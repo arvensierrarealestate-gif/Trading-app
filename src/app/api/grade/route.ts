@@ -5,23 +5,44 @@ import type { SOP, Grade } from "@/lib/types";
 
 export const runtime = "nodejs";
 
-const SYSTEM = `You are a strict but supportive trading coach. Grade whether this paper trade followed the trader's own SOP rules. Be specific about what you see in the chart.
-Return ONLY valid JSON, no other text:
-{
-  "score": 0-100,
-  "verdict": "SOP followed"|"Partial"|"SOP violated",
-  "rule_checks": [
-    {"rule":"Entry signal visible on chart","status":"pass"|"fail"|"warn","note":"specific detail"},
-    {"rule":"Trend aligned with direction","status":"pass"|"fail"|"warn","note":"specific detail"},
-    {"rule":"Risk/reward looks acceptable","status":"pass"|"fail"|"warn","note":"specific detail"},
-    {"rule":"Entry timing reasonable","status":"pass"|"fail"|"warn","note":"specific detail"},
-    {"rule":"Volume supports the move","status":"pass"|"fail"|"warn","note":"specific detail"},
-    {"rule":"Volatility / MACD context","status":"pass"|"fail"|"warn","note":"specific detail"}
-  ],
-  "what_you_did_well": "specific positive",
-  "what_to_improve": "specific actionable improvement",
-  "coach_note": "one encouraging sentence for a beginner"
-}`;
+const SYSTEM = `You are a strict but supportive trading coach. Grade whether this paper trade followed the trader's own SOP rules. Read the chart carefully and be specific about what you actually see — price action, indicators, structure. Score 0-100 (0 = ignored the SOP entirely, 100 = textbook adherence). The verdict must reflect the score: "SOP followed" for strong adherence, "Partial" for mixed, "SOP violated" for poor adherence. For each rule check, "pass" means clearly met, "warn" means ambiguous or partially met, "fail" means clearly not met.`;
+
+const GRADE_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    score: { type: "integer", description: "Overall SOP-compliance score from 0 to 100" },
+    verdict: { type: "string", enum: ["SOP followed", "Partial", "SOP violated"] },
+    rule_checks: {
+      type: "array",
+      description: "Exactly these six checks, in this order",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          rule: {
+            type: "string",
+            enum: [
+              "Entry signal visible on chart",
+              "Trend aligned with direction",
+              "Risk/reward looks acceptable",
+              "Entry timing reasonable",
+              "Volume supports the move",
+              "Volatility / MACD context",
+            ],
+          },
+          status: { type: "string", enum: ["pass", "fail", "warn"] },
+          note: { type: "string", description: "Specific detail referencing what is visible in the chart" },
+        },
+        required: ["rule", "status", "note"],
+      },
+    },
+    what_you_did_well: { type: "string", description: "Specific positive observation" },
+    what_to_improve: { type: "string", description: "Specific, actionable improvement" },
+    coach_note: { type: "string", description: "One encouraging sentence for a beginner" },
+  },
+  required: ["score", "verdict", "rule_checks", "what_you_did_well", "what_to_improve", "coach_note"],
+} as const;
 
 type ImageInput = { data: string; media_type: "image/png" | "image/jpeg" | "image/gif" | "image/webp" };
 type Body = {
@@ -73,30 +94,38 @@ ${sopText}`,
   }
 
   const anthropic = new Anthropic({ apiKey });
-  let raw = "";
+  let message: Anthropic.Messages.Message;
   try {
-    const msg = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1200,
+    message = await anthropic.messages.create({
+      model: "claude-opus-4-7",
+      max_tokens: 16000,
+      thinking: { type: "adaptive" },
+      output_config: { effort: "medium", format: { type: "json_schema", schema: GRADE_SCHEMA } },
       system: SYSTEM,
       messages: [{ role: "user", content }],
     });
-    raw = msg.content.find((b): b is Anthropic.Messages.TextBlock => b.type === "text")?.text ?? "";
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Grading failed";
-    return NextResponse.json({ error: msg }, { status: 502 });
+    if (err instanceof Anthropic.APIError) {
+      return NextResponse.json({ error: err.message }, { status: err.status ?? 502 });
+    }
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Grading failed" }, { status: 502 });
   }
 
-  const clean = raw.replace(/```json|```/g, "").trim();
-  const start = clean.indexOf("{");
-  const end = clean.lastIndexOf("}");
-  if (start < 0 || end <= start) return NextResponse.json({ error: "Bad model response", raw }, { status: 502 });
+  if (message.stop_reason === "refusal") {
+    return NextResponse.json({ error: "The model declined to grade this image." }, { status: 422 });
+  }
+  if (message.stop_reason === "max_tokens") {
+    return NextResponse.json({ error: "Grading response was truncated. Try again." }, { status: 502 });
+  }
+
+  const raw = message.content.find((b): b is Anthropic.Messages.TextBlock => b.type === "text")?.text;
+  if (!raw) return NextResponse.json({ error: "Empty grade response" }, { status: 502 });
 
   let grade: Grade;
   try {
-    grade = JSON.parse(clean.slice(start, end + 1));
+    grade = JSON.parse(raw);
   } catch {
-    return NextResponse.json({ error: "Could not parse grade JSON", raw }, { status: 502 });
+    return NextResponse.json({ error: "Could not parse grade JSON" }, { status: 502 });
   }
 
   return NextResponse.json({ grade });
