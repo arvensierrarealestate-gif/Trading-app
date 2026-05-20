@@ -540,6 +540,66 @@ body::before {
 .auth-msg.ok { background: rgba(0,212,170,0.08); color: var(--accent); border: 1px solid rgba(0,212,170,0.2); }
 .auth-msg.err { background: rgba(239,68,68,0.08); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
 
+.order-row {
+  display: grid;
+  grid-template-columns: 1fr 70px 70px 80px 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.order-row:last-child { border-bottom: none; }
+.order-row.header { color: var(--text3); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+.order-sym { font-weight: 600; color: var(--text); }
+.order-status { font-size: 10px; padding: 2px 7px; border-radius: 4px; text-align: center; justify-self: start; }
+.os-filled { background: rgba(0,212,170,0.1); color: var(--accent); }
+.os-open { background: rgba(245,158,11,0.1); color: var(--amber); }
+.os-dead { background: rgba(239,68,68,0.1); color: var(--red); }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.modal-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg1);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.modal-title {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+.confirm-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 20px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+}
+.confirm-line span:first-child { color: var(--text3); }
+.confirm-line span:last-child { color: var(--text); font-weight: 600; }
+.confirm-warn {
+  font-size: 11px;
+  color: var(--amber);
+  padding: 12px 20px;
+  background: rgba(245,158,11,0.06);
+}
+
 .acct-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; padding: 16px 20px; }
 .acct-cell { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
 .acct-label { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }

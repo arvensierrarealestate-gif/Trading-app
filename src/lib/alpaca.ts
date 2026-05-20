@@ -11,11 +11,57 @@ function headers() {
   };
 }
 
+export class AlpacaError extends Error {
+  status: number;
+  constructor(status: number, message: string) {
+    super(message);
+    this.status = status;
+  }
+}
+
 export async function alpacaGet<T>(path: string): Promise<T> {
   const res = await fetch(`${ALPACA_BASE}${path}`, { headers: headers(), cache: "no-store" });
-  if (!res.ok) throw new Error(`Alpaca ${path}: ${res.status} ${await res.text()}`);
+  if (!res.ok) throw new AlpacaError(res.status, await res.text());
   return res.json() as Promise<T>;
 }
+
+export async function alpacaPost<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${ALPACA_BASE}${path}`, {
+    method: "POST",
+    headers: headers(),
+    body: JSON.stringify(body),
+    cache: "no-store",
+  });
+  if (!res.ok) throw new AlpacaError(res.status, await res.text());
+  return res.json() as Promise<T>;
+}
+
+export type OrderSide = "buy" | "sell";
+export type OrderType = "market" | "limit";
+export type TimeInForce = "day" | "gtc" | "ioc" | "fok";
+
+export type AlpacaOrderRequest = {
+  symbol: string;
+  qty: string;
+  side: OrderSide;
+  type: OrderType;
+  time_in_force: TimeInForce;
+  limit_price?: string;
+};
+
+export type AlpacaOrder = {
+  id: string;
+  symbol: string;
+  qty: string | null;
+  filled_qty: string;
+  side: string;
+  type: string;
+  time_in_force: string;
+  limit_price: string | null;
+  status: string;
+  submitted_at: string;
+  filled_avg_price: string | null;
+};
 
 export type AlpacaAccount = {
   id: string;
