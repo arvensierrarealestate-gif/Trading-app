@@ -36,6 +36,16 @@ export async function alpacaPost<T>(path: string, body: unknown): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+export async function alpacaDelete<T>(path: string): Promise<T> {
+  const res = await fetch(`${ALPACA_BASE}${path}`, {
+    method: "DELETE",
+    headers: headers(),
+    cache: "no-store",
+  });
+  if (!res.ok) throw new AlpacaError(res.status, await res.text());
+  return res.json() as Promise<T>;
+}
+
 export type OrderSide = "buy" | "sell";
 export type OrderType = "market" | "limit";
 export type TimeInForce = "day" | "gtc" | "ioc" | "fok";
@@ -61,6 +71,17 @@ export type AlpacaOrder = {
   status: string;
   submitted_at: string;
   filled_avg_price: string | null;
+};
+
+export type AlpacaPosition = {
+  symbol: string;
+  qty: string;
+  side: string;
+  avg_entry_price: string;
+  current_price: string | null;
+  market_value: string;
+  unrealized_pl: string;
+  unrealized_plpc: string;
 };
 
 export type AlpacaAccount = {

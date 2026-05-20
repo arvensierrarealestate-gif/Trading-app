@@ -28,6 +28,17 @@ type AlpacaOrder = {
   filled_avg_price: string | null;
 };
 
+type AlpacaPosition = {
+  symbol: string;
+  qty: string;
+  side: string;
+  avg_entry_price: string;
+  current_price: string | null;
+  market_value: string;
+  unrealized_pl: string;
+  unrealized_plpc: string;
+};
+
 type Ticket = {
   symbol: string;
   side: "buy" | "sell";
@@ -72,6 +83,11 @@ export default function Stage3GoLive({
   const [orders, setOrders] = useState<AlpacaOrder[]>([]);
   const [ordersErr, setOrdersErr] = useState<string | null>(null);
 
+  const [positions, setPositions] = useState<AlpacaPosition[]>([]);
+  const [posErr, setPosErr] = useState<string | null>(null);
+  const [closing, setClosing] = useState<AlpacaPosition | null>(null);
+  const [closingBusy, setClosingBusy] = useState(false);
+
   const [ticket, setTicket] = useState<Ticket>(EMPTY_TICKET);
   const [formErr, setFormErr] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
@@ -112,6 +128,20 @@ export default function Stage3GoLive({
     }
   }, []);
 
+  const loadPositions = useCallback(async () => {
+    try {
+      const res = await fetch("/api/alpaca/positions");
+      const json = await res.json();
+      if (!res.ok) setPosErr(json.error || "Could not load positions");
+      else {
+        setPositions(json.positions ?? []);
+        setPosErr(null);
+      }
+    } catch (e) {
+      setPosErr(e instanceof Error ? e.message : "Network error");
+    }
+  }, []);
+
   const n = trades.length;
   const avg = n ? Math.round(trades.reduce((a, t) => a + t.score, 0) / n) : 0;
   const autoVals = { trades5: n >= 5, score70: avg >= 70 };
@@ -129,8 +159,11 @@ export default function Stage3GoLive({
   const allPassed = done === total;
 
   useEffect(() => {
-    if (allPassed) loadOrders();
-  }, [allPassed, loadOrders]);
+    if (allPassed) {
+      loadOrders();
+      loadPositions();
+    }
+  }, [allPassed, loadOrders, loadPositions]);
 
   async function toggle(i: number) {
     const item = GL_ITEMS[i];
@@ -184,12 +217,33 @@ export default function Stage3GoLive({
         setResult({ kind: "ok", msg: `Order submitted: ${json.order.side} ${json.order.qty} ${json.order.symbol} (${json.order.status})` });
         setTicket(EMPTY_TICKET);
         loadOrders();
+        loadPositions();
       }
     } catch (e) {
       setResult({ kind: "err", msg: e instanceof Error ? e.message : "Network error" });
     } finally {
       setSubmitting(false);
       setConfirming(false);
+    }
+  }
+
+  async function closePosition() {
+    if (!closing) return;
+    setClosingBusy(true);
+    try {
+      const res = await fetch(`/api/alpaca/positions?symbol=${encodeURIComponent(closing.symbol)}`, { method: "DELETE" });
+      const json = await res.json();
+      if (!res.ok) setResult({ kind: "err", msg: json.error || "Could not close position" });
+      else {
+        setResult({ kind: "ok", msg: `Submitted close for ${closing.symbol}` });
+        loadPositions();
+        loadOrders();
+      }
+    } catch (e) {
+      setResult({ kind: "err", msg: e instanceof Error ? e.message : "Network error" });
+    } finally {
+      setClosingBusy(false);
+      setClosing(null);
     }
   }
 
@@ -357,6 +411,42 @@ export default function Stage3GoLive({
       {allPassed && (
         <div className="card">
           <div className="card-header">
+            <div className="card-title"><div className="card-title-icon">◧</div> Open positions</div>
+            <button className="btn" style={{ padding: "5px 12px", fontSize: 12 }} onClick={loadPositions} type="button">↻ Refresh</button>
+          </div>
+          {posErr ? (
+            <div className="empty-state"><div>Could not load positions</div><div style={{ fontSize: 11, color: "var(--text3)" }}>{posErr}</div></div>
+          ) : positions.length === 0 ? (
+            <div className="empty-state"><div className="empty-icon">◧</div><div>No open positions</div></div>
+          ) : (
+            <div>
+              <div className="pos-row header">
+                <span>symbol</span><span>qty</span><span>avg entry</span><span>unrealized p/l</span><span></span>
+              </div>
+              {positions.map((p) => {
+                const pl = Number(p.unrealized_pl);
+                const plpc = Number(p.unrealized_plpc) * 100;
+                const col = pl > 0 ? "var(--accent)" : pl < 0 ? "var(--red)" : "var(--text2)";
+                return (
+                  <div key={p.symbol} className="pos-row">
+                    <span className="order-sym">{p.symbol}</span>
+                    <span>{p.qty}</span>
+                    <span style={{ color: "var(--text2)" }}>${Number(p.avg_entry_price).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                    <span className="pos-pl" style={{ color: col }}>
+                      {pl >= 0 ? "+" : ""}{pl.toLocaleString(undefined, { maximumFractionDigits: 2 })} ({plpc >= 0 ? "+" : ""}{plpc.toFixed(2)}%)
+                    </span>
+                    <span><button className="btn danger" style={{ padding: "5px 12px", fontSize: 12 }} onClick={() => setClosing(p)} type="button">Close</button></span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {allPassed && (
+        <div className="card">
+          <div className="card-header">
             <div className="card-title"><div className="card-title-icon">≡</div> Recent orders</div>
             <button className="btn" style={{ padding: "5px 12px", fontSize: 12 }} onClick={loadOrders} type="button">↻ Refresh</button>
           </div>
@@ -401,6 +491,24 @@ export default function Stage3GoLive({
               <button className="btn" onClick={() => setConfirming(false)} disabled={submitting} type="button">Cancel</button>
               <button className="btn primary" onClick={submitOrder} disabled={submitting} type="button">
                 {submitting ? "Submitting…" : "Confirm & submit"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {closing && (
+        <div className="modal-overlay" onClick={() => !closingBusy && setClosing(null)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-title">Close position</div>
+            <div className="confirm-line"><span>Symbol</span><span>{closing.symbol}</span></div>
+            <div className="confirm-line"><span>Quantity</span><span>{closing.qty}</span></div>
+            <div className="confirm-line"><span>Market value</span><span>${Number(closing.market_value).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span></div>
+            <div className="confirm-warn">This submits a market order to liquidate the entire position on your Alpaca paper account.</div>
+            <div className="btn-row">
+              <button className="btn" onClick={() => setClosing(null)} disabled={closingBusy} type="button">Cancel</button>
+              <button className="btn danger" onClick={closePosition} disabled={closingBusy} type="button">
+                {closingBusy ? "Closing…" : "Confirm close"}
               </button>
             </div>
           </div>

@@ -557,6 +557,19 @@ body::before {
 .os-open { background: rgba(245,158,11,0.1); color: var(--amber); }
 .os-dead { background: rgba(239,68,68,0.1); color: var(--red); }
 
+.pos-row {
+  display: grid;
+  grid-template-columns: 1fr 70px 90px 1fr 80px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.pos-row:last-child { border-bottom: none; }
+.pos-row.header { color: var(--text3); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+.pos-pl { font-weight: 600; font-family: var(--display); }
+
 .modal-overlay {
   position: fixed;
   inset: 0;
