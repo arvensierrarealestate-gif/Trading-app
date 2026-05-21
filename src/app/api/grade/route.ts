@@ -5,6 +5,11 @@ import type { SOP, Grade } from "@/lib/types";
 
 export const runtime = "nodejs";
 
+const MODEL = "claude-opus-4-7";
+const DAILY_LIMIT = Number(process.env.GRADE_DAILY_LIMIT ?? "50");
+const ALLOWED_MEDIA = ["image/png", "image/jpeg", "image/gif", "image/webp"] as const;
+const MAX_IMAGE_B64 = 7_000_000; // ~5 MB decoded, Anthropic's per-image cap
+
 const SYSTEM = `You are a strict but supportive trading coach. Grade whether this paper trade followed the trader's own SOP rules. Read the chart carefully and be specific about what you actually see — price action, indicators, structure. Score 0-100 (0 = ignored the SOP entirely, 100 = textbook adherence). The verdict must reflect the score: "SOP followed" for strong adherence, "Partial" for mixed, "SOP violated" for poor adherence. For each rule check, "pass" means clearly met, "warn" means ambiguous or partially met, "fail" means clearly not met.`;
 
 const GRADE_SCHEMA = {
@@ -44,7 +49,7 @@ const GRADE_SCHEMA = {
   required: ["score", "verdict", "rule_checks", "what_you_did_well", "what_to_improve", "coach_note"],
 } as const;
 
-type ImageInput = { data: string; media_type: "image/png" | "image/jpeg" | "image/gif" | "image/webp" };
+type ImageInput = { data: string; media_type: (typeof ALLOWED_MEDIA)[number] };
 type Body = {
   sop: SOP;
   asset: string;
@@ -56,6 +61,17 @@ type Body = {
   news?: ImageInput | null;
 };
 
+function imageError(img: unknown, label: string): string | null {
+  if (typeof img !== "object" || img === null) return `${label} is malformed`;
+  const { data, media_type } = img as Partial<ImageInput>;
+  if (typeof data !== "string" || !data) return `${label} is missing image data`;
+  if (!ALLOWED_MEDIA.includes(media_type as (typeof ALLOWED_MEDIA)[number])) {
+    return `${label} must be PNG, JPEG, GIF, or WebP`;
+  }
+  if (data.length > MAX_IMAGE_B64) return `${label} is too large (max ~5 MB)`;
+  return null;
+}
+
 export async function POST(req: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -64,8 +80,32 @@ export async function POST(req: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
 
-  const body = (await req.json()) as Body;
-  if (!body?.chart?.data) return NextResponse.json({ error: "Chart image required" }, { status: 400 });
+  const body = (await req.json().catch(() => null)) as Body | null;
+  if (!body || typeof body.sop !== "object" || body.sop === null) {
+    return NextResponse.json({ error: "Missing SOP" }, { status: 400 });
+  }
+  const chartErr = imageError(body.chart, "Chart");
+  if (chartErr) return NextResponse.json({ error: chartErr }, { status: 400 });
+  if (body.news) {
+    const newsErr = imageError(body.news, "News image");
+    if (newsErr) return NextResponse.json({ error: newsErr }, { status: 400 });
+  }
+
+  // Per-user daily cost guard.
+  const since = new Date();
+  since.setHours(0, 0, 0, 0);
+  const { count } = await supabase
+    .from("api_usage")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .eq("kind", "grade")
+    .gte("created_at", since.toISOString());
+  if ((count ?? 0) >= DAILY_LIMIT) {
+    return NextResponse.json(
+      { error: `Daily grading limit reached (${DAILY_LIMIT}). Try again tomorrow.` },
+      { status: 429 },
+    );
+  }
 
   const sopText = `TRADER SOP:
 Assets: ${body.sop.assets} | Timeframe: ${body.sop.tf}
@@ -97,7 +137,7 @@ ${sopText}`,
   let message: Anthropic.Messages.Message;
   try {
     message = await anthropic.messages.create({
-      model: "claude-opus-4-7",
+      model: MODEL,
       max_tokens: 16000,
       thinking: { type: "adaptive" },
       output_config: { effort: "medium", format: { type: "json_schema", schema: GRADE_SCHEMA } },
@@ -110,6 +150,19 @@ ${sopText}`,
     }
     return NextResponse.json({ error: err instanceof Error ? err.message : "Grading failed" }, { status: 502 });
   }
+
+  // Every completed model call consumed tokens — log it so it counts toward the cap.
+  const usage = {
+    input_tokens: message.usage.input_tokens,
+    output_tokens: message.usage.output_tokens,
+  };
+  await supabase.from("api_usage").insert({
+    user_id: user.id,
+    kind: "grade",
+    model: MODEL,
+    input_tokens: usage.input_tokens,
+    output_tokens: usage.output_tokens,
+  });
 
   if (message.stop_reason === "refusal") {
     return NextResponse.json({ error: "The model declined to grade this image." }, { status: 422 });
@@ -128,5 +181,5 @@ ${sopText}`,
     return NextResponse.json({ error: "Could not parse grade JSON" }, { status: 502 });
   }
 
-  return NextResponse.json({ grade });
+  return NextResponse.json({ grade, usage });
 }

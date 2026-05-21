@@ -36,14 +36,16 @@ export async function alpacaPost<T>(path: string, body: unknown): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export async function alpacaDelete<T>(path: string): Promise<T> {
+export async function alpacaDelete<T>(path: string): Promise<T | null> {
   const res = await fetch(`${ALPACA_BASE}${path}`, {
     method: "DELETE",
     headers: headers(),
     cache: "no-store",
   });
   if (!res.ok) throw new AlpacaError(res.status, await res.text());
-  return res.json() as Promise<T>;
+  if (res.status === 204) return null;
+  const text = await res.text();
+  return text ? (JSON.parse(text) as T) : null;
 }
 
 export type OrderSide = "buy" | "sell";

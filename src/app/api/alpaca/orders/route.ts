@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   alpacaGet,
   alpacaPost,
+  alpacaDelete,
   AlpacaError,
   type AlpacaOrder,
   type AlpacaOrderRequest,
@@ -85,5 +86,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: err.message }, { status: err.status >= 400 && err.status < 500 ? err.status : 502 });
     }
     return NextResponse.json({ error: err instanceof Error ? err.message : "Order failed" }, { status: 502 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const id = new URL(req.url).searchParams.get("id")?.trim();
+  if (!id) return NextResponse.json({ error: "Order id is required" }, { status: 400 });
+
+  try {
+    await alpacaDelete(`/orders/${encodeURIComponent(id)}`);
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    if (err instanceof AlpacaError) {
+      return NextResponse.json({ error: err.message }, { status: err.status >= 400 && err.status < 500 ? err.status : 502 });
+    }
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Cancel failed" }, { status: 502 });
   }
 }
