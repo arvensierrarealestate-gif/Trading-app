@@ -542,7 +542,7 @@ body::before {
 
 .order-row {
   display: grid;
-  grid-template-columns: 1fr 70px 70px 80px 1fr;
+  grid-template-columns: 1fr 60px 60px 70px 90px 72px;
   align-items: center;
   gap: 12px;
   padding: 10px 16px;

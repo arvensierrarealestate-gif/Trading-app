@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Grade, SOP, Trade } from "@/lib/types";
 
@@ -47,6 +47,21 @@ export default function Stage2Paper({
   const [grading, setGrading] = useState(false);
   const [log, setLog] = useState<LogLine[]>([]);
   const [grade, setGrade] = useState<{ grade: Grade; asset: string; dir: string; outcome: string } | null>(null);
+  const [usage, setUsage] = useState<{ grades: number; limit: number; remaining: number; est_cost_usd: number } | null>(null);
+
+  const loadUsage = useCallback(async () => {
+    try {
+      const res = await fetch("/api/usage");
+      const json = await res.json();
+      if (res.ok) setUsage(json.today);
+    } catch {
+      // non-critical
+    }
+  }, []);
+
+  useEffect(() => {
+    loadUsage();
+  }, [loadUsage]);
 
   function addLog(line: LogLine) {
     setLog((prev) => [...prev, line]);
@@ -97,12 +112,14 @@ export default function Stage2Paper({
         }),
       });
       const json = await res.json();
+      loadUsage();
       if (!res.ok) {
         addLog({ kind: "err", msg: json.error || "Grading failed" });
         return;
       }
       const g: Grade = json.grade;
-      addLog({ kind: "ok", msg: `Score: ${g.score}/100 — ${g.verdict}` });
+      const cost = json.usage ? ` · ${json.usage.input_tokens + json.usage.output_tokens} tok` : "";
+      addLog({ kind: "ok", msg: `Score: ${g.score}/100 — ${g.verdict}${cost}` });
       setGrade({ grade: g, asset: asset || "Unknown", dir, outcome });
 
       const { data: { user } } = await supabase.auth.getUser();
@@ -170,7 +187,11 @@ export default function Stage2Paper({
       <div className="card">
         <div className="card-header">
           <div className="card-title"><div className="card-title-icon">↑</div> Submit paper trade</div>
-          <div className="card-meta">AI grades against your SOP</div>
+          <div className="card-meta">
+            {usage
+              ? `${usage.grades}/${usage.limit} grades today · ~$${usage.est_cost_usd.toFixed(2)}`
+              : "AI grades against your SOP"}
+          </div>
         </div>
 
         <div className="section-block">
@@ -248,8 +269,11 @@ export default function Stage2Paper({
         </div>
 
         <div className="btn-row">
+          {usage && usage.remaining === 0 && (
+            <span className="btn-hint" style={{ color: "var(--amber)" }}>Daily grading limit reached — resets tomorrow.</span>
+          )}
           <button className="btn" onClick={clearForm} type="button">↺ Clear</button>
-          <button className="btn primary" onClick={gradeTrade} disabled={grading} type="button">
+          <button className="btn primary" onClick={gradeTrade} disabled={grading || (usage?.remaining === 0)} type="button">
             {grading ? "⏳ Grading…" : "⚡ Grade this trade"}
           </button>
         </div>

@@ -64,6 +64,11 @@ function statusClass(status: string) {
   return "os-open";
 }
 
+const CANCELABLE = ["new", "accepted", "partially_filled", "pending_new", "accepted_for_bidding", "calculated", "held"];
+function isCancelable(status: string) {
+  return CANCELABLE.includes(status.toLowerCase());
+}
+
 export default function Stage3GoLive({
   trades,
   manualChecks,
@@ -87,6 +92,7 @@ export default function Stage3GoLive({
   const [posErr, setPosErr] = useState<string | null>(null);
   const [closing, setClosing] = useState<AlpacaPosition | null>(null);
   const [closingBusy, setClosingBusy] = useState(false);
+  const [cancelingId, setCancelingId] = useState<string | null>(null);
 
   const [ticket, setTicket] = useState<Ticket>(EMPTY_TICKET);
   const [formErr, setFormErr] = useState<string | null>(null);
@@ -224,6 +230,23 @@ export default function Stage3GoLive({
     } finally {
       setSubmitting(false);
       setConfirming(false);
+    }
+  }
+
+  async function cancelOrder(id: string) {
+    setCancelingId(id);
+    try {
+      const res = await fetch(`/api/alpaca/orders?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+      const json = await res.json();
+      if (!res.ok) setResult({ kind: "err", msg: json.error || "Could not cancel order" });
+      else {
+        setResult({ kind: "ok", msg: "Order cancellation submitted" });
+        loadOrders();
+      }
+    } catch (e) {
+      setResult({ kind: "err", msg: e instanceof Error ? e.message : "Network error" });
+    } finally {
+      setCancelingId(null);
     }
   }
 
@@ -457,7 +480,7 @@ export default function Stage3GoLive({
           ) : (
             <div>
               <div className="order-row header">
-                <span>symbol</span><span>side</span><span>qty</span><span>type</span><span>status</span>
+                <span>symbol</span><span>side</span><span>qty</span><span>type</span><span>status</span><span></span>
               </div>
               {orders.map((o) => (
                 <div key={o.id} className="order-row">
@@ -466,6 +489,19 @@ export default function Stage3GoLive({
                   <span>{o.qty ?? o.filled_qty}</span>
                   <span style={{ color: "var(--text2)" }}>{o.type}</span>
                   <span className={`order-status ${statusClass(o.status)}`}>{o.status}</span>
+                  <span>
+                    {isCancelable(o.status) && (
+                      <button
+                        className="btn danger"
+                        style={{ padding: "4px 10px", fontSize: 11 }}
+                        onClick={() => cancelOrder(o.id)}
+                        disabled={cancelingId === o.id}
+                        type="button"
+                      >
+                        {cancelingId === o.id ? "…" : "Cancel"}
+                      </button>
+                    )}
+                  </span>
                 </div>
               ))}
             </div>
