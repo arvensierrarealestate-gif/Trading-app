@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Grade, SOP, Trade } from "@/lib/types";
+import type { Regime } from "@/lib/regime";
 
 type LogLine = { kind: "ai" | "ok" | "err" | "tool"; msg: string };
 
@@ -27,12 +28,14 @@ export default function Stage2Paper({
   sop,
   trades,
   goLiveUnlocked,
+  currentRegime,
   onTradeAdded,
   onUnlock,
 }: {
   sop: SOP;
   trades: Trade[];
   goLiveUnlocked: boolean;
+  currentRegime: Regime | null;
   onTradeAdded: (t: Trade) => void;
   onUnlock: () => void;
 }) {
@@ -109,6 +112,7 @@ export default function Stage2Paper({
           exit,
           chart: chart.payload,
           news: news?.payload ?? null,
+          current_regime: currentRegime,
         }),
       });
       const json = await res.json();

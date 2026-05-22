@@ -28,8 +28,9 @@ export default function Stage1Sop({
   const sessionsSel = parseList(sop.sessions);
   const signalsSel = parseList(sop.entry_signals);
   const confirmSel = parseList(sop.entry_confirm);
+  const regimesSel = parseList(sop.regimes);
 
-  function toggleIn(field: "sessions" | "entry_signals" | "entry_confirm", value: string) {
+  function toggleIn(field: "sessions" | "entry_signals" | "entry_confirm" | "regimes", value: string) {
     const cur = parseList(sop[field]);
     const next = cur.includes(value) ? cur.filter((x) => x !== value) : [...cur, value];
     onChange({ ...sop, [field]: next.join(", ") });
@@ -198,6 +199,33 @@ export default function Stage1Sop({
                 <option key={v}>{v}</option>
               ))}
             </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="section-block">
+        <div className="section-label">Market regime filter</div>
+        <div className="field">
+          <label>Only trade in these SPY regimes</label>
+          <div className="tag-row">
+            {[
+              { key: "crash", label: "Crash" },
+              { key: "bear", label: "Bear" },
+              { key: "neutral", label: "Neutral" },
+              { key: "bull", label: "Bull" },
+            ].map((r) => (
+              <span
+                key={r.key}
+                className={`tag ${regimesSel.includes(r.key) ? "sel" : ""}`}
+                onClick={() => toggleIn("regimes", r.key)}
+              >
+                {r.label}
+              </span>
+            ))}
+          </div>
+          <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 6 }}>
+            The Regime tab estimates the live SPY regime with an HMM. Trades graded while the market is
+            outside these regimes are flagged as out-of-SOP.
           </div>
         </div>
       </div>

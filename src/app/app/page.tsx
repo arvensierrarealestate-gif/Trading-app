@@ -29,6 +29,7 @@ export default async function AppPage() {
         risk: sopRow.risk,
         max_trades: sopRow.max_trades,
         drawdown: sopRow.drawdown,
+        regimes: sopRow.regimes ?? "neutral, bull",
       }
     : null;
 

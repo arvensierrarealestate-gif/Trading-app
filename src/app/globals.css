@@ -580,6 +580,60 @@ body::before {
 .os-open { background: rgba(245,158,11,0.1); color: var(--amber); }
 .os-dead { background: rgba(239,68,68,0.1); color: var(--red); }
 
+.regime-card { margin-bottom: 24px; }
+.regime-head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.regime-now {
+  border: 1px solid var(--border2);
+  border-left-width: 3px;
+  border-radius: 10px;
+  padding: 12px 18px;
+  background: var(--bg2);
+  min-width: 150px;
+}
+.regime-now-label { font-family: var(--display); font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+.regime-now-conf { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.regime-meta { display: flex; flex-direction: column; gap: 6px; }
+.regime-asof { font-size: 11px; color: var(--text3); }
+.regime-match { font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 6px; width: fit-content; }
+.regime-match.ok { background: rgba(0,212,170,0.1); color: var(--accent); border: 1px solid rgba(0,212,170,0.25); }
+.regime-match.blocked { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+
+.regime-timeline-wrap { padding: 16px 20px 8px; }
+.regime-timeline {
+  display: flex;
+  gap: 1px;
+  height: 32px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.regime-seg { flex: 1 1 0; min-width: 1px; transition: opacity 0.1s; }
+.regime-seg:hover { opacity: 0.7; }
+.regime-timeline-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 6px;
+}
+.regime-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 12px 20px 18px;
+  border-top: 1px solid var(--border);
+}
+.regime-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); }
+.regime-dot { width: 10px; height: 10px; border-radius: 3px; }
+.regime-legend-mean { font-size: 10px; color: var(--text3); }
+
 .pos-row {
   display: grid;
   grid-template-columns: 1fr 70px 90px 1fr 80px;

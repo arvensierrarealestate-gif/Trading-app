@@ -4,6 +4,8 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { SOP, Trade } from "@/lib/types";
+import { parseRegimes, type Regime } from "@/lib/regime";
+import RegimeTab from "./RegimeTab";
 import Stage1Sop from "./Stage1Sop";
 import Stage2Paper from "./Stage2Paper";
 import Stage3GoLive from "./Stage3GoLive";
@@ -25,6 +27,7 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
   const [trades, setTrades] = useState<Trade[]>(initialTrades);
   const [manualChecks, setManualChecks] = useState<boolean[]>(initialManualChecks);
   const [stage, setStage] = useState<number>(hasSavedSop ? (initialTrades.length >= 5 ? 1 : 1) : 0);
+  const [currentRegime, setCurrentRegime] = useState<Regime | null>(null);
 
   const avgScore = trades.length
     ? Math.round(trades.reduce((a, t) => a + t.score, 0) / trades.length)
@@ -75,6 +78,8 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
           </div>
         </div>
       </div>
+
+      <RegimeTab sopRegimes={parseRegimes(sop.regimes)} onRegime={setCurrentRegime} />
 
       <div className="stage-nav">
         {[
@@ -132,6 +137,7 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
           sop={sop}
           trades={trades}
           goLiveUnlocked={goLiveUnlocked}
+          currentRegime={currentRegime}
           onTradeAdded={(t) => setTrades((prev) => [...prev, t])}
           onUnlock={() => setStage(2)}
         />

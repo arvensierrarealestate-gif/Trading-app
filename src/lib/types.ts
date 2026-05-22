@@ -11,6 +11,7 @@ export type SOP = {
   risk: string;
   max_trades: string;
   drawdown: string;
+  regimes: string;
 };
 
 export type RuleCheck = {
@@ -53,6 +54,7 @@ export const SOP_DEFAULTS: SOP = {
   risk: "1%",
   max_trades: "2",
   drawdown: "3%",
+  regimes: "neutral, bull",
 };
 
 export const GL_ITEMS = [

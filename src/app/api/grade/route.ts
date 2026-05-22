@@ -59,6 +59,7 @@ type Body = {
   exit?: string;
   chart: ImageInput;
   news?: ImageInput | null;
+  current_regime?: string | null;
 };
 
 function imageError(img: unknown, label: string): string | null {
@@ -115,7 +116,18 @@ Entry confirmation: ${body.sop.entry_confirm}
 Entry notes: ${body.sop.entry_notes || "none"}
 TP: ${body.sop.tp} | SL: ${body.sop.sl} | Min R/R: ${body.sop.rr}
 Max risk/trade: ${body.sop.risk} | Max trades/day: ${body.sop.max_trades}
-Daily loss limit: ${body.sop.drawdown}`;
+Daily loss limit: ${body.sop.drawdown}
+Allowed market regimes: ${body.sop.regimes || "any"}`;
+
+  const allowedRegimes = (body.sop.regimes || "")
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  const liveRegime = (body.current_regime || "").toLowerCase();
+  const regimeMismatch = !!liveRegime && allowedRegimes.length > 0 && !allowedRegimes.includes(liveRegime);
+  const regimeText = liveRegime
+    ? `\n\nLIVE MARKET REGIME (SPY, 4-state HMM): ${liveRegime}. The trader's SOP only permits trading in: ${allowedRegimes.join(", ") || "any"}.${regimeMismatch ? " This trade was taken OUTSIDE the trader's allowed regimes — this is a regime violation: cap the score at 49 and set the verdict to \"SOP violated\" regardless of the chart, and explain the regime mismatch in what_to_improve." : " The current regime is within the trader's allowed regimes."}`
+    : "";
 
   const content: Anthropic.Messages.ContentBlockParam[] = [
     {
@@ -123,7 +135,7 @@ Daily loss limit: ${body.sop.drawdown}`;
       text: `Grade this paper trade against the SOP.
 Asset: ${body.asset}, Direction: ${body.dir}, Outcome: ${body.outcome}, Entry: ${body.entry || "—"}, Exit: ${body.exit || "—"}
 
-${sopText}`,
+${sopText}${regimeText}`,
     },
     { type: "image", source: { type: "base64", media_type: body.chart.media_type, data: body.chart.data } },
     { type: "text", text: "Image: price chart" },
