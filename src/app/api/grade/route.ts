@@ -12,42 +12,68 @@ const MAX_IMAGE_B64 = 7_000_000; // ~5 MB decoded, Anthropic's per-image cap
 
 const SYSTEM = `You are a strict but supportive trading coach. Grade whether this paper trade followed the trader's own SOP rules. Read the chart carefully and be specific about what you actually see — price action, indicators, structure. Score 0-100 (0 = ignored the SOP entirely, 100 = textbook adherence). The verdict must reflect the score: "SOP followed" for strong adherence, "Partial" for mixed, "SOP violated" for poor adherence. For each rule check, "pass" means clearly met, "warn" means ambiguous or partially met, "fail" means clearly not met.`;
 
-const GRADE_SCHEMA = {
+const PROTECTION_SCHEMA = {
   type: "object",
   additionalProperties: false,
   properties: {
-    score: { type: "integer", description: "Overall SOP-compliance score from 0 to 100" },
-    verdict: { type: "string", enum: ["SOP followed", "Partial", "SOP violated"] },
-    rule_checks: {
-      type: "array",
-      description: "Exactly these six checks, in this order",
-      items: {
-        type: "object",
-        additionalProperties: false,
-        properties: {
-          rule: {
-            type: "string",
-            enum: [
-              "Entry signal visible on chart",
-              "Trend aligned with direction",
-              "Risk/reward looks acceptable",
-              "Entry timing reasonable",
-              "Volume supports the move",
-              "Volatility / MACD context",
-            ],
-          },
-          status: { type: "string", enum: ["pass", "fail", "warn"] },
-          note: { type: "string", description: "Specific detail referencing what is visible in the chart" },
-        },
-        required: ["rule", "status", "note"],
-      },
+    stop_loss_placement: {
+      type: "integer",
+      description:
+        "0-30. How well the submitted stop loss is placed on the chart: ~30 = just beyond a clear support/resistance level; ~15 = plausible but loose; 0 = no stop, or placed illogically (e.g. inside recent noise or on the wrong side).",
     },
-    what_you_did_well: { type: "string", description: "Specific positive observation" },
-    what_to_improve: { type: "string", description: "Specific, actionable improvement" },
-    coach_note: { type: "string", description: "One encouraging sentence for a beginner" },
+    position_size_ok: {
+      type: "boolean",
+      description:
+        "True if, given the entry and stop, a beginner could size this position to risk only their max-risk %% (i.e. the stop distance is sane). False if the stop is missing or so far/illogical that risking only that %% is implausible.",
+    },
+    placement_note: { type: "string", description: "Plain-English, encouraging note about the stop placement" },
   },
-  required: ["score", "verdict", "rule_checks", "what_you_did_well", "what_to_improve", "coach_note"],
+  required: ["stop_loss_placement", "position_size_ok", "placement_note"],
 } as const;
+
+function buildSchema(withProtection: boolean) {
+  const base = {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      score: { type: "integer", description: "Overall SOP-compliance score from 0 to 100" },
+      verdict: { type: "string", enum: ["SOP followed", "Partial", "SOP violated"] },
+      rule_checks: {
+        type: "array",
+        description: "Exactly these six checks, in this order",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            rule: {
+              type: "string",
+              enum: [
+                "Entry signal visible on chart",
+                "Trend aligned with direction",
+                "Risk/reward looks acceptable",
+                "Entry timing reasonable",
+                "Volume supports the move",
+                "Volatility / MACD context",
+              ],
+            },
+            status: { type: "string", enum: ["pass", "fail", "warn"] },
+            note: { type: "string", description: "Specific detail referencing what is visible in the chart" },
+          },
+          required: ["rule", "status", "note"],
+        },
+      },
+      what_you_did_well: { type: "string", description: "Specific positive observation" },
+      what_to_improve: { type: "string", description: "Specific, actionable improvement" },
+      coach_note: { type: "string", description: "One encouraging sentence for a beginner" },
+    } as Record<string, unknown>,
+    required: ["score", "verdict", "rule_checks", "what_you_did_well", "what_to_improve", "coach_note"] as string[],
+  };
+  if (withProtection) {
+    base.properties.protection = PROTECTION_SCHEMA;
+    base.required = [...base.required, "protection"];
+  }
+  return base;
+}
 
 type ImageInput = { data: string; media_type: (typeof ALLOWED_MEDIA)[number] };
 type Body = {
@@ -57,6 +83,7 @@ type Body = {
   outcome: string;
   entry?: string;
   exit?: string;
+  stop_loss?: string;
   chart: ImageInput;
   news?: ImageInput | null;
   current_regime?: string | null;
@@ -130,18 +157,24 @@ Allowed market regimes: ${body.sop.regimes || "any"}`;
     ? `\n\nLIVE MARKET REGIME (SPY, 4-state HMM): ${liveRegime}. The trader's SOP only permits trading in: ${allowedRegimes.join(", ") || "any"}.${regimeMismatch ? " This trade was taken OUTSIDE the trader's allowed regimes — this is a regime violation: cap the score at 49 and set the verdict to \"SOP violated\" regardless of the chart, and explain the regime mismatch in what_to_improve." : " The current regime is within the trader's allowed regimes."}`
     : "";
 
-  const toneText =
-    body.mode === "learner"
-      ? "\n\nThe trader is a BEGINNER. Write what_you_did_well, what_to_improve, coach_note and every rule_check note in plain, encouraging English. Avoid or briefly explain any jargon (e.g. say \"reward vs risk\" instead of \"R/R\"). Be supportive, not harsh."
-      : "";
+  const learner = body.mode === "learner";
+  const stopLoss = (body.stop_loss || "").trim();
+
+  const toneText = learner
+    ? "\n\nThe trader is a BEGINNER. Write what_you_did_well, what_to_improve, coach_note and every rule_check note in plain, encouraging English. Avoid or briefly explain any jargon (e.g. say \"reward vs risk\" instead of \"R/R\"). Be supportive, not harsh."
+    : "";
+
+  const protectionText = learner
+    ? `\n\nSTOP LOSS: ${stopLoss || "NONE PROVIDED"}. Also fill the "protection" object: judge stop_loss_placement (0-30) from where this stop sits on the chart relative to support/resistance, and position_size_ok given the trader's max risk of ${body.sop.risk}.`
+    : "";
 
   const content: Anthropic.Messages.ContentBlockParam[] = [
     {
       type: "text",
       text: `Grade this paper trade against the SOP.
-Asset: ${body.asset}, Direction: ${body.dir}, Outcome: ${body.outcome}, Entry: ${body.entry || "—"}, Exit: ${body.exit || "—"}
+Asset: ${body.asset}, Direction: ${body.dir}, Outcome: ${body.outcome}, Entry: ${body.entry || "—"}, Exit: ${body.exit || "—"}, Stop loss: ${stopLoss || "—"}
 
-${sopText}${regimeText}${toneText}`,
+${sopText}${regimeText}${toneText}${protectionText}`,
     },
     { type: "image", source: { type: "base64", media_type: body.chart.media_type, data: body.chart.data } },
     { type: "text", text: "Image: price chart" },
@@ -158,7 +191,7 @@ ${sopText}${regimeText}${toneText}`,
       model: MODEL,
       max_tokens: 16000,
       thinking: { type: "adaptive" },
-      output_config: { effort: "medium", format: { type: "json_schema", schema: GRADE_SCHEMA } },
+      output_config: { effort: "medium", format: { type: "json_schema", schema: buildSchema(learner) } },
       system: SYSTEM,
       messages: [{ role: "user", content }],
     });
@@ -199,5 +232,20 @@ ${sopText}${regimeText}${toneText}`,
     return NextResponse.json({ error: "Could not parse grade JSON" }, { status: 502 });
   }
 
-  return NextResponse.json({ grade, usage });
+  let protection: {
+    stop_loss_set: boolean;
+    stop_loss_placement: number;
+    position_size_ok: boolean;
+    protection_score: number;
+  } | null = null;
+  if (learner) {
+    const stop_loss_set = !!stopLoss;
+    // No stop loss => placement and sizing can't be credited.
+    const stop_loss_placement = stop_loss_set ? Math.max(0, Math.min(30, grade.protection?.stop_loss_placement ?? 0)) : 0;
+    const position_size_ok = stop_loss_set ? !!grade.protection?.position_size_ok : false;
+    const protection_score = (stop_loss_set ? 40 : 0) + stop_loss_placement + (position_size_ok ? 30 : 0);
+    protection = { stop_loss_set, stop_loss_placement, position_size_ok, protection_score };
+  }
+
+  return NextResponse.json({ grade, usage, protection });
 }

@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { SOP, Trade, TradingMode } from "@/lib/types";
 import { parseRegimes, type Regime } from "@/lib/regime";
 import RegimeTab from "./RegimeTab";
+import MorningBrief from "./MorningBrief";
 import ModeSelect from "./ModeSelect";
 import Stage1Sop from "./Stage1Sop";
 import Stage2Paper from "./Stage2Paper";
@@ -33,10 +34,12 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
   const [mode, setMode] = useState<TradingMode | null>(initialMode);
   const [switchingMode, setSwitchingMode] = useState(false);
 
-  const avgScore = trades.length
-    ? Math.round(trades.reduce((a, t) => a + t.score, 0) / trades.length)
+  // Learner trades only count toward go-live if capital was protected.
+  const eligibleTrades = mode === "learner" ? trades.filter((t) => (t.protection_score ?? 0) >= 70) : trades;
+  const avgScore = eligibleTrades.length
+    ? Math.round(eligibleTrades.reduce((a, t) => a + t.score, 0) / eligibleTrades.length)
     : 0;
-  const goLiveUnlocked = trades.length >= 5 && avgScore >= 70;
+  const goLiveUnlocked = eligibleTrades.length >= 5 && avgScore >= 70;
 
   const gotoStage = useCallback(
     (n: number) => {
@@ -59,6 +62,7 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
   }
 
   const learner = mode === "learner";
+  const riskExceeded = learner && parseFloat(sop.risk) > 1;
 
   return (
     <div className="app">
@@ -82,6 +86,12 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
               );
             })}
           </div>
+          {learner && (
+            <div className={`shield-badge ${riskExceeded ? "danger" : ""}`}>
+              <span aria-hidden>🛡</span>
+              {riskExceeded ? "Warning — risk limit exceeded" : "Protected — 1% max risk per trade"}
+            </div>
+          )}
           <button type="button" className={`mode-pill ${learner ? "learner" : "trader"}`} onClick={() => setSwitchingMode(true)}>
             {learner ? "Learner mode" : "Trader mode"} <span>· switch</span>
           </button>
@@ -91,6 +101,8 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
           </div>
         </div>
       </div>
+
+      {learner && <MorningBrief sop={sop} />}
 
       <RegimeTab sopRegimes={parseRegimes(sop.regimes)} onRegime={setCurrentRegime} mode={mode} />
 
@@ -164,6 +176,7 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
           manualChecks={manualChecks}
           onManualChecksChange={setManualChecks}
           onBack={() => setStage(1)}
+          mode={mode}
         />
       </div>
 

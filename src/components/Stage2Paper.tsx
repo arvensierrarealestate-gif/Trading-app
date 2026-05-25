@@ -7,6 +7,13 @@ import type { Regime } from "@/lib/regime";
 
 type LogLine = { kind: "ai" | "ok" | "err" | "tool"; msg: string };
 
+type ProtectionResult = {
+  stop_loss_set: boolean;
+  stop_loss_placement: number;
+  position_size_ok: boolean;
+  protection_score: number;
+};
+
 type ImagePayload = { data: string; media_type: "image/png" | "image/jpeg" | "image/gif" | "image/webp" };
 
 function fileToImagePayload(file: File): Promise<ImagePayload> {
@@ -48,12 +55,33 @@ export default function Stage2Paper({
   const [outcome, setOutcome] = useState<"Win" | "Loss" | "Break even">("Win");
   const [entry, setEntry] = useState("");
   const [exit, setExit] = useState("");
+  const [stopLoss, setStopLoss] = useState("");
   const [chart, setChart] = useState<{ url: string; payload: ImagePayload } | null>(null);
   const [news, setNews] = useState<{ url: string; payload: ImagePayload } | null>(null);
   const [grading, setGrading] = useState(false);
   const [log, setLog] = useState<LogLine[]>([]);
-  const [grade, setGrade] = useState<{ grade: Grade; asset: string; dir: string; outcome: string } | null>(null);
+  const [grade, setGrade] = useState<{ grade: Grade; asset: string; dir: string; outcome: string; protection: ProtectionResult | null } | null>(null);
   const [usage, setUsage] = useState<{ grades: number; limit: number; remaining: number; est_cost_usd: number } | null>(null);
+  const [reco, setReco] = useState<{ stop_loss_price: number; support_basis: string; drop_pct: number } | null>(null);
+  const [recoBusy, setRecoBusy] = useState(false);
+  const [showEdu, setShowEdu] = useState(false);
+
+  useEffect(() => {
+    if (learner && typeof window !== "undefined" && !localStorage.getItem("tr_stoploss_edu_seen")) {
+      setShowEdu(true);
+    }
+  }, [learner]);
+
+  function dismissEdu() {
+    setShowEdu(false);
+    try {
+      localStorage.setItem("tr_stoploss_edu_seen", "1");
+    } catch {
+      // ignore
+    }
+  }
+
+  const riskPct = sop.risk || "1%";
 
   const loadUsage = useCallback(async () => {
     try {
@@ -77,8 +105,30 @@ export default function Stage2Paper({
     if (!file) return;
     const payload = await fileToImagePayload(file);
     const url = `data:${payload.media_type};base64,${payload.data}`;
-    if (idx === 0) setChart({ url, payload });
-    else setNews({ url, payload });
+    if (idx === 0) {
+      setChart({ url, payload });
+      if (learner) recommendStop(payload);
+    } else {
+      setNews({ url, payload });
+    }
+  }
+
+  async function recommendStop(chartPayload: ImagePayload) {
+    setRecoBusy(true);
+    setReco(null);
+    try {
+      const res = await fetch("/api/recommend-stop", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chart: chartPayload, asset: asset || "Unknown", dir, entry }),
+      });
+      const json = await res.json();
+      if (res.ok && json.recommendation) setReco(json.recommendation);
+    } catch {
+      // non-critical; learner can still set their own stop
+    } finally {
+      setRecoBusy(false);
+    }
   }
 
   function clearForm() {
@@ -86,14 +136,20 @@ export default function Stage2Paper({
     setNews(null);
     setEntry("");
     setExit("");
+    setStopLoss("");
     setAsset("");
     setLog([]);
     setGrade(null);
+    setReco(null);
   }
 
   async function gradeTrade() {
     if (!chart) {
       addLog({ kind: "err", msg: "Upload a chart screenshot first." });
+      return;
+    }
+    if (learner && !stopLoss.trim()) {
+      addLog({ kind: "err", msg: "Set your stop loss before trading — this protects your money if the trade goes wrong." });
       return;
     }
     setGrading(true);
@@ -113,6 +169,7 @@ export default function Stage2Paper({
           outcome,
           entry,
           exit,
+          stop_loss: stopLoss,
           chart: chart.payload,
           news: news?.payload ?? null,
           current_regime: currentRegime,
@@ -126,9 +183,16 @@ export default function Stage2Paper({
         return;
       }
       const g: Grade = json.grade;
+      const prot: ProtectionResult | null = json.protection ?? null;
       const cost = json.usage ? ` · ${json.usage.input_tokens + json.usage.output_tokens} tok` : "";
       addLog({ kind: "ok", msg: `Score: ${g.score}/100 — ${g.verdict}${cost}` });
-      setGrade({ grade: g, asset: asset || "Unknown", dir, outcome });
+      if (prot) {
+        addLog({
+          kind: prot.protection_score >= 70 ? "ok" : "err",
+          msg: `Protection score: ${prot.protection_score}/100${prot.protection_score < 70 ? " — does not count toward go-live" : ""}`,
+        });
+      }
+      setGrade({ grade: g, asset: asset || "Unknown", dir, outcome, protection: prot });
 
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -141,9 +205,14 @@ export default function Stage2Paper({
             outcome,
             entry_price: entry || null,
             exit_price: exit || null,
+            stop_loss_price: stopLoss || null,
             score: g.score,
             verdict: g.verdict,
             grade: g,
+            protection_score: prot?.protection_score ?? 0,
+            stop_loss_set: prot?.stop_loss_set ?? false,
+            stop_loss_placement: prot?.stop_loss_placement ?? 0,
+            position_size_ok: prot?.position_size_ok ?? false,
           })
           .select()
           .single();
@@ -157,9 +226,14 @@ export default function Stage2Paper({
             outcome: inserted.outcome as Trade["outcome"],
             entry: inserted.entry_price ?? undefined,
             exit: inserted.exit_price ?? undefined,
+            stop_loss: inserted.stop_loss_price ?? undefined,
             score: inserted.score,
             verdict: inserted.verdict as Trade["verdict"],
             grade: inserted.grade,
+            protection_score: inserted.protection_score ?? 0,
+            stop_loss_set: inserted.stop_loss_set ?? false,
+            stop_loss_placement: inserted.stop_loss_placement ?? 0,
+            position_size_ok: inserted.position_size_ok ?? false,
           });
         }
       }
@@ -170,13 +244,26 @@ export default function Stage2Paper({
     }
   }
 
-  const n = trades.length;
-  const avg = n ? Math.round(trades.reduce((a, t) => a + t.score, 0) / n) : 0;
-  const comp = n ? Math.round((trades.filter((t) => t.verdict === "SOP followed").length / n) * 100) : 0;
+  // In learner mode only protected trades (protection score >= 70) count toward go-live.
+  const eligible = learner ? trades.filter((t) => (t.protection_score ?? 0) >= 70) : trades;
+  const n = eligible.length;
+  const avg = n ? Math.round(eligible.reduce((a, t) => a + t.score, 0) / n) : 0;
+  const comp = n ? Math.round((eligible.filter((t) => t.verdict === "SOP followed").length / n) * 100) : 0;
   const ready = n >= 5 && avg >= 70;
 
   return (
     <>
+      {learner && showEdu && (
+        <div className="edu-banner">
+          <div className="edu-banner-body">
+            <strong>Before your first trade:</strong> a stop loss is a price level where you automatically exit if
+            the trade goes against you. It is the single most important thing that separates traders who survive from
+            traders who blow up their account. TradeReady will always ask for your stop loss first.
+          </div>
+          <button type="button" className="btn" onClick={dismissEdu}>Got it</button>
+        </div>
+      )}
+
       <div className="card">
         <div className="card-header">
           <div className="card-title">
@@ -225,16 +312,47 @@ export default function Stage2Paper({
               </select>
             </div>
           </div>
-          <div className="form-grid">
+          <div className="form-grid three">
             <div className="field">
               <label>Entry price</label>
               <input type="text" value={entry} onChange={(e) => setEntry(e.target.value)} placeholder="67,450" />
+            </div>
+            <div className="field">
+              <label>
+                Stop loss {learner && <span style={{ color: "var(--accent)" }}>· required</span>}
+              </label>
+              <input
+                type="text"
+                value={stopLoss}
+                onChange={(e) => setStopLoss(e.target.value)}
+                placeholder="where you exit if wrong"
+                style={learner && !stopLoss.trim() ? { borderColor: "rgba(0,212,170,0.5)" } : undefined}
+              />
             </div>
             <div className="field">
               <label>Exit price</label>
               <input type="text" value={exit} onChange={(e) => setExit(e.target.value)} placeholder="69,200" />
             </div>
           </div>
+
+          {learner && (recoBusy || reco) && (
+            <div className="reco-box">
+              {recoBusy ? (
+                <div className="reco-title">Reading your chart for a safe stop loss…</div>
+              ) : reco ? (
+                <>
+                  <div className="reco-title">Recommended stop loss: {reco.stop_loss_price}</div>
+                  <div className="reco-body">
+                    {reco.support_basis} If price drops to this level you&apos;d exit, and by sizing your position to your{" "}
+                    {riskPct} rule your loss stays limited to about {riskPct} of your account.
+                  </div>
+                  <button type="button" className="btn" style={{ marginTop: 10, padding: "5px 12px", fontSize: 12 }} onClick={() => setStopLoss(String(reco.stop_loss_price))}>
+                    Use this stop loss
+                  </button>
+                </>
+              ) : null}
+            </div>
+          )}
         </div>
 
         <div className="section-label" style={{ padding: "0 20px", marginBottom: 0 }}>Screenshots</div>
@@ -277,11 +395,21 @@ export default function Stage2Paper({
         </div>
 
         <div className="btn-row">
+          {learner && !stopLoss.trim() && (
+            <span className="btn-hint" style={{ color: "var(--accent)" }}>
+              Set your stop loss before trading — this protects your money if the trade goes wrong.
+            </span>
+          )}
           {usage && usage.remaining === 0 && (
             <span className="btn-hint" style={{ color: "var(--amber)" }}>Daily grading limit reached — resets tomorrow.</span>
           )}
           <button className="btn" onClick={clearForm} type="button">↺ Clear</button>
-          <button className="btn primary" onClick={gradeTrade} disabled={grading || (usage?.remaining === 0)} type="button">
+          <button
+            className="btn primary"
+            onClick={gradeTrade}
+            disabled={grading || usage?.remaining === 0 || (learner && !stopLoss.trim())}
+            type="button"
+          >
             {grading ? "⏳ Grading…" : "⚡ Grade this trade"}
           </button>
         </div>
@@ -351,7 +479,7 @@ export default function Stage2Paper({
   );
 }
 
-function GradeCard({ data, learner }: { data: { grade: Grade; asset: string; dir: string; outcome: string }; learner: boolean }) {
+function GradeCard({ data, learner }: { data: { grade: Grade; asset: string; dir: string; outcome: string; protection: ProtectionResult | null }; learner: boolean }) {
   const r = data.grade;
   const vClass = r.verdict === "SOP followed" ? "gv-pass" : r.verdict === "Partial" ? "gv-part" : "gv-fail";
   const scoreColor = r.score >= 70 ? "var(--accent)" : r.score >= 50 ? "var(--amber)" : "var(--red)";
@@ -370,6 +498,24 @@ function GradeCard({ data, learner }: { data: { grade: Grade; asset: string; dir
         </div>
         <span className={`grade-verdict-badge ${vClass}`}>{r.verdict}</span>
       </div>
+      {data.protection && (
+        <div className={`protection-bar ${data.protection.protection_score >= 70 ? "ok" : "low"}`}>
+          <div className="shield" aria-hidden>🛡</div>
+          <div className="protection-meta">
+            <div className="protection-score-line">
+              Protection score <strong>{data.protection.protection_score}/100</strong>
+            </div>
+            <div className="protection-sub">
+              Stop loss set {data.protection.stop_loss_set ? "✓" : "✗"} · Stop placement {data.protection.stop_loss_placement}/30 · Position size {data.protection.position_size_ok ? "ok" : "too big"}
+            </div>
+            {data.protection.protection_score < 70 && (
+              <div className="protection-warn">
+                This trade does not count toward your go-live progress because your capital was not protected. Always set your stop loss first — this keeps you safe.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       {!learner && (
         <div className="rule-checks">
           {(r.rule_checks ?? []).map((rc, i) => {

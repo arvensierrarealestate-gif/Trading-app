@@ -580,6 +580,78 @@ body::before {
 .os-open { background: rgba(245,158,11,0.1); color: var(--amber); }
 .os-dead { background: rgba(239,68,68,0.1); color: var(--red); }
 
+.shield-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-size: 11px;
+  background: rgba(0,212,170,0.08);
+  border: 1px solid rgba(0,212,170,0.3);
+  color: var(--accent);
+}
+.shield-badge.danger { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.35); color: var(--red); }
+
+.ct-prot { background: rgba(0,212,170,0.12); color: var(--accent); }
+
+.lock-msg { font-size: 10px; color: var(--text3); margin-top: 6px; line-height: 1.5; }
+
+.edu-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(0,212,170,0.06);
+  border: 1px solid rgba(0,212,170,0.25);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+.edu-banner-body { font-size: 13px; color: var(--text2); line-height: 1.6; flex: 1; }
+.edu-banner-body strong { color: var(--accent); }
+
+.reco-box {
+  background: rgba(0,212,170,0.06);
+  border: 1px solid rgba(0,212,170,0.3);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-top: 4px;
+}
+.reco-title { font-family: var(--display); font-size: 14px; font-weight: 700; color: var(--accent); }
+.reco-body { font-size: 12px; color: var(--text2); line-height: 1.6; margin-top: 6px; }
+
+.protection-bar {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.protection-bar.ok { background: rgba(0,212,170,0.05); }
+.protection-bar.low { background: rgba(239,68,68,0.05); }
+.protection-bar .shield { font-size: 26px; line-height: 1; }
+.protection-meta { flex: 1; }
+.protection-score-line { font-size: 14px; color: var(--text); }
+.protection-score-line strong { font-family: var(--display); }
+.protection-sub { font-size: 11px; color: var(--text3); margin-top: 3px; }
+.protection-warn {
+  font-size: 12px;
+  color: var(--amber);
+  margin-top: 8px;
+  line-height: 1.6;
+  background: rgba(245,158,11,0.08);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.brief-card { margin-bottom: 16px; }
+.brief-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+.brief-line { font-size: 13px; color: var(--text); line-height: 1.6; }
+.brief-line.muted, .brief-line .muted { color: var(--text3); }
+.brief-key { color: var(--accent); font-weight: 500; }
+
 .mode-pill {
   display: inline-flex;
   align-items: center;

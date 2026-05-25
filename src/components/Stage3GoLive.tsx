@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { GL_ITEMS } from "@/lib/types";
-import type { Trade } from "@/lib/types";
+import { GL_ITEMS, LEARNER_PROTECTION_ITEM } from "@/lib/types";
+import type { Trade, TradingMode } from "@/lib/types";
 
 type AlpacaAccount = {
   account_number: string;
@@ -74,11 +74,13 @@ export default function Stage3GoLive({
   manualChecks,
   onManualChecksChange,
   onBack,
+  mode,
 }: {
   trades: Trade[];
   manualChecks: boolean[];
   onManualChecksChange: (next: boolean[]) => void;
   onBack: () => void;
+  mode: TradingMode;
 }) {
   const supabase = useMemo(() => createClient(), []);
   const [account, setAccount] = useState<AlpacaAccount | null>(null);
@@ -148,11 +150,16 @@ export default function Stage3GoLive({
     }
   }, []);
 
-  const n = trades.length;
-  const avg = n ? Math.round(trades.reduce((a, t) => a + t.score, 0) / n) : 0;
+  const learner = mode === "learner";
+  const items = learner ? [...GL_ITEMS, LEARNER_PROTECTION_ITEM] : GL_ITEMS;
+
+  // In learner mode only protected trades count toward the gate.
+  const eligible = learner ? trades.filter((t) => (t.protection_score ?? 0) >= 70) : trades;
+  const n = eligible.length;
+  const avg = n ? Math.round(eligible.reduce((a, t) => a + t.score, 0) / n) : 0;
   const autoVals = { trades5: n >= 5, score70: avg >= 70 };
 
-  const allChecks = GL_ITEMS.map((item, i) => {
+  const allChecks = items.map((item, i) => {
     if (item.auto) {
       const key = item.key as "trades5" | "score70";
       return autoVals[key];
@@ -160,7 +167,7 @@ export default function Stage3GoLive({
     return manualChecks[i - 2] ?? false;
   });
 
-  const total = GL_ITEMS.length;
+  const total = items.length;
   const done = allChecks.filter(Boolean).length;
   const allPassed = done === total;
 
@@ -172,7 +179,7 @@ export default function Stage3GoLive({
   }, [allPassed, loadOrders, loadPositions]);
 
   async function toggle(i: number) {
-    const item = GL_ITEMS[i];
+    const item = items[i];
     if (item.auto) return;
     const idx = i - 2;
     const next = manualChecks.slice();
@@ -279,7 +286,7 @@ export default function Stage3GoLive({
         </div>
 
         <div className="checklist">
-          {GL_ITEMS.map((item, i) => {
+          {items.map((item, i) => {
             const checked = allChecks[i];
             return (
               <div
