@@ -1,30 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { SOP } from "@/lib/types";
+import type { SOP, TradingMode, TraderStats } from "@/lib/types";
 import { parseRegimes, type Regime } from "@/lib/regime";
+import { aggressionColor, aggressionLabel, type TickerMetrics } from "@/lib/ticker";
 
 const CONDITION: Record<Regime, { label: string; why: string; rec: string }> = {
-  bull: {
-    label: "favorable",
-    why: "the market has been trending up steadily.",
-    rec: "trade today with caution",
-  },
-  neutral: {
-    label: "neutral",
-    why: "the market is calm and moving sideways.",
-    rec: "trade today with caution",
-  },
-  bear: {
-    label: "avoid today",
-    why: "the market has been drifting down.",
-    rec: "wait for better conditions",
-  },
-  crash: {
-    label: "avoid today",
-    why: "the market is falling sharply and risk is high.",
-    rec: "do not trade today",
-  },
+  bull: { label: "favorable", why: "the market has been trending up steadily.", rec: "trade today with caution" },
+  neutral: { label: "neutral", why: "the market is calm and moving sideways.", rec: "trade today with caution" },
+  bear: { label: "avoid today", why: "the market has been drifting down.", rec: "wait for better conditions" },
+  crash: { label: "avoid today", why: "the market is falling sharply and risk is high.", rec: "do not trade today" },
 };
 
 function pctToFraction(s: string): number {
@@ -32,7 +17,23 @@ function pctToFraction(s: string): number {
   return Number.isFinite(n) ? n / 100 : 0.02;
 }
 
-export default function MorningBrief({ sop }: { sop: SOP }) {
+function parseSymbols(assets: string): string[] {
+  return Array.from(
+    new Set(
+      assets
+        .split(",")
+        .map((s) => s.trim().toUpperCase())
+        .filter(Boolean),
+    ),
+  ).slice(0, 6);
+}
+
+export default function MorningBrief({ sop, mode, stats }: { sop: SOP; mode: TradingMode; stats: TraderStats | null }) {
+  if (mode === "trader") return <TraderBrief sop={sop} stats={stats} />;
+  return <LearnerBrief sop={sop} />;
+}
+
+function LearnerBrief({ sop }: { sop: SOP }) {
   const [regime, setRegime] = useState<Regime | null>(null);
   const [equity, setEquity] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,12 +58,9 @@ export default function MorningBrief({ sop }: { sop: SOP }) {
     };
   }, []);
 
-  const dailyLoss = pctToFraction(sop.drawdown);
-  const maxLoss = equity != null ? equity * dailyLoss : null;
+  const maxLoss = equity != null ? equity * pctToFraction(sop.drawdown) : null;
   const allowed = parseRegimes(sop.regimes);
   const cond = regime ? CONDITION[regime] : null;
-
-  // Recommendation is gated on having the dollar figure.
   let recommendation = cond?.rec ?? null;
   if (cond && regime && (regime === "bull" || regime === "neutral") && allowed.length && !allowed.includes(regime)) {
     recommendation = "wait for better conditions";
@@ -90,24 +88,100 @@ export default function MorningBrief({ sop }: { sop: SOP }) {
                 <span className="muted">Connect your paper account to see your maximum dollar loss for the day.</span>
               )}
             </div>
-
             <div className="brief-line">
               <span className="brief-key">Market conditions:</span>{" "}
               {cond ? <>{cond.label} — {cond.why}</> : <span className="muted">unavailable right now.</span>}
             </div>
-
             {maxLoss != null && recommendation ? (
-              <div className="brief-line">
-                <span className="brief-key">Recommendation:</span> {recommendation}.
-              </div>
+              <div className="brief-line"><span className="brief-key">Recommendation:</span> {recommendation}.</div>
             ) : maxLoss == null ? (
-              <div className="brief-line muted">
-                We&apos;ll show your trade recommendation once we can show your dollar risk alongside it.
-              </div>
+              <div className="brief-line muted">We&apos;ll show your trade recommendation once we can show your dollar risk alongside it.</div>
             ) : null}
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+function TraderBrief({ sop, stats }: { sop: SOP; stats: TraderStats | null }) {
+  const symbols = parseSymbols(sop.assets);
+  const [rows, setRows] = useState<Record<string, TickerMetrics | { error: string }>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const entries = await Promise.all(
+        symbols.map(async (sym) => {
+          try {
+            const res = await fetch(`/api/ticker?symbol=${encodeURIComponent(sym)}`);
+            const json = await res.json();
+            return [sym, res.ok ? (json.metrics as TickerMetrics) : { error: json.error || "no data" }] as const;
+          } catch {
+            return [sym, { error: "network" }] as const;
+          }
+        }),
+      );
+      if (cancelled) return;
+      setRows(Object.fromEntries(entries));
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sop.assets]);
+
+  function bestStyle(m: TickerMetrics): string {
+    if (m.scalp_suitable && m.swing_suitable) return "scalp / swing";
+    if (m.scalp_suitable) return "scalp";
+    if (m.swing_suitable) return "swing";
+    return "wait — choppy";
+  }
+
+  return (
+    <div className="card brief-card">
+      <div className="card-header">
+        <div className="card-title"><div className="card-title-icon">☰</div> Watchlist intelligence</div>
+        <div className="card-meta">{symbols.length} symbols · price-derived</div>
+      </div>
+      {symbols.length === 0 ? (
+        <div className="empty-state"><div>No symbols in your SOP watchlist</div></div>
+      ) : loading ? (
+        <div className="empty-state"><div>Scanning your watchlist…</div></div>
+      ) : (
+        <div className="watch-list">
+          {symbols.map((sym) => {
+            const m = rows[sym];
+            if (!m || "error" in (m as object)) {
+              return (
+                <div key={sym} className="watch-row">
+                  <span className="watch-sym">{sym}</span>
+                  <span className="ticker-meta" style={{ color: "var(--red)" }}>{(m as { error: string })?.error ?? "no data"}</span>
+                </div>
+              );
+            }
+            const tm = m as TickerMetrics;
+            const aggressiveRisk = tm.aggression_score >= 9;
+            return (
+              <div key={sym} className="watch-row">
+                <span className="watch-sym">{sym}</span>
+                <span className="aggr-chip" style={{ color: aggressionColor(tm.aggression_score), borderColor: aggressionColor(tm.aggression_score) }}>
+                  {tm.aggression_score}/10 {aggressionLabel(tm.aggression_score)}
+                </span>
+                <span className="watch-style">{bestStyle(tm)}</span>
+                <span className="ticker-meta">ATR {tm.atr_pct}% · β {tm.beta}</span>
+                {aggressiveRisk && (
+                  <span className="watch-warn">
+                    Highly aggressive. {stats?.max_single_loss != null ? `Your worst single loss was ${stats.max_single_loss}% — proceed with extra caution or skip today.` : "Proceed with extra caution or skip today."}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

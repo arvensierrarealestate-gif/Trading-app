@@ -2,8 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Grade, SOP, Trade, TradingMode } from "@/lib/types";
+import type { Grade, SOP, Trade, TradingMode, TraderStats } from "@/lib/types";
 import type { Regime } from "@/lib/regime";
+import TickerCard from "./TickerCard";
+import PositionSizer from "./PositionSizer";
 
 type LogLine = { kind: "ai" | "ok" | "err" | "tool"; msg: string };
 
@@ -37,6 +39,7 @@ export default function Stage2Paper({
   goLiveUnlocked,
   currentRegime,
   mode,
+  traderStats,
   onTradeAdded,
   onUnlock,
 }: {
@@ -45,6 +48,7 @@ export default function Stage2Paper({
   goLiveUnlocked: boolean;
   currentRegime: Regime | null;
   mode: TradingMode;
+  traderStats: TraderStats | null;
   onTradeAdded: (t: Trade) => void;
   onUnlock: () => void;
 }) {
@@ -335,6 +339,10 @@ export default function Stage2Paper({
             </div>
           </div>
 
+          {!learner && asset.trim() && (
+            <TickerCard symbol={asset} sop={sop} stats={traderStats} regime={currentRegime} />
+          )}
+
           {learner && (recoBusy || reco) && (
             <div className="reco-box">
               {recoBusy ? (
@@ -424,6 +432,8 @@ export default function Stage2Paper({
           </div>
         )}
       </div>
+
+      {!learner && <PositionSizer sop={sop} entry={entry} stop={stopLoss} />}
 
       {grade && <GradeCard data={grade} learner={learner} />}
 

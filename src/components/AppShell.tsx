@@ -3,11 +3,13 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import type { SOP, Trade, TradingMode } from "@/lib/types";
+import type { SOP, Trade, TradingMode, TraderStats } from "@/lib/types";
 import { parseRegimes, type Regime } from "@/lib/regime";
 import RegimeTab from "./RegimeTab";
 import MorningBrief from "./MorningBrief";
 import ModeSelect from "./ModeSelect";
+import TraderVerify from "./TraderVerify";
+import TraderProtectionBanners, { computeTraderWarnings } from "./TraderProtection";
 import Stage1Sop from "./Stage1Sop";
 import Stage2Paper from "./Stage2Paper";
 import Stage3GoLive from "./Stage3GoLive";
@@ -19,9 +21,11 @@ type Props = {
   initialTrades: Trade[];
   initialManualChecks: boolean[];
   initialMode: TradingMode | null;
+  initialVerified: boolean;
+  initialStats: TraderStats | null;
 };
 
-export default function AppShell({ email, initialSop, hasSavedSop, initialTrades, initialManualChecks, initialMode }: Props) {
+export default function AppShell({ email, initialSop, hasSavedSop, initialTrades, initialManualChecks, initialMode, initialVerified, initialStats }: Props) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
 
@@ -33,6 +37,8 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
   const [currentRegime, setCurrentRegime] = useState<Regime | null>(null);
   const [mode, setMode] = useState<TradingMode | null>(initialMode);
   const [switchingMode, setSwitchingMode] = useState(false);
+  const [verified, setVerified] = useState(initialVerified);
+  const [traderStats, setTraderStats] = useState<TraderStats | null>(initialStats);
 
   // Learner trades only count toward go-live if capital was protected.
   const eligibleTrades = mode === "learner" ? trades.filter((t) => (t.protection_score ?? 0) >= 70) : trades;
@@ -61,8 +67,21 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
     return <ModeSelect current={null} onChosen={(m) => setMode(m)} />;
   }
 
+  // Experienced traders must verify their history before full access.
+  if (mode === "trader" && !verified) {
+    return (
+      <TraderVerify
+        onVerified={(s) => {
+          setTraderStats(s);
+          setVerified(true);
+        }}
+      />
+    );
+  }
+
   const learner = mode === "learner";
   const riskExceeded = learner && parseFloat(sop.risk) > 1;
+  const traderWarnings = mode === "trader" ? computeTraderWarnings(traderStats, sop) : [];
 
   return (
     <div className="app">
@@ -92,6 +111,12 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
               {riskExceeded ? "Warning — risk limit exceeded" : "Protected — 1% max risk per trade"}
             </div>
           )}
+          {!learner && traderWarnings.length > 0 && (
+            <div className="shield-badge danger" title={traderWarnings.map((w) => w.text).join("\n")}>
+              <span aria-hidden>⚠</span>
+              {traderWarnings.length} risk alert{traderWarnings.length === 1 ? "" : "s"}
+            </div>
+          )}
           <button type="button" className={`mode-pill ${learner ? "learner" : "trader"}`} onClick={() => setSwitchingMode(true)}>
             {learner ? "Learner mode" : "Trader mode"} <span>· switch</span>
           </button>
@@ -102,7 +127,9 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
         </div>
       </div>
 
-      {learner && <MorningBrief sop={sop} />}
+      {!learner && traderWarnings.length > 0 && <TraderProtectionBanners warnings={traderWarnings} />}
+
+      <MorningBrief sop={sop} mode={mode} stats={traderStats} />
 
       <RegimeTab sopRegimes={parseRegimes(sop.regimes)} onRegime={setCurrentRegime} mode={mode} />
 
@@ -165,6 +192,7 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
           goLiveUnlocked={goLiveUnlocked}
           currentRegime={currentRegime}
           mode={mode}
+          traderStats={traderStats}
           onTradeAdded={(t) => setTrades((prev) => [...prev, t])}
           onUnlock={() => setStage(2)}
         />

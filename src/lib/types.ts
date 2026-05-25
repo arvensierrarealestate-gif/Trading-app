@@ -1,5 +1,16 @@
 export type TradingMode = "learner" | "trader";
 
+export type TraderStats = {
+  total_trades: number | null;
+  win_rate: number | null; // percent 0-100
+  avg_win: number | null; // currency per winning trade
+  avg_loss: number | null; // currency per losing trade (magnitude)
+  max_single_loss: number | null; // percent of account
+  max_drawdown: number | null; // percent
+  primary_assets: string | null;
+  avg_hold_time: string | null;
+};
+
 export type SOP = {
   assets: string;
   tf: string;
