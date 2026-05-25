@@ -3,9 +3,10 @@
 import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import type { SOP, Trade } from "@/lib/types";
+import type { SOP, Trade, TradingMode } from "@/lib/types";
 import { parseRegimes, type Regime } from "@/lib/regime";
 import RegimeTab from "./RegimeTab";
+import ModeSelect from "./ModeSelect";
 import Stage1Sop from "./Stage1Sop";
 import Stage2Paper from "./Stage2Paper";
 import Stage3GoLive from "./Stage3GoLive";
@@ -16,9 +17,10 @@ type Props = {
   hasSavedSop: boolean;
   initialTrades: Trade[];
   initialManualChecks: boolean[];
+  initialMode: TradingMode | null;
 };
 
-export default function AppShell({ email, initialSop, hasSavedSop, initialTrades, initialManualChecks }: Props) {
+export default function AppShell({ email, initialSop, hasSavedSop, initialTrades, initialManualChecks, initialMode }: Props) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
 
@@ -28,6 +30,8 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
   const [manualChecks, setManualChecks] = useState<boolean[]>(initialManualChecks);
   const [stage, setStage] = useState<number>(hasSavedSop ? (initialTrades.length >= 5 ? 1 : 1) : 0);
   const [currentRegime, setCurrentRegime] = useState<Regime | null>(null);
+  const [mode, setMode] = useState<TradingMode | null>(initialMode);
+  const [switchingMode, setSwitchingMode] = useState(false);
 
   const avgScore = trades.length
     ? Math.round(trades.reduce((a, t) => a + t.score, 0) / trades.length)
@@ -48,6 +52,13 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
     router.push("/login");
     router.refresh();
   }
+
+  // New users (no mode yet) must choose before entering the app.
+  if (mode === null) {
+    return <ModeSelect current={null} onChosen={(m) => setMode(m)} />;
+  }
+
+  const learner = mode === "learner";
 
   return (
     <div className="app">
@@ -71,7 +82,9 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
               );
             })}
           </div>
-          <div className="status-pill">Supabase + Alpaca ready</div>
+          <button type="button" className={`mode-pill ${learner ? "learner" : "trader"}`} onClick={() => setSwitchingMode(true)}>
+            {learner ? "Learner mode" : "Trader mode"} <span>· switch</span>
+          </button>
           <div className="user-pill">
             <span>{email}</span>
             <button type="button" onClick={signOut}>Sign out</button>
@@ -79,7 +92,7 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
         </div>
       </div>
 
-      <RegimeTab sopRegimes={parseRegimes(sop.regimes)} onRegime={setCurrentRegime} />
+      <RegimeTab sopRegimes={parseRegimes(sop.regimes)} onRegime={setCurrentRegime} mode={mode} />
 
       <div className="stage-nav">
         {[
@@ -123,6 +136,7 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
       <div className={`stage-panel ${stage === 0 ? "active" : ""}`}>
         <Stage1Sop
           sop={sop}
+          mode={mode}
           onChange={setSop}
           onSaved={() => {
             setSopSaved(true);
@@ -138,6 +152,7 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
           trades={trades}
           goLiveUnlocked={goLiveUnlocked}
           currentRegime={currentRegime}
+          mode={mode}
           onTradeAdded={(t) => setTrades((prev) => [...prev, t])}
           onUnlock={() => setStage(2)}
         />
@@ -151,6 +166,21 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
           onBack={() => setStage(1)}
         />
       </div>
+
+      {switchingMode && (
+        <div className="modal-overlay" onClick={() => setSwitchingMode(false)}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: "100%" }}>
+            <ModeSelect
+              current={mode}
+              onChosen={(m) => {
+                setMode(m);
+                setSwitchingMode(false);
+              }}
+              onCancel={() => setSwitchingMode(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

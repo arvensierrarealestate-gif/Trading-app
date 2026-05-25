@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import AppShell from "@/components/AppShell";
-import type { SOP, Trade } from "@/lib/types";
+import type { SOP, Trade, TradingMode } from "@/lib/types";
 import { SOP_DEFAULTS } from "@/lib/types";
 
 export default async function AppPage() {
@@ -8,11 +8,14 @@ export default async function AppPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const [sopRes, tradesRes, checksRes] = await Promise.all([
+  const [sopRes, tradesRes, checksRes, profileRes] = await Promise.all([
     supabase.from("sops").select("*").eq("user_id", user.id).maybeSingle(),
     supabase.from("paper_trades").select("*").eq("user_id", user.id).order("created_at", { ascending: true }),
     supabase.from("go_live_checks").select("manual_checks").eq("user_id", user.id).maybeSingle(),
+    supabase.from("profiles").select("trading_mode").eq("id", user.id).maybeSingle(),
   ]);
+
+  const initialMode = (profileRes.data?.trading_mode ?? null) as TradingMode | null;
 
   const sopRow = sopRes.data;
   const sop: SOP | null = sopRow
@@ -54,6 +57,7 @@ export default async function AppPage() {
       hasSavedSop={!!sop}
       initialTrades={trades}
       initialManualChecks={manualChecks}
+      initialMode={initialMode}
     />
   );
 }

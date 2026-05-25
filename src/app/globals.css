@@ -580,6 +580,69 @@ body::before {
 .os-open { background: rgba(245,158,11,0.1); color: var(--amber); }
 .os-dead { background: rgba(239,68,68,0.1); color: var(--red); }
 
+.mode-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-family: var(--mono);
+  cursor: pointer;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  transition: all 0.15s;
+}
+.mode-pill:hover { border-color: var(--text3); color: var(--text); }
+.mode-pill span { color: var(--text3); }
+.mode-pill.learner { border-color: rgba(59,130,246,0.4); color: var(--blue); }
+.mode-pill.trader { border-color: rgba(0,212,170,0.4); color: var(--accent); }
+
+.mode-shell {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+.mode-head { text-align: center; margin-bottom: 28px; }
+.mode-head .auth-title { justify-content: center; }
+.mode-head .auth-sub { margin-bottom: 0; }
+.mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 640px) { .mode-grid { grid-template-columns: 1fr; } }
+.mode-card {
+  text-align: left;
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  cursor: pointer;
+  transition: all 0.18s;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: var(--mono);
+}
+.mode-card:hover:not(:disabled) { border-color: var(--accent); background: rgba(0,212,170,0.04); transform: translateY(-2px); }
+.mode-card.current { border-color: var(--accent); }
+.mode-card:disabled { opacity: 0.6; cursor: default; }
+.mode-card-title { font-family: var(--display); font-size: 18px; font-weight: 800; color: var(--text); }
+.mode-card-tag { font-size: 12px; color: var(--text2); }
+.mode-card-list { list-style: none; display: flex; flex-direction: column; gap: 6px; margin: 4px 0; }
+.mode-card-list li { font-size: 12px; color: var(--text2); padding-left: 18px; position: relative; }
+.mode-card-list li::before { content: "›"; position: absolute; left: 4px; color: var(--accent); }
+.mode-card-cta {
+  margin-top: 6px;
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 600;
+  color: #000;
+  background: var(--accent);
+  padding: 7px 16px;
+  border-radius: 8px;
+}
+
 .regime-card { margin-bottom: 24px; }
 .regime-head {
   display: flex;

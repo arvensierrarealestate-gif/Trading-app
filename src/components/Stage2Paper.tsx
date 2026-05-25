@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Grade, SOP, Trade } from "@/lib/types";
+import type { Grade, SOP, Trade, TradingMode } from "@/lib/types";
 import type { Regime } from "@/lib/regime";
 
 type LogLine = { kind: "ai" | "ok" | "err" | "tool"; msg: string };
@@ -29,6 +29,7 @@ export default function Stage2Paper({
   trades,
   goLiveUnlocked,
   currentRegime,
+  mode,
   onTradeAdded,
   onUnlock,
 }: {
@@ -36,9 +37,11 @@ export default function Stage2Paper({
   trades: Trade[];
   goLiveUnlocked: boolean;
   currentRegime: Regime | null;
+  mode: TradingMode;
   onTradeAdded: (t: Trade) => void;
   onUnlock: () => void;
 }) {
+  const learner = mode === "learner";
   const supabase = useMemo(() => createClient(), []);
   const [asset, setAsset] = useState("");
   const [dir, setDir] = useState<"Long" | "Short">("Long");
@@ -113,6 +116,7 @@ export default function Stage2Paper({
           chart: chart.payload,
           news: news?.payload ?? null,
           current_regime: currentRegime,
+          mode,
         }),
       });
       const json = await res.json();
@@ -293,7 +297,7 @@ export default function Stage2Paper({
         )}
       </div>
 
-      {grade && <GradeCard data={grade} />}
+      {grade && <GradeCard data={grade} learner={learner} />}
 
       <div className="card">
         <div className="card-header">
@@ -347,14 +351,14 @@ export default function Stage2Paper({
   );
 }
 
-function GradeCard({ data }: { data: { grade: Grade; asset: string; dir: string; outcome: string } }) {
+function GradeCard({ data, learner }: { data: { grade: Grade; asset: string; dir: string; outcome: string }; learner: boolean }) {
   const r = data.grade;
   const vClass = r.verdict === "SOP followed" ? "gv-pass" : r.verdict === "Partial" ? "gv-part" : "gv-fail";
   const scoreColor = r.score >= 70 ? "var(--accent)" : r.score >= 50 ? "var(--amber)" : "var(--red)";
   return (
     <div className="card">
       <div className="card-header">
-        <div className="card-title"><div className="card-title-icon">★</div> AI grade report</div>
+        <div className="card-title"><div className="card-title-icon">★</div> {learner ? "Your feedback" : "AI grade report"}</div>
       </div>
       <div className="grade-header">
         <div className="grade-score" style={{ color: scoreColor }}>{r.score}<span>/100</span></div>
@@ -362,25 +366,27 @@ function GradeCard({ data }: { data: { grade: Grade; asset: string; dir: string;
           <div className="grade-pair">
             {data.asset} <span style={{ color: "var(--text3)", fontWeight: 400, fontSize: 13 }}>{data.dir} · {data.outcome}</span>
           </div>
-          <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 2 }}>AI grade based on your SOP</div>
+          <div style={{ fontSize: 11, color: "var(--text3)", marginTop: 2 }}>{learner ? "Based on your trading plan" : "AI grade based on your SOP"}</div>
         </div>
         <span className={`grade-verdict-badge ${vClass}`}>{r.verdict}</span>
       </div>
-      <div className="rule-checks">
-        {(r.rule_checks ?? []).map((rc, i) => {
-          const ico = rc.status === "pass" ? "✓" : rc.status === "fail" ? "✗" : "△";
-          const col = rc.status === "pass" ? "var(--accent)" : rc.status === "fail" ? "var(--red)" : "var(--amber)";
-          return (
-            <div key={i} className="rc-item">
-              <div className="rc-icon" style={{ color: col }}>{ico}</div>
-              <div>
-                <div className="rc-rule">{rc.rule}</div>
-                <div className="rc-note">{rc.note}</div>
+      {!learner && (
+        <div className="rule-checks">
+          {(r.rule_checks ?? []).map((rc, i) => {
+            const ico = rc.status === "pass" ? "✓" : rc.status === "fail" ? "✗" : "△";
+            const col = rc.status === "pass" ? "var(--accent)" : rc.status === "fail" ? "var(--red)" : "var(--amber)";
+            return (
+              <div key={i} className="rc-item">
+                <div className="rc-icon" style={{ color: col }}>{ico}</div>
+                <div>
+                  <div className="rc-rule">{rc.rule}</div>
+                  <div className="rc-note">{rc.note}</div>
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
       <div className="detail-section">
         <div style={{ fontSize: 11, color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 8 }}>What you did well</div>
         <div className="summary-box">{r.what_you_did_well}</div>

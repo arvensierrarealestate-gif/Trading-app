@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { SOP } from "@/lib/types";
+import type { SOP, TradingMode } from "@/lib/types";
 
 const SESSIONS = ["Asian", "London", "New York", "24/7 crypto", "Pre-market", "After hours"];
 const ENTRY_SIGNALS = ["EMA crossover", "RSI oversold", "MACD cross", "Breakout", "Support bounce", "Volume spike"];
@@ -14,16 +14,19 @@ function parseList(s: string): string[] {
 
 export default function Stage1Sop({
   sop,
+  mode,
   onChange,
   onSaved,
 }: {
   sop: SOP;
+  mode: TradingMode;
   onChange: (next: SOP) => void;
   onSaved: () => void;
 }) {
   const supabase = useMemo(() => createClient(), []);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const learner = mode === "learner";
 
   const sessionsSel = parseList(sop.sessions);
   const signalsSel = parseList(sop.entry_signals);
@@ -116,31 +119,35 @@ export default function Stage1Sop({
               ))}
             </div>
           </div>
-          <div className="field">
-            <label>Confirmation required</label>
-            <div className="tag-row">
-              {ENTRY_CONFIRM.map((s) => (
-                <span
-                  key={s}
-                  className={`tag ${confirmSel.includes(s) ? "sel" : ""}`}
-                  onClick={() => toggleIn("entry_confirm", s)}
-                >
-                  {s}
-                </span>
-              ))}
+          {!learner && (
+            <div className="field">
+              <label>Confirmation required</label>
+              <div className="tag-row">
+                {ENTRY_CONFIRM.map((s) => (
+                  <span
+                    key={s}
+                    className={`tag ${confirmSel.includes(s) ? "sel" : ""}`}
+                    onClick={() => toggleIn("entry_confirm", s)}
+                  >
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        {!learner && (
+          <div className="form-grid single">
+            <div className="field">
+              <label>Entry rule in your own words</label>
+              <textarea
+                value={sop.entry_notes}
+                onChange={(e) => onChange({ ...sop, entry_notes: e.target.value })}
+                placeholder="e.g. Only enter when price is above EMA50 and RSI is between 40–65 on the 4h chart…"
+              />
             </div>
           </div>
-        </div>
-        <div className="form-grid single">
-          <div className="field">
-            <label>Entry rule in your own words</label>
-            <textarea
-              value={sop.entry_notes}
-              onChange={(e) => onChange({ ...sop, entry_notes: e.target.value })}
-              placeholder="e.g. Only enter when price is above EMA50 and RSI is between 40–65 on the 4h chart…"
-            />
-          </div>
-        </div>
+        )}
       </div>
 
       <div className="section-block">
@@ -162,14 +169,16 @@ export default function Stage1Sop({
               ))}
             </select>
           </div>
-          <div className="field">
-            <label>Minimum R/R ratio</label>
-            <select value={sop.rr} onChange={(e) => onChange({ ...sop, rr: e.target.value })}>
-              {["1:1.5", "1:2", "1:2.5", "1:3"].map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
-          </div>
+          {!learner && (
+            <div className="field">
+              <label>Minimum R/R ratio</label>
+              <select value={sop.rr} onChange={(e) => onChange({ ...sop, rr: e.target.value })}>
+                {["1:1.5", "1:2", "1:2.5", "1:3"].map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       </div>
 
@@ -192,17 +201,20 @@ export default function Stage1Sop({
               ))}
             </select>
           </div>
-          <div className="field">
-            <label>Daily loss limit</label>
-            <select value={sop.drawdown} onChange={(e) => onChange({ ...sop, drawdown: e.target.value })}>
-              {["2%", "3%", "5%"].map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
-          </div>
+          {!learner && (
+            <div className="field">
+              <label>Daily loss limit</label>
+              <select value={sop.drawdown} onChange={(e) => onChange({ ...sop, drawdown: e.target.value })}>
+                {["2%", "3%", "5%"].map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       </div>
 
+      {!learner && (
       <div className="section-block">
         <div className="section-label">Market regime filter</div>
         <div className="field">
@@ -229,6 +241,7 @@ export default function Stage1Sop({
           </div>
         </div>
       </div>
+      )}
 
       <div className="btn-row">
         <span className="btn-hint">Your SOP will be used by AI to grade every paper trade</span>

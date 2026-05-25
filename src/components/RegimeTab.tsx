@@ -8,14 +8,25 @@ import {
   type Regime,
   type RegimeResponse,
 } from "@/lib/regime";
+import type { TradingMode } from "@/lib/types";
+
+const PLAIN: Record<Regime, string> = {
+  crash: "Falling sharply — high risk right now",
+  bear: "Trending down",
+  neutral: "Calm and sideways",
+  bull: "Trending up",
+};
 
 export default function RegimeTab({
   sopRegimes,
   onRegime,
+  mode,
 }: {
   sopRegimes: Regime[];
   onRegime: (r: Regime | null) => void;
+  mode: TradingMode;
 }) {
+  const learner = mode === "learner";
   const [data, setData] = useState<RegimeResponse | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,8 +65,10 @@ export default function RegimeTab({
     <div className="card regime-card">
       <div className="card-header">
         <div className="card-title">
-          <div className="card-title-icon">◴</div> Market regime · SPY
-          <span className="card-meta" style={{ marginLeft: 8 }}>4-state Gaussian HMM · 90d</span>
+          <div className="card-title-icon">◴</div> {learner ? "Market conditions · SPY" : "Market regime · SPY"}
+          <span className="card-meta" style={{ marginLeft: 8 }}>
+            {learner ? "last 90 days" : "4-state Gaussian HMM · 90d"}
+          </span>
         </div>
         <button className="btn" style={{ padding: "5px 12px", fontSize: 12 }} onClick={load} type="button" disabled={loading}>
           {loading ? "…" : "↻ Refresh"}
@@ -74,7 +87,9 @@ export default function RegimeTab({
           <div className="regime-head">
             <div className="regime-now" style={{ borderColor: color }}>
               <div className="regime-now-label" style={{ color }}>{REGIME_LABELS[current!]}</div>
-              <div className="regime-now-conf">{Math.round(data.current.confidence * 100)}% confidence</div>
+              <div className="regime-now-conf">
+                {learner ? PLAIN[current!] : `${Math.round(data.current.confidence * 100)}% confidence`}
+              </div>
             </div>
             <div className="regime-meta">
               <div className="regime-asof">as of {data.asOf}</div>
@@ -110,9 +125,11 @@ export default function RegimeTab({
               <div key={r} className="regime-legend-item">
                 <span className="regime-dot" style={{ background: REGIME_COLORS[r] }} />
                 <span>{REGIME_LABELS[r]}</span>
-                <span className="regime-legend-mean">
-                  {data.means[r] > 0 ? "+" : ""}{data.means[r]}% avg
-                </span>
+                {!learner && (
+                  <span className="regime-legend-mean">
+                    {data.means[r] > 0 ? "+" : ""}{data.means[r]}% avg
+                  </span>
+                )}
               </div>
             ))}
           </div>

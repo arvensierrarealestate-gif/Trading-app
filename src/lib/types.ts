@@ -1,3 +1,5 @@
+export type TradingMode = "learner" | "trader";
+
 export type SOP = {
   assets: string;
   tf: string;

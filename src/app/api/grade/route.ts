@@ -60,6 +60,7 @@ type Body = {
   chart: ImageInput;
   news?: ImageInput | null;
   current_regime?: string | null;
+  mode?: "learner" | "trader";
 };
 
 function imageError(img: unknown, label: string): string | null {
@@ -129,13 +130,18 @@ Allowed market regimes: ${body.sop.regimes || "any"}`;
     ? `\n\nLIVE MARKET REGIME (SPY, 4-state HMM): ${liveRegime}. The trader's SOP only permits trading in: ${allowedRegimes.join(", ") || "any"}.${regimeMismatch ? " This trade was taken OUTSIDE the trader's allowed regimes — this is a regime violation: cap the score at 49 and set the verdict to \"SOP violated\" regardless of the chart, and explain the regime mismatch in what_to_improve." : " The current regime is within the trader's allowed regimes."}`
     : "";
 
+  const toneText =
+    body.mode === "learner"
+      ? "\n\nThe trader is a BEGINNER. Write what_you_did_well, what_to_improve, coach_note and every rule_check note in plain, encouraging English. Avoid or briefly explain any jargon (e.g. say \"reward vs risk\" instead of \"R/R\"). Be supportive, not harsh."
+      : "";
+
   const content: Anthropic.Messages.ContentBlockParam[] = [
     {
       type: "text",
       text: `Grade this paper trade against the SOP.
 Asset: ${body.asset}, Direction: ${body.dir}, Outcome: ${body.outcome}, Entry: ${body.entry || "—"}, Exit: ${body.exit || "—"}
 
-${sopText}${regimeText}`,
+${sopText}${regimeText}${toneText}`,
     },
     { type: "image", source: { type: "base64", media_type: body.chart.media_type, data: body.chart.data } },
     { type: "text", text: "Image: price chart" },
