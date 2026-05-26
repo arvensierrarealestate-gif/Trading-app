@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import AppShell from "@/components/AppShell";
 import type { SOP, Trade, TradingMode, TraderStats } from "@/lib/types";
 import { SOP_DEFAULTS } from "@/lib/types";
+import { isThemeId, type ThemeId } from "@/lib/themes";
 
 export default async function AppPage() {
   const supabase = await createClient();
@@ -12,12 +13,14 @@ export default async function AppPage() {
     supabase.from("sops").select("*").eq("user_id", user.id).maybeSingle(),
     supabase.from("paper_trades").select("*").eq("user_id", user.id).order("created_at", { ascending: true }),
     supabase.from("go_live_checks").select("manual_checks").eq("user_id", user.id).maybeSingle(),
-    supabase.from("profiles").select("trading_mode, verified").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("trading_mode, verified, theme").eq("id", user.id).maybeSingle(),
     supabase.from("trader_stats").select("*").eq("user_id", user.id).maybeSingle(),
   ]);
 
   const initialMode = (profileRes.data?.trading_mode ?? null) as TradingMode | null;
   const initialVerified = !!profileRes.data?.verified;
+  const themeRaw = profileRes.data?.theme;
+  const initialTheme: ThemeId = isThemeId(themeRaw) ? themeRaw : "dark-terminal";
   const sr = statsRes.data;
   const initialStats: TraderStats | null = sr
     ? {
@@ -80,6 +83,7 @@ export default async function AppPage() {
       initialMode={initialMode}
       initialVerified={initialVerified}
       initialStats={initialStats}
+      initialTheme={initialTheme}
     />
   );
 }

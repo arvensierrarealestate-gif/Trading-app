@@ -9,6 +9,7 @@ export type TickerMetrics = {
   beta: number | null;
   volume_ratio: number | null; // recent vs 90d average
   gap_freq: number | null; // fraction of days with >1% open gap
+  worst_drawdown_pct: number | null; // largest peak-to-trough drawdown over the lookback
   aggression_score: number; // 1-10
   scalp_suitable: boolean;
   swing_suitable: boolean;

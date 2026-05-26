@@ -65,6 +65,19 @@ function atrPct(bars: Bars, period = 14): number {
   return (atr / px) * 100;
 }
 
+function worstDrawdown(close: number[]): number {
+  let peak = close[0] ?? 0;
+  let worst = 0;
+  for (const px of close) {
+    if (px > peak) peak = px;
+    if (peak > 0) {
+      const dd = (px - peak) / peak;
+      if (dd < worst) worst = dd;
+    }
+  }
+  return Math.abs(worst) * 100;
+}
+
 function gapFreq(bars: Bars, lookback = 90): number {
   const { open, close } = bars;
   let gaps = 0;
@@ -81,11 +94,15 @@ export async function GET(req: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const symbol = new URL(req.url).searchParams.get("symbol")?.trim().toUpperCase();
+  const url = new URL(req.url);
+  const symbol = url.searchParams.get("symbol")?.trim().toUpperCase();
   if (!symbol) return NextResponse.json({ error: "Symbol required" }, { status: 400 });
+  const forceFresh = url.searchParams.get("fresh") === "1";
 
   // Serve fresh cache (< 24h) to spare Yahoo on watchlist fan-out.
-  const { data: cached } = await supabase.from("ticker_cache").select("*").eq("symbol", symbol).maybeSingle();
+  const { data: cached } = forceFresh
+    ? { data: null }
+    : await supabase.from("ticker_cache").select("*").eq("symbol", symbol).maybeSingle();
   if (cached && Date.now() - new Date(cached.last_updated).getTime() < 24 * 3600 * 1000) {
     const atr = cached.atr_pct ?? 0;
     const metrics: TickerMetrics = {
@@ -95,6 +112,7 @@ export async function GET(req: Request) {
       beta: cached.beta,
       volume_ratio: null,
       gap_freq: null,
+      worst_drawdown_pct: null,
       aggression_score: cached.aggression_score ?? 5,
       scalp_suitable: !!cached.scalp_suitable,
       swing_suitable: !!cached.swing_suitable,
@@ -132,6 +150,7 @@ export async function GET(req: Request) {
     beta: Number(b.toFixed(2)),
     volume_ratio: Number(volRatio.toFixed(2)),
     gap_freq: Number(gaps.toFixed(2)),
+    worst_drawdown_pct: Number(worstDrawdown(bars.close).toFixed(1)),
     aggression_score: aggression,
     scalp_suitable,
     swing_suitable,

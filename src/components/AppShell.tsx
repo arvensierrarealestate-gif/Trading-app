@@ -1,15 +1,20 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { SOP, Trade, TradingMode, TraderStats } from "@/lib/types";
 import { parseRegimes, type Regime } from "@/lib/regime";
+import { type ThemeId } from "@/lib/themes";
 import RegimeTab from "./RegimeTab";
 import MorningBrief from "./MorningBrief";
 import ModeSelect from "./ModeSelect";
 import TraderVerify from "./TraderVerify";
 import TraderProtectionBanners, { computeTraderWarnings } from "./TraderProtection";
+import ThemeSwitcher from "./ThemeSwitcher";
+import Sidebar, { type DashView } from "./Sidebar";
+import HomeDashboard from "./HomeDashboard";
+import SettingsView from "./SettingsView";
 import Stage1Sop from "./Stage1Sop";
 import Stage2Paper from "./Stage2Paper";
 import Stage3GoLive from "./Stage3GoLive";
@@ -23,9 +28,20 @@ type Props = {
   initialMode: TradingMode | null;
   initialVerified: boolean;
   initialStats: TraderStats | null;
+  initialTheme: ThemeId;
 };
 
-export default function AppShell({ email, initialSop, hasSavedSop, initialTrades, initialManualChecks, initialMode, initialVerified, initialStats }: Props) {
+export default function AppShell({
+  email,
+  initialSop,
+  hasSavedSop,
+  initialTrades,
+  initialManualChecks,
+  initialMode,
+  initialVerified,
+  initialStats,
+  initialTheme,
+}: Props) {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
 
@@ -33,14 +49,20 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
   const [sopSaved, setSopSaved] = useState(hasSavedSop);
   const [trades, setTrades] = useState<Trade[]>(initialTrades);
   const [manualChecks, setManualChecks] = useState<boolean[]>(initialManualChecks);
-  const [stage, setStage] = useState<number>(hasSavedSop ? (initialTrades.length >= 5 ? 1 : 1) : 0);
+  const [stage, setStage] = useState<number>(hasSavedSop ? 1 : 0);
   const [currentRegime, setCurrentRegime] = useState<Regime | null>(null);
   const [mode, setMode] = useState<TradingMode | null>(initialMode);
   const [switchingMode, setSwitchingMode] = useState(false);
   const [verified, setVerified] = useState(initialVerified);
   const [traderStats, setTraderStats] = useState<TraderStats | null>(initialStats);
+  const [theme, setTheme] = useState<ThemeId>(initialTheme);
+  const [view, setView] = useState<DashView>("home");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Learner trades only count toward go-live if capital was protected.
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
   const eligibleTrades = mode === "learner" ? trades.filter((t) => (t.protection_score ?? 0) >= 70) : trades;
   const avgScore = eligibleTrades.length
     ? Math.round(eligibleTrades.reduce((a, t) => a + t.score, 0) / eligibleTrades.length)
@@ -62,12 +84,8 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
     router.refresh();
   }
 
-  // New users (no mode yet) must choose before entering the app.
-  if (mode === null) {
-    return <ModeSelect current={null} onChosen={(m) => setMode(m)} />;
-  }
+  if (mode === null) return <ModeSelect current={null} onChosen={(m) => setMode(m)} />;
 
-  // Experienced traders must verify their history before full access.
   if (mode === "trader" && !verified) {
     return (
       <TraderVerify
@@ -79,9 +97,106 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
     );
   }
 
-  const learner = mode === "learner";
-  const riskExceeded = learner && parseFloat(sop.risk) > 1;
-  const traderWarnings = mode === "trader" ? computeTraderWarnings(traderStats, sop) : [];
+  // ───── Trader shell: left sidebar + top bar + view router ─────
+  if (mode === "trader") {
+    const warnings = computeTraderWarnings(traderStats, sop);
+    return (
+      <div className={`app trader-shell ${sidebarOpen ? "sidebar-open" : ""}`}>
+        <Sidebar active={view} onSelect={(v) => { setView(v); setSidebarOpen(false); }} email={email} />
+        {sidebarOpen && <div className="sidebar-scrim" onClick={() => setSidebarOpen(false)} />}
+
+        <div className="trader-main">
+          <div className="trader-topbar">
+            <button className="mobile-toggle" onClick={() => setSidebarOpen((v) => !v)} type="button" aria-label="Toggle navigation">☰</button>
+            <div className="trader-topbar-spacer" />
+            {warnings.length > 0 && (
+              <div className="shield-badge danger" title={warnings.map((w) => w.text).join("\n")}>
+                <span aria-hidden>⚠</span>
+                {warnings.length} risk alert{warnings.length === 1 ? "" : "s"}
+              </div>
+            )}
+            <ThemeSwitcher value={theme} onChange={setTheme} />
+            <button type="button" className="mode-pill trader" onClick={() => setSwitchingMode(true)}>
+              Trader mode <span>· switch</span>
+            </button>
+            <div className="user-pill">
+              <span>{email}</span>
+              <button type="button" onClick={signOut}>Sign out</button>
+            </div>
+          </div>
+
+          {warnings.length > 0 && <TraderProtectionBanners warnings={warnings} />}
+
+          <div className="trader-view">
+            {view === "home" && <HomeDashboard sop={sop} />}
+            {view === "brief" && <MorningBrief sop={sop} mode={mode} stats={traderStats} />}
+            {view === "stage1" && (
+              <Stage1Sop
+                sop={sop}
+                mode={mode}
+                onChange={setSop}
+                onSaved={() => {
+                  setSopSaved(true);
+                  router.refresh();
+                }}
+              />
+            )}
+            {view === "stage2" && (
+              <Stage2Paper
+                sop={sop}
+                trades={trades}
+                goLiveUnlocked={goLiveUnlocked}
+                currentRegime={currentRegime}
+                mode={mode}
+                traderStats={traderStats}
+                onTradeAdded={(t) => setTrades((prev) => [...prev, t])}
+                onUnlock={() => setView("stage3")}
+              />
+            )}
+            {view === "stage3" && (
+              <Stage3GoLive
+                trades={trades}
+                manualChecks={manualChecks}
+                onManualChecksChange={setManualChecks}
+                onBack={() => setView("stage2")}
+                mode={mode}
+              />
+            )}
+            {view === "regime" && <RegimeTab sopRegimes={parseRegimes(sop.regimes)} onRegime={setCurrentRegime} mode={mode} />}
+            {view === "settings" && (
+              <SettingsView
+                email={email}
+                theme={theme}
+                onTheme={setTheme}
+                mode={mode}
+                onSwitchMode={() => setSwitchingMode(true)}
+                onSignOut={signOut}
+              />
+            )}
+          </div>
+        </div>
+
+        {switchingMode && (
+          <div className="modal-overlay" onClick={() => setSwitchingMode(false)}>
+            <div onClick={(e) => e.stopPropagation()} style={{ width: "100%" }}>
+              <ModeSelect
+                current={mode}
+                onChosen={(m) => {
+                  setMode(m);
+                  setSwitchingMode(false);
+                }}
+                onCancel={() => setSwitchingMode(false)}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ───── Learner shell (unchanged stage flow) ─────
+  const learner = true;
+  const riskExceeded = parseFloat(sop.risk) > 1;
 
   return (
     <div className="app">
@@ -105,20 +220,13 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
               );
             })}
           </div>
-          {learner && (
-            <div className={`shield-badge ${riskExceeded ? "danger" : ""}`}>
-              <span aria-hidden>🛡</span>
-              {riskExceeded ? "Warning — risk limit exceeded" : "Protected — 1% max risk per trade"}
-            </div>
-          )}
-          {!learner && traderWarnings.length > 0 && (
-            <div className="shield-badge danger" title={traderWarnings.map((w) => w.text).join("\n")}>
-              <span aria-hidden>⚠</span>
-              {traderWarnings.length} risk alert{traderWarnings.length === 1 ? "" : "s"}
-            </div>
-          )}
-          <button type="button" className={`mode-pill ${learner ? "learner" : "trader"}`} onClick={() => setSwitchingMode(true)}>
-            {learner ? "Learner mode" : "Trader mode"} <span>· switch</span>
+          <div className={`shield-badge ${riskExceeded ? "danger" : ""}`}>
+            <span aria-hidden>🛡</span>
+            {riskExceeded ? "Warning — risk limit exceeded" : "Protected — 1% max risk per trade"}
+          </div>
+          <ThemeSwitcher value={theme} onChange={setTheme} />
+          <button type="button" className="mode-pill learner" onClick={() => setSwitchingMode(true)}>
+            Learner mode <span>· switch</span>
           </button>
           <div className="user-pill">
             <span>{email}</span>
@@ -126,8 +234,6 @@ export default function AppShell({ email, initialSop, hasSavedSop, initialTrades
           </div>
         </div>
       </div>
-
-      {!learner && traderWarnings.length > 0 && <TraderProtectionBanners warnings={traderWarnings} />}
 
       <MorningBrief sop={sop} mode={mode} stats={traderStats} />
 
