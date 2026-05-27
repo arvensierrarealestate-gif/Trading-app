@@ -27,13 +27,20 @@ function readAsText(file: File): Promise<string> {
   });
 }
 
-export default function TraderVerify({ onVerified }: { onVerified: (s: TraderStats) => void }) {
+export default function TraderVerify({ onVerified }: { onVerified: (s: TraderStats | null) => void }) {
   const supabase = useMemo(() => createClient(), []);
   const [files, setFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [stats, setStats] = useState<ExtractedStats | null>(null);
   const [saving, setSaving] = useState(false);
+  const [skipping, setSkipping] = useState(false);
+
+  function errorMessage(e: unknown): string {
+    if (e instanceof Error) return e.message;
+    if (typeof e === "object" && e !== null && "message" in e) return String((e as { message: unknown }).message);
+    return "Could not save verification";
+  }
 
   async function analyze() {
     if (!files.length) return;
@@ -96,16 +103,31 @@ export default function TraderVerify({ onVerified }: { onVerified: (s: TraderSta
       if (p.error) throw p.error;
       onVerified(stats);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Could not save verification");
+      setErr(errorMessage(e));
       setSaving(false);
+    }
+  }
+
+  async function skipVerification() {
+    setSkipping(true);
+    setErr(null);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not signed in");
+      const { error } = await supabase.from("profiles").upsert({ id: user.id, verified: true });
+      if (error) throw error;
+      onVerified(null);
+    } catch (e) {
+      setErr(errorMessage(e));
+      setSkipping(false);
     }
   }
 
   return (
     <div className="mode-shell">
       <div className="mode-head">
-        <div className="auth-title"><span className="logo-dot" /> Verify your trading history</div>
-        <div className="auth-sub">Experienced mode unlocks after you upload proof of real trading activity.</div>
+        <div className="auth-title"><span className="logo-dot" /> Unlock experienced trader mode</div>
+        <div className="auth-sub">Upload your trading history to personalize the safety layer — or skip and unlock with full responsibility.</div>
       </div>
 
       {!stats ? (
@@ -141,10 +163,17 @@ export default function TraderVerify({ onVerified }: { onVerified: (s: TraderSta
             </div>
             <div className="btn-row">
               <span className="btn-hint">The AI reads your files and extracts your verified stats. Nothing is shared.</span>
-              <button className="btn primary" onClick={analyze} disabled={busy || !files.length} type="button">
+              <button className="btn primary" onClick={analyze} disabled={busy || skipping || !files.length} type="button">
                 {busy ? "Reading your history…" : "Analyze & extract stats"}
               </button>
             </div>
+          </div>
+
+          <div className="skip-verify">
+            <span className="skip-verify-text">In a hurry? Unlock trader mode without uploading — you accept full responsibility for risk decisions and the history-based protection banners stay off.</span>
+            <button className="btn" onClick={skipVerification} type="button" disabled={busy || skipping}>
+              {skipping ? "Unlocking…" : "Skip and unlock"}
+            </button>
           </div>
         </>
       ) : (
