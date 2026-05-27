@@ -64,7 +64,10 @@ export default function Stage1Sop({
       if (error) throw error;
       onSaved();
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Save failed");
+      const msg = e instanceof Error ? e.message
+        : typeof e === "object" && e !== null && "message" in e ? String((e as { message: unknown }).message)
+        : "Save failed";
+      setErr(msg);
     } finally {
       setSaving(false);
     }
