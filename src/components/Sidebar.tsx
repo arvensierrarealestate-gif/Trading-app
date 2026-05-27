@@ -1,6 +1,6 @@
 "use client";
 
-export type DashView = "home" | "brief" | "stage1" | "stage2" | "stage3" | "regime" | "settings";
+export type DashView = "home" | "brief" | "stage1" | "stage2" | "stage3" | "regime" | "academy" | "settings";
 
 const NAV: { id: DashView; label: string; icon: string }[] = [
   { id: "home", label: "Home", icon: "▦" },
@@ -9,6 +9,7 @@ const NAV: { id: DashView; label: string; icon: string }[] = [
   { id: "stage2", label: "Stage 2 — Paper journal", icon: "②" },
   { id: "stage3", label: "Stage 3 — Go-live", icon: "③" },
   { id: "regime", label: "Regime", icon: "≋" },
+  { id: "academy", label: "Academy", icon: "📖" },
   { id: "settings", label: "Settings", icon: "⚙" },
 ];
 

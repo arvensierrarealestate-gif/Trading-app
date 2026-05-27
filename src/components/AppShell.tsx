@@ -15,6 +15,8 @@ import ThemeSwitcher from "./ThemeSwitcher";
 import Sidebar, { type DashView } from "./Sidebar";
 import HomeDashboard from "./HomeDashboard";
 import SettingsView from "./SettingsView";
+import AcademyView from "./AcademyView";
+import { AcademyProvider, useAcademy } from "./AcademyContext";
 import Stage1Sop from "./Stage1Sop";
 import Stage2Paper from "./Stage2Paper";
 import Stage3GoLive from "./Stage3GoLive";
@@ -31,7 +33,15 @@ type Props = {
   initialTheme: ThemeId;
 };
 
-export default function AppShell({
+export default function AppShell(props: Props) {
+  return (
+    <AcademyProvider>
+      <AppShellInner {...props} />
+    </AcademyProvider>
+  );
+}
+
+function AppShellInner({
   email,
   initialSop,
   hasSavedSop,
@@ -42,6 +52,7 @@ export default function AppShell({
   initialStats,
   initialTheme,
 }: Props) {
+  const academy = useAcademy();
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
 
@@ -102,7 +113,19 @@ export default function AppShell({
     const warnings = computeTraderWarnings(traderStats, sop);
     return (
       <div className={`app trader-shell ${sidebarOpen ? "sidebar-open" : ""}`}>
-        <Sidebar active={view} onSelect={(v) => { setView(v); setSidebarOpen(false); }} email={email} />
+        <Sidebar
+          active={academy.open ? "academy" : view}
+          onSelect={(v) => {
+            setSidebarOpen(false);
+            if (v === "academy") {
+              academy.openAcademy();
+            } else {
+              academy.closeAcademy();
+              setView(v);
+            }
+          }}
+          email={email}
+        />
         {sidebarOpen && <div className="sidebar-scrim" onClick={() => setSidebarOpen(false)} />}
 
         <div className="trader-main">
@@ -128,6 +151,10 @@ export default function AppShell({
           {warnings.length > 0 && <TraderProtectionBanners warnings={warnings} />}
 
           <div className="trader-view">
+            {academy.open ? (
+              <AcademyView anchorTermId={academy.anchorTermId} />
+            ) : (
+              <>
             {view === "home" && <HomeDashboard sop={sop} />}
             {view === "brief" && <MorningBrief sop={sop} mode={mode} stats={traderStats} />}
             {view === "stage1" && (
@@ -173,6 +200,8 @@ export default function AppShell({
                 onSwitchMode={() => setSwitchingMode(true)}
                 onSignOut={signOut}
               />
+            )}
+              </>
             )}
           </div>
         </div>
@@ -225,6 +254,9 @@ export default function AppShell({
             <span aria-hidden>🛡</span>
             {riskExceeded ? "Warning — risk limit exceeded" : "Protected — 1% max risk per trade"}
           </div>
+          <button type="button" className="header-academy" onClick={() => academy.openAcademy()} title="Open Trading Academy">
+            <span aria-hidden>📖</span> Academy
+          </button>
           <ThemeSwitcher value={theme} onChange={setTheme} />
           <button type="button" className="mode-pill learner" onClick={() => setSwitchingMode(true)}>
             Learner mode <span>· switch</span>
@@ -236,6 +268,13 @@ export default function AppShell({
         </div>
       </div>
 
+      {academy.open ? (
+        <div className="learner-academy-wrap">
+          <button type="button" className="btn" onClick={() => academy.closeAcademy()}>← Back to your stages</button>
+          <AcademyView anchorTermId={academy.anchorTermId} />
+        </div>
+      ) : (
+      <>
       <MorningBrief sop={sop} mode={mode} stats={traderStats} />
 
       <RegimeTab sopRegimes={parseRegimes(sop.regimes)} onRegime={setCurrentRegime} mode={mode} />
@@ -315,6 +354,8 @@ export default function AppShell({
           mode={mode}
         />
       </div>
+      </>
+      )}
 
       {switchingMode && (
         <div className="modal-overlay" onClick={() => setSwitchingMode(false)}>

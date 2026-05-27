@@ -6,6 +6,7 @@ import type { Grade, SOP, Trade, TradingMode, TraderStats } from "@/lib/types";
 import type { Regime } from "@/lib/regime";
 import TickerCard from "./TickerCard";
 import PositionSizer from "./PositionSizer";
+import TermTip from "./TermTip";
 
 type LogLine = { kind: "ai" | "ok" | "err" | "tool"; msg: string };
 
@@ -323,7 +324,7 @@ export default function Stage2Paper({
             </div>
             <div className="field">
               <label>
-                Stop loss {learner && <span style={{ color: "var(--accent)" }}>· required</span>}
+                <TermTip term="stop-loss">Stop loss</TermTip> {learner && <span style={{ color: "var(--accent)" }}>· required</span>}
               </label>
               <input
                 type="text"

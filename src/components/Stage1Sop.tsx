@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { SOP, TradingMode } from "@/lib/types";
+import TermTip from "./TermTip";
 
 const LOCK_MSG = "This limit protects your account while you are learning. You can adjust this when you graduate to trader mode.";
 const LEARNER_RR = ["1:2", "1:2.5", "1:3"];
@@ -195,7 +196,7 @@ export default function Stage1Sop({
             </select>
           </div>
           <div className="field">
-            <label>Minimum R/R ratio</label>
+            <label>Minimum <TermTip term="risk-reward">R/R ratio</TermTip></label>
             <select value={sop.rr} onChange={(e) => onChange({ ...sop, rr: e.target.value })}>
               {(learner ? LEARNER_RR : ["1:1.5", "1:2", "1:2.5", "1:3"]).map((v) => (
                 <option key={v}>{v}</option>
@@ -210,7 +211,7 @@ export default function Stage1Sop({
         <div className="section-label">Risk management</div>
         <div className="form-grid three">
           <div className="field">
-            <label>Max risk per trade</label>
+            <label><TermTip term="position-size">Max risk per trade</TermTip></label>
             <select value={sop.risk} disabled={riskLocked} onChange={(e) => onChange({ ...sop, risk: e.target.value })}>
               {["0.5%", "1%", "1.5%", "2%", "3%"].map((v) => <option key={v}>{v}</option>)}
             </select>
@@ -228,7 +229,7 @@ export default function Stage1Sop({
               : learner ? <div className="hint-msg">Up to 5 trades per day. Locks once you save.</div> : null}
           </div>
           <div className="field">
-            <label>Daily loss limit</label>
+            <label><TermTip term="drawdown">Daily loss limit</TermTip></label>
             <select value={sop.drawdown} disabled={riskLocked} onChange={(e) => onChange({ ...sop, drawdown: e.target.value })}>
               {["2%", "3%", "5%"].map((v) => <option key={v}>{v}</option>)}
             </select>
