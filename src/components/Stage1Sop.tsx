@@ -3,9 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { SOP, TradingMode } from "@/lib/types";
+import { CRITICAL_FIELDS, getStrategy } from "@/lib/strategies";
 import TermTip from "./TermTip";
+import FieldInfo from "./FieldInfo";
 
-const LOCK_MSG = "This limit protects your account while you are learning. You can adjust this when you graduate to trader mode.";
 const LEARNER_RR = ["1:2", "1:2.5", "1:3"];
 
 const SESSIONS = ["Asian", "London", "New York", "24/7 crypto", "Pre-market", "After hours"];
@@ -22,12 +23,14 @@ export default function Stage1Sop({
   sopSaved,
   onChange,
   onSaved,
+  onSwitchStrategy,
 }: {
   sop: SOP;
   mode: TradingMode;
   sopSaved: boolean;
   onChange: (next: SOP) => void;
   onSaved: () => void;
+  onSwitchStrategy?: () => void;
 }) {
   const supabase = useMemo(() => createClient(), []);
   const [saving, setSaving] = useState(false);
@@ -35,6 +38,22 @@ export default function Stage1Sop({
   const learner = mode === "learner";
   // In learner mode: open while you're picking your first SOP, locked once saved.
   const riskLocked = learner && sopSaved;
+
+  // Strategy template (premium-selling / leaps / momentum-swing / custom) — drives
+  // the pre-fill banner, field info icons, and critical-field change warnings.
+  const strategy = useMemo(() => getStrategy(sop.strategy_type ?? "custom"), [sop.strategy_type]);
+  const hasTemplate = !!strategy && strategy.id !== "custom" && strategy.defaults != null;
+
+  function reasonFor(field: keyof SOP): string | undefined {
+    return strategy?.fieldReasons?.[field];
+  }
+
+  function isCriticalChange(field: keyof SOP): boolean {
+    if (!hasTemplate || !strategy?.defaults) return false;
+    if (!CRITICAL_FIELDS.includes(field)) return false;
+    const templateVal = (strategy.defaults as Record<string, string>)[field];
+    return templateVal != null && sop[field] !== templateVal;
+  }
 
   // Learner ceilings: pick within safe limits, then lock after first save.
   // Values from trader mode that exceed learner ceilings are clamped on entry.
@@ -90,6 +109,20 @@ export default function Stage1Sop({
         </div>
         <div className="card-meta">saved to Supabase · used for AI grading</div>
       </div>
+
+      {hasTemplate && strategy && (
+        <div className="strategy-banner">
+          <div className="strategy-banner-text">
+            Your SOP has been pre-filled with the <strong>{strategy.name}</strong> strategy settings.
+            Review each section and save when ready.
+          </div>
+          {onSwitchStrategy && (
+            <button type="button" className="strategy-switch-link" onClick={onSwitchStrategy}>
+              Switch strategy →
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="section-block">
         <div className="section-label">Assets &amp; session</div>
@@ -180,29 +213,24 @@ export default function Stage1Sop({
         <div className="section-label">Exit rules</div>
         <div className="form-grid three">
           <div className="field">
-            <label>Take profit method</label>
-            <select value={sop.tp} onChange={(e) => onChange({ ...sop, tp: e.target.value })}>
-              {["Fixed R/R ratio", "Key resistance", "Trailing stop", "Time-based"].map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
+            <label>Take profit <FieldInfo text={reasonFor("tp") ?? ""} /></label>
+            <input type="text" value={sop.tp} onChange={(e) => onChange({ ...sop, tp: e.target.value })} placeholder="Fixed R/R ratio, Key resistance…" />
+            {isCriticalChange("tp") && <div className="warn-msg">⚠ Changing this setting increases your risk. Are you sure?</div>}
           </div>
           <div className="field">
-            <label>Stop loss method</label>
-            <select value={sop.sl} onChange={(e) => onChange({ ...sop, sl: e.target.value })}>
-              {["ATR-based", "Below support", "Fixed %", "Swing low/high"].map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
+            <label><TermTip term="stop-loss">Stop loss</TermTip> <FieldInfo text={reasonFor("sl") ?? ""} /></label>
+            <input type="text" value={sop.sl} onChange={(e) => onChange({ ...sop, sl: e.target.value })} placeholder="ATR-based, Below support…" />
+            {isCriticalChange("sl") && <div className="warn-msg">⚠ Changing this setting increases your risk. Are you sure?</div>}
           </div>
           <div className="field">
-            <label>Minimum <TermTip term="risk-reward">R/R ratio</TermTip></label>
+            <label>Minimum <TermTip term="risk-reward">R/R ratio</TermTip> <FieldInfo text={reasonFor("rr") ?? ""} /></label>
             <select value={sop.rr} onChange={(e) => onChange({ ...sop, rr: e.target.value })}>
               {(learner ? LEARNER_RR : ["1:1.5", "1:2", "1:2.5", "1:3"]).map((v) => (
                 <option key={v}>{v}</option>
               ))}
             </select>
-            {learner && <div className="lock-msg">🔒 Minimum 1:2. {LOCK_MSG}</div>}
+            {learner && <div className="lock-msg">🔒 Minimum 1:2. This floor protects your account while learning. You can adjust this when you graduate to trader mode.</div>}
+            {isCriticalChange("rr") && <div className="warn-msg">⚠ Changing this setting increases your risk. Are you sure?</div>}
           </div>
         </div>
       </div>
@@ -211,40 +239,42 @@ export default function Stage1Sop({
         <div className="section-label">Risk management</div>
         <div className="form-grid three">
           <div className="field">
-            <label><TermTip term="position-size">Max risk per trade</TermTip></label>
+            <label><TermTip term="position-size">Max risk per trade</TermTip> <FieldInfo text={reasonFor("risk") ?? ""} /></label>
             <select value={sop.risk} disabled={riskLocked} onChange={(e) => onChange({ ...sop, risk: e.target.value })}>
               {["0.5%", "1%", "1.5%", "2%", "3%"].map((v) => <option key={v}>{v}</option>)}
             </select>
             {riskLocked
               ? <div className="lock-msg">🔒 Locked at {sop.risk}. You chose this when you saved your SOP. To change it, switch to trader mode.</div>
               : learner ? <div className="hint-msg">Pick up to 3%. Locks once you save your SOP.</div> : null}
+            {isCriticalChange("risk") && <div className="warn-msg">⚠ Changing this setting increases your risk. Are you sure?</div>}
           </div>
           <div className="field">
-            <label>Max trades per day</label>
+            <label>Max trades per day <FieldInfo text={reasonFor("max_trades") ?? ""} /></label>
             <select value={sop.max_trades} disabled={riskLocked} onChange={(e) => onChange({ ...sop, max_trades: e.target.value })}>
               {(learner ? ["1", "2", "3", "5"] : ["1", "2", "3", "5", "No limit"]).map((v) => <option key={v}>{v}</option>)}
             </select>
             {riskLocked
               ? <div className="lock-msg">🔒 Locked at {sop.max_trades}. You chose this when you saved your SOP. To change it, switch to trader mode.</div>
               : learner ? <div className="hint-msg">Up to 5 trades per day. Locks once you save.</div> : null}
+            {isCriticalChange("max_trades") && <div className="warn-msg">⚠ Changing this setting increases your risk. Are you sure?</div>}
           </div>
           <div className="field">
-            <label><TermTip term="drawdown">Daily loss limit</TermTip></label>
+            <label><TermTip term="drawdown">Daily loss limit</TermTip> <FieldInfo text={reasonFor("drawdown") ?? ""} /></label>
             <select value={sop.drawdown} disabled={riskLocked} onChange={(e) => onChange({ ...sop, drawdown: e.target.value })}>
               {["2%", "3%", "5%"].map((v) => <option key={v}>{v}</option>)}
             </select>
             {riskLocked
               ? <div className="lock-msg">🔒 Locked at {sop.drawdown}. You chose this when you saved your SOP. To change it, switch to trader mode.</div>
               : learner ? <div className="hint-msg">Pick up to 5%. Locks once you save.</div> : null}
+            {isCriticalChange("drawdown") && <div className="warn-msg">⚠ Changing this setting increases your risk. Are you sure?</div>}
           </div>
         </div>
       </div>
 
-      {!learner && (
       <div className="section-block">
         <div className="section-label">Market regime filter</div>
         <div className="field">
-          <label>Only trade in these SPY regimes</label>
+          <label>Only trade in these SPY regimes <FieldInfo text={reasonFor("regimes") ?? ""} /></label>
           <div className="tag-row">
             {[
               { key: "crash", label: "Crash" },
@@ -265,9 +295,9 @@ export default function Stage1Sop({
             The Regime tab estimates the live SPY regime with an HMM. Trades graded while the market is
             outside these regimes are flagged as out-of-SOP.
           </div>
+          {isCriticalChange("regimes") && <div className="warn-msg">⚠ Changing this setting increases your risk. Are you sure?</div>}
         </div>
       </div>
-      )}
 
       <div className="btn-row">
         <span className="btn-hint">Your SOP will be used by AI to grade every paper trade</span>

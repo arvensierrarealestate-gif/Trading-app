@@ -51,6 +51,7 @@ export default async function AppPage() {
         max_trades: sopRow.max_trades,
         drawdown: sopRow.drawdown,
         regimes: sopRow.regimes ?? "neutral, bull",
+        strategy_type: sopRow.strategy_type ?? "custom",
       }
     : null;
 

@@ -25,6 +25,7 @@ export type SOP = {
   max_trades: string;
   drawdown: string;
   regimes: string;
+  strategy_type: string;
 };
 
 export type RuleCheck = {
@@ -90,6 +91,7 @@ export const SOP_DEFAULTS: SOP = {
   max_trades: "2",
   drawdown: "3%",
   regimes: "neutral, bull",
+  strategy_type: "custom",
 };
 
 export type GoLiveItem = {

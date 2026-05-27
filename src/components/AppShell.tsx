@@ -20,6 +20,8 @@ import { AcademyProvider, useAcademy } from "./AcademyContext";
 import Stage1Sop from "./Stage1Sop";
 import Stage2Paper from "./Stage2Paper";
 import Stage3GoLive from "./Stage3GoLive";
+import StrategyPicker from "./StrategyPicker";
+import { getStrategy, type StrategyId } from "@/lib/strategies";
 
 type Props = {
   email: string;
@@ -69,6 +71,20 @@ function AppShellInner({
   const [theme, setTheme] = useState<ThemeId>(initialTheme);
   const [view, setView] = useState<DashView>("home");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Learner-only: show the StrategyPicker before the SOP form on first visit.
+  const [showStrategyPicker, setShowStrategyPicker] = useState(initialMode === "learner" && !hasSavedSop);
+
+  function applyStrategy(id: StrategyId) {
+    const tpl = getStrategy(id);
+    if (!tpl) return;
+    if (tpl.defaults) {
+      setSop({ ...tpl.defaults, strategy_type: id });
+    } else {
+      // "Build my own" — keep current sop values, just mark strategy_type=custom.
+      setSop({ ...sop, strategy_type: "custom" });
+    }
+    setShowStrategyPicker(false);
+  }
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -158,16 +174,23 @@ function AppShellInner({
             {view === "home" && <HomeDashboard sop={sop} />}
             {view === "brief" && <MorningBrief sop={sop} mode={mode} stats={traderStats} />}
             {view === "stage1" && (
-              <Stage1Sop
-                sop={sop}
-                mode={mode}
-                sopSaved={sopSaved}
-                onChange={setSop}
-                onSaved={() => {
-                  setSopSaved(true);
-                  router.refresh();
-                }}
-              />
+              showStrategyPicker ? (
+                <StrategyPicker
+                  initial={sop.strategy_type as StrategyId | undefined}
+                  onContinue={(id) => applyStrategy(id)}
+                />
+              ) : (
+                <Stage1Sop
+                  sop={sop}
+                  mode={mode}
+                  sopSaved={sopSaved}
+                  onChange={setSop}
+                  onSaved={() => {
+                    setSopSaved(true);
+                    router.refresh();
+                  }}
+                />
+              )
             )}
             {view === "stage2" && (
               <Stage2Paper
@@ -319,17 +342,25 @@ function AppShellInner({
       </div>
 
       <div className={`stage-panel ${stage === 0 ? "active" : ""}`}>
-        <Stage1Sop
-          sop={sop}
-          mode={mode}
-          sopSaved={sopSaved}
-          onChange={setSop}
-          onSaved={() => {
-            setSopSaved(true);
-            setStage(1);
-            router.refresh();
-          }}
-        />
+        {showStrategyPicker ? (
+          <StrategyPicker
+            initial={sop.strategy_type as StrategyId | undefined}
+            onContinue={(id) => applyStrategy(id)}
+          />
+        ) : (
+          <Stage1Sop
+            sop={sop}
+            mode={mode}
+            sopSaved={sopSaved}
+            onChange={setSop}
+            onSaved={() => {
+              setSopSaved(true);
+              setStage(1);
+              router.refresh();
+            }}
+            onSwitchStrategy={mode === "learner" ? () => setShowStrategyPicker(true) : undefined}
+          />
+        )}
       </div>
 
       <div className={`stage-panel ${stage === 1 ? "active" : ""}`}>
