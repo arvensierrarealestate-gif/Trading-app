@@ -18,11 +18,13 @@ function parseList(s: string): string[] {
 export default function Stage1Sop({
   sop,
   mode,
+  sopSaved,
   onChange,
   onSaved,
 }: {
   sop: SOP;
   mode: TradingMode;
+  sopSaved: boolean;
   onChange: (next: SOP) => void;
   onSaved: () => void;
 }) {
@@ -30,14 +32,19 @@ export default function Stage1Sop({
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const learner = mode === "learner";
+  // In learner mode: open while you're picking your first SOP, locked once saved.
+  const riskLocked = learner && sopSaved;
 
-  // Enforce conservative caps in learner mode.
+  // Learner ceilings: pick within safe limits, then lock after first save.
+  // Values from trader mode that exceed learner ceilings are clamped on entry.
   useEffect(() => {
     if (!learner) return;
     const fixed: Partial<SOP> = {};
-    if (sop.risk !== "1%") fixed.risk = "1%";
-    if (sop.drawdown !== "2%") fixed.drawdown = "2%";
-    if (sop.max_trades !== "2") fixed.max_trades = "2";
+    const r = parseFloat(sop.risk);
+    if (!Number.isFinite(r) || r > 3) fixed.risk = "3%";
+    const d = parseFloat(sop.drawdown);
+    if (!Number.isFinite(d) || d > 5) fixed.drawdown = "5%";
+    if (!["1", "2", "3", "5"].includes(sop.max_trades)) fixed.max_trades = "5";
     if (!LEARNER_RR.includes(sop.rr)) fixed.rr = "1:2";
     if (Object.keys(fixed).length) onChange({ ...sop, ...fixed });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -204,30 +211,30 @@ export default function Stage1Sop({
         <div className="form-grid three">
           <div className="field">
             <label>Max risk per trade</label>
-            <select value={learner ? "1%" : sop.risk} disabled={learner} onChange={(e) => onChange({ ...sop, risk: e.target.value })}>
-              {(learner ? ["1%"] : ["0.5%", "1%", "1.5%", "2%", "3%"]).map((v) => (
-                <option key={v}>{v}</option>
-              ))}
+            <select value={sop.risk} disabled={riskLocked} onChange={(e) => onChange({ ...sop, risk: e.target.value })}>
+              {["0.5%", "1%", "1.5%", "2%", "3%"].map((v) => <option key={v}>{v}</option>)}
             </select>
-            {learner && <div className="lock-msg">🔒 Locked at 1%. {LOCK_MSG}</div>}
+            {riskLocked
+              ? <div className="lock-msg">🔒 Locked at {sop.risk}. You chose this when you saved your SOP. To change it, switch to trader mode.</div>
+              : learner ? <div className="hint-msg">Pick up to 3%. Locks once you save your SOP.</div> : null}
           </div>
           <div className="field">
             <label>Max trades per day</label>
-            <select value={learner ? "2" : sop.max_trades} disabled={learner} onChange={(e) => onChange({ ...sop, max_trades: e.target.value })}>
-              {(learner ? ["2"] : ["1", "2", "3", "5", "No limit"]).map((v) => (
-                <option key={v}>{v}</option>
-              ))}
+            <select value={sop.max_trades} disabled={riskLocked} onChange={(e) => onChange({ ...sop, max_trades: e.target.value })}>
+              {(learner ? ["1", "2", "3", "5"] : ["1", "2", "3", "5", "No limit"]).map((v) => <option key={v}>{v}</option>)}
             </select>
-            {learner && <div className="lock-msg">🔒 Locked at 2. {LOCK_MSG}</div>}
+            {riskLocked
+              ? <div className="lock-msg">🔒 Locked at {sop.max_trades}. You chose this when you saved your SOP. To change it, switch to trader mode.</div>
+              : learner ? <div className="hint-msg">Up to 5 trades per day. Locks once you save.</div> : null}
           </div>
           <div className="field">
             <label>Daily loss limit</label>
-            <select value={learner ? "2%" : sop.drawdown} disabled={learner} onChange={(e) => onChange({ ...sop, drawdown: e.target.value })}>
-              {(learner ? ["2%"] : ["2%", "3%", "5%"]).map((v) => (
-                <option key={v}>{v}</option>
-              ))}
+            <select value={sop.drawdown} disabled={riskLocked} onChange={(e) => onChange({ ...sop, drawdown: e.target.value })}>
+              {["2%", "3%", "5%"].map((v) => <option key={v}>{v}</option>)}
             </select>
-            {learner && <div className="lock-msg">🔒 Capped at 2%. {LOCK_MSG}</div>}
+            {riskLocked
+              ? <div className="lock-msg">🔒 Locked at {sop.drawdown}. You chose this when you saved your SOP. To change it, switch to trader mode.</div>
+              : learner ? <div className="hint-msg">Pick up to 5%. Locks once you save.</div> : null}
           </div>
         </div>
       </div>

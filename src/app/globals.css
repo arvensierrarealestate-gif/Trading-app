@@ -666,6 +666,7 @@ body::before {
 .ct-prot { background: rgba(0,212,170,0.12); color: var(--accent); }
 
 .lock-msg { font-size: 10px; color: var(--text3); margin-top: 6px; line-height: 1.5; }
+.hint-msg { font-size: 10px; color: var(--accent); margin-top: 6px; line-height: 1.5; }
 
 .edu-banner {
   display: flex;

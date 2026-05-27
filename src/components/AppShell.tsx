@@ -134,6 +134,7 @@ export default function AppShell({
               <Stage1Sop
                 sop={sop}
                 mode={mode}
+                sopSaved={sopSaved}
                 onChange={setSop}
                 onSaved={() => {
                   setSopSaved(true);
@@ -282,6 +283,7 @@ export default function AppShell({
         <Stage1Sop
           sop={sop}
           mode={mode}
+          sopSaved={sopSaved}
           onChange={setSop}
           onSaved={() => {
             setSopSaved(true);
