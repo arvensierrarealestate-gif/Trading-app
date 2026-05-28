@@ -8,6 +8,7 @@ import TickerCard from "./TickerCard";
 import PositionSizer from "./PositionSizer";
 import TermTip from "./TermTip";
 import { errorMessage } from "@/lib/errors";
+import { getStrategy } from "@/lib/strategies";
 
 type LogLine = { kind: "ai" | "ok" | "err" | "tool"; msg: string };
 
@@ -71,12 +72,25 @@ export default function Stage2Paper({
   const [reco, setReco] = useState<{ stop_loss_price: number; support_basis: string; drop_pct: number } | null>(null);
   const [recoBusy, setRecoBusy] = useState(false);
   const [showEdu, setShowEdu] = useState(false);
+  const [hintCollapsed, setHintCollapsed] = useState(false);
 
   useEffect(() => {
     if (learner && typeof window !== "undefined" && !localStorage.getItem("tr_stoploss_edu_seen")) {
       setShowEdu(true);
     }
+    if (typeof window !== "undefined" && localStorage.getItem("dismissed_sop_hint") === "1") {
+      setHintCollapsed(true);
+    }
   }, [learner]);
+
+  function collapseHint() {
+    setHintCollapsed(true);
+    try {
+      localStorage.setItem("dismissed_sop_hint", "1");
+    } catch {
+      /* ignore */
+    }
+  }
 
   function dismissEdu() {
     setShowEdu(false);
@@ -257,8 +271,28 @@ export default function Stage2Paper({
   const comp = n ? Math.round((eligible.filter((t) => t.verdict === "SOP followed").length / n) * 100) : 0;
   const ready = n >= 5 && avg >= 70;
 
+  const stratLabel = getStrategy(sop.strategy_type ?? "custom")?.name ?? "Custom";
+
   return (
     <>
+      <div className="sop-hint">
+        {hintCollapsed ? (
+          <button type="button" className="sop-hint-collapsed" onClick={() => setHintCollapsed(false)}>
+            Using {stratLabel} strategy · tap to expand
+          </button>
+        ) : (
+          <div className="sop-hint-expanded">
+            <div className="sop-hint-text">
+              Your current SOP uses the <strong>{stratLabel}</strong> strategy. Trades you log here are graded
+              against these saved rules — keep trading your plan and watch how it performs over your 5 paper trades.
+            </div>
+            <button type="button" className="sop-hint-chevron" onClick={collapseHint} aria-label="Collapse this hint">
+              ⌄
+            </button>
+          </div>
+        )}
+      </div>
+
       {learner && showEdu && (
         <div className="edu-banner">
           <div className="edu-banner-body">

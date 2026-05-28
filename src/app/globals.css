@@ -1293,3 +1293,63 @@ body::before {
 }
 
 .theme-err { font-size: 11px; color: var(--red); padding: 8px 10px; line-height: 1.4; }
+
+/* ─────────────────────────── SOP review gate ─────────────────────────── */
+.sop-review-card { border-color: rgba(0,212,170,0.3); }
+.sop-review-title { font-family: var(--display); font-weight: 800; font-size: 18px; margin-bottom: 12px; }
+.sop-review-meta { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--text2); margin-bottom: 16px; }
+.sop-review-meta strong { color: var(--text); }
+.sop-review-q { font-size: 13px; color: var(--text); margin-bottom: 14px; }
+.sop-review-actions { display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
+.sop-review-actions .btn { justify-content: center; }
+
+/* Button variants for the three differentiated options */
+.btn.outline-teal { background: transparent; border-color: var(--accent); color: var(--accent); }
+.btn.outline-teal:hover { background: rgba(0,212,170,0.08); }
+.btn.outline-gray { background: transparent; border-color: var(--border2); color: var(--text2); }
+.btn.outline-gray:hover { background: var(--bg2); color: var(--text); }
+
+/* ─────────────────────────── Picker disclaimer + confirm dialog ─────────────────────────── */
+.picker-disclaimer {
+  background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.35);
+  color: var(--amber); border-radius: 10px; padding: 11px 14px;
+  font-size: 12px; line-height: 1.6;
+}
+.picker-foot { display: flex; gap: 10px; justify-content: flex-end; }
+.confirm-card {
+  background: var(--bg1); border: 1px solid var(--border2); border-radius: 14px;
+  padding: 22px; max-width: 460px; margin: 0 auto;
+}
+.confirm-card.warn { border-color: rgba(245,158,11,0.45); }
+.confirm-title { font-family: var(--display); font-weight: 700; font-size: 16px; margin-bottom: 10px; }
+.confirm-card.warn .confirm-title { color: var(--amber); }
+.confirm-body { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 18px; }
+.confirm-card.warn .confirm-body { color: var(--amber); }
+.confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ─────────────────────────── Stage 2 SOP hint ─────────────────────────── */
+.sop-hint { margin-bottom: 16px; }
+.sop-hint-expanded {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: var(--bg1); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+  border-radius: 10px; padding: 12px 14px;
+}
+.sop-hint-text { font-size: 12px; color: var(--text2); line-height: 1.6; flex: 1; }
+.sop-hint-text strong { color: var(--text); }
+.sop-hint-chevron {
+  background: transparent; border: none; color: var(--text3); cursor: pointer;
+  font-size: 18px; line-height: 1; padding: 0 2px;
+}
+.sop-hint-chevron:hover { color: var(--text); }
+.sop-hint-collapsed {
+  width: 100%; text-align: left; background: var(--bg1); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px; color: var(--text3); font-size: 12px;
+  font-family: var(--mono); cursor: pointer;
+}
+.sop-hint-collapsed:hover { color: var(--text2); border-color: var(--border2); }
+
+/* ─────────────────────────── Settings SOP summary ─────────────────────────── */
+.strategy-badge {
+  font-size: 11px; padding: 2px 9px; border-radius: 100px; border: 1px solid; font-weight: 600;
+}
+.sop-summary-rules { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }

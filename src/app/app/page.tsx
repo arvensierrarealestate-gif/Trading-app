@@ -54,6 +54,7 @@ export default async function AppPage() {
         strategy_type: sopRow.strategy_type ?? "custom",
       }
     : null;
+  const sopUpdatedAt: string | null = sopRow?.updated_at ?? null;
 
   const trades: Trade[] = (tradesRes.data ?? []).map((row) => ({
     id: row.id,
@@ -79,6 +80,7 @@ export default async function AppPage() {
       email={user.email ?? ""}
       initialSop={sop ?? SOP_DEFAULTS}
       hasSavedSop={!!sop}
+      initialSopUpdatedAt={sopUpdatedAt}
       initialTrades={trades}
       initialManualChecks={manualChecks}
       initialMode={initialMode}

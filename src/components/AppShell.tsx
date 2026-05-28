@@ -21,12 +21,14 @@ import Stage1Sop from "./Stage1Sop";
 import Stage2Paper from "./Stage2Paper";
 import Stage3GoLive from "./Stage3GoLive";
 import StrategyPicker from "./StrategyPicker";
+import SopReviewGate from "./SopReviewGate";
 import { getStrategy, type StrategyId } from "@/lib/strategies";
 
 type Props = {
   email: string;
   initialSop: SOP;
   hasSavedSop: boolean;
+  initialSopUpdatedAt: string | null;
   initialTrades: Trade[];
   initialManualChecks: boolean[];
   initialMode: TradingMode | null;
@@ -34,6 +36,8 @@ type Props = {
   initialStats: TraderStats | null;
   initialTheme: ThemeId;
 };
+
+type Stage1Mode = "review" | "form" | "picker";
 
 export default function AppShell(props: Props) {
   return (
@@ -47,6 +51,7 @@ function AppShellInner({
   email,
   initialSop,
   hasSavedSop,
+  initialSopUpdatedAt,
   initialTrades,
   initialManualChecks,
   initialMode,
@@ -71,19 +76,75 @@ function AppShellInner({
   const [theme, setTheme] = useState<ThemeId>(initialTheme);
   const [view, setView] = useState<DashView>("home");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  // Learner-only: show the StrategyPicker before the SOP form on first visit.
-  const [showStrategyPicker, setShowStrategyPicker] = useState(initialMode === "learner" && !hasSavedSop);
+  const [sopUpdatedAt] = useState<string | null>(initialSopUpdatedAt);
+  const [presetJustApplied, setPresetJustApplied] = useState(false);
+  // Stage 1 entry: returning learners with a saved SOP land on the review gate;
+  // brand-new learners on the picker; traders go straight to the form.
+  const [stage1Mode, setStage1Mode] = useState<Stage1Mode>(
+    initialMode === "learner" ? (hasSavedSop ? "review" : "picker") : "form",
+  );
 
   function applyStrategy(id: StrategyId) {
     const tpl = getStrategy(id);
     if (!tpl) return;
     if (tpl.defaults) {
       setSop({ ...tpl.defaults, strategy_type: id });
+      setPresetJustApplied(true);
     } else {
       // "Build my own" — keep current sop values, just mark strategy_type=custom.
       setSop({ ...sop, strategy_type: "custom" });
+      setPresetJustApplied(false);
     }
-    setShowStrategyPicker(false);
+    setStage1Mode("form");
+  }
+
+  // Open Stage 1 on the review gate (used by the Settings "Edit SOP" button).
+  function openSopReview() {
+    setStage1Mode(sopSaved ? "review" : "picker");
+    setPresetJustApplied(false);
+    setView("stage1");
+    setStage(0);
+  }
+
+  // Stage 1 has three faces: the review gate (returning users), the strategy
+  // picker, and the SOP form. Shared between the learner and trader shells.
+  function renderStage1(m: TradingMode, onSaved: () => void, goStage2: () => void) {
+    if (stage1Mode === "review") {
+      return (
+        <SopReviewGate
+          sop={sop}
+          updatedAt={sopUpdatedAt}
+          onContinue={goStage2}
+          onReview={() => {
+            setPresetJustApplied(false);
+            setStage1Mode("form");
+          }}
+          onSwitchPreset={() => setStage1Mode("picker")}
+        />
+      );
+    }
+    if (stage1Mode === "picker") {
+      return (
+        <StrategyPicker
+          initial={sop.strategy_type as StrategyId | undefined}
+          hasSavedSop={sopSaved}
+          onContinue={applyStrategy}
+          onCancel={sopSaved ? () => setStage1Mode("review") : undefined}
+        />
+      );
+    }
+    return (
+      <Stage1Sop
+        sop={sop}
+        mode={m}
+        sopSaved={sopSaved}
+        onChange={setSop}
+        onSaved={onSaved}
+        onSwitchStrategy={m === "learner" ? () => setStage1Mode("picker") : undefined}
+        saveLabel={sopSaved ? "Update my SOP" : undefined}
+        presetJustApplied={presetJustApplied}
+      />
+    );
   }
 
   useEffect(() => {
@@ -173,25 +234,16 @@ function AppShellInner({
               <>
             {view === "home" && <HomeDashboard sop={sop} />}
             {view === "brief" && <MorningBrief sop={sop} mode={mode} stats={traderStats} />}
-            {view === "stage1" && (
-              showStrategyPicker ? (
-                <StrategyPicker
-                  initial={sop.strategy_type as StrategyId | undefined}
-                  onContinue={(id) => applyStrategy(id)}
-                />
-              ) : (
-                <Stage1Sop
-                  sop={sop}
-                  mode={mode}
-                  sopSaved={sopSaved}
-                  onChange={setSop}
-                  onSaved={() => {
-                    setSopSaved(true);
-                    router.refresh();
-                  }}
-                />
-              )
-            )}
+            {view === "stage1" &&
+              renderStage1(
+                mode,
+                () => {
+                  setSopSaved(true);
+                  setPresetJustApplied(false);
+                  router.refresh();
+                },
+                () => setView("stage2"),
+              )}
             {view === "stage2" && (
               <Stage2Paper
                 sop={sop}
@@ -220,6 +272,10 @@ function AppShellInner({
                 theme={theme}
                 onTheme={setTheme}
                 mode={mode}
+                sop={sop}
+                sopSaved={sopSaved}
+                sopUpdatedAt={sopUpdatedAt}
+                onEditSop={openSopReview}
                 onSwitchMode={() => setSwitchingMode(true)}
                 onSignOut={signOut}
               />
@@ -342,24 +398,15 @@ function AppShellInner({
       </div>
 
       <div className={`stage-panel ${stage === 0 ? "active" : ""}`}>
-        {showStrategyPicker ? (
-          <StrategyPicker
-            initial={sop.strategy_type as StrategyId | undefined}
-            onContinue={(id) => applyStrategy(id)}
-          />
-        ) : (
-          <Stage1Sop
-            sop={sop}
-            mode={mode}
-            sopSaved={sopSaved}
-            onChange={setSop}
-            onSaved={() => {
-              setSopSaved(true);
-              setStage(1);
-              router.refresh();
-            }}
-            onSwitchStrategy={mode === "learner" ? () => setShowStrategyPicker(true) : undefined}
-          />
+        {renderStage1(
+          mode,
+          () => {
+            setSopSaved(true);
+            setPresetJustApplied(false);
+            setStage(1);
+            router.refresh();
+          },
+          () => setStage(1),
         )}
       </div>
 

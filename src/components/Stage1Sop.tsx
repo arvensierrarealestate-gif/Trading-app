@@ -25,6 +25,8 @@ export default function Stage1Sop({
   onChange,
   onSaved,
   onSwitchStrategy,
+  saveLabel,
+  presetJustApplied,
 }: {
   sop: SOP;
   mode: TradingMode;
@@ -32,6 +34,8 @@ export default function Stage1Sop({
   onChange: (next: SOP) => void;
   onSaved: () => void;
   onSwitchStrategy?: () => void;
+  saveLabel?: string;
+  presetJustApplied?: boolean;
 }) {
   const supabase = useMemo(() => createClient(), []);
   const [saving, setSaving] = useState(false);
@@ -111,8 +115,17 @@ export default function Stage1Sop({
       {hasTemplate && strategy && (
         <div className="strategy-banner">
           <div className="strategy-banner-text">
-            Your SOP has been pre-filled with the <strong>{strategy.name}</strong> strategy settings.
-            Review each section and save when ready.
+            {presetJustApplied ? (
+              <>
+                This SOP was pre-filled using the <strong>{strategy.name}</strong> preset strategy.
+                All values are fully editable — adjust anything to match your personal style before saving.
+              </>
+            ) : (
+              <>
+                Your SOP has been pre-filled with the <strong>{strategy.name}</strong> strategy settings.
+                Review each section and save when ready.
+              </>
+            )}
           </div>
           {onSwitchStrategy && (
             <button type="button" className="strategy-switch-link" onClick={onSwitchStrategy}>
@@ -301,7 +314,7 @@ export default function Stage1Sop({
         <span className="btn-hint">Your SOP will be used by AI to grade every paper trade</span>
         {err && <span className="btn-hint" style={{ color: "var(--red)", flex: "initial" }}>{err}</span>}
         <button className="btn primary" onClick={save} disabled={saving}>
-          {saving ? "Saving…" : "Save SOP & unlock stage 2 →"}
+          {saving ? "Saving…" : (saveLabel ?? "Save SOP & unlock stage 2 →")}
         </button>
       </div>
     </div>
