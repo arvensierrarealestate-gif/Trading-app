@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
@@ -14,6 +14,45 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<{ kind: "ok" | "err"; msg: string } | null>(null);
   const [pending, setPending] = useState(false);
+
+  // Catch implicit-flow tokens an email confirmation link can drop in the URL
+  // fragment (#access_token=...). Set the session, scrub the URL so the token
+  // never lingers, then continue into the app. Also surfaces ?error=auth_failed
+  // bounced back from the server callback.
+  useEffect(() => {
+    const { hash, search } = window.location;
+
+    if (new URLSearchParams(search).get("error") === "auth_failed") {
+      setStatus({ kind: "err", msg: "That sign-in link was invalid or expired. Please sign in again." });
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+
+    if (!hash || !hash.includes("access_token")) return;
+    const params = new URLSearchParams(hash.slice(1));
+    const errorDesc = params.get("error_description");
+    if (errorDesc) {
+      setStatus({ kind: "err", msg: errorDesc.replace(/\+/g, " ") });
+      window.history.replaceState(null, "", window.location.pathname);
+      return;
+    }
+    const access_token = params.get("access_token");
+    const refresh_token = params.get("refresh_token");
+    if (!access_token || !refresh_token) return;
+
+    setPending(true);
+    createClient()
+      .auth.setSession({ access_token, refresh_token })
+      .then(({ error }) => {
+        window.history.replaceState(null, "", window.location.pathname);
+        if (error) {
+          setStatus({ kind: "err", msg: error.message });
+          setPending(false);
+        } else {
+          router.replace("/app");
+          router.refresh();
+        }
+      });
+  }, [router]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
