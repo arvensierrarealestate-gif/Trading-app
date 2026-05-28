@@ -2,13 +2,12 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { checkDailyLimit } from "@/lib/rate-limit";
-import type { SOP, Grade } from "@/lib/types";
+import { gradeSchema, parseBody } from "@/lib/schemas";
+import type { Grade } from "@/lib/types";
 
 export const runtime = "nodejs";
 
 const MODEL = "claude-opus-4-7";
-const ALLOWED_MEDIA = ["image/png", "image/jpeg", "image/gif", "image/webp"] as const;
-const MAX_IMAGE_B64 = 7_000_000; // ~5 MB decoded, Anthropic's per-image cap
 
 const SYSTEM = `You are a strict but supportive trading coach. Grade whether this paper trade followed the trader's own SOP rules. Read the chart carefully and be specific about what you actually see — price action, indicators, structure. Score 0-100 (0 = ignored the SOP entirely, 100 = textbook adherence). The verdict must reflect the score: "SOP followed" for strong adherence, "Partial" for mixed, "SOP violated" for poor adherence. For each rule check, "pass" means clearly met, "warn" means ambiguous or partially met, "fail" means clearly not met.`;
 
@@ -75,32 +74,6 @@ function buildSchema(withProtection: boolean) {
   return base;
 }
 
-type ImageInput = { data: string; media_type: (typeof ALLOWED_MEDIA)[number] };
-type Body = {
-  sop: SOP;
-  asset: string;
-  dir: string;
-  outcome: string;
-  entry?: string;
-  exit?: string;
-  stop_loss?: string;
-  chart: ImageInput;
-  news?: ImageInput | null;
-  current_regime?: string | null;
-  mode?: "learner" | "trader";
-};
-
-function imageError(img: unknown, label: string): string | null {
-  if (typeof img !== "object" || img === null) return `${label} is malformed`;
-  const { data, media_type } = img as Partial<ImageInput>;
-  if (typeof data !== "string" || !data) return `${label} is missing image data`;
-  if (!ALLOWED_MEDIA.includes(media_type as (typeof ALLOWED_MEDIA)[number])) {
-    return `${label} must be PNG, JPEG, GIF, or WebP`;
-  }
-  if (data.length > MAX_IMAGE_B64) return `${label} is too large (max ~5 MB)`;
-  return null;
-}
-
 export async function POST(req: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -109,16 +82,9 @@ export async function POST(req: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
 
-  const body = (await req.json().catch(() => null)) as Body | null;
-  if (!body || typeof body.sop !== "object" || body.sop === null) {
-    return NextResponse.json({ error: "Missing SOP" }, { status: 400 });
-  }
-  const chartErr = imageError(body.chart, "Chart");
-  if (chartErr) return NextResponse.json({ error: chartErr }, { status: 400 });
-  if (body.news) {
-    const newsErr = imageError(body.news, "News image");
-    if (newsErr) return NextResponse.json({ error: newsErr }, { status: 400 });
-  }
+  const parsed = parseBody(gradeSchema, await req.json().catch(() => null));
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const body = parsed.data;
 
   // Per-user daily cost guard.
   const limit = await checkDailyLimit(supabase, user.id, "grade");

@@ -2,12 +2,11 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { checkDailyLimit } from "@/lib/rate-limit";
+import { recommendStopSchema, parseBody } from "@/lib/schemas";
 
 export const runtime = "nodejs";
 
 const MODEL = "claude-opus-4-7";
-const ALLOWED_MEDIA = ["image/png", "image/jpeg", "image/gif", "image/webp"] as const;
-const MAX_IMAGE_B64 = 7_000_000;
 
 const SYSTEM =
   "You are a careful trading-safety assistant for a beginner. Read the price chart and recommend a single protective stop-loss price placed just beyond the nearest meaningful support (for a long) or resistance (for a short) visible on the chart. Explain it in plain, encouraging English with no jargon. Return ONLY the structured object.";
@@ -24,9 +23,6 @@ const SCHEMA = {
   required: ["stop_loss_price", "direction", "support_basis", "drop_pct"],
 } as const;
 
-type ImageInput = { data: string; media_type: (typeof ALLOWED_MEDIA)[number] };
-type Body = { chart: ImageInput; asset?: string; dir?: string; entry?: string };
-
 export async function POST(req: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -38,14 +34,10 @@ export async function POST(req: Request) {
   const limit = await checkDailyLimit(supabase, user.id, "recommend");
   if (!limit.ok) return NextResponse.json({ error: limit.message }, { status: 429 });
 
-  const body = (await req.json().catch(() => null)) as Body | null;
-  const img = body?.chart;
-  if (!img || typeof img.data !== "string" || !img.data) {
-    return NextResponse.json({ error: "Chart image required" }, { status: 400 });
-  }
-  if (!ALLOWED_MEDIA.includes(img.media_type) || img.data.length > MAX_IMAGE_B64) {
-    return NextResponse.json({ error: "Invalid or oversized image" }, { status: 400 });
-  }
+  const parsed = parseBody(recommendStopSchema, await req.json().catch(() => null));
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const body = parsed.data;
+  const img = body.chart;
 
   const anthropic = new Anthropic({ apiKey });
   let message: Anthropic.Messages.Message;
@@ -61,7 +53,7 @@ export async function POST(req: Request) {
           content: [
             {
               type: "text",
-              text: `Recommend a protective stop loss.\nAsset: ${body?.asset || "unknown"}, Direction: ${body?.dir || "long"}, Planned entry: ${body?.entry || "unknown"}.`,
+              text: `Recommend a protective stop loss.\nAsset: ${body.asset || "unknown"}, Direction: ${body.dir || "long"}, Planned entry: ${body.entry || "unknown"}.`,
             },
             { type: "image", source: { type: "base64", media_type: img.media_type, data: img.data } },
           ],

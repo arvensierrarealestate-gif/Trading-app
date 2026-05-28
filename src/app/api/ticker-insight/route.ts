@@ -2,23 +2,12 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { checkDailyLimit } from "@/lib/rate-limit";
+import { tickerInsightSchema, parseBody } from "@/lib/schemas";
 import { aggressionLabel } from "@/lib/ticker";
 
 export const runtime = "nodejs";
 
 const MODEL = "claude-opus-4-7";
-
-type Body = {
-  symbol?: string;
-  aggression_score?: number;
-  atr_pct?: number;
-  beta?: number;
-  scalp_suitable?: boolean;
-  swing_suitable?: boolean;
-  sop?: { regimes?: string; tf?: string; assets?: string };
-  stats?: { win_rate?: number | null; max_single_loss?: number | null; primary_assets?: string | null } | null;
-  regime?: string | null;
-};
 
 export async function POST(req: Request) {
   const supabase = await createClient();
@@ -31,8 +20,9 @@ export async function POST(req: Request) {
   const limit = await checkDailyLimit(supabase, user.id, "insight");
   if (!limit.ok) return NextResponse.json({ error: limit.message }, { status: 429 });
 
-  const b = (await req.json().catch(() => null)) as Body | null;
-  if (!b?.symbol) return NextResponse.json({ error: "Symbol required" }, { status: 400 });
+  const parsed = parseBody(tickerInsightSchema, await req.json().catch(() => null));
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const b = parsed.data;
 
   const prompt = `Write a two-sentence, technical, no-fluff insight for an experienced trader about ${b.symbol} today. Use these facts and personalize to the trader's profile. Do not invent options data.
 Ticker (price-derived): aggression ${b.aggression_score}/10 (${aggressionLabel(b.aggression_score ?? 5)}), ATR ${b.atr_pct}% of price, beta ${b.beta}, scalp-suitable ${b.scalp_suitable}, swing-suitable ${b.swing_suitable}.

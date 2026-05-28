@@ -2,12 +2,11 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { checkDailyLimit } from "@/lib/rate-limit";
+import { verifyTradesSchema, parseBody } from "@/lib/schemas";
 
 export const runtime = "nodejs";
 
 const MODEL = "claude-opus-4-7";
-const MAX_FILES = 8;
-const MAX_B64 = 8_000_000; // ~6MB per file
 const MAX_TEXT = 200_000;
 
 const SYSTEM =
@@ -42,10 +41,6 @@ const SCHEMA = {
   ],
 } as const;
 
-type UploadFile =
-  | { kind: "pdf"; name: string; data: string }
-  | { kind: "image"; name: string; media_type: "image/png" | "image/jpeg" | "image/gif" | "image/webp"; data: string }
-  | { kind: "csv"; name: string; text: string };
 
 export async function POST(req: Request) {
   const supabase = await createClient();
@@ -58,10 +53,9 @@ export async function POST(req: Request) {
   const limit = await checkDailyLimit(supabase, user.id, "verify");
   if (!limit.ok) return NextResponse.json({ error: limit.message }, { status: 429 });
 
-  const body = (await req.json().catch(() => null)) as { files?: UploadFile[] } | null;
-  const files = body?.files ?? [];
-  if (!files.length) return NextResponse.json({ error: "Upload at least one file" }, { status: 400 });
-  if (files.length > MAX_FILES) return NextResponse.json({ error: `Max ${MAX_FILES} files` }, { status: 400 });
+  const parsed = parseBody(verifyTradesSchema, await req.json().catch(() => null));
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
+  const files = parsed.data.files;
 
   const content: Anthropic.Messages.ContentBlockParam[] = [
     {
@@ -71,14 +65,11 @@ export async function POST(req: Request) {
   ];
   for (const f of files) {
     if (f.kind === "pdf") {
-      if (!f.data || f.data.length > MAX_B64) return NextResponse.json({ error: `PDF ${f.name} missing or too large` }, { status: 400 });
       content.push({ type: "document", source: { type: "base64", media_type: "application/pdf", data: f.data } });
     } else if (f.kind === "image") {
-      if (!f.data || f.data.length > MAX_B64) return NextResponse.json({ error: `Image ${f.name} missing or too large` }, { status: 400 });
       content.push({ type: "image", source: { type: "base64", media_type: f.media_type, data: f.data } });
     } else if (f.kind === "csv") {
-      const text = (f.text ?? "").slice(0, MAX_TEXT);
-      content.push({ type: "text", text: `CSV file "${f.name}":\n${text}` });
+      content.push({ type: "text", text: `CSV file "${f.name}":\n${f.text.slice(0, MAX_TEXT)}` });
     }
   }
 
