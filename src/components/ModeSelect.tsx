@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { errorMessage } from "@/lib/errors";
 import type { TradingMode } from "@/lib/types";
 
 const OPTIONS: { mode: TradingMode; title: string; tagline: string; points: string[] }[] = [
@@ -52,7 +53,7 @@ export default function ModeSelect({
       if (error) throw error;
       onChosen(mode);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Could not save mode");
+      setErr(errorMessage(e, "Could not save mode"));
       setSaving(null);
     }
   }

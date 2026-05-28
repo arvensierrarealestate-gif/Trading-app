@@ -9,6 +9,7 @@ import {
   type RegimeResponse,
 } from "@/lib/regime";
 import type { TradingMode } from "@/lib/types";
+import { errorMessage } from "@/lib/errors";
 
 const PLAIN: Record<Regime, string> = {
   crash: "Falling sharply — high risk right now",
@@ -45,7 +46,7 @@ export default function RegimeTab({
         onRegime(json.current.regime);
       }
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Network error");
+      setErr(errorMessage(e, "Network error"));
       onRegime(null);
     } finally {
       setLoading(false);

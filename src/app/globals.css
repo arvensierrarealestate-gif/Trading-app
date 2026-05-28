@@ -1291,3 +1291,5 @@ body::before {
   font-size: 10px; color: var(--amber); margin-top: 6px; line-height: 1.5;
   display: flex; align-items: center; gap: 5px;
 }
+
+.theme-err { font-size: 11px; color: var(--red); padding: 8px 10px; line-height: 1.4; }

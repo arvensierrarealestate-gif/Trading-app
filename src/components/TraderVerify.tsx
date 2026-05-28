@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { errorMessage } from "@/lib/errors";
 import type { TraderStats } from "@/lib/types";
 
 type ExtractedStats = TraderStats & { confidence?: string; summary?: string };
@@ -36,12 +37,6 @@ export default function TraderVerify({ onVerified }: { onVerified: (s: TraderSta
   const [saving, setSaving] = useState(false);
   const [skipping, setSkipping] = useState(false);
 
-  function errorMessage(e: unknown): string {
-    if (e instanceof Error) return e.message;
-    if (typeof e === "object" && e !== null && "message" in e) return String((e as { message: unknown }).message);
-    return "Could not save verification";
-  }
-
   async function analyze() {
     if (!files.length) return;
     setBusy(true);
@@ -68,7 +63,7 @@ export default function TraderVerify({ onVerified }: { onVerified: (s: TraderSta
       if (!res.ok) setErr(json.error || "Could not read your files");
       else setStats(json.stats);
     } catch (e) {
-      setErr(e instanceof Error ? e.message : "Upload failed");
+      setErr(errorMessage(e, "Upload failed"));
     } finally {
       setBusy(false);
     }

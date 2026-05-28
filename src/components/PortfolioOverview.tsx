@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PortfolioChart from "./PortfolioChart";
+import { errorMessage } from "@/lib/errors";
 
 type Range = "LIVE" | "1D" | "1W" | "1M" | "3M" | "YTD" | "1Y" | "ALL";
 const RANGES: Range[] = ["LIVE", "1D", "1W", "1M", "3M", "YTD", "1Y", "ALL"];
@@ -49,7 +50,7 @@ export default function PortfolioOverview() {
           setHistory(j.history);
         }
       } catch (e) {
-        if (!cancelled) setErr(e instanceof Error ? e.message : "Network error");
+        if (!cancelled) setErr(errorMessage(e, "Network error"));
       } finally {
         if (!cancelled) setLoading(false);
       }

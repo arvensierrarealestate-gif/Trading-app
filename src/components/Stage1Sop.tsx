@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { SOP, TradingMode } from "@/lib/types";
 import { CRITICAL_FIELDS, getStrategy } from "@/lib/strategies";
+import { errorMessage } from "@/lib/errors";
 import TermTip from "./TermTip";
 import FieldInfo from "./FieldInfo";
 
@@ -91,10 +92,7 @@ export default function Stage1Sop({
       if (error) throw error;
       onSaved();
     } catch (e) {
-      const msg = e instanceof Error ? e.message
-        : typeof e === "object" && e !== null && "message" in e ? String((e as { message: unknown }).message)
-        : "Save failed";
-      setErr(msg);
+      setErr(errorMessage(e, "Save failed"));
     } finally {
       setSaving(false);
     }

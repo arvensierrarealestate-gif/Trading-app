@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { GL_ITEMS, LEARNER_PROTECTION_ITEM } from "@/lib/types";
 import type { Trade, TradingMode } from "@/lib/types";
+import { errorMessage } from "@/lib/errors";
 
 type AlpacaAccount = {
   account_number: string;
@@ -101,6 +102,7 @@ export default function Stage3GoLive({
   const [confirming, setConfirming] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ kind: "ok" | "err"; msg: string } | null>(null);
+  const [checkErr, setCheckErr] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -112,7 +114,7 @@ export default function Stage3GoLive({
         if (!res.ok) setAcctErr(json.error || "Alpaca request failed");
         else setAccount(json.account);
       } catch (e) {
-        if (!cancelled) setAcctErr(e instanceof Error ? e.message : "Network error");
+        if (!cancelled) setAcctErr(errorMessage(e, "Network error"));
       } finally {
         if (!cancelled) setAcctLoading(false);
       }
@@ -132,7 +134,7 @@ export default function Stage3GoLive({
         setOrdersErr(null);
       }
     } catch (e) {
-      setOrdersErr(e instanceof Error ? e.message : "Network error");
+      setOrdersErr(errorMessage(e, "Network error"));
     }
   }, []);
 
@@ -146,7 +148,7 @@ export default function Stage3GoLive({
         setPosErr(null);
       }
     } catch (e) {
-      setPosErr(e instanceof Error ? e.message : "Network error");
+      setPosErr(errorMessage(e, "Network error"));
     }
   }, []);
 
@@ -185,13 +187,18 @@ export default function Stage3GoLive({
     const next = manualChecks.slice();
     next[idx] = !next[idx];
     onManualChecksChange(next);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase.from("go_live_checks").upsert({
+    setCheckErr(null);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not signed in");
+      const { error } = await supabase.from("go_live_checks").upsert({
         user_id: user.id,
         manual_checks: next,
         updated_at: new Date().toISOString(),
       });
+      if (error) throw error;
+    } catch (e) {
+      setCheckErr(errorMessage(e, "Could not save your checklist"));
     }
   }
 
@@ -233,7 +240,7 @@ export default function Stage3GoLive({
         loadPositions();
       }
     } catch (e) {
-      setResult({ kind: "err", msg: e instanceof Error ? e.message : "Network error" });
+      setResult({ kind: "err", msg: errorMessage(e, "Network error") });
     } finally {
       setSubmitting(false);
       setConfirming(false);
@@ -251,7 +258,7 @@ export default function Stage3GoLive({
         loadOrders();
       }
     } catch (e) {
-      setResult({ kind: "err", msg: e instanceof Error ? e.message : "Network error" });
+      setResult({ kind: "err", msg: errorMessage(e, "Network error") });
     } finally {
       setCancelingId(null);
     }
@@ -270,7 +277,7 @@ export default function Stage3GoLive({
         loadOrders();
       }
     } catch (e) {
-      setResult({ kind: "err", msg: e instanceof Error ? e.message : "Network error" });
+      setResult({ kind: "err", msg: errorMessage(e, "Network error") });
     } finally {
       setClosingBusy(false);
       setClosing(null);
@@ -301,6 +308,8 @@ export default function Stage3GoLive({
             );
           })}
         </div>
+
+        {checkErr && <div className="auth-msg err" style={{ margin: "0 20px 16px" }}>Checklist not saved: {checkErr}</div>}
 
         <div className="verdict-bar">
           <div className={`verdict-pill ${allPassed ? "execute" : "pending"}`}>

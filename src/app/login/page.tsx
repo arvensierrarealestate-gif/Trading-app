@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { errorMessage } from "@/lib/errors";
 
 type Mode = "signin" | "signup";
 
@@ -84,7 +85,7 @@ export default function LoginPage() {
         router.refresh();
       }
     } catch (err) {
-      setStatus({ kind: "err", msg: err instanceof Error ? err.message : "Authentication failed" });
+      setStatus({ kind: "err", msg: errorMessage(err, "Authentication failed") });
     } finally {
       setPending(false);
     }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { aggressionColor, aggressionLabel, type TickerMetrics } from "@/lib/ticker";
+import { errorMessage } from "@/lib/errors";
 import type { SOP, TraderStats } from "@/lib/types";
 
 export default function TickerCard({
@@ -63,7 +64,7 @@ export default function TickerCard({
           .then((j) => !cancelled && setInsight(j.insight || null))
           .catch(() => {});
       } catch (e) {
-        if (!cancelled) setErr(e instanceof Error ? e.message : "Network error");
+        if (!cancelled) setErr(errorMessage(e, "Network error"));
       } finally {
         if (!cancelled) setLoading(false);
       }

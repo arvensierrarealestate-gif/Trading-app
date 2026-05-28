@@ -7,6 +7,7 @@ import type { Regime } from "@/lib/regime";
 import TickerCard from "./TickerCard";
 import PositionSizer from "./PositionSizer";
 import TermTip from "./TermTip";
+import { errorMessage } from "@/lib/errors";
 
 type LogLine = { kind: "ai" | "ok" | "err" | "tool"; msg: string };
 
@@ -222,7 +223,7 @@ export default function Stage2Paper({
           .select()
           .single();
         if (error) {
-          addLog({ kind: "err", msg: `Saved locally only: ${error.message}` });
+          addLog({ kind: "err", msg: `Saved locally only — database error: ${errorMessage(error)}` });
         } else if (inserted) {
           onTradeAdded({
             id: inserted.id,
@@ -243,7 +244,7 @@ export default function Stage2Paper({
         }
       }
     } catch (e) {
-      addLog({ kind: "err", msg: e instanceof Error ? e.message : "Network error" });
+      addLog({ kind: "err", msg: errorMessage(e, "Could not grade or save this trade") });
     } finally {
       setGrading(false);
     }
