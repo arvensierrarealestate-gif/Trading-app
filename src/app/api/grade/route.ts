@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { checkDailyLimit } from "@/lib/rate-limit";
 import type { SOP, Grade } from "@/lib/types";
 
 export const runtime = "nodejs";
 
 const MODEL = "claude-opus-4-7";
-const DAILY_LIMIT = Number(process.env.GRADE_DAILY_LIMIT ?? "50");
 const ALLOWED_MEDIA = ["image/png", "image/jpeg", "image/gif", "image/webp"] as const;
 const MAX_IMAGE_B64 = 7_000_000; // ~5 MB decoded, Anthropic's per-image cap
 
@@ -121,20 +121,8 @@ export async function POST(req: Request) {
   }
 
   // Per-user daily cost guard.
-  const since = new Date();
-  since.setHours(0, 0, 0, 0);
-  const { count } = await supabase
-    .from("api_usage")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", user.id)
-    .eq("kind", "grade")
-    .gte("created_at", since.toISOString());
-  if ((count ?? 0) >= DAILY_LIMIT) {
-    return NextResponse.json(
-      { error: `Daily grading limit reached (${DAILY_LIMIT}). Try again tomorrow.` },
-      { status: 429 },
-    );
-  }
+  const limit = await checkDailyLimit(supabase, user.id, "grade");
+  if (!limit.ok) return NextResponse.json({ error: limit.message }, { status: 429 });
 
   const sopText = `TRADER SOP:
 Assets: ${body.sop.assets} | Timeframe: ${body.sop.tf}

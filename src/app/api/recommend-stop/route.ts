@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { checkDailyLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -33,6 +34,9 @@ export async function POST(req: Request) {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
+
+  const limit = await checkDailyLimit(supabase, user.id, "recommend");
+  if (!limit.ok) return NextResponse.json({ error: limit.message }, { status: 429 });
 
   const body = (await req.json().catch(() => null)) as Body | null;
   const img = body?.chart;
