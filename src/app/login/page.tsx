@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { errorMessage } from "@/lib/errors";
+import BrandLogo from "@/components/BrandLogo";
 
 type Mode = "signin" | "signup";
 
@@ -99,44 +100,19 @@ export default function LoginPage() {
   return (
     <div className="auth-shell">
       <div className="auth-card">
-        <div className="auth-title">
-          <span className="logo-dot" />
-          TradeReady
-        </div>
+        <BrandLogo size={32} className="auth-brand" />
         <div className="auth-sub">
-          {mode === "signin" ? "Sign in to continue your onboarding." : "Create an account to start building your SOP."}
-        </div>
-
-        <div className="auth-tabs">
-          <button
-            type="button"
-            className={`auth-tab ${mode === "signin" ? "active" : ""}`}
-            onClick={() => switchMode("signin")}
-          >
-            Sign in
-          </button>
-          <button
-            type="button"
-            className={`auth-tab ${mode === "signup" ? "active" : ""}`}
-            onClick={() => switchMode("signup")}
-          >
-            Sign up
-          </button>
+          {mode === "signin" ? "Sign in to terminal" : "Create your terminal access"}
         </div>
 
         <form onSubmit={onSubmit}>
           {mode === "signup" && (
-            <div className="field" style={{ marginBottom: 14 }}>
+            <div className="field auth-field">
               <label>Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Your name"
-              />
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
             </div>
           )}
-          <div className="field" style={{ marginBottom: 14 }}>
+          <div className="field auth-field">
             <label>Email</label>
             <input
               type="email"
@@ -144,10 +120,10 @@ export default function LoginPage() {
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              placeholder="trader@tradeready.io"
             />
           </div>
-          <div className="field" style={{ marginBottom: 18 }}>
+          <div className="field auth-field">
             <label>Password</label>
             <input
               type="password"
@@ -156,13 +132,21 @@ export default function LoginPage() {
               autoComplete={mode === "signup" ? "new-password" : "current-password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 6 characters"
+              placeholder="••••••••••"
             />
           </div>
-          <button type="submit" className="btn primary" disabled={pending} style={{ width: "100%", justifyContent: "center" }}>
+          <button type="submit" className="btn-signin" disabled={pending}>
             {pending ? "Working…" : mode === "signin" ? "Sign in" : "Create account"}
           </button>
         </form>
+
+        <div className="auth-foot">
+          {mode === "signin" ? (
+            <>No account yet? <button type="button" onClick={() => switchMode("signup")}>Create one</button></>
+          ) : (
+            <>Already have an account? <button type="button" onClick={() => switchMode("signin")}>Sign in</button></>
+          )}
+        </div>
 
         {status && <div className={`auth-msg ${status.kind}`}>{status.msg}</div>}
       </div>

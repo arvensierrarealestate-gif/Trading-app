@@ -5,28 +5,40 @@ import { createClient } from "@/lib/supabase/client";
 import { errorMessage } from "@/lib/errors";
 import type { TradingMode } from "@/lib/types";
 
-const OPTIONS: { mode: TradingMode; title: string; tagline: string; points: string[] }[] = [
+const SHIELD = (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+  </svg>
+);
+const CHART = (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 3v18h18" /><path d="M7 14l4-4 3 3 5-6" />
+  </svg>
+);
+
+const OPTIONS: {
+  mode: TradingMode;
+  accent: "teal" | "purple";
+  icon: React.ReactNode;
+  badge: string;
+  title: string;
+  desc: string;
+}[] = [
   {
     mode: "learner",
+    accent: "teal",
+    icon: SHIELD,
+    badge: "Recommended for beginners",
     title: "Learning to trade",
-    tagline: "Simple, guided, plain English.",
-    points: [
-      "Step-by-step with no jargon",
-      "Simplified SOP builder",
-      "Grade reports in plain language",
-      "Encouraging, beginner-friendly tone",
-    ],
+    desc: "Build your system first. No real money until you are ready.",
   },
   {
     mode: "trader",
+    accent: "purple",
+    icon: CHART,
+    badge: "Requires trade history verification",
     title: "Experienced trader",
-    tagline: "Full technical experience.",
-    points: [
-      "All SOP fields unlocked",
-      "Full 6-gate grade results",
-      "Regime tab with HMM details",
-      "Technical reports and data",
-    ],
+    desc: "Full technical tools. Upload your trade history to unlock.",
   },
 ];
 
@@ -61,28 +73,32 @@ export default function ModeSelect({
   return (
     <div className="mode-shell">
       <div className="mode-head">
-        <div className="auth-title"><span className="logo-dot" /> Choose your experience</div>
-        <div className="auth-sub">You can switch anytime from the header. This tailors the whole app to you.</div>
+        <div className="mode-eyebrow">Step 01 · Profile</div>
+        <h1 className="mode-headline">How do you trade?</h1>
+        <div className="mode-subhead">Pick the path that matches your experience. You can switch later.</div>
       </div>
       <div className="mode-grid">
-        {OPTIONS.map((o) => (
-          <button
-            key={o.mode}
-            className={`mode-card ${current === o.mode ? "current" : ""}`}
-            onClick={() => choose(o.mode)}
-            disabled={saving !== null}
-            type="button"
-          >
-            <div className="mode-card-title">{o.title}</div>
-            <div className="mode-card-tag">{o.tagline}</div>
-            <ul className="mode-card-list">
-              {o.points.map((p) => <li key={p}>{p}</li>)}
-            </ul>
-            <span className="mode-card-cta">
-              {saving === o.mode ? "Saving…" : current === o.mode ? "Current — keep" : "Choose"}
-            </span>
-          </button>
-        ))}
+        {OPTIONS.map((o) => {
+          const active = current === o.mode;
+          return (
+            <button
+              key={o.mode}
+              className={`mode-card accent-${o.accent} ${active ? "current" : ""}`}
+              onClick={() => choose(o.mode)}
+              disabled={saving !== null}
+              type="button"
+            >
+              <span className={`mode-icon accent-${o.accent}`}>{o.icon}</span>
+              <span className={`mode-badge accent-${o.accent}`}>{o.badge}</span>
+              <span className="mode-card-title">{o.title}</span>
+              <span className="mode-card-desc">{o.desc}</span>
+              <span className="mode-card-foot">
+                <span className="mode-select-cta">{saving === o.mode ? "Saving…" : active ? "Current" : "Click to select"}</span>
+                <span className={`mode-radio ${active ? "on" : ""}`} />
+              </span>
+            </button>
+          );
+        })}
       </div>
       {err && <div className="auth-msg err" style={{ maxWidth: 760, margin: "12px auto 0" }}>{err}</div>}
       {onCancel && current && (
