@@ -85,6 +85,7 @@ export default function Stage2Paper({
   const [stopLoss, setStopLoss] = useState("");
   const [chart, setChart] = useState<{ url: string; payload: ImagePayload } | null>(null);
   const [news, setNews] = useState<{ url: string; payload: ImagePayload } | null>(null);
+  const [newsText, setNewsText] = useState("");
   const [grading, setGrading] = useState(false);
   const [log, setLog] = useState<LogLine[]>([]);
   const [grade, setGrade] = useState<{ grade: Grade; asset: string; dir: string; outcome: string; protection: ProtectionResult | null; strategyLabel: string } | null>(null);
@@ -177,6 +178,7 @@ export default function Stage2Paper({
   function clearForm() {
     setChart(null);
     setNews(null);
+    setNewsText("");
     setEntry("");
     setExit("");
     setStopLoss("");
@@ -221,6 +223,7 @@ export default function Stage2Paper({
           stop_loss: stopLoss,
           chart: chart.payload,
           news: news?.payload ?? null,
+          news_text: newsText.trim() || undefined,
           current_regime: currentRegime,
           mode,
           strategy_label: strategyLabel,
@@ -558,6 +561,14 @@ export default function Stage2Paper({
                   <div className="dropzone-hint">CryptoPanic · Twitter</div>
                 </>
               )}
+            </div>
+            <div className="news-paste">
+              <div className="news-paste-or">or paste the catalyst text</div>
+              <textarea
+                value={newsText}
+                onChange={(e) => setNewsText(e.target.value)}
+                placeholder="Paste headlines or the catalyst sentences from the source (e.g. an earnings note, a CryptoPanic blurb, an analyst comment)…"
+              />
             </div>
           </div>
         </div>

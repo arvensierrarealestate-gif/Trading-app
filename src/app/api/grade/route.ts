@@ -144,6 +144,9 @@ ${sopText}${regimeText}${strategyText}${criteriaText}${toneText}${protectionText
     content.push({ type: "image", source: { type: "base64", media_type: body.news.media_type, data: body.news.data } });
     content.push({ type: "text", text: "Image 2: news/sentiment" });
   }
+  if (body.news_text?.trim()) {
+    content.push({ type: "text", text: `News / catalyst text the trader pasted from the source:\n"""\n${body.news_text.trim()}\n"""\nFactor this catalyst/sentiment into the grade where the SOP considers news.` });
+  }
 
   const anthropic = new Anthropic({ apiKey });
   let message: Anthropic.Messages.Message;

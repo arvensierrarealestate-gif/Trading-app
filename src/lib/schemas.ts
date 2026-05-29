@@ -43,6 +43,7 @@ export const gradeSchema = z.object({
   stop_loss: z.string().optional(),
   chart: imageSchema,
   news: imageSchema.nullish(),
+  news_text: z.string().max(4000).optional(),
   current_regime: z.string().nullish(),
   mode: z.enum(["learner", "trader"]).optional(),
   strategy_label: z.string().max(40).optional(),
