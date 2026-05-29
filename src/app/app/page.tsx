@@ -71,6 +71,7 @@ export default async function AppPage() {
     stop_loss_set: row.stop_loss_set ?? false,
     stop_loss_placement: row.stop_loss_placement ?? 0,
     position_size_ok: row.position_size_ok ?? false,
+    strategy_type: row.strategy_type ?? null,
   }));
 
   const manualChecks: boolean[] = checksRes.data?.manual_checks ?? [false, false, false, false, false, false];

@@ -2,13 +2,33 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Grade, SOP, Trade, TradingMode, TraderStats } from "@/lib/types";
+import { isMySopTrade, type Grade, type SOP, type Trade, type TradingMode, type TraderStats } from "@/lib/types";
 import type { Regime } from "@/lib/regime";
 import TickerCard from "./TickerCard";
 import PositionSizer from "./PositionSizer";
 import TermTip from "./TermTip";
 import { errorMessage } from "@/lib/errors";
-import { getStrategy } from "@/lib/strategies";
+import { getStrategy, type StrategyId } from "@/lib/strategies";
+
+type PillId = "my-sop" | "premium-selling" | "leaps" | "momentum-swing";
+const STRATEGY_PILLS: { id: PillId; label: string; accent: string }[] = [
+  { id: "premium-selling", label: "Premium selling", accent: "teal" },
+  { id: "leaps", label: "LEAPS", accent: "amber" },
+  { id: "momentum-swing", label: "Momentum swing", accent: "purple" },
+  { id: "my-sop", label: "My SOP", accent: "teal" },
+];
+const PILL_LABEL: Record<string, string> = {
+  "my-sop": "My SOP",
+  "premium-selling": "Premium selling",
+  leaps: "LEAPS",
+  "momentum-swing": "Momentum swing",
+};
+const PILL_ACCENT: Record<string, string> = {
+  "my-sop": "#00d4aa",
+  "premium-selling": "#00d4aa",
+  leaps: "#f59e0b",
+  "momentum-swing": "#8b5cf6",
+};
 
 type LogLine = { kind: "ai" | "ok" | "err" | "tool"; msg: string };
 
@@ -67,12 +87,15 @@ export default function Stage2Paper({
   const [news, setNews] = useState<{ url: string; payload: ImagePayload } | null>(null);
   const [grading, setGrading] = useState(false);
   const [log, setLog] = useState<LogLine[]>([]);
-  const [grade, setGrade] = useState<{ grade: Grade; asset: string; dir: string; outcome: string; protection: ProtectionResult | null } | null>(null);
+  const [grade, setGrade] = useState<{ grade: Grade; asset: string; dir: string; outcome: string; protection: ProtectionResult | null; strategyLabel: string } | null>(null);
   const [usage, setUsage] = useState<{ grades: number; limit: number; remaining: number; est_cost_usd: number } | null>(null);
   const [reco, setReco] = useState<{ stop_loss_price: number; support_basis: string; drop_pct: number } | null>(null);
   const [recoBusy, setRecoBusy] = useState(false);
   const [showEdu, setShowEdu] = useState(false);
   const [hintCollapsed, setHintCollapsed] = useState(false);
+  const [selectedStrategy, setSelectedStrategy] = useState<PillId>("my-sop");
+  const [customizing, setCustomizing] = useState(false);
+  const [criteriaChecked, setCriteriaChecked] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (learner && typeof window !== "undefined" && !localStorage.getItem("tr_stoploss_edu_seen")) {
@@ -172,18 +195,24 @@ export default function Stage2Paper({
       addLog({ kind: "err", msg: "Set your stop loss before trading — this protects your money if the trade goes wrong." });
       return;
     }
+    const isMySop = selectedStrategy === "my-sop";
+    const tpl = isMySop ? null : getStrategy(selectedStrategy);
+    const gradeSop: SOP = isMySop || !tpl?.defaults ? sop : { ...tpl.defaults, strategy_type: selectedStrategy };
+    const strategyLabel = isMySop ? "My SOP" : tpl?.name ?? "My SOP";
+    const checkedCriteria = customizing ? currentCriteria.filter((c) => criteriaChecked[c] !== false) : undefined;
+
     setGrading(true);
     setLog([]);
     setGrade(null);
     addLog({ kind: "ai", msg: "Reading chart screenshot…" });
-    addLog({ kind: "tool", msg: "Comparing vs your SOP rules…" });
+    addLog({ kind: "tool", msg: `Comparing vs ${strategyLabel} rules…` });
 
     try {
       const res = await fetch("/api/grade", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sop,
+          sop: gradeSop,
           asset: asset || "Unknown",
           dir,
           outcome,
@@ -194,6 +223,8 @@ export default function Stage2Paper({
           news: news?.payload ?? null,
           current_regime: currentRegime,
           mode,
+          strategy_label: strategyLabel,
+          criteria: checkedCriteria,
         }),
       });
       const json = await res.json();
@@ -212,7 +243,12 @@ export default function Stage2Paper({
           msg: `Protection score: ${prot.protection_score}/100${prot.protection_score < 70 ? " — does not count toward go-live" : ""}`,
         });
       }
-      setGrade({ grade: g, asset: asset || "Unknown", dir, outcome, protection: prot });
+      if (isMySop) {
+        addLog({ kind: "ok", msg: "Counts toward go-live (graded against My SOP)." });
+      } else {
+        addLog({ kind: "tool", msg: `Practice trade — graded as ${strategyLabel}, does not count toward go-live.` });
+      }
+      setGrade({ grade: g, asset: asset || "Unknown", dir, outcome, protection: prot, strategyLabel });
 
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
@@ -233,6 +269,7 @@ export default function Stage2Paper({
             stop_loss_set: prot?.stop_loss_set ?? false,
             stop_loss_placement: prot?.stop_loss_placement ?? 0,
             position_size_ok: prot?.position_size_ok ?? false,
+            strategy_type: selectedStrategy,
           })
           .select()
           .single();
@@ -254,6 +291,7 @@ export default function Stage2Paper({
             stop_loss_set: inserted.stop_loss_set ?? false,
             stop_loss_placement: inserted.stop_loss_placement ?? 0,
             position_size_ok: inserted.position_size_ok ?? false,
+            strategy_type: inserted.strategy_type ?? selectedStrategy,
           });
         }
       }
@@ -265,11 +303,39 @@ export default function Stage2Paper({
   }
 
   // In learner mode only protected trades (protection score >= 70) count toward go-live.
-  const eligible = learner ? trades.filter((t) => (t.protection_score ?? 0) >= 70) : trades;
+  const currentCriteria = useMemo(() => {
+    if (selectedStrategy === "my-sop") {
+      const sig = sop.entry_signals.split(",").map((s) => s.trim()).filter(Boolean);
+      return [
+        ...sig.map((s) => `Entry signal: ${s}`),
+        `Stop loss is set (${sop.sl || "your rule"})`,
+        `Take profit plan (${sop.tp || "your rule"})`,
+        `Reward:risk at least ${sop.rr}`,
+      ];
+    }
+    return getStrategy(selectedStrategy)?.criteria ?? [];
+  }, [selectedStrategy, sop.entry_signals, sop.sl, sop.tp, sop.rr]);
+
+  const eligible = learner ? trades.filter((t) => isMySopTrade(t) && (t.protection_score ?? 0) >= 70) : trades;
   const n = eligible.length;
   const avg = n ? Math.round(eligible.reduce((a, t) => a + t.score, 0) / n) : 0;
   const comp = n ? Math.round((eligible.filter((t) => t.verdict === "SOP followed").length / n) * 100) : 0;
   const ready = n >= 5 && avg >= 70;
+
+  // Average score grouped by the strategy each trade was graded against.
+  const byStrategy = useMemo(() => {
+    const groups: Record<string, { sum: number; count: number }> = {};
+    for (const t of trades) {
+      const key = t.strategy_type ?? "my-sop";
+      groups[key] = groups[key] ?? { sum: 0, count: 0 };
+      groups[key].sum += t.score;
+      groups[key].count += 1;
+    }
+    return Object.entries(groups)
+      .map(([key, g]) => ({ key, label: PILL_LABEL[key] ?? "My SOP", avg: Math.round(g.sum / g.count), count: g.count }))
+      .sort((a, b) => b.avg - a.avg);
+  }, [trades]);
+  const bestStrategy = byStrategy[0] ?? null;
 
   const stratLabel = getStrategy(sop.strategy_type ?? "custom")?.name ?? "Custom";
 
@@ -315,6 +381,12 @@ export default function Stage2Paper({
           <div className="stat"><div className="stat-label">Trades</div><div className="stat-val">{n}</div></div>
           <div className="stat"><div className="stat-label">Avg score</div><div className={`stat-val ${avg >= 70 ? "green" : avg >= 50 ? "amber" : avg ? "red" : ""}`}>{n ? `${avg}/100` : "—"}</div></div>
           <div className="stat"><div className="stat-label">SOP compliance</div><div className="stat-val">{n ? `${comp}%` : "—"}</div></div>
+          <div className="stat">
+            <div className="stat-label">Best strategy</div>
+            <div className="stat-val" style={{ fontSize: 13 }}>
+              {bestStrategy ? `${bestStrategy.label} · ${bestStrategy.avg}` : "—"}
+            </div>
+          </div>
           <div className="stat"><div className="stat-label">Go-live ready</div><div className={`stat-val ${ready ? "green" : n >= 5 ? "red" : ""}`}>{n >= 5 ? (ready ? "Yes ✓" : "Not yet") : "—"}</div></div>
         </div>
       </div>
@@ -326,6 +398,56 @@ export default function Stage2Paper({
             {usage
               ? `${usage.grades}/${usage.limit} grades today · ~$${usage.est_cost_usd.toFixed(2)}`
               : "AI grades against your SOP"}
+          </div>
+        </div>
+
+        <div className="section-block">
+          <div className="section-label">Grade against</div>
+          <div className="strategy-pills">
+            {STRATEGY_PILLS.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className={`strategy-pill accent-${p.accent} ${selectedStrategy === p.id ? "active" : ""}`}
+                onClick={() => setSelectedStrategy(p.id)}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="criteria-card">
+            <div className="criteria-head">
+              <span>
+                {selectedStrategy === "my-sop"
+                  ? "Graded against your saved SOP — counts toward go-live."
+                  : `Practice grade against the ${PILL_LABEL[selectedStrategy]} playbook — does not count toward go-live.`}
+              </span>
+              <button type="button" className="criteria-toggle" onClick={() => setCustomizing((v) => !v)}>
+                {customizing ? "Done" : "Customize criteria"}
+              </button>
+            </div>
+            <ul className="criteria-list">
+              {currentCriteria.map((c) => {
+                const checked = criteriaChecked[c] !== false;
+                return (
+                  <li key={c} className={`criteria-item ${checked ? "" : "off"}`}>
+                    {customizing ? (
+                      <label className="criteria-check">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => setCriteriaChecked((m) => ({ ...m, [c]: !checked }))}
+                        />
+                        <span>{c}</span>
+                      </label>
+                    ) : (
+                      <span>• {c}</span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </div>
 
@@ -486,15 +608,18 @@ export default function Stage2Paper({
         ) : (
           <div>
             <div className="trade-row header">
-              <span>#</span><span>pair</span><span>direction</span><span>outcome</span><span>score</span><span>verdict</span>
+              <span>#</span><span>pair</span><span>strategy</span><span>direction</span><span>outcome</span><span>score</span><span>verdict</span>
             </div>
             {trades.map((t, i) => {
               const vc = t.verdict === "SOP followed" ? "tv-pass" : t.verdict === "Partial" ? "tv-part" : "tv-fail";
               const sc = t.score >= 70 ? "var(--accent)" : t.score >= 50 ? "var(--amber)" : "var(--red)";
+              const sKey = t.strategy_type ?? "my-sop";
+              const accent = PILL_ACCENT[sKey] ?? "var(--text3)";
               return (
                 <div key={t.id ?? i} className="trade-row">
                   <span style={{ color: "var(--text3)", fontSize: 11 }}>#{i + 1}</span>
                   <span className="trade-pair">{t.asset}</span>
+                  <span><span className="trade-strategy-pill" style={{ color: accent, borderColor: accent }}>{PILL_LABEL[sKey] ?? "My SOP"}</span></span>
                   <span><span className={`trade-dir ${t.dir === "Long" ? "long" : "short"}`}>{t.dir}</span></span>
                   <span style={{ color: "var(--text2)" }}>{t.outcome}</span>
                   <span className="trade-score" style={{ color: sc }}>{t.score}</span>
@@ -505,6 +630,30 @@ export default function Stage2Paper({
           </div>
         )}
       </div>
+
+      {trades.length >= 3 && byStrategy.length > 0 && (
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title"><div className="card-title-icon">⊞</div> Strategy comparison</div>
+            <div className="card-meta">avg score by strategy graded against</div>
+          </div>
+          <div className="section-block strategy-compare">
+            {byStrategy.map((s) => {
+              const accent = PILL_ACCENT[s.key] ?? "var(--text3)";
+              return (
+                <div key={s.key} className="compare-row">
+                  <span className="compare-label">{s.label}</span>
+                  <div className="compare-track">
+                    <div className="compare-fill" style={{ width: `${s.avg}%`, background: accent }} />
+                  </div>
+                  <span className="compare-val" style={{ color: accent }}>{s.avg}</span>
+                  <span className="compare-count">{s.count} trade{s.count === 1 ? "" : "s"}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "16px 20px", background: "var(--bg1)", border: "1px solid var(--border)", borderRadius: 12 }}>
         <div style={{ flex: 1 }}>
@@ -525,7 +674,7 @@ export default function Stage2Paper({
   );
 }
 
-function GradeCard({ data, learner }: { data: { grade: Grade; asset: string; dir: string; outcome: string; protection: ProtectionResult | null }; learner: boolean }) {
+function GradeCard({ data, learner }: { data: { grade: Grade; asset: string; dir: string; outcome: string; protection: ProtectionResult | null; strategyLabel: string }; learner: boolean }) {
   const r = data.grade;
   const vClass = r.verdict === "SOP followed" ? "gv-pass" : r.verdict === "Partial" ? "gv-part" : "gv-fail";
   const scoreColor = r.score >= 70 ? "var(--accent)" : r.score >= 50 ? "var(--amber)" : "var(--red)";
@@ -533,6 +682,7 @@ function GradeCard({ data, learner }: { data: { grade: Grade; asset: string; dir
     <div className="card">
       <div className="card-header">
         <div className="card-title"><div className="card-title-icon">★</div> {learner ? "Your feedback" : "AI grade report"}</div>
+        <span className="grade-strategy-badge">Graded as: {data.strategyLabel}</span>
       </div>
       <div className="grade-header">
         <div className="grade-score" style={{ color: scoreColor }}>{r.score}<span>/100</span></div>

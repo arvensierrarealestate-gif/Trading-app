@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import type { SOP, Trade, TradingMode, TraderStats } from "@/lib/types";
+import { isMySopTrade, type SOP, type Trade, type TradingMode, type TraderStats } from "@/lib/types";
 import { parseRegimes, type Regime } from "@/lib/regime";
 import { type ThemeId } from "@/lib/themes";
 import RegimeTab from "./RegimeTab";
@@ -151,7 +151,9 @@ function AppShellInner({
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
-  const eligibleTrades = mode === "learner" ? trades.filter((t) => (t.protection_score ?? 0) >= 70) : trades;
+  const eligibleTrades = mode === "learner"
+    ? trades.filter((t) => isMySopTrade(t) && (t.protection_score ?? 0) >= 70)
+    : trades;
   const avgScore = eligibleTrades.length
     ? Math.round(eligibleTrades.reduce((a, t) => a + t.score, 0) / eligibleTrades.length)
     : 0;

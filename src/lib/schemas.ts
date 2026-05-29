@@ -45,6 +45,8 @@ export const gradeSchema = z.object({
   news: imageSchema.nullish(),
   current_regime: z.string().nullish(),
   mode: z.enum(["learner", "trader"]).optional(),
+  strategy_label: z.string().max(40).optional(),
+  criteria: z.array(z.string().max(160)).max(12).optional(),
 });
 
 export const recommendStopSchema = z.object({

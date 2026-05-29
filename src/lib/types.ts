@@ -65,7 +65,15 @@ export type Trade = {
   stop_loss_set?: boolean;
   stop_loss_placement?: number;
   position_size_ok?: boolean;
+  strategy_type?: string | null;
 };
+
+// A trade counts toward the go-live gate only if it was graded against the
+// user's own SOP. Preset-pill practice trades (and any legacy trade with no
+// strategy tag) are excluded from graduation but still shown for comparison.
+export function isMySopTrade(t: { strategy_type?: string | null }): boolean {
+  return t.strategy_type == null || t.strategy_type === "my-sop";
+}
 
 // A learner trade only counts toward go-live if capital was protected.
 export const PROTECTION_PASS = 70;

@@ -15,6 +15,8 @@ export type StrategyTemplate = {
   accent: "teal" | "amber" | "purple" | "gray";
   defaults: Omit<SOP, "strategy_type"> | null;
   fieldReasons: Partial<Record<keyof SOP, string>>;
+  // Grade criteria shown in the Stage 2 info card / customize checklist.
+  criteria: string[];
 };
 
 export const STRATEGIES: StrategyTemplate[] = [
@@ -25,6 +27,13 @@ export const STRATEGIES: StrategyTemplate[] = [
     risk: "Conservative",
     accountRange: "$500 to $5,000",
     accent: "teal",
+    criteria: [
+      "Implied volatility (IV rank) is above 30%",
+      "Strike chosen 1-2% out of the money",
+      "Underlying is a stock you'd be happy to own",
+      "Stop set to exit if the position doubles in loss",
+      "Plan to close at 50% profit or 21 days to expiry",
+    ],
     defaults: {
       assets: "SPY, AAPL, MSFT",
       tf: "1d",
@@ -75,6 +84,14 @@ export const STRATEGIES: StrategyTemplate[] = [
     risk: "Moderate",
     accountRange: "$1,000 to $10,000",
     accent: "amber",
+    criteria: [
+      "A company you believe in long-term",
+      "Entry on a pullback to weekly support",
+      "Call delta is 0.70 or higher",
+      "Expiry is 12+ months out",
+      "Risk is no more than 2% of account",
+      "Exit plan: 100% gain or 6 months before expiry",
+    ],
     defaults: {
       assets: "SPY, QQQ, AAPL, MSFT, NVDA",
       tf: "1w",
@@ -126,6 +143,14 @@ export const STRATEGIES: StrategyTemplate[] = [
     risk: "Moderate",
     accountRange: "$2,000 and up",
     accent: "purple",
+    criteria: [
+      "EMA crossover is present",
+      "Volume confirms the move",
+      "RSI is above 50",
+      "Trading with the trend, not against it",
+      "Stop set below the entry candle's low",
+      "Plan to hold 3-10 days maximum",
+    ],
     defaults: {
       assets: "SPY, QQQ, high volume stocks",
       tf: "4h",
@@ -176,6 +201,7 @@ export const STRATEGIES: StrategyTemplate[] = [
     risk: "Advanced",
     accountRange: null,
     accent: "gray",
+    criteria: [],
     defaults: null,
     fieldReasons: {},
   },

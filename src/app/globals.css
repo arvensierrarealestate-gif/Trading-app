@@ -1353,3 +1353,64 @@ body::before {
   font-size: 11px; padding: 2px 9px; border-radius: 100px; border: 1px solid; font-weight: 600;
 }
 .sop-summary-rules { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+
+/* ─────────────────── Stage 2 strategy suite ─────────────────── */
+.strategy-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.strategy-pill {
+  font-size: 12px; padding: 7px 14px; border-radius: 100px; cursor: pointer;
+  background: transparent; color: var(--text2); font-family: var(--mono);
+  border: 1px solid var(--border2); transition: all 0.12s;
+}
+.strategy-pill:hover { color: var(--text); }
+.strategy-pill.accent-teal.active   { background: rgba(0,212,170,0.12); border-color: var(--accent); color: var(--accent); }
+.strategy-pill.accent-amber.active  { background: rgba(245,158,11,0.12); border-color: var(--amber); color: var(--amber); }
+.strategy-pill.accent-purple.active { background: rgba(139,92,246,0.12); border-color: #8b5cf6; color: #a78bfa; }
+
+.criteria-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+.criteria-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; color: var(--text2); margin-bottom: 8px; }
+.criteria-toggle { background: transparent; border: none; color: var(--accent); font-size: 11px; font-family: var(--mono); cursor: pointer; flex-shrink: 0; }
+.criteria-toggle:hover { text-decoration: underline; }
+.criteria-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.criteria-item { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.criteria-item.off { color: var(--text3); text-decoration: line-through; }
+.criteria-check { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
+.criteria-check input { margin-top: 2px; accent-color: var(--accent); }
+
+.grade-strategy-badge {
+  font-size: 11px; padding: 3px 10px; border-radius: 100px;
+  border: 1px solid var(--border2); color: var(--text2);
+}
+
+.trade-row.header, .trade-row {
+  grid-template-columns: 40px 1.1fr 1.1fr 0.9fr 0.9fr 0.6fr 1.1fr;
+}
+.trade-strategy-pill {
+  font-size: 10px; padding: 2px 8px; border-radius: 100px;
+  border: 1px solid; white-space: nowrap;
+}
+
+.strategy-compare { display: flex; flex-direction: column; gap: 10px; }
+.compare-row { display: grid; grid-template-columns: 120px 1fr 40px 64px; align-items: center; gap: 10px; font-size: 12px; }
+.compare-label { color: var(--text); }
+.compare-track { height: 8px; background: var(--bg3); border-radius: 5px; overflow: hidden; }
+.compare-fill { height: 100%; border-radius: 5px; transition: width 0.3s; }
+.compare-val { font-family: var(--display); font-weight: 700; text-align: right; }
+.compare-count { color: var(--text3); font-size: 11px; }
+@media (max-width: 640px) {
+  .compare-row { grid-template-columns: 90px 1fr 34px; }
+  .compare-count { display: none; }
+}
+
+/* ─────────────────── Academy progress ─────────────────── */
+.academy-progress { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.academy-progress-track { flex: 1; max-width: 280px; height: 6px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+.academy-progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s; }
+.academy-progress-label { font-size: 11px; color: var(--text3); }
+.academy-term-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.academy-read-btn {
+  flex-shrink: 0; background: transparent; border: 1px solid var(--border2);
+  color: var(--text3); font-size: 10px; font-family: var(--mono);
+  padding: 3px 9px; border-radius: 100px; cursor: pointer;
+}
+.academy-read-btn:hover { color: var(--text); }
+.academy-read-btn.done { color: var(--accent); border-color: rgba(0,212,170,0.4); background: rgba(0,212,170,0.06); }

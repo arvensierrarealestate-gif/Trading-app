@@ -122,13 +122,20 @@ Allowed market regimes: ${body.sop.regimes || "any"}`;
     ? `\n\nSTOP LOSS: ${stopLoss || "NONE PROVIDED"}. Also fill the "protection" object: judge stop_loss_placement (0-30) from where this stop sits on the chart relative to support/resistance, and position_size_ok given the trader's max risk of ${body.sop.risk}.`
     : "";
 
+  const strategyText = body.strategy_label
+    ? `\n\nGRADE AGAINST STRATEGY: "${body.strategy_label}". The rules above represent this strategy's playbook — judge adherence to it specifically.`
+    : "";
+  const criteriaText = body.criteria?.length
+    ? `\n\nThe trader self-reports these criteria were met for this trade: ${body.criteria.map((c) => `"${c}"`).join(", ")}. Verify each against the chart where visible; do not take them at face value if the chart contradicts them.`
+    : "";
+
   const content: Anthropic.Messages.ContentBlockParam[] = [
     {
       type: "text",
       text: `Grade this paper trade against the SOP.
 Asset: ${body.asset}, Direction: ${body.dir}, Outcome: ${body.outcome}, Entry: ${body.entry || "—"}, Exit: ${body.exit || "—"}, Stop loss: ${stopLoss || "—"}
 
-${sopText}${regimeText}${toneText}${protectionText}`,
+${sopText}${regimeText}${strategyText}${criteriaText}${toneText}${protectionText}`,
     },
     { type: "image", source: { type: "base64", media_type: body.chart.media_type, data: body.chart.data } },
     { type: "text", text: "Image: price chart" },

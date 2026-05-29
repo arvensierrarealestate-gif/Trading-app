@@ -13,9 +13,37 @@ const CATEGORY_LABEL: Record<Term["category"], string> = {
   regime: "Market regime",
 };
 
+const READ_KEY = "academy_read";
+
 export default function AcademyView({ anchorTermId }: { anchorTermId?: string | null }) {
   const [section, setSection] = useState<Section>("terms");
   const [query, setQuery] = useState("");
+  const [read, setRead] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(READ_KEY);
+      if (raw) setRead(new Set(JSON.parse(raw) as string[]));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  function toggleRead(id: string) {
+    setRead((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      try {
+        localStorage.setItem(READ_KEY, JSON.stringify([...next]));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }
+
+  const readCount = TERMS.filter((t) => read.has(t.id)).length;
 
   // When opened via TermTip "Learn more", jump to the Terms tab + scroll to that anchor.
   useEffect(() => {
@@ -55,6 +83,12 @@ export default function AcademyView({ anchorTermId }: { anchorTermId?: string | 
           <span>Trading Academy</span>
         </div>
         <div className="academy-sub">Plain-English definitions, playbooks, and the reasoning behind every rule in this app.</div>
+        <div className="academy-progress">
+          <div className="academy-progress-track">
+            <div className="academy-progress-fill" style={{ width: `${Math.round((readCount / TERMS.length) * 100)}%` }} />
+          </div>
+          <span className="academy-progress-label">{readCount} / {TERMS.length} terms read</span>
+        </div>
       </div>
 
       <div className="academy-tabs" role="tablist">
@@ -90,7 +124,16 @@ export default function AcademyView({ anchorTermId }: { anchorTermId?: string | 
                   <div className="academy-terms">
                     {grouped[cat].map((t) => (
                       <div key={t.id} id={`term-${t.id}`} className="academy-term">
-                        <div className="academy-term-name">{t.name}</div>
+                        <div className="academy-term-top">
+                          <div className="academy-term-name">{t.name}</div>
+                          <button
+                            type="button"
+                            className={`academy-read-btn ${read.has(t.id) ? "done" : ""}`}
+                            onClick={() => toggleRead(t.id)}
+                          >
+                            {read.has(t.id) ? "✓ Read" : "Mark read"}
+                          </button>
+                        </div>
                         <div className="academy-term-def">{t.short}</div>
                         <div className="academy-term-why"><strong>Why it matters · </strong>{t.why}</div>
                         <div className="academy-term-ex"><strong>Example · </strong>{t.example}</div>

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { GL_ITEMS, LEARNER_PROTECTION_ITEM } from "@/lib/types";
+import { GL_ITEMS, LEARNER_PROTECTION_ITEM, isMySopTrade } from "@/lib/types";
 import type { Trade, TradingMode } from "@/lib/types";
 import { errorMessage } from "@/lib/errors";
 
@@ -156,7 +156,7 @@ export default function Stage3GoLive({
   const items = learner ? [...GL_ITEMS, LEARNER_PROTECTION_ITEM] : GL_ITEMS;
 
   // In learner mode only protected trades count toward the gate.
-  const eligible = learner ? trades.filter((t) => (t.protection_score ?? 0) >= 70) : trades;
+  const eligible = learner ? trades.filter((t) => isMySopTrade(t) && (t.protection_score ?? 0) >= 70) : trades;
   const n = eligible.length;
   const avg = n ? Math.round(eligible.reduce((a, t) => a + t.score, 0) / n) : 0;
   const autoVals = { trades5: n >= 5, score70: avg >= 70 };
