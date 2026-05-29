@@ -1558,3 +1558,30 @@ body::before {
 .mode-radio.on { border-color: var(--accent); }
 .mode-radio.on::after { content: ""; position: absolute; inset: 4px; background: var(--accent); border-radius: 50%; }
 @media (max-width: 700px) { .mode-headline { font-size: 32px; } }
+
+/* ─────────────────── Stage 1 two-column layout ─────────────────── */
+.sop-wrap { display: flex; flex-direction: column; gap: 16px; }
+.sop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 900px) { .sop-grid { grid-template-columns: 1fr; } }
+.sop-wrap .card { margin-bottom: 0; }
+
+.protect-banner {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(0,212,170,0.07); border: 1px solid rgba(0,212,170,0.3);
+  border-radius: 12px; padding: 13px 18px; font-size: 13px; color: var(--accent);
+}
+.protect-shield { font-size: 15px; }
+.locked-tag { color: var(--text3); font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em; font-size: 10px; }
+
+.risk-box-list { display: flex; flex-direction: column; gap: 10px; }
+.risk-box { border: 1px solid var(--border2); border-radius: 10px; padding: 12px 14px; background: var(--bg2); }
+.risk-box.changed { border-color: rgba(245,158,11,0.4); }
+.risk-box.open { border-color: var(--accent); }
+.risk-box-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.risk-box-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text2); display: inline-flex; align-items: center; gap: 4px; }
+.risk-box-right { display: inline-flex; align-items: center; gap: 10px; }
+.risk-box-value { font-family: var(--display); font-weight: 800; font-size: 16px; color: var(--accent); }
+.risk-lock-btn { background: transparent; border: none; cursor: pointer; font-size: 13px; opacity: 0.7; padding: 0; }
+.risk-lock-btn:hover { opacity: 1; }
+.risk-box-note { font-size: 10px; color: var(--text3); line-height: 1.5; margin-top: 6px; }
+.risk-box select { margin-top: 8px; width: 100%; background: var(--bg1); border: 1px solid var(--border2); border-radius: 8px; padding: 8px 10px; color: var(--text); font-family: var(--mono); font-size: 13px; }
