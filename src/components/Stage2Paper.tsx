@@ -391,6 +391,7 @@ export default function Stage2Paper({
         </div>
       </div>
 
+      <div className="stage2-grid">
       <div className="card">
         <div className="card-header">
           <div className="card-title"><div className="card-title-icon">↑</div> Submit paper trade</div>
@@ -503,11 +504,12 @@ export default function Stage2Paper({
 
           {learner && (recoBusy || reco) && (
             <div className="reco-box">
+              <div className="reco-eyebrow">AI suggestion</div>
               {recoBusy ? (
                 <div className="reco-title">Reading your chart for a safe stop loss…</div>
               ) : reco ? (
                 <>
-                  <div className="reco-title">Recommended stop loss: {reco.stop_loss_price}</div>
+                  <div className="reco-title">Suggested stop loss: {reco.stop_loss_price}</div>
                   <div className="reco-body">
                     {reco.support_basis} If price drops to this level you&apos;d exit, and by sizing your position to your{" "}
                     {riskPct} rule your loss stays limited to about {riskPct} of your account.
@@ -591,9 +593,19 @@ export default function Stage2Paper({
         )}
       </div>
 
-      {!learner && <PositionSizer sop={sop} entry={entry} stop={stopLoss} />}
-
-      {grade && <GradeCard data={grade} learner={learner} />}
+      <div className="stage2-right">
+        {grade ? (
+          <GradeCard data={grade} learner={learner} />
+        ) : (
+          <div className="card grade-placeholder">
+            <div className="grade-placeholder-icon">★</div>
+            <div>Grade report will render here.</div>
+            <div className="grade-placeholder-sub">Fill in the trade and tap Grade this trade.</div>
+          </div>
+        )}
+        {!learner && <PositionSizer sop={sop} entry={entry} stop={stopLoss} />}
+      </div>
+      </div>
 
       <div className="card">
         <div className="card-header">
