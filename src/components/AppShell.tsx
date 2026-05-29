@@ -19,6 +19,7 @@ import AcademyView from "./AcademyView";
 import { AcademyProvider, useAcademy } from "./AcademyContext";
 import { TickerPanelProvider } from "./TickerPanelContext";
 import TickerDetailPanel from "./TickerDetailPanel";
+import BrandLogo from "./BrandLogo";
 import Stage1Sop from "./Stage1Sop";
 import Stage2Paper from "./Stage2Paper";
 import Stage3GoLive from "./Stage3GoLive";
@@ -318,10 +319,7 @@ function AppShellInner({
   return (
     <div className="app">
       <div className="header">
-        <div className="logo">
-          <div className="logo-dot" />
-          TradeReady
-        </div>
+        <BrandLogo size={26} />
         <div className="header-right">
           <div className="progress-row">
             {(["SOP", "Paper trade", "Go live"] as const).map((label, i) => {

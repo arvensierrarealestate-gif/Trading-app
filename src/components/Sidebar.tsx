@@ -1,5 +1,7 @@
 "use client";
 
+import BrandLogo from "./BrandLogo";
+
 export type DashView = "home" | "brief" | "stage1" | "stage2" | "stage3" | "regime" | "academy" | "settings";
 
 const NAV: { id: DashView; label: string; icon: string }[] = [
@@ -27,8 +29,7 @@ export default function Sidebar({
   return (
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       <div className="sidebar-brand">
-        <span className="logo-dot" />
-        <span>TradeReady</span>
+        <BrandLogo size={24} />
       </div>
       <nav className="sidebar-nav">
         {NAV.map((item) => (
