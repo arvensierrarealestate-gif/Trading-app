@@ -643,18 +643,18 @@ export default function Stage2Paper({
         )}
       </div>
 
-      {trades.length >= 3 && byStrategy.length > 0 && (
+      {byStrategy.length > 0 && (
         <div className="card">
           <div className="card-header">
-            <div className="card-title"><div className="card-title-icon">⊞</div> Strategy comparison</div>
-            <div className="card-meta">avg score by strategy graded against</div>
+            <div className="card-title"><div className="card-title-icon">⊞</div> Your strategy performance</div>
+            <div className="card-meta">See which strategy you execute best</div>
           </div>
           <div className="section-block strategy-compare">
             {byStrategy.map((s) => {
               const accent = PILL_ACCENT[s.key] ?? "var(--text3)";
               return (
                 <div key={s.key} className="compare-row">
-                  <span className="compare-label">{s.label}</span>
+                  <span className="compare-label"><span className="compare-dot" style={{ background: accent }} />{s.label}</span>
                   <div className="compare-track">
                     <div className="compare-fill" style={{ width: `${s.avg}%`, background: accent }} />
                   </div>
@@ -663,6 +663,11 @@ export default function Stage2Paper({
                 </div>
               );
             })}
+            {bestStrategy && byStrategy.length >= 2 && (
+              <div className="compare-insight">
+                You score highest on <strong>{bestStrategy.label.toLowerCase()}</strong> trades. Consider making this your primary strategy for go-live.
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -1599,3 +1599,13 @@ body::before {
 .grade-placeholder-icon { font-size: 22px; opacity: 0.4; }
 .grade-placeholder-sub { font-size: 11px; color: var(--text3); }
 .reco-eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 8px; font-weight: 600; }
+
+/* Strategy performance card refinements */
+.compare-label { display: flex; align-items: center; gap: 8px; }
+.compare-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.compare-insight {
+  margin-top: 6px; font-size: 12px; color: #a78bfa; line-height: 1.6;
+  background: rgba(139,92,246,0.07); border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 10px; padding: 11px 14px;
+}
+.compare-insight strong { color: #c4b5fd; }
