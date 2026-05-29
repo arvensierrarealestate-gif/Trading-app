@@ -8,6 +8,7 @@ import { aggressionLabel } from "./ticker";
 export type ConfidenceInput = {
   symbol: string;
   aggression: number; // 1-10
+  atrPct: number; // daily ATR as % of price
   beta: number | null;
   worstDrawdownPct: number | null;
   scalpSuitable: boolean;
@@ -16,6 +17,8 @@ export type ConfidenceInput = {
   regime: string | null; // current SPY regime
 };
 
+export type Gate = { label: string; pass: boolean };
+
 export type ConfidenceResult = {
   symbol: string;
   score: number; // 0-100 match to SOP
@@ -23,6 +26,7 @@ export type ConfidenceResult = {
   survivesStress: boolean;
   reason: string; // one-line "why" for recommended
   warning: string | null; // red warning for not-recommended
+  gates: Gate[];
 };
 
 function num(s: string, fallback: number): number {
@@ -77,5 +81,15 @@ export function computeConfidence(input: ConfidenceInput): ConfidenceResult {
   }
 
   const recommended = score >= 55 && !regimeBlocked;
-  return { symbol: input.symbol, score, recommended, survivesStress, reason, warning };
+  const styleFits = wantsSwing ? input.swingSuitable : wantsScalp ? input.scalpSuitable : true;
+  const gates: Gate[] = [
+    { label: "Regime allowed", pass: !regimeBlocked },
+    { label: "Aggression in tolerance", pass: aggression <= ceiling },
+    { label: "Style fits your SOP", pass: styleFits },
+    { label: "Survives 20% drop", pass: survivesStress },
+    { label: "Volatility sane", pass: input.atrPct > 0 && input.atrPct < 12 },
+    { label: "Confidence ≥ 55%", pass: score >= 55 },
+  ];
+
+  return { symbol: input.symbol, score, recommended, survivesStress, reason, warning, gates };
 }

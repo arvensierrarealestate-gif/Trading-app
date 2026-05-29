@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Sparkline from "./Sparkline";
 import { aggressionColor, aggressionLabel, type TickerMetrics } from "@/lib/ticker";
 import { computeStress, stressColor, type StressResult } from "@/lib/stress";
+import { useTickerPanel } from "./TickerPanelContext";
 import type { SOP } from "@/lib/types";
 
 type Position = {
@@ -25,6 +26,7 @@ export default function PositionRow({
   sop: SOP;
   accountEquity: number;
 }) {
+  const { openTicker } = useTickerPanel();
   const [closes, setCloses] = useState<number[] | null>(null);
   const [metrics, setMetrics] = useState<TickerMetrics | null>(null);
   const [stress, setStress] = useState<StressResult | null>(null);
@@ -76,7 +78,7 @@ export default function PositionRow({
     <div className="position-row">
       <div className="pos-main">
         <div className="pos-left">
-          <div className="pos-sym">{pos.symbol}</div>
+          <button type="button" className="pos-sym pos-sym-link" onClick={() => openTicker(pos.symbol)}>{pos.symbol}</button>
           <div className="pos-qty">{qty.toLocaleString()} {Math.abs(qty) === 1 ? "share" : "shares"}</div>
         </div>
 

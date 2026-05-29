@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { aggressionColor, type TickerMetrics } from "@/lib/ticker";
 import { computeConfidence, type ConfidenceResult } from "@/lib/confidence";
+import { useTickerPanel } from "./TickerPanelContext";
 import type { SOP } from "@/lib/types";
 
 type Row = ConfidenceResult & { metrics: TickerMetrics };
@@ -23,6 +24,7 @@ function parseSymbols(assets: string): string[] {
 
 export default function RecommendationsPanel({ sop, regime }: { sop: SOP; regime: string | null }) {
   const supabase = useMemo(() => createClient(), []);
+  const { openTicker } = useTickerPanel();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -57,6 +59,7 @@ export default function RecommendationsPanel({ sop, regime }: { sop: SOP; regime
               const conf = computeConfidence({
                 symbol: sym,
                 aggression: m.aggression_score,
+                atrPct: m.atr_pct ?? 0,
                 beta: m.beta,
                 worstDrawdownPct: m.worst_drawdown_pct,
                 scalpSuitable: m.scalp_suitable,
@@ -112,14 +115,14 @@ export default function RecommendationsPanel({ sop, regime }: { sop: SOP; regime
           </div>
           <div className="reco-list">
             {notRecommended.map((r) => (
-              <div key={r.symbol} className="reco-card danger">
+              <button key={r.symbol} type="button" className="reco-card danger reco-card-btn" onClick={() => openTicker(r.symbol)}>
                 <div className="reco-card-head">
                   <span className="reco-sym">{r.symbol}</span>
                   <span className="reco-match" style={{ color: "var(--red)" }}>Risk match: {r.score}%</span>
                 </div>
                 <div className="reco-warning">{r.warning ?? "Outside your SOP parameters."}</div>
                 <div className="reco-match-sub">Outside your SOP parameters</div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -129,13 +132,14 @@ export default function RecommendationsPanel({ sop, regime }: { sop: SOP; regime
 }
 
 function RecoCard({ row }: { row: Row }) {
+  const { openTicker } = useTickerPanel();
   const m = row.metrics;
   const styles = [
     m.scalp_suitable ? "scalp" : null,
     m.swing_suitable ? "swing" : null,
   ].filter(Boolean) as string[];
   return (
-    <div className="reco-card">
+    <button type="button" className="reco-card reco-card-btn" onClick={() => openTicker(row.symbol)}>
       <div className="reco-card-head">
         <span className="reco-sym">{row.symbol}</span>
         <span className="reco-match">{row.score}% match</span>
@@ -151,6 +155,6 @@ function RecoCard({ row }: { row: Row }) {
         <span className="pill na">CALLS n/a</span>
         <span className="pill na">PUTS n/a</span>
       </div>
-    </div>
+    </button>
   );
 }

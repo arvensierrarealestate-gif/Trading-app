@@ -17,6 +17,8 @@ import HomeDashboard from "./HomeDashboard";
 import SettingsView from "./SettingsView";
 import AcademyView from "./AcademyView";
 import { AcademyProvider, useAcademy } from "./AcademyContext";
+import { TickerPanelProvider } from "./TickerPanelContext";
+import TickerDetailPanel from "./TickerDetailPanel";
 import Stage1Sop from "./Stage1Sop";
 import Stage2Paper from "./Stage2Paper";
 import Stage3GoLive from "./Stage3GoLive";
@@ -42,7 +44,9 @@ type Stage1Mode = "review" | "form" | "picker";
 export default function AppShell(props: Props) {
   return (
     <AcademyProvider>
-      <AppShellInner {...props} />
+      <TickerPanelProvider>
+        <AppShellInner {...props} />
+      </TickerPanelProvider>
     </AcademyProvider>
   );
 }
@@ -287,6 +291,8 @@ function AppShellInner({
           </div>
         </div>
 
+        <TickerDetailPanel sop={sop} regime={currentRegime} />
+
         {switchingMode && (
           <div className="modal-overlay" onClick={() => setSwitchingMode(false)}>
             <div onClick={(e) => e.stopPropagation()} style={{ width: "100%" }}>
@@ -436,6 +442,8 @@ function AppShellInner({
       </div>
       </>
       )}
+
+      <TickerDetailPanel sop={sop} regime={currentRegime} />
 
       {switchingMode && (
         <div className="modal-overlay" onClick={() => setSwitchingMode(false)}>
