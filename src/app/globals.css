@@ -1414,3 +1414,37 @@ body::before {
 }
 .academy-read-btn:hover { color: var(--text); }
 .academy-read-btn.done { color: var(--accent); border-color: rgba(0,212,170,0.4); background: rgba(0,212,170,0.06); }
+
+/* ─────────────────── Home dashboard 2-column layout ─────────────────── */
+.dash-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+.dash-main { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.reco-rail { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 76px; }
+@media (max-width: 1040px) {
+  .dash-layout { grid-template-columns: 1fr; }
+  .reco-rail { position: static; }
+}
+
+.reco-list { display: flex; flex-direction: column; }
+.reco-empty { padding: 16px 18px; font-size: 12px; color: var(--text3); }
+.reco-card { padding: 13px 18px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 7px; }
+.reco-card:last-child { border-bottom: none; }
+.reco-card.danger { background: rgba(239,68,68,0.04); }
+.reco-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.reco-sym { font-family: var(--display); font-weight: 800; font-size: 15px; }
+.reco-match { font-size: 12px; color: var(--accent); font-family: var(--display); font-weight: 700; }
+.reco-match-sub { font-size: 10px; color: var(--text3); }
+.reco-why { font-size: 11px; color: var(--text2); line-height: 1.5; }
+.reco-warning { font-size: 11px; color: var(--red); line-height: 1.5; }
+.reco-stress-badge {
+  font-size: 10px; color: var(--accent); background: rgba(0,212,170,0.06);
+  border: 1px solid rgba(0,212,170,0.25); border-radius: 6px; padding: 4px 8px; align-self: flex-start;
+}
+.reco-card .aggr-bar { flex: 1; height: 6px; }
+.reco-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+
+/* Morning-brief inline academy links */
+.brief-learn {
+  background: transparent; border: none; color: var(--accent);
+  font-size: 11px; font-family: var(--mono); cursor: pointer; padding: 0;
+}
+.brief-learn:hover { text-decoration: underline; }

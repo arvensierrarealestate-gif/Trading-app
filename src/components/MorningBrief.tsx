@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { SOP, TradingMode, TraderStats } from "@/lib/types";
 import { parseRegimes, type Regime } from "@/lib/regime";
 import { aggressionColor, aggressionLabel, type TickerMetrics } from "@/lib/ticker";
+import { useAcademy } from "./AcademyContext";
 
 const CONDITION: Record<Regime, { label: string; why: string; rec: string }> = {
   bull: { label: "favorable", why: "the market has been trending up steadily.", rec: "trade today with caution" },
@@ -41,6 +42,7 @@ type StrategyBrief = {
 };
 
 function LearnerBrief({ sop }: { sop: SOP }) {
+  const { openAcademy } = useAcademy();
   const [regime, setRegime] = useState<Regime | null>(null);
   const [equity, setEquity] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -136,10 +138,17 @@ function LearnerBrief({ sop }: { sop: SOP }) {
             <div className="brief-line">
               <span className="brief-key">Market conditions:</span>{" "}
               {cond ? <>{cond.label} — {cond.why}</> : <span className="muted">unavailable right now.</span>}
+              {" "}
+              <button type="button" className="brief-learn" onClick={() => openAcademy("market-regime")}>Learn →</button>
             </div>
             {strategyLine && <div className="brief-line">{strategyLine}</div>}
             {maxLoss != null && recommendation ? (
-              <div className="brief-line"><span className="brief-key">Recommendation:</span> {recommendation}.</div>
+              <div className="brief-line">
+                <span className="brief-key">Recommendation:</span> {recommendation}.
+                {recommendation.startsWith("wait") || recommendation.startsWith("do not") ? (
+                  <> <button type="button" className="brief-learn" onClick={() => openAcademy("market-regime")}>Why this gate?</button></>
+                ) : null}
+              </div>
             ) : maxLoss == null ? (
               <div className="brief-line muted">We&apos;ll show your trade recommendation once we can show your dollar risk alongside it.</div>
             ) : null}

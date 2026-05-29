@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import PortfolioOverview from "./PortfolioOverview";
 import PositionRow from "./PositionRow";
+import RecommendationsPanel from "./RecommendationsPanel";
 import type { SOP } from "@/lib/types";
 
 type Position = {
@@ -16,7 +17,7 @@ type Position = {
   unrealized_plpc: string;
 };
 
-export default function HomeDashboard({ sop }: { sop: SOP }) {
+export default function HomeDashboard({ sop, regime }: { sop: SOP; regime: string | null }) {
   const [positions, setPositions] = useState<Position[] | null>(null);
   const [equity, setEquity] = useState<number>(0);
   const [err, setErr] = useState<string | null>(null);
@@ -39,28 +40,32 @@ export default function HomeDashboard({ sop }: { sop: SOP }) {
   }, []);
 
   return (
-    <div className="home-dash">
-      <PortfolioOverview />
+    <div className="dash-layout">
+      <div className="dash-main">
+        <PortfolioOverview />
 
-      <div className="dash-card">
-        <div className="card-header">
-          <div className="card-title"><div className="card-title-icon">▦</div> Current positions</div>
-          <div className="card-meta">{positions?.length ?? 0} open</div>
-        </div>
-        {err ? (
-          <div className="empty-state error"><div>{err}</div></div>
-        ) : positions === null ? (
-          <div className="empty-state"><div>Loading positions…</div></div>
-        ) : positions.length === 0 ? (
-          <div className="empty-state"><div>No open positions in your Alpaca paper account.</div></div>
-        ) : (
-          <div className="positions-list">
-            {positions.map((p) => (
-              <PositionRow key={p.symbol} pos={p} sop={sop} accountEquity={equity} />
-            ))}
+        <div className="dash-card">
+          <div className="card-header">
+            <div className="card-title"><div className="card-title-icon">▦</div> Current positions</div>
+            <div className="card-meta">{positions?.length ?? 0} open</div>
           </div>
-        )}
+          {err ? (
+            <div className="empty-state error"><div>{err}</div></div>
+          ) : positions === null ? (
+            <div className="empty-state"><div>Loading positions…</div></div>
+          ) : positions.length === 0 ? (
+            <div className="empty-state"><div>No open positions in your Alpaca paper account.</div></div>
+          ) : (
+            <div className="positions-list">
+              {positions.map((p) => (
+                <PositionRow key={p.symbol} pos={p} sop={sop} accountEquity={equity} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
+
+      <RecommendationsPanel sop={sop} regime={regime} />
     </div>
   );
 }

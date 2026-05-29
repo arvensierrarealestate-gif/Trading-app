@@ -234,7 +234,7 @@ function AppShellInner({
               <AcademyView anchorTermId={academy.anchorTermId} />
             ) : (
               <>
-            {view === "home" && <HomeDashboard sop={sop} />}
+            {view === "home" && <HomeDashboard sop={sop} regime={currentRegime} />}
             {view === "brief" && <MorningBrief sop={sop} mode={mode} stats={traderStats} />}
             {view === "stage1" &&
               renderStage1(
