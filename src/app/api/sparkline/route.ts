@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { normalizeSymbol } from "@/lib/yahoo";
 
 export const runtime = "nodejs";
 
@@ -8,7 +9,8 @@ export async function GET(req: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const symbol = new URL(req.url).searchParams.get("symbol")?.trim().toUpperCase();
+  const raw = new URL(req.url).searchParams.get("symbol");
+  const symbol = raw ? normalizeSymbol(raw) : undefined;
   if (!symbol) return NextResponse.json({ error: "Symbol required" }, { status: 400 });
 
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=5d&interval=1d`;

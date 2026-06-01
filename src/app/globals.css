@@ -1646,3 +1646,28 @@ body::before {
 .risk-badge-check { margin-left: auto; opacity: 0.7; color: var(--accent); }
 .risk-badge-foot { font-size: 10px; color: var(--text3); padding: 8px 10px 4px; line-height: 1.5; border-top: 1px solid var(--border); margin-top: 4px; }
 .risk-badge-err { font-size: 11px; color: var(--red); margin-top: 6px; }
+
+/* ─────────────────── Scalp monitor ─────────────────── */
+.scalp-wrap { display: flex; flex-direction: column; gap: 16px; max-width: 820px; }
+.signal-card.go { border-color: var(--accent); }
+.signal-card.wait { border-color: var(--amber); }
+.signal-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 18px;
+  margin-bottom: 12px;
+}
+@media (max-width: 540px) { .signal-grid { grid-template-columns: 1fr 1fr; } }
+.signal-cell { display: flex; flex-direction: column; gap: 2px; }
+.signal-k { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); }
+.signal-cell strong { font-family: var(--display); font-weight: 700; font-size: 16px; color: var(--text); }
+.signal-reasons {
+  list-style: none; padding: 0; margin: 0 0 12px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.signal-reasons li { font-size: 12px; color: var(--text2); line-height: 1.5; padding-left: 14px; position: relative; }
+.signal-reasons li::before { content: "›"; position: absolute; left: 2px; color: var(--accent); }
+.signal-order { display: flex; gap: 8px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+.signal-order input {
+  width: 100px; background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 9px 11px; color: var(--text); font-family: var(--mono); font-size: 13px;
+}
+.signal-foot { font-size: 11px; color: var(--text3); margin-top: 8px; line-height: 1.55; }

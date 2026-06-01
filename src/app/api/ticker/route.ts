@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { scoreAggression, type TickerMetrics } from "@/lib/ticker";
+import { normalizeSymbol } from "@/lib/yahoo";
 
 export const runtime = "nodejs";
 
@@ -95,7 +96,8 @@ export async function GET(req: Request) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const url = new URL(req.url);
-  const symbol = url.searchParams.get("symbol")?.trim().toUpperCase();
+  const raw = url.searchParams.get("symbol");
+  const symbol = raw ? normalizeSymbol(raw) : undefined;
   if (!symbol) return NextResponse.json({ error: "Symbol required" }, { status: 400 });
   const forceFresh = url.searchParams.get("fresh") === "1";
 

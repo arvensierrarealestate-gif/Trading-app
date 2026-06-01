@@ -59,6 +59,11 @@ export type AlpacaOrderRequest = {
   type: OrderType;
   time_in_force: TimeInForce;
   limit_price?: string;
+  // Bracket order: parent order placed with an attached stop-loss (and
+  // optional take-profit) that fires automatically once filled.
+  order_class?: "simple" | "bracket";
+  stop_loss?: { stop_price: string };
+  take_profit?: { limit_price: string };
 };
 
 export type AlpacaOrder = {

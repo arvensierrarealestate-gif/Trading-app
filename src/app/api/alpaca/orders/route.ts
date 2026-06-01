@@ -36,6 +36,8 @@ type Incoming = {
   qty?: unknown;
   time_in_force?: unknown;
   limit_price?: unknown;
+  stop_loss?: unknown;
+  take_profit?: unknown;
 };
 
 export async function POST(req: Request) {
@@ -76,6 +78,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Limit price must be a positive number" }, { status: 400 });
     }
     order.limit_price = String(priceNum);
+  }
+
+  // Optional bracket fields: a stop-loss (and/or take-profit) that fires
+  // automatically once the parent fills.
+  const stopNum = body.stop_loss != null ? Number(body.stop_loss) : NaN;
+  const tpNum = body.take_profit != null ? Number(body.take_profit) : NaN;
+  if (Number.isFinite(stopNum) && stopNum > 0) {
+    order.order_class = "bracket";
+    order.stop_loss = { stop_price: String(stopNum) };
+    if (Number.isFinite(tpNum) && tpNum > 0) {
+      order.take_profit = { limit_price: String(tpNum) };
+    }
   }
 
   try {

@@ -21,6 +21,7 @@ import { TickerPanelProvider } from "./TickerPanelContext";
 import TickerDetailPanel from "./TickerDetailPanel";
 import BrandLogo from "./BrandLogo";
 import RiskBadge from "./RiskBadge";
+import ScalpMonitor from "./ScalpMonitor";
 import Stage1Sop from "./Stage1Sop";
 import Stage2Paper from "./Stage2Paper";
 import Stage3GoLive from "./Stage3GoLive";
@@ -274,6 +275,7 @@ function AppShellInner({
               />
             )}
             {view === "regime" && <RegimeTab sopRegimes={parseRegimes(sop.regimes)} onRegime={setCurrentRegime} mode={mode} />}
+            {view === "scalp" && <ScalpMonitor sop={sop} />}
             {view === "settings" && (
               <SettingsView
                 email={email}
