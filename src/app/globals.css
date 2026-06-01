@@ -8,8 +8,8 @@
   --border: #252933;
   --border2: #2e3440;
   --text: #e8eaf0;
-  --text2: #8b90a0;
-  --text3: #4a5068;
+  --text2: #b4b9c8;
+  --text3: #858b9d;
   --accent: #00d4aa;
   --accent2: #00a882;
   --amber: #f59e0b;
@@ -909,28 +909,28 @@ body::before {
 [data-theme="dark-terminal"] {
   --bg: #0a0b0d; --bg1: #0f1114; --bg2: #151820; --bg3: #1c2028;
   --border: #252933; --border2: #2e3440;
-  --text: #e8eaf0; --text2: #8b90a0; --text3: #4a5068;
+  --text: #e8eaf0; --text2: #b4b9c8; --text3: #858b9d;
   --accent: #00d4aa; --accent2: #00a882;
   --amber: #f59e0b; --red: #ef4444;
 }
 [data-theme="robinhood-dark"] {
   --bg: #050505; --bg1: #0d0d0d; --bg2: #161616; --bg3: #1f1f1f;
   --border: #242424; --border2: #2d2d2d;
-  --text: #f5f5f5; --text2: #9a9a9a; --text3: #5a5a5a;
+  --text: #f5f5f5; --text2: #c2c2c2; --text3: #8e8e8e;
   --accent: #ff6b35; --accent2: #d2521f;
   --amber: #ffaa3c; --red: #ef4444;
 }
 [data-theme="light-pro"] {
   --bg: #f7f8fa; --bg1: #ffffff; --bg2: #f1f4f8; --bg3: #e6ebf2;
   --border: #e2e8f0; --border2: #cbd5e1;
-  --text: #0b1220; --text2: #475569; --text3: #94a3b8;
+  --text: #0b1220; --text2: #334155; --text3: #64748b;
   --accent: #1e3a8a; --accent2: #1d4ed8;
   --amber: #b45309; --red: #dc2626;
 }
 [data-theme="bloomberg-dark"] {
   --bg: #000000; --bg1: #0a0a0a; --bg2: #141414; --bg3: #1b1b1b;
   --border: #242424; --border2: #303030;
-  --text: #f0e6d2; --text2: #c8b88a; --text3: #7a6b48;
+  --text: #f0e6d2; --text2: #dccda0; --text3: #b09a6c;
   --accent: #ff8a00; --accent2: #cc6f00;
   --amber: #ffb347; --red: #ef4444;
 }
