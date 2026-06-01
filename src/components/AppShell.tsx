@@ -20,6 +20,7 @@ import { AcademyProvider, useAcademy } from "./AcademyContext";
 import { TickerPanelProvider } from "./TickerPanelContext";
 import TickerDetailPanel from "./TickerDetailPanel";
 import BrandLogo from "./BrandLogo";
+import RiskBadge from "./RiskBadge";
 import Stage1Sop from "./Stage1Sop";
 import Stage2Paper from "./Stage2Paper";
 import Stage3GoLive from "./Stage3GoLive";
@@ -314,7 +315,6 @@ function AppShellInner({
 
   // ───── Learner shell (unchanged stage flow) ─────
   const learner = true;
-  const riskExceeded = parseFloat(sop.risk) > 1;
 
   return (
     <div className="app">
@@ -335,10 +335,7 @@ function AppShellInner({
               );
             })}
           </div>
-          <div className={`shield-badge ${riskExceeded ? "danger" : ""}`}>
-            <span aria-hidden>🛡</span>
-            {riskExceeded ? "Warning — risk limit exceeded" : "Protected — 1% max risk per trade"}
-          </div>
+          <RiskBadge sop={sop} sopSaved={sopSaved} onChange={setSop} />
           <button type="button" className="header-academy" onClick={() => academy.openAcademy()} title="Open Trading Academy">
             <span aria-hidden>📖</span> Academy
           </button>

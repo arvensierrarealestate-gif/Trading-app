@@ -1620,3 +1620,29 @@ body::before {
   line-height: 1.5; outline: none;
 }
 .news-paste textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,212,170,0.08); }
+
+/* ─────────────────── Risk badge dropdown ─────────────────── */
+.risk-badge-wrap { position: relative; display: inline-flex; }
+.risk-badge-trigger { cursor: pointer; gap: 8px; }
+.risk-badge-trigger.warn { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.4); color: var(--amber); }
+.risk-badge-trigger.active { border-color: var(--accent); }
+.risk-badge-menu {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 40;
+  min-width: 220px; background: var(--bg1); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 6px; display: flex; flex-direction: column; gap: 2px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+}
+.risk-badge-item {
+  display: flex; align-items: center; gap: 10px;
+  background: transparent; border: none; cursor: pointer;
+  color: var(--text); font-family: var(--mono); font-size: 12px;
+  padding: 8px 10px; border-radius: 6px; text-align: left;
+}
+.risk-badge-item:hover { background: var(--bg2); }
+.risk-badge-item.active { background: var(--bg2); color: var(--accent); }
+.risk-badge-val { font-family: var(--display); font-weight: 700; width: 42px; }
+.risk-badge-item.above .risk-badge-val { color: var(--amber); }
+.risk-badge-warn { font-size: 10px; color: var(--amber); margin-left: 2px; }
+.risk-badge-check { margin-left: auto; opacity: 0.7; color: var(--accent); }
+.risk-badge-foot { font-size: 10px; color: var(--text3); padding: 8px 10px 4px; line-height: 1.5; border-top: 1px solid var(--border); margin-top: 4px; }
+.risk-badge-err { font-size: 11px; color: var(--red); margin-top: 6px; }
