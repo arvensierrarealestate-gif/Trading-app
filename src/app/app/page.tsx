@@ -13,12 +13,21 @@ export default async function AppPage() {
     supabase.from("sops").select("*").eq("user_id", user.id).maybeSingle(),
     supabase.from("paper_trades").select("*").eq("user_id", user.id).order("created_at", { ascending: true }),
     supabase.from("go_live_checks").select("manual_checks").eq("user_id", user.id).maybeSingle(),
-    supabase.from("profiles").select("trading_mode, verified, theme").eq("id", user.id).maybeSingle(),
+    supabase
+      .from("profiles")
+      .select("trading_mode, verified, theme, subscription_status, subscription_tier, subscription_current_period_end")
+      .eq("id", user.id)
+      .maybeSingle(),
     supabase.from("trader_stats").select("*").eq("user_id", user.id).maybeSingle(),
   ]);
 
   const initialMode = (profileRes.data?.trading_mode ?? null) as TradingMode | null;
   const initialVerified = !!profileRes.data?.verified;
+  const initialSubscription = {
+    status: (profileRes.data?.subscription_status ?? "free") as string,
+    tier: (profileRes.data?.subscription_tier ?? null) as string | null,
+    current_period_end: (profileRes.data?.subscription_current_period_end ?? null) as string | null,
+  };
   const themeRaw = profileRes.data?.theme;
   const initialTheme: ThemeId = isThemeId(themeRaw) ? themeRaw : "dark-terminal";
   const sr = statsRes.data;
@@ -88,6 +97,7 @@ export default async function AppPage() {
       initialVerified={initialVerified}
       initialStats={initialStats}
       initialTheme={initialTheme}
+      initialSubscription={initialSubscription}
     />
   );
 }

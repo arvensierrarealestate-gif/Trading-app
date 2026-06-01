@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { isMySopTrade, type SOP, type Trade, type TradingMode, type TraderStats } from "@/lib/types";
 import { parseRegimes, type Regime } from "@/lib/regime";
 import { type ThemeId } from "@/lib/themes";
+import type { SubscriptionInfo } from "@/lib/subscription";
 import RegimeTab from "./RegimeTab";
 import MorningBrief from "./MorningBrief";
 import ModeSelect from "./ModeSelect";
@@ -40,6 +41,7 @@ type Props = {
   initialVerified: boolean;
   initialStats: TraderStats | null;
   initialTheme: ThemeId;
+  initialSubscription: SubscriptionInfo;
 };
 
 type Stage1Mode = "review" | "form" | "picker";
@@ -65,6 +67,7 @@ function AppShellInner({
   initialVerified,
   initialStats,
   initialTheme,
+  initialSubscription,
 }: Props) {
   const academy = useAcademy();
   const router = useRouter();
@@ -285,6 +288,7 @@ function AppShellInner({
                 sop={sop}
                 sopSaved={sopSaved}
                 sopUpdatedAt={sopUpdatedAt}
+                subscription={initialSubscription}
                 onEditSop={openSopReview}
                 onSwitchMode={() => setSwitchingMode(true)}
                 onSignOut={signOut}

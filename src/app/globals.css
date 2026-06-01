@@ -1671,3 +1671,19 @@ body::before {
   border-radius: 8px; padding: 9px 11px; color: var(--text); font-family: var(--mono); font-size: 13px;
 }
 .signal-foot { font-size: 11px; color: var(--text3); margin-top: 8px; line-height: 1.55; }
+
+/* ─────────────────── Subscription panel ─────────────────── */
+.sub-status { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; padding: 4px 10px; border-radius: 100px; border: 1px solid; }
+.sub-status.active { color: var(--accent); border-color: rgba(0,212,170,0.4); background: rgba(0,212,170,0.06); }
+.sub-status.free { color: var(--text3); border-color: var(--border2); }
+.sub-pitch { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.sub-pitch strong { color: var(--text); }
+
+/* ─────────────────── Legal pages ─────────────────── */
+.legal-shell { max-width: 740px; margin: 60px auto; padding: 0 24px 80px; line-height: 1.7; }
+.legal-shell h1 { font-family: var(--display); font-weight: 800; font-size: 32px; margin-bottom: 14px; }
+.legal-shell h2 { font-family: var(--display); font-weight: 700; font-size: 18px; margin: 28px 0 8px; color: var(--text); }
+.legal-shell p, .legal-shell li { font-size: 14px; color: var(--text2); }
+.legal-shell ul { padding-left: 22px; margin: 8px 0; }
+.legal-shell a { color: var(--accent); }
+.legal-draft { padding: 10px 14px; border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.06); border-radius: 8px; color: var(--amber) !important; }

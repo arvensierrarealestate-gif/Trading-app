@@ -2,7 +2,9 @@
 
 import { THEMES, type ThemeId } from "@/lib/themes";
 import { getStrategy } from "@/lib/strategies";
+import type { SubscriptionInfo } from "@/lib/subscription";
 import type { SOP, TradingMode } from "@/lib/types";
+import SubscriptionPanel from "./SubscriptionPanel";
 
 const ACCENT_HEX: Record<string, string> = {
   teal: "#00d4aa",
@@ -19,6 +21,7 @@ export default function SettingsView({
   sop,
   sopSaved,
   sopUpdatedAt,
+  subscription,
   onEditSop,
   onSwitchMode,
   onSignOut,
@@ -30,6 +33,7 @@ export default function SettingsView({
   sop: SOP;
   sopSaved: boolean;
   sopUpdatedAt: string | null;
+  subscription: SubscriptionInfo;
   onEditSop: () => void;
   onSwitchMode: () => void;
   onSignOut: () => void;
@@ -41,6 +45,7 @@ export default function SettingsView({
 
   return (
     <div className="settings-view">
+      <SubscriptionPanel subscription={subscription} />
       {sopSaved && (
         <div className="dash-card">
           <div className="card-header">
