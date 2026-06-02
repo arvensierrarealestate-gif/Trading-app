@@ -1687,3 +1687,18 @@ body::before {
 .legal-shell ul { padding-left: 22px; margin: 8px 0; }
 .legal-shell a { color: var(--accent); }
 .legal-draft { padding: 10px 14px; border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.06); border-radius: 8px; color: var(--amber) !important; }
+
+/* Always-visible subscription pill in the app header */
+.sub-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; padding: 6px 12px; border-radius: 100px;
+  border: 1px solid; font-family: var(--mono); white-space: nowrap;
+}
+.sub-badge.active { color: var(--accent); border-color: rgba(0,212,170,0.45); background: rgba(0,212,170,0.08); }
+.sub-badge.warn { color: var(--amber); border-color: rgba(245,158,11,0.45); background: rgba(245,158,11,0.06); cursor: pointer; }
+.sub-badge.free {
+  background: var(--accent); color: #06231d; border-color: var(--accent);
+  cursor: pointer; font-weight: 700; letter-spacing: 0.02em;
+}
+.sub-badge.free:hover:not(:disabled) { background: #00e8ba; }
+.sub-badge:disabled { opacity: 0.7; cursor: default; }

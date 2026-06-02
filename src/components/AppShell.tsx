@@ -23,6 +23,7 @@ import TickerDetailPanel from "./TickerDetailPanel";
 import BrandLogo from "./BrandLogo";
 import RiskBadge from "./RiskBadge";
 import ScalpMonitor from "./ScalpMonitor";
+import SubscriptionBadge from "./SubscriptionBadge";
 import Stage1Sop from "./Stage1Sop";
 import Stage2Paper from "./Stage2Paper";
 import Stage3GoLive from "./Stage3GoLive";
@@ -227,6 +228,7 @@ function AppShellInner({
                 {warnings.length} risk alert{warnings.length === 1 ? "" : "s"}
               </div>
             )}
+            <SubscriptionBadge subscription={initialSubscription} />
             <ThemeSwitcher value={theme} onChange={setTheme} />
             <button type="button" className="mode-pill trader" onClick={() => setSwitchingMode(true)}>
               Trader mode <span>· switch</span>
@@ -345,6 +347,7 @@ function AppShellInner({
           <button type="button" className="header-academy" onClick={() => academy.openAcademy()} title="Open Trading Academy">
             <span aria-hidden>📖</span> Academy
           </button>
+          <SubscriptionBadge subscription={initialSubscription} />
           <ThemeSwitcher value={theme} onChange={setTheme} />
           <button type="button" className="mode-pill learner" onClick={() => setSwitchingMode(true)}>
             Learner mode <span>· switch</span>
