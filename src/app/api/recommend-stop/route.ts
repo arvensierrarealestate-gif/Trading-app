@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
-import { checkDailyLimit } from "@/lib/rate-limit";
 import { recommendStopSchema, parseBody } from "@/lib/schemas";
 
 export const runtime = "nodejs";
@@ -31,8 +30,8 @@ export async function POST(req: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "ANTHROPIC_API_KEY not configured" }, { status: 500 });
 
-  const limit = await checkDailyLimit(supabase, user.id, "recommend");
-  if (!limit.ok) return NextResponse.json({ error: limit.message }, { status: 429 });
+  // No daily limit: the AI stop-loss suggestion is part of the unlimited
+  // Stage 2 grading flow.
 
   const parsed = parseBody(recommendStopSchema, await req.json().catch(() => null));
   if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });

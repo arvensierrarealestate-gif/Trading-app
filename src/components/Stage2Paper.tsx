@@ -398,11 +398,7 @@ export default function Stage2Paper({
       <div className="card">
         <div className="card-header">
           <div className="card-title"><div className="card-title-icon">↑</div> Submit paper trade</div>
-          <div className="card-meta">
-            {usage
-              ? `${usage.grades}/${usage.limit} grades today · ~$${usage.est_cost_usd.toFixed(2)}`
-              : "AI grades against your SOP"}
-          </div>
+          <div className="card-meta">unlimited AI grading · against your SOP</div>
         </div>
 
         <div className="section-block">
@@ -579,14 +575,11 @@ export default function Stage2Paper({
               Set your stop loss before trading — this protects your money if the trade goes wrong.
             </span>
           )}
-          {usage && usage.remaining === 0 && (
-            <span className="btn-hint" style={{ color: "var(--amber)" }}>Daily grading limit reached — resets tomorrow.</span>
-          )}
           <button className="btn" onClick={clearForm} type="button">↺ Clear</button>
           <button
             className="btn primary"
             onClick={gradeTrade}
-            disabled={grading || usage?.remaining === 0 || (learner && !stopLoss.trim())}
+            disabled={grading || (learner && !stopLoss.trim())}
             type="button"
           >
             {grading ? "⏳ Grading…" : "⚡ Grade this trade"}

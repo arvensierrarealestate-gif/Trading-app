@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
-import { checkDailyLimit } from "@/lib/rate-limit";
 import { gradeSchema, parseBody } from "@/lib/schemas";
 import type { Grade } from "@/lib/types";
 
@@ -86,9 +85,9 @@ export async function POST(req: Request) {
   if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
   const body = parsed.data;
 
-  // Per-user daily cost guard.
-  const limit = await checkDailyLimit(supabase, user.id, "grade");
-  if (!limit.ok) return NextResponse.json({ error: limit.message }, { status: 429 });
+  // Stage 2 grading is core, free, and unlimited for every user. The daily
+  // cost guard that used to live here was removed by product decision —
+  // the trader must be able to grade as many paper trades as they want.
 
   const sopText = `TRADER SOP:
 Assets: ${body.sop.assets} | Timeframe: ${body.sop.tf}
