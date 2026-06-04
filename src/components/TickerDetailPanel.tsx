@@ -5,7 +5,9 @@ import { useTickerPanel } from "./TickerPanelContext";
 import { aggressionColor, aggressionLabel, type TickerMetrics } from "@/lib/ticker";
 import { computeConfidence } from "@/lib/confidence";
 import { errorMessage } from "@/lib/errors";
+import { isPaid, type SubscriptionInfo } from "@/lib/subscription";
 import type { SOP } from "@/lib/types";
+import ProGate from "./ProGate";
 
 type Quote = {
   price: number | null;
@@ -25,7 +27,15 @@ type Quote = {
 const RANGES = ["1mo", "6mo", "1y"] as const;
 type Range = (typeof RANGES)[number];
 
-export default function TickerDetailPanel({ sop, regime }: { sop: SOP; regime: string | null }) {
+export default function TickerDetailPanel({
+  sop,
+  regime,
+  subscription,
+}: {
+  sop: SOP;
+  regime: string | null;
+  subscription?: SubscriptionInfo;
+}) {
   const { symbol, closeTicker } = useTickerPanel();
   const [metrics, setMetrics] = useState<TickerMetrics | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
@@ -87,6 +97,32 @@ export default function TickerDetailPanel({ sop, regime }: { sop: SOP; regime: s
   }, [metrics, symbol, sop, regime]);
 
   if (!symbol) return null;
+
+  const free = !isPaid(subscription);
+  if (free) {
+    return (
+      <>
+        <div className="td-scrim" onClick={closeTicker} />
+        <aside className="td-panel" role="dialog" aria-label={`${symbol} detail`}>
+          <div className="td-head">
+            <div>
+              <div className="td-sym">{symbol}</div>
+              <div className="td-price">Ticker intelligence</div>
+            </div>
+            <button className="td-close" onClick={closeTicker} aria-label="Close">✕</button>
+          </div>
+          <div className="td-body" style={{ padding: 18 }}>
+            <ProGate
+              title="The ticker detail panel is a Pro tool"
+              description="Live chart, day range, aggression score, gate dots, stress test, confidence match, and a one-click bracket-order ticket against your Alpaca account — built for active traders placing real money trades."
+              onBack={closeTicker}
+              backLabel="Close"
+            />
+          </div>
+        </aside>
+      </>
+    );
+  }
 
   const price = quote?.price ?? metrics?.price ?? null;
   const prev = quote?.prev_close ?? null;

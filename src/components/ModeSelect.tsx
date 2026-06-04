@@ -3,7 +3,9 @@
 import { useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { errorMessage } from "@/lib/errors";
+import { isPaid, type SubscriptionInfo } from "@/lib/subscription";
 import type { TradingMode } from "@/lib/types";
+import ProGate from "./ProGate";
 
 const SHIELD = (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -46,16 +48,27 @@ export default function ModeSelect({
   current,
   onChosen,
   onCancel,
+  subscription,
 }: {
   current: TradingMode | null;
   onChosen: (m: TradingMode) => void;
   onCancel?: () => void;
+  subscription?: SubscriptionInfo;
 }) {
   const supabase = useMemo(() => createClient(), []);
   const [saving, setSaving] = useState<TradingMode | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [showTraderGate, setShowTraderGate] = useState(false);
+
+  const free = !isPaid(subscription);
 
   async function choose(mode: TradingMode) {
+    // Trader mode is a Pro feature. Free users see the upgrade prompt instead
+    // of switching — they can still keep working in Learner.
+    if (mode === "trader" && free) {
+      setShowTraderGate(true);
+      return;
+    }
     setSaving(mode);
     setErr(null);
     try {
@@ -68,6 +81,24 @@ export default function ModeSelect({
       setErr(errorMessage(e, "Could not save mode"));
       setSaving(null);
     }
+  }
+
+  if (showTraderGate) {
+    return (
+      <div className="mode-shell">
+        <div className="mode-head">
+          <div className="mode-eyebrow">Step 01 · Profile</div>
+          <h1 className="mode-headline">Experienced trader is a Pro feature</h1>
+          <div className="mode-subhead">The learning path is fully free. Live trading tools are reserved for Pro.</div>
+        </div>
+        <ProGate
+          title="Experienced trader mode is a Pro feature"
+          description="Trader mode unlocks the live dashboard, scalp monitor, recommendations rail, ticker detail panel, and the full regime tab — built for active traders placing real money trades."
+          onBack={() => setShowTraderGate(false)}
+          backLabel="Continue with Learner"
+        />
+      </div>
+    );
   }
 
   return (

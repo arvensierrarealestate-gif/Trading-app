@@ -6,7 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { isMySopTrade, type SOP, type Trade, type TradingMode, type TraderStats } from "@/lib/types";
 import { parseRegimes, type Regime } from "@/lib/regime";
 import { type ThemeId } from "@/lib/themes";
-import type { SubscriptionInfo } from "@/lib/subscription";
+import { isPaid, type SubscriptionInfo } from "@/lib/subscription";
+import ProGate from "./ProGate";
 import RegimeTab from "./RegimeTab";
 import MorningBrief from "./MorningBrief";
 import ModeSelect from "./ModeSelect";
@@ -162,6 +163,8 @@ function AppShellInner({
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
+  const free = !isPaid(initialSubscription);
+
   const eligibleTrades = mode === "learner"
     ? trades.filter((t) => isMySopTrade(t) && (t.protection_score ?? 0) >= 70)
     : trades;
@@ -185,7 +188,7 @@ function AppShellInner({
     router.refresh();
   }
 
-  if (mode === null) return <ModeSelect current={null} onChosen={(m) => setMode(m)} />;
+  if (mode === null) return <ModeSelect current={null} onChosen={(m) => setMode(m)} subscription={initialSubscription} />;
 
   if (mode === "trader" && !verified) {
     return (
@@ -246,7 +249,18 @@ function AppShellInner({
               <AcademyView anchorTermId={academy.anchorTermId} />
             ) : (
               <>
-            {view === "home" && <HomeDashboard sop={sop} regime={currentRegime} />}
+            {view === "home" && (
+              free ? (
+                <ProGate
+                  title="The home dashboard is a Pro tool"
+                  description="The trader Home shows your live portfolio chart, current positions with stress tests, and the recommendations rail — built for active traders placing real money trades."
+                  onBack={() => setView("brief")}
+                  backLabel="Back to morning brief"
+                />
+              ) : (
+                <HomeDashboard sop={sop} regime={currentRegime} />
+              )
+            )}
             {view === "brief" && <MorningBrief sop={sop} mode={mode} stats={traderStats} />}
             {view === "stage1" &&
               renderStage1(
@@ -277,10 +291,33 @@ function AppShellInner({
                 onManualChecksChange={setManualChecks}
                 onBack={() => setView("stage2")}
                 mode={mode}
+                subscription={initialSubscription}
               />
             )}
-            {view === "regime" && <RegimeTab sopRegimes={parseRegimes(sop.regimes)} onRegime={setCurrentRegime} mode={mode} />}
-            {view === "scalp" && <ScalpMonitor sop={sop} />}
+            {view === "regime" && (
+              free ? (
+                <ProGate
+                  title="The full regime tab is a Pro tool"
+                  description="The full regime view shows the live HMM confidence and 90-day timeline so you only trade when the market matches your SOP — built for active traders placing real money trades."
+                  onBack={() => setView("brief")}
+                  backLabel="Back to morning brief"
+                />
+              ) : (
+                <RegimeTab sopRegimes={parseRegimes(sop.regimes)} onRegime={setCurrentRegime} mode={mode} />
+              )
+            )}
+            {view === "scalp" && (
+              free ? (
+                <ProGate
+                  title="The scalp monitor is a Pro tool"
+                  description="The scalp monitor polls live market data every 5, 15 or 60 minutes and surfaces momentum signals you can act on with one click and an auto-stop — built for active traders placing real money trades."
+                  onBack={() => setView("stage2")}
+                  backLabel="Back to paper trading"
+                />
+              ) : (
+                <ScalpMonitor sop={sop} />
+              )
+            )}
             {view === "settings" && (
               <SettingsView
                 email={email}
@@ -301,7 +338,7 @@ function AppShellInner({
           </div>
         </div>
 
-        <TickerDetailPanel sop={sop} regime={currentRegime} />
+        <TickerDetailPanel sop={sop} regime={currentRegime} subscription={initialSubscription} />
 
         {switchingMode && (
           <div className="modal-overlay" onClick={() => setSwitchingMode(false)}>
@@ -313,6 +350,7 @@ function AppShellInner({
                   setSwitchingMode(false);
                 }}
                 onCancel={() => setSwitchingMode(false)}
+                subscription={initialSubscription}
               />
             </div>
           </div>
@@ -442,6 +480,7 @@ function AppShellInner({
           onManualChecksChange={setManualChecks}
           onBack={() => setStage(1)}
           mode={mode}
+          subscription={initialSubscription}
         />
       </div>
       </>

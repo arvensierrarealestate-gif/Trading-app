@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import { GL_ITEMS, LEARNER_PROTECTION_ITEM, isMySopTrade } from "@/lib/types";
 import type { Trade, TradingMode } from "@/lib/types";
 import { errorMessage } from "@/lib/errors";
+import { isPaid, type SubscriptionInfo } from "@/lib/subscription";
+import GoLiveCongrats from "./GoLiveCongrats";
 
 type AlpacaAccount = {
   account_number: string;
@@ -76,13 +78,16 @@ export default function Stage3GoLive({
   onManualChecksChange,
   onBack,
   mode,
+  subscription,
 }: {
   trades: Trade[];
   manualChecks: boolean[];
   onManualChecksChange: (next: boolean[]) => void;
   onBack: () => void;
   mode: TradingMode;
+  subscription?: SubscriptionInfo;
 }) {
+  const free = !isPaid(subscription);
   const supabase = useMemo(() => createClient(), []);
   const [account, setAccount] = useState<AlpacaAccount | null>(null);
   const [acctErr, setAcctErr] = useState<string | null>(null);
@@ -353,6 +358,9 @@ export default function Stage3GoLive({
         ) : null}
       </div>
 
+      {allPassed && free ? (
+        <GoLiveCongrats avgScore={avg} />
+      ) : (
       <div className="card">
         <div className="card-header">
           <div className="card-title"><div className="card-title-icon">⚡</div> Place live order</div>
@@ -446,8 +454,9 @@ export default function Stage3GoLive({
           </>
         )}
       </div>
+      )}
 
-      {allPassed && (
+      {allPassed && !free && (
         <div className="card">
           <div className="card-header">
             <div className="card-title"><div className="card-title-icon">◧</div> Open positions</div>
@@ -483,7 +492,7 @@ export default function Stage3GoLive({
         </div>
       )}
 
-      {allPassed && (
+      {allPassed && !free && (
         <div className="card">
           <div className="card-header">
             <div className="card-title"><div className="card-title-icon">≡</div> Recent orders</div>

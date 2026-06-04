@@ -18,3 +18,16 @@ export function isPaid(s: SubscriptionInfo | null | undefined): boolean {
   }
   return false;
 }
+
+// Client-only: ask the server for a Stripe Checkout URL, then redirect.
+// Called from the SubscriptionBadge and every ProGate, so the upgrade path
+// is the same everywhere.
+export async function startCheckout(): Promise<void> {
+  const res = await fetch("/api/stripe/checkout", { method: "POST" });
+  const j = await res.json();
+  if (res.ok && j.url) {
+    window.location.href = j.url;
+    return;
+  }
+  throw new Error(j.error || "Could not start checkout");
+}

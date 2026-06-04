@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { isPaid, type SubscriptionInfo } from "@/lib/subscription";
+import { isPaid, startCheckout, type SubscriptionInfo } from "@/lib/subscription";
 
 // Always-visible subscription pill in the header. Pro shows as a green badge
 // (with the renewal date on hover). Free shows as a clickable Upgrade pill
@@ -13,15 +13,9 @@ export default function SubscriptionBadge({ subscription }: { subscription: Subs
   async function upgrade() {
     setBusy(true);
     try {
-      const res = await fetch("/api/stripe/checkout", { method: "POST" });
-      const j = await res.json();
-      if (j.url) {
-        window.location.href = j.url;
-      } else {
-        alert(j.error || "Could not start checkout");
-        setBusy(false);
-      }
-    } catch {
+      await startCheckout();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Could not start checkout");
       setBusy(false);
     }
   }

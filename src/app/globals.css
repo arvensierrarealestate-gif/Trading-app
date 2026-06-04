@@ -1702,3 +1702,57 @@ body::before {
 }
 .sub-badge.free:hover:not(:disabled) { background: #00e8ba; }
 .sub-badge:disabled { opacity: 0.7; cursor: default; }
+
+/* ─────────────────── Pro gate card ─────────────────── */
+.pro-gate-card {
+  max-width: 540px; margin: 24px auto; padding: 36px 32px;
+  background: var(--bg1); border: 1px solid var(--border); border-radius: 16px;
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.35);
+}
+.pro-gate-lock {
+  width: 56px; height: 56px; border-radius: 14px;
+  background: rgba(0,212,170,0.12); color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin-bottom: 4px;
+}
+.pro-gate-title {
+  font-family: var(--display); font-weight: 800; font-size: 22px;
+  color: var(--text); letter-spacing: -0.01em;
+}
+.pro-gate-sub {
+  font-size: 13px; color: var(--text2); line-height: 1.65; max-width: 440px;
+}
+.pro-gate-desc {
+  font-size: 13px; color: var(--text); line-height: 1.65;
+  padding: 12px 16px; background: var(--bg2); border-radius: 10px;
+  border-left: 3px solid var(--accent); text-align: left;
+}
+.pro-gate-actions {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  justify-content: center; margin-top: 6px;
+}
+.pro-gate-cta { padding: 11px 22px; font-size: 13px; font-weight: 600; }
+.pro-gate-card .btn { font-size: 12px; }
+
+/* ─────────────────── Go-live congrats screen ─────────────────── */
+.congrats-card {
+  max-width: 580px; margin: 16px auto; padding: 44px 36px;
+  background: linear-gradient(180deg, rgba(0,212,170,0.05) 0%, transparent 100%);
+  border: 1px solid rgba(0,212,170,0.4); border-radius: 16px;
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px;
+  box-shadow: 0 12px 40px rgba(0,212,170,0.08);
+}
+.congrats-icon {
+  font-size: 36px; line-height: 1;
+  filter: drop-shadow(0 0 12px rgba(0,212,170,0.4));
+}
+.congrats-title {
+  font-family: var(--display); font-weight: 800; font-size: 26px;
+  color: var(--accent); letter-spacing: -0.01em; margin: 6px 0 4px;
+}
+.congrats-body { font-size: 14px; color: var(--text); line-height: 1.7; }
+.congrats-body strong { color: var(--accent); font-family: var(--display); }
+.congrats-next { font-size: 13px; color: var(--text2); margin: 14px 0 6px; line-height: 1.65; }
+.congrats-cta { margin-top: 6px; padding: 13px 26px; font-size: 14px; font-weight: 700; }
+.congrats-hint { font-size: 11px; color: var(--text3); margin-top: 10px; }
