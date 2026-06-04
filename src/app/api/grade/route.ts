@@ -2,11 +2,13 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { gradeSchema, parseBody } from "@/lib/schemas";
+import { isPaid } from "@/lib/subscription";
 import type { Grade } from "@/lib/types";
 
 export const runtime = "nodejs";
 
 const MODEL = "claude-opus-4-7";
+const FREE_GRADE_LIMIT = Number(process.env.FREE_GRADE_DAILY_LIMIT ?? "5");
 
 const SYSTEM = `You are a strict but supportive trading coach. Grade whether this paper trade followed the trader's own SOP rules. Read the chart carefully and be specific about what you actually see — price action, indicators, structure. Score 0-100 (0 = ignored the SOP entirely, 100 = textbook adherence). The verdict must reflect the score: "SOP followed" for strong adherence, "Partial" for mixed, "SOP violated" for poor adherence. For each rule check, "pass" means clearly met, "warn" means ambiguous or partially met, "fail" means clearly not met.`;
 
@@ -85,9 +87,41 @@ export async function POST(req: Request) {
   if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
   const body = parsed.data;
 
-  // Stage 2 grading is core, free, and unlimited for every user. The daily
-  // cost guard that used to live here was removed by product decision —
-  // the trader must be able to grade as many paper trades as they want.
+  // Free users get FREE_GRADE_LIMIT paper-trade grades per UTC day; Pro is
+  // unlimited. Pro check bypasses the count entirely.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("subscription_status, subscription_current_period_end")
+    .eq("id", user.id)
+    .maybeSingle();
+  const paid = isPaid({
+    status: (profile?.subscription_status ?? "free") as string,
+    tier: null,
+    current_period_end: profile?.subscription_current_period_end ?? null,
+  });
+  if (!paid) {
+    const since = new Date();
+    since.setUTCHours(0, 0, 0, 0);
+    const { count } = await supabase
+      .from("api_usage")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("kind", "grade")
+      .gte("created_at", since.toISOString());
+    if ((count ?? 0) >= FREE_GRADE_LIMIT) {
+      const reset = new Date();
+      reset.setUTCHours(0, 0, 0, 0);
+      reset.setUTCDate(reset.getUTCDate() + 1);
+      return NextResponse.json(
+        {
+          error: `You've used all ${FREE_GRADE_LIMIT} free grades today. Grades reset at midnight UTC. Upgrade to Pro for unlimited grading.`,
+          reset_at: reset.toISOString(),
+          limit_reached: true,
+        },
+        { status: 429 },
+      );
+    }
+  }
 
   const sopText = `TRADER SOP:
 Assets: ${body.sop.assets} | Timeframe: ${body.sop.tf}

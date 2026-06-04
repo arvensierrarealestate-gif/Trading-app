@@ -89,7 +89,14 @@ export default function Stage2Paper({
   const [grading, setGrading] = useState(false);
   const [log, setLog] = useState<LogLine[]>([]);
   const [grade, setGrade] = useState<{ grade: Grade; asset: string; dir: string; outcome: string; protection: ProtectionResult | null; strategyLabel: string } | null>(null);
-  const [usage, setUsage] = useState<{ grades: number; limit: number; remaining: number; est_cost_usd: number } | null>(null);
+  const [usage, setUsage] = useState<{
+    paid: boolean;
+    grades: number;
+    limit: number | null;
+    remaining: number | null;
+    resets_at: string;
+    est_cost_usd: number;
+  } | null>(null);
   const [reco, setReco] = useState<{ stop_loss_price: number; support_basis: string; drop_pct: number } | null>(null);
   const [recoBusy, setRecoBusy] = useState(false);
   const [showEdu, setShowEdu] = useState(false);
@@ -390,6 +397,22 @@ export default function Stage2Paper({
               {bestStrategy ? `${bestStrategy.label} · ${bestStrategy.avg}` : "—"}
             </div>
           </div>
+          <div className="stat">
+            <div className="stat-label">Grades today</div>
+            {usage ? (
+              usage.paid ? (
+                <div className="stat-val green" style={{ fontSize: 13 }}>Unlimited</div>
+              ) : (() => {
+                const used = usage.grades;
+                const cap = usage.limit ?? 5;
+                const left = usage.remaining ?? Math.max(0, cap - used);
+                const cls = left === 0 ? "red" : left === 1 ? "amber" : "green";
+                return <div className={`stat-val ${cls}`} style={{ fontSize: 13 }}>{used} of {cap}</div>;
+              })()
+            ) : (
+              <div className="stat-val">—</div>
+            )}
+          </div>
           <div className="stat"><div className="stat-label">Go-live ready</div><div className={`stat-val ${ready ? "green" : n >= 5 ? "red" : ""}`}>{n >= 5 ? (ready ? "Yes ✓" : "Not yet") : "—"}</div></div>
         </div>
       </div>
@@ -398,7 +421,11 @@ export default function Stage2Paper({
       <div className="card">
         <div className="card-header">
           <div className="card-title"><div className="card-title-icon">↑</div> Submit paper trade</div>
-          <div className="card-meta">unlimited AI grading · against your SOP</div>
+          <div className="card-meta">
+            {usage?.paid
+              ? "Unlimited AI grading · against your SOP"
+              : `${usage?.limit ?? 5} free grades per day · against your SOP`}
+          </div>
         </div>
 
         <div className="section-block">
@@ -569,22 +596,31 @@ export default function Stage2Paper({
           </div>
         </div>
 
-        <div className="btn-row">
-          {learner && !stopLoss.trim() && (
-            <span className="btn-hint" style={{ color: "var(--accent)" }}>
-              Set your stop loss before trading — this protects your money if the trade goes wrong.
-            </span>
-          )}
-          <button className="btn" onClick={clearForm} type="button">↺ Clear</button>
-          <button
-            className="btn primary"
-            onClick={gradeTrade}
-            disabled={grading || (learner && !stopLoss.trim())}
-            type="button"
-          >
-            {grading ? "⏳ Grading…" : "⚡ Grade this trade"}
-          </button>
-        </div>
+        {usage && !usage.paid && usage.remaining === 0 ? (
+          <GradeLimitCard cap={usage.limit ?? 5} resetsAt={usage.resets_at} />
+        ) : (
+          <div className="btn-row">
+            {learner && !stopLoss.trim() && (
+              <span className="btn-hint" style={{ color: "var(--accent)" }}>
+                Set your stop loss before trading — this protects your money if the trade goes wrong.
+              </span>
+            )}
+            {usage && !usage.paid && usage.remaining === 1 && (
+              <span className="btn-hint" style={{ color: "var(--amber)" }}>
+                Last free grade today — Pro unlocks unlimited grading.
+              </span>
+            )}
+            <button className="btn" onClick={clearForm} type="button">↺ Clear</button>
+            <button
+              className="btn primary"
+              onClick={gradeTrade}
+              disabled={grading || (learner && !stopLoss.trim())}
+              type="button"
+            >
+              {grading ? "⏳ Grading…" : "⚡ Grade this trade"}
+            </button>
+          </div>
+        )}
         {log.length > 0 && (
           <div className="log-strip">
             {log.map((l, i) => (
@@ -692,6 +728,47 @@ export default function Stage2Paper({
         <button className="btn primary" onClick={onUnlock} disabled={!goLiveUnlocked}>Unlock go-live →</button>
       </div>
     </>
+  );
+}
+
+// Shown in place of the Grade button when a Free user has used all 5 of
+// their daily grades. Tone is encouraging — they get back tomorrow OR
+// upgrade now.
+function GradeLimitCard({ cap, resetsAt }: { cap: number; resetsAt: string }) {
+  const [busy, setBusy] = useState(false);
+
+  async function upgrade() {
+    setBusy(true);
+    try {
+      const res = await fetch("/api/stripe/checkout", { method: "POST" });
+      const j = await res.json();
+      if (j.url) window.location.href = j.url;
+      else setBusy(false);
+    } catch {
+      setBusy(false);
+    }
+  }
+
+  const resetDate = new Date(resetsAt);
+  const localTime = resetDate.toLocaleString(undefined, { hour: "numeric", minute: "2-digit", timeZoneName: "short" });
+
+  return (
+    <div className="grade-limit-card">
+      <div className="grade-limit-icon" aria-hidden>🎯</div>
+      <div className="grade-limit-title">You've used all {cap} free grades today</div>
+      <div className="grade-limit-sub">
+        Grades reset at midnight UTC (<span style={{ color: "var(--text2)" }}>{localTime} your time</span>).
+        Upgrade to Pro for unlimited grading whenever you want it.
+      </div>
+      <div className="grade-limit-actions">
+        <button type="button" className="btn primary" onClick={upgrade} disabled={busy}>
+          {busy ? "Opening Stripe…" : "Upgrade to Pro · $19/mo"}
+        </button>
+        <button type="button" className="btn" disabled>
+          Come back tomorrow
+        </button>
+      </div>
+    </div>
   );
 }
 

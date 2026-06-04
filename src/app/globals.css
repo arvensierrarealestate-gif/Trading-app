@@ -1756,3 +1756,16 @@ body::before {
 .congrats-next { font-size: 13px; color: var(--text2); margin: 14px 0 6px; line-height: 1.65; }
 .congrats-cta { margin-top: 6px; padding: 13px 26px; font-size: 14px; font-weight: 700; }
 .congrats-hint { font-size: 11px; color: var(--text3); margin-top: 10px; }
+
+/* ─────────────────── Grade limit upgrade card (Free) ─────────────────── */
+.grade-limit-card {
+  margin: 0 20px 16px; padding: 22px 24px;
+  background: linear-gradient(180deg, rgba(0,212,170,0.04) 0%, transparent 100%);
+  border: 1px solid rgba(0,212,170,0.35); border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;
+}
+.grade-limit-icon { font-size: 28px; line-height: 1; filter: drop-shadow(0 0 10px rgba(0,212,170,0.3)); }
+.grade-limit-title { font-family: var(--display); font-weight: 800; font-size: 18px; color: var(--text); }
+.grade-limit-sub { font-size: 12px; color: var(--text3); line-height: 1.65; max-width: 460px; }
+.grade-limit-actions { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; justify-content: center; }
+.grade-limit-actions .btn { font-size: 12px; padding: 10px 18px; }
