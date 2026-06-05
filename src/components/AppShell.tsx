@@ -163,6 +163,20 @@ function AppShellInner({
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
+  // After Stripe redirects to /app?subscribed=1 the webhook may not have
+  // landed yet, so the SSR'd subscription is still 'free'. Strip the marker
+  // from the URL and re-fetch a few seconds later — by then the webhook has
+  // upserted the profile and the UI catches up.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("subscribed") !== "1") return;
+    url.searchParams.delete("subscribed");
+    window.history.replaceState(null, "", url.pathname + url.search);
+    const t = setTimeout(() => router.refresh(), 4000);
+    return () => clearTimeout(t);
+  }, [router]);
+
   const free = !isPaid(initialSubscription);
 
   const eligibleTrades = mode === "learner"
@@ -498,6 +512,7 @@ function AppShellInner({
                 setSwitchingMode(false);
               }}
               onCancel={() => setSwitchingMode(false)}
+              subscription={initialSubscription}
             />
           </div>
         </div>
