@@ -64,6 +64,7 @@ export default function Stage2Paper({
   mode,
   traderStats,
   onTradeAdded,
+  onTradesReplace,
   onUnlock,
 }: {
   sop: SOP;
@@ -73,6 +74,7 @@ export default function Stage2Paper({
   mode: TradingMode;
   traderStats: TraderStats | null;
   onTradeAdded: (t: Trade) => void;
+  onTradesReplace?: (next: Trade[]) => void;
   onUnlock: () => void;
 }) {
   const learner = mode === "learner";
@@ -89,6 +91,11 @@ export default function Stage2Paper({
   const [grading, setGrading] = useState(false);
   const [log, setLog] = useState<LogLine[]>([]);
   const [grade, setGrade] = useState<{ grade: Grade; asset: string; dir: string; outcome: string; protection: ProtectionResult | null; strategyLabel: string } | null>(null);
+  // Persisted-trade reconciliation: a visible banner the user can't miss when
+  // the journal-insert silently failed or the local count drifted from DB.
+  const [persistError, setPersistError] = useState<string | null>(null);
+  const [syncWarning, setSyncWarning] = useState<string | null>(null);
+  const [refreshingJournal, setRefreshingJournal] = useState(false);
   const [usage, setUsage] = useState<{
     paid: boolean;
     grades: number;
@@ -195,6 +202,53 @@ export default function Stage2Paper({
     setReco(null);
   }
 
+  // Refresh the journal from the DB — used to recover from an insert failure
+  // or when the local count drifted from the persisted truth.
+  async function refreshJournal() {
+    setRefreshingJournal(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setPersistError("Not signed in.");
+        return;
+      }
+      const { data, error } = await supabase
+        .from("paper_trades")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
+      if (error) {
+        setPersistError(`Could not refresh journal: ${errorMessage(error)}`);
+        return;
+      }
+      const next: Trade[] = (data ?? []).map((row) => ({
+        id: row.id,
+        asset: row.asset,
+        dir: row.dir as Trade["dir"],
+        outcome: row.outcome as Trade["outcome"],
+        entry: row.entry_price ?? undefined,
+        exit: row.exit_price ?? undefined,
+        stop_loss: row.stop_loss_price ?? undefined,
+        score: row.score,
+        verdict: row.verdict as Trade["verdict"],
+        grade: row.grade,
+        protection_score: row.protection_score ?? 0,
+        stop_loss_set: row.stop_loss_set ?? false,
+        stop_loss_placement: row.stop_loss_placement ?? 0,
+        position_size_ok: row.position_size_ok ?? false,
+        strategy_type: row.strategy_type ?? null,
+      }));
+      if (onTradesReplace) onTradesReplace(next);
+      setPersistError(null);
+      setSyncWarning(null);
+      addLog({ kind: "ok", msg: `Journal refreshed from database — ${next.length} trade(s).` });
+    } catch (e) {
+      setPersistError(`Refresh failed: ${errorMessage(e)}`);
+    } finally {
+      setRefreshingJournal(false);
+    }
+  }
+
   async function gradeTrade() {
     if (!chart) {
       addLog({ kind: "err", msg: "Upload a chart screenshot first." });
@@ -262,31 +316,43 @@ export default function Stage2Paper({
 
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: inserted, error } = await supabase
-          .from("paper_trades")
-          .insert({
-            user_id: user.id,
-            asset: asset || "Unknown",
-            dir,
-            outcome,
-            entry_price: entry || null,
-            exit_price: exit || null,
-            stop_loss_price: stopLoss || null,
-            score: g.score,
-            verdict: g.verdict,
-            grade: g,
-            protection_score: prot?.protection_score ?? 0,
-            stop_loss_set: prot?.stop_loss_set ?? false,
-            stop_loss_placement: prot?.stop_loss_placement ?? 0,
-            position_size_ok: prot?.position_size_ok ?? false,
-            strategy_type: selectedStrategy,
-          })
-          .select()
-          .single();
+        const payload = {
+          user_id: user.id,
+          asset: asset || "Unknown",
+          dir,
+          outcome,
+          entry_price: entry || null,
+          exit_price: exit || null,
+          stop_loss_price: stopLoss || null,
+          score: g.score,
+          verdict: g.verdict,
+          grade: g,
+          protection_score: prot?.protection_score ?? 0,
+          stop_loss_set: prot?.stop_loss_set ?? false,
+          stop_loss_placement: prot?.stop_loss_placement ?? 0,
+          position_size_ok: prot?.position_size_ok ?? false,
+          strategy_type: selectedStrategy,
+        };
+
+        // Insert with one transparent retry on a transient failure. Surfaces
+        // any persistent error via a prominent banner so it can't be missed.
+        async function insertOnce() {
+          return supabase.from("paper_trades").insert(payload).select().single();
+        }
+        let { data: inserted, error } = await insertOnce();
         if (error) {
-          addLog({ kind: "err", msg: `Saved locally only — database error: ${errorMessage(error)}` });
-        } else if (inserted) {
-          onTradeAdded({
+          addLog({ kind: "tool", msg: `Retrying database insert (${errorMessage(error)})…` });
+          await new Promise((r) => setTimeout(r, 700));
+          ({ data: inserted, error } = await insertOnce());
+        }
+
+        if (error || !inserted) {
+          const msg = error ? errorMessage(error) : "no row returned";
+          setPersistError(`This trade was graded but did NOT save to your journal: ${msg}. Click "Refresh journal" below to retry.`);
+          addLog({ kind: "err", msg: `Database error: ${msg}` });
+        } else {
+          // Reconcile: confirm the row really exists and bump local state.
+          const newTrade: Trade = {
             id: inserted.id,
             asset: inserted.asset,
             dir: inserted.dir as Trade["dir"],
@@ -302,7 +368,29 @@ export default function Stage2Paper({
             stop_loss_placement: inserted.stop_loss_placement ?? 0,
             position_size_ok: inserted.position_size_ok ?? false,
             strategy_type: inserted.strategy_type ?? selectedStrategy,
-          });
+          };
+          onTradeAdded(newTrade);
+          setPersistError(null);
+
+          // Post-insert reconciliation: count the rows in DB and compare with
+          // the (now incremented) local view. If they disagree the user sees a
+          // warning + a one-click refresh that reloads from the DB.
+          try {
+            const { count: dbCount, error: countErr } = await supabase
+              .from("paper_trades")
+              .select("id", { count: "exact", head: true })
+              .eq("user_id", user.id);
+            if (!countErr && dbCount != null) {
+              const expected = trades.length + 1;
+              if (dbCount !== expected) {
+                setSyncWarning(`Journal shows ${expected} trade(s) but the database has ${dbCount}. Click Refresh journal to re-sync.`);
+              } else {
+                setSyncWarning(null);
+              }
+            }
+          } catch {
+            /* non-critical */
+          }
         }
       }
     } catch (e) {
@@ -351,6 +439,25 @@ export default function Stage2Paper({
 
   return (
     <>
+      {persistError && (
+        <div className="persist-error-banner">
+          <span aria-hidden style={{ fontSize: 18 }}>⚠</span>
+          <span style={{ flex: 1 }}>{persistError}</span>
+          <button type="button" className="btn" onClick={refreshJournal} disabled={refreshingJournal}>
+            {refreshingJournal ? "Refreshing…" : "Refresh journal"}
+          </button>
+        </div>
+      )}
+      {syncWarning && !persistError && (
+        <div className="sync-warning-banner">
+          <span aria-hidden>↻</span>
+          <span style={{ flex: 1 }}>{syncWarning}</span>
+          <button type="button" className="btn" onClick={refreshJournal} disabled={refreshingJournal}>
+            {refreshingJournal ? "Refreshing…" : "Refresh journal"}
+          </button>
+        </div>
+      )}
+
       <div className="sop-hint">
         {hintCollapsed ? (
           <button type="button" className="sop-hint-collapsed" onClick={() => setHintCollapsed(false)}>
@@ -650,6 +757,16 @@ export default function Stage2Paper({
       <div className="card">
         <div className="card-header">
           <div className="card-title"><div className="card-title-icon">≡</div> Trade journal</div>
+          <button
+            type="button"
+            className="btn"
+            style={{ padding: "5px 12px", fontSize: 12 }}
+            onClick={refreshJournal}
+            disabled={refreshingJournal}
+            title="Re-load trades from the database"
+          >
+            {refreshingJournal ? "↻ Refreshing…" : "↻ Refresh journal"}
+          </button>
         </div>
         {trades.length === 0 ? (
           <div className="empty-state">

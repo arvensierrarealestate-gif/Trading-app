@@ -1769,3 +1769,18 @@ body::before {
 .grade-limit-sub { font-size: 12px; color: var(--text3); line-height: 1.65; max-width: 460px; }
 .grade-limit-actions { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; justify-content: center; }
 .grade-limit-actions .btn { font-size: 12px; padding: 10px 18px; }
+
+/* ─────────────────── Persist-error / sync-warning banners ─────────────────── */
+.persist-error-banner {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px; padding: 12px 18px;
+  background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.4);
+  border-radius: 10px; color: var(--red); font-size: 13px; line-height: 1.5;
+}
+.sync-warning-banner {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px; padding: 12px 18px;
+  background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.35);
+  border-radius: 10px; color: var(--amber); font-size: 13px; line-height: 1.5;
+}
+.persist-error-banner .btn, .sync-warning-banner .btn { padding: 6px 12px; font-size: 12px; }

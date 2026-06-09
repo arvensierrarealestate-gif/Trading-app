@@ -295,6 +295,7 @@ function AppShellInner({
                 mode={mode}
                 traderStats={traderStats}
                 onTradeAdded={(t) => setTrades((prev) => [...prev, t])}
+                onTradesReplace={(next) => setTrades(next)}
                 onUnlock={() => setView("stage3")}
               />
             )}
@@ -483,6 +484,7 @@ function AppShellInner({
           mode={mode}
           traderStats={traderStats}
           onTradeAdded={(t) => setTrades((prev) => [...prev, t])}
+          onTradesReplace={(next) => setTrades(next)}
           onUnlock={() => setStage(2)}
         />
       </div>
