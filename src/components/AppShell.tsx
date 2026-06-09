@@ -83,6 +83,7 @@ function AppShellInner({
   const [currentRegime, setCurrentRegime] = useState<Regime | null>(null);
   const [mode, setMode] = useState<TradingMode | null>(initialMode);
   const [switchingMode, setSwitchingMode] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [verified, setVerified] = useState(initialVerified);
   const [traderStats, setTraderStats] = useState<TraderStats | null>(initialStats);
   const [theme, setTheme] = useState<ThemeId>(initialTheme);
@@ -400,6 +401,9 @@ function AppShellInner({
           <button type="button" className="header-academy" onClick={() => academy.openAcademy()} title="Open Trading Academy">
             <span aria-hidden>📖</span> Academy
           </button>
+          <button type="button" className="header-academy" onClick={() => setSettingsOpen(true)} title="Open Settings">
+            <span aria-hidden>⚙</span> Settings
+          </button>
           <SubscriptionBadge subscription={initialSubscription} />
           <ThemeSwitcher value={theme} onChange={setTheme} />
           <button type="button" className="mode-pill learner" onClick={() => setSwitchingMode(true)}>
@@ -412,7 +416,30 @@ function AppShellInner({
         </div>
       </div>
 
-      {academy.open ? (
+      {settingsOpen ? (
+        <div className="learner-academy-wrap">
+          <button type="button" className="btn" onClick={() => setSettingsOpen(false)}>← Back to your stages</button>
+          <SettingsView
+            email={email}
+            theme={theme}
+            onTheme={setTheme}
+            mode={mode ?? "learner"}
+            sop={sop}
+            sopSaved={sopSaved}
+            sopUpdatedAt={sopUpdatedAt}
+            subscription={initialSubscription}
+            onEditSop={() => {
+              setSettingsOpen(false);
+              openSopReview();
+            }}
+            onSwitchMode={() => {
+              setSettingsOpen(false);
+              setSwitchingMode(true);
+            }}
+            onSignOut={signOut}
+          />
+        </div>
+      ) : academy.open ? (
         <div className="learner-academy-wrap">
           <button type="button" className="btn" onClick={() => academy.closeAcademy()}>← Back to your stages</button>
           <AcademyView anchorTermId={academy.anchorTermId} />
