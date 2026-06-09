@@ -21,11 +21,15 @@ export default function SubscriptionBadge({ subscription }: { subscription: Subs
   }
 
   if (paid) {
-    const renews = subscription.current_period_end
-      ? `Renews ${new Date(subscription.current_period_end).toLocaleDateString()}`
+    const dateStr = subscription.current_period_end
+      ? new Date(subscription.current_period_end).toLocaleDateString()
+      : null;
+    const canceled = subscription.status === "canceled";
+    const tooltip = dateStr
+      ? `${canceled ? "Access until" : "Renews"} ${dateStr}`
       : "Pro plan";
     return (
-      <span className="sub-badge active" title={renews}>
+      <span className="sub-badge active" title={tooltip}>
         ★ Pro
       </span>
     );
