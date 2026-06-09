@@ -254,10 +254,15 @@ export default function Stage2Paper({
       addLog({ kind: "err", msg: "Upload a chart screenshot first." });
       return;
     }
+    if (!asset.trim()) {
+      addLog({ kind: "err", msg: "Enter the asset / pair (e.g. BTC/USD) before grading." });
+      return;
+    }
     if (learner && !stopLoss.trim()) {
       addLog({ kind: "err", msg: "Set your stop loss before trading — this protects your money if the trade goes wrong." });
       return;
     }
+    const assetName = asset.trim();
     const isMySop = selectedStrategy === "my-sop";
     const tpl = isMySop ? null : getStrategy(selectedStrategy);
     const gradeSop: SOP = isMySop || !tpl?.defaults ? sop : { ...tpl.defaults, strategy_type: selectedStrategy };
@@ -276,7 +281,7 @@ export default function Stage2Paper({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sop: gradeSop,
-          asset: asset || "Unknown",
+          asset: assetName,
           dir,
           outcome,
           entry,
@@ -312,13 +317,13 @@ export default function Stage2Paper({
       } else {
         addLog({ kind: "tool", msg: `Practice trade — graded as ${strategyLabel}, does not count toward go-live.` });
       }
-      setGrade({ grade: g, asset: asset || "Unknown", dir, outcome, protection: prot, strategyLabel });
+      setGrade({ grade: g, asset: assetName, dir, outcome, protection: prot, strategyLabel });
 
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const payload = {
           user_id: user.id,
-          asset: asset || "Unknown",
+          asset: assetName,
           dir,
           outcome,
           entry_price: entry || null,
@@ -589,8 +594,15 @@ export default function Stage2Paper({
           <div className="section-label">Trade details</div>
           <div className="form-grid three">
             <div className="field">
-              <label>Asset / pair</label>
-              <input type="text" value={asset} onChange={(e) => setAsset(e.target.value)} placeholder="BTC/USD" />
+              <label>Asset / pair <span style={{ color: "var(--red)" }}>*</span></label>
+              <input
+                type="text"
+                value={asset}
+                onChange={(e) => setAsset(e.target.value)}
+                placeholder="BTC/USD"
+                required
+                aria-required="true"
+              />
             </div>
             <div className="field">
               <label>Direction</label>
