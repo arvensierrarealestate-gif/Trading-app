@@ -15,7 +15,7 @@ export default async function AppPage() {
     supabase.from("go_live_checks").select("manual_checks").eq("user_id", user.id).maybeSingle(),
     supabase
       .from("profiles")
-      .select("trading_mode, verified, theme, subscription_status, subscription_tier, subscription_current_period_end")
+      .select("trading_mode, verified, theme, subscription_status, subscription_tier, subscription_current_period_end, subscription_cancel_at_period_end")
       .eq("id", user.id)
       .maybeSingle(),
     supabase.from("trader_stats").select("*").eq("user_id", user.id).maybeSingle(),
@@ -27,6 +27,7 @@ export default async function AppPage() {
     status: (profileRes.data?.subscription_status ?? "free") as string,
     tier: (profileRes.data?.subscription_tier ?? null) as string | null,
     current_period_end: (profileRes.data?.subscription_current_period_end ?? null) as string | null,
+    cancel_at_period_end: !!profileRes.data?.subscription_cancel_at_period_end,
   };
   const themeRaw = profileRes.data?.theme;
   const initialTheme: ThemeId = isThemeId(themeRaw) ? themeRaw : "dark-terminal";

@@ -61,6 +61,7 @@ export async function POST(req: Request) {
           subscription_status: mapStatus(sub.status),
           subscription_tier: "pro",
           subscription_current_period_end: toIso(periodEnd),
+          subscription_cancel_at_period_end: !!sub.cancel_at_period_end,
         });
         if (error) throw new Error(`profiles upsert: ${error.message}`);
         console.log("[stripe webhook] checkout completed → pro", { userId, status: sub.status });
@@ -78,6 +79,7 @@ export async function POST(req: Request) {
             subscription_status: mapStatus(sub.status),
             subscription_tier: paid ? "pro" : null,
             subscription_current_period_end: toIso(periodEnd),
+            subscription_cancel_at_period_end: !!sub.cancel_at_period_end,
           })
           .eq("stripe_customer_id", customerId);
         if (error) throw new Error(`profiles update: ${error.message}`);
@@ -89,7 +91,7 @@ export async function POST(req: Request) {
         const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
         const { error } = await admin
           .from("profiles")
-          .update({ subscription_status: "canceled", subscription_tier: null })
+          .update({ subscription_status: "canceled", subscription_tier: null, subscription_cancel_at_period_end: false })
           .eq("stripe_customer_id", customerId);
         if (error) throw new Error(`profiles update: ${error.message}`);
         console.log("[stripe webhook] subscription canceled", { customerId });

@@ -7,6 +7,7 @@ export type SubscriptionInfo = {
   status: SubscriptionStatus | string;
   tier: string | null;
   current_period_end: string | null; // ISO timestamp
+  cancel_at_period_end?: boolean;
 };
 
 export function isPaid(s: SubscriptionInfo | null | undefined): boolean {

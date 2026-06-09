@@ -27,7 +27,10 @@ export default function SubscriptionPanel({ subscription }: { subscription: Subs
   }
 
   const paid = isPaid(subscription);
-  const statusLabel = paid ? "Pro · active" : subscription.status === "canceled" ? "Canceled" : "Free";
+  const cancelPending = subscription.status === "canceled" || !!subscription.cancel_at_period_end;
+  const statusLabel = paid
+    ? cancelPending ? "Pro · canceling" : "Pro · active"
+    : subscription.status === "canceled" ? "Canceled" : "Free";
   const periodEnd = subscription.current_period_end
     ? new Date(subscription.current_period_end).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
     : null;
@@ -42,7 +45,7 @@ export default function SubscriptionPanel({ subscription }: { subscription: Subs
         {paid ? (
           <>
             <div className="kv"><span>Plan</span><strong>Pro</strong></div>
-            {periodEnd && <div className="kv"><span>{subscription.status === "canceled" ? "Access until" : "Renews"}</span><strong>{periodEnd}</strong></div>}
+            {periodEnd && <div className="kv"><span>{cancelPending ? "Access until" : "Renews"}</span><strong>{periodEnd}</strong></div>}
             <div className="btn-row" style={{ marginTop: 12 }}>
               <span className="btn-hint">Update card, see invoices, or cancel in the Stripe customer portal.</span>
               <button className="btn" onClick={() => go("portal")} disabled={busy} type="button">
