@@ -99,13 +99,6 @@ export async function POST(req: Request) {
     tier: null,
     current_period_end: profile?.subscription_current_period_end ?? null,
   });
-  console.log("[grade] paid check", {
-    user_id: user.id,
-    has_profile: !!profile,
-    status: profile?.subscription_status ?? null,
-    current_period_end: profile?.subscription_current_period_end ?? null,
-    paid,
-  });
   if (!paid) {
     const since = new Date();
     since.setUTCHours(0, 0, 0, 0);
