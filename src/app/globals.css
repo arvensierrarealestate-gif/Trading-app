@@ -722,6 +722,12 @@ body::before {
 .brief-line { font-size: 13px; color: var(--text); line-height: 1.6; }
 .brief-line.muted, .brief-line .muted { color: var(--text3); }
 .brief-key { color: var(--accent); font-weight: 500; }
+.brief-markdown { display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text); line-height: 1.6; }
+.brief-markdown .brief-h { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); margin: 6px 0 2px; font-weight: 600; }
+.brief-markdown .brief-p { margin: 0; }
+.brief-markdown ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.brief-markdown li { font-size: 13px; color: var(--text); }
+.brief-empty { display: flex; flex-direction: column; align-items: flex-start; }
 
 .mode-pill {
   display: inline-flex;

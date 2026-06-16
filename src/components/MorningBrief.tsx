@@ -1,22 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { SOP, TradingMode, TraderStats } from "@/lib/types";
-import { parseRegimes, type Regime } from "@/lib/regime";
 import { aggressionColor, aggressionLabel, type TickerMetrics } from "@/lib/ticker";
-import { useAcademy } from "./AcademyContext";
 
-const CONDITION: Record<Regime, { label: string; why: string; rec: string }> = {
-  bull: { label: "favorable", why: "the market has been trending up steadily.", rec: "trade today with caution" },
-  neutral: { label: "neutral", why: "the market is calm and moving sideways.", rec: "trade today with caution" },
-  bear: { label: "avoid today", why: "the market has been drifting down.", rec: "wait for better conditions" },
-  crash: { label: "avoid today", why: "the market is falling sharply and risk is high.", rec: "do not trade today" },
+type DBBrief = {
+  id: string;
+  generated_at: string;
+  date: string;
+  regime: string | null;
+  regime_confidence: number | null;
+  gates_passing: number | null;
+  strategy_signal: string | null;
+  recommendation: string | null;
+  full_brief: string | null;
 };
-
-function pctToFraction(s: string): number {
-  const n = parseFloat(s);
-  return Number.isFinite(n) ? n / 100 : 0.02;
-}
 
 function parseSymbols(assets: string): string[] {
   return Array.from(
@@ -30,136 +28,131 @@ function parseSymbols(assets: string): string[] {
 }
 
 export default function MorningBrief({ sop, mode, stats }: { sop: SOP; mode: TradingMode; stats: TraderStats | null }) {
-  if (mode === "trader") return <TraderBrief sop={sop} stats={stats} />;
-  return <LearnerBrief sop={sop} />;
+  return (
+    <>
+      <AutomatedBrief />
+      {mode === "trader" && <TraderWatchlist sop={sop} stats={stats} />}
+    </>
+  );
 }
 
-type StrategyBrief = {
-  last_close: number;
-  leaps: { recent_low: number; pct_above_low: number; at_support: boolean };
-  momentum: { ema20: number; ema50: number; crossover_recent: boolean; ema20_above_ema50: boolean; volume_ratio: number; volume_high: boolean };
-  premium_selling: { iv_rank_available: boolean; note: string };
-};
-
-function LearnerBrief({ sop }: { sop: SOP }) {
-  const { openAcademy } = useAcademy();
-  const [regime, setRegime] = useState<Regime | null>(null);
-  const [equity, setEquity] = useState<number | null>(null);
+function AutomatedBrief() {
+  const [brief, setBrief] = useState<DBBrief | null>(null);
   const [loading, setLoading] = useState(true);
-  const [strat, setStrat] = useState<StrategyBrief | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const strategyType = sop.strategy_type ?? "custom";
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const [regRes, acctRes, stratRes] = await Promise.allSettled([
-        fetch("/api/regime").then((r) => r.json()),
-        fetch("/api/alpaca/account").then((r) => r.json()),
-        strategyType === "custom" ? Promise.resolve(null) : fetch("/api/strategy-brief").then((r) => r.json()),
-      ]);
-      if (cancelled) return;
-      if (regRes.status === "fulfilled" && regRes.value?.current?.regime) setRegime(regRes.value.current.regime);
-      if (acctRes.status === "fulfilled" && acctRes.value?.account?.equity) {
-        const e = Number(acctRes.value.account.equity);
-        if (Number.isFinite(e)) setEquity(e);
-      }
-      if (stratRes.status === "fulfilled" && stratRes.value && !stratRes.value.error) setStrat(stratRes.value as StrategyBrief);
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/morning-brief/latest");
+      const j = await res.json();
+      if (res.ok) setBrief(j.brief);
+    } finally {
       setLoading(false);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [strategyType]);
+    }
+  }, []);
 
-  const maxLoss = equity != null ? equity * pctToFraction(sop.drawdown) : null;
-  const allowed = parseRegimes(sop.regimes);
-  const cond = regime ? CONDITION[regime] : null;
-  let recommendation = cond?.rec ?? null;
-  if (cond && regime && (regime === "bull" || regime === "neutral") && allowed.length && !allowed.includes(regime)) {
-    recommendation = "wait for better conditions";
-  }
-
-  // Strategy-specific brief copy.
-  let strategyLine: React.ReactNode = null;
-  if (strat) {
-    if (strategyType === "premium-selling") {
-      strategyLine = (
-        <span className="muted">
-          <span className="brief-key" style={{ color: "var(--amber)" }}>Premium selling brief:</span> {strat.premium_selling.note}
-        </span>
-      );
-    } else if (strategyType === "leaps") {
-      const { pct_above_low, at_support } = strat.leaps;
-      strategyLine = (
-        <>
-          <span className="brief-key">LEAPS conditions:</span>{" "}
-          SPY is {at_support ? "at" : pct_above_low > 0 ? "above" : "below"} weekly support
-          {" "}({pct_above_low >= 0 ? "+" : ""}{pct_above_low.toFixed(1)}% from 8-week low).{" "}
-          <strong>{at_support ? "Good entry conditions for LEAPS." : "Wait for a pullback to support."}</strong>
-        </>
-      );
-    } else if (strategyType === "momentum-swing") {
-      const { crossover_recent, ema20_above_ema50, volume_high, volume_ratio } = strat.momentum;
-      const haveSignal = crossover_recent || ema20_above_ema50;
-      strategyLine = (
-        <>
-          <span className="brief-key">Momentum conditions:</span>{" "}
-          EMA crossover {crossover_recent ? "detected" : ema20_above_ema50 ? "active (20-EMA above 50-EMA)" : "not detected"} on SPY
-          {" "}with {volume_high ? "high" : "low"} volume ({volume_ratio.toFixed(2)}× 20-day avg).{" "}
-          <strong>{haveSignal && volume_high ? "Momentum conditions are favorable." : "Wait for a stronger momentum signal."}</strong>
-        </>
-      );
+  async function generate() {
+    setGenerating(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/morning-brief/generate", { method: "POST" });
+      const j = await res.json();
+      if (!res.ok) {
+        setError(j.error ?? "Could not generate brief");
+        return;
+      }
+      setBrief(j.brief as DBBrief);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Network error");
+    } finally {
+      setGenerating(false);
     }
   }
+
+  useEffect(() => { load(); }, [load]);
+
+  const generatedTime = brief?.generated_at
+    ? new Date(brief.generated_at).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })
+    : null;
 
   return (
     <div className="card brief-card">
       <div className="card-header">
         <div className="card-title"><div className="card-title-icon">☀</div> Your morning brief</div>
-        <div className="card-meta">protection first</div>
+        <div className="card-meta">
+          {generatedTime ? (
+            <>Generated today at {generatedTime} · <button type="button" className="brief-learn" onClick={generate} disabled={generating}>{generating ? "Refreshing…" : "↻ Regenerate"}</button></>
+          ) : (
+            <span>protection first</span>
+          )}
+        </div>
       </div>
       <div className="brief-body">
         {loading ? (
-          <div className="brief-line muted">Putting together your brief…</div>
+          <div className="brief-line muted">Loading your brief…</div>
+        ) : brief?.full_brief ? (
+          <div className="brief-markdown">{renderMarkdown(brief.full_brief)}</div>
         ) : (
-          <>
-            <div className="brief-line">
-              {maxLoss != null ? (
-                <>
-                  <span className="brief-key">Your maximum loss today</span> if all trades hit their stop loss:{" "}
-                  <strong>${maxLoss.toLocaleString(undefined, { maximumFractionDigits: 0 })}</strong>{" "}
-                  <span className="muted">(your {sop.drawdown} daily safety limit).</span>
-                </>
-              ) : (
-                <span className="muted">Connect your paper account to see your maximum dollar loss for the day.</span>
-              )}
-            </div>
-            <div className="brief-line">
-              <span className="brief-key">Market conditions:</span>{" "}
-              {cond ? <>{cond.label} — {cond.why}</> : <span className="muted">unavailable right now.</span>}
-              {" "}
-              <button type="button" className="brief-learn" onClick={() => openAcademy("market-regime")}>Learn →</button>
-            </div>
-            {strategyLine && <div className="brief-line">{strategyLine}</div>}
-            {maxLoss != null && recommendation ? (
-              <div className="brief-line">
-                <span className="brief-key">Recommendation:</span> {recommendation}.
-                {recommendation.startsWith("wait") || recommendation.startsWith("do not") ? (
-                  <> <button type="button" className="brief-learn" onClick={() => openAcademy("market-regime")}>Why this gate?</button></>
-                ) : null}
-              </div>
-            ) : maxLoss == null ? (
-              <div className="brief-line muted">We&apos;ll show your trade recommendation once we can show your dollar risk alongside it.</div>
-            ) : null}
-          </>
+          <div className="brief-empty">
+            <div className="brief-line muted">No brief for today yet. Generate one now or wait for the 7:30 AM ET auto-brief.</div>
+            <button type="button" className="btn primary" onClick={generate} disabled={generating} style={{ marginTop: 10 }}>
+              {generating ? "Generating…" : "Generate now"}
+            </button>
+          </div>
         )}
+        {error && <div className="brief-line" style={{ color: "var(--red)" }}>{error}</div>}
       </div>
     </div>
   );
 }
 
-function TraderBrief({ sop, stats }: { sop: SOP; stats: TraderStats | null }) {
+// Minimal markdown renderer for the 6-section brief — handles ##, **, lists.
+// Avoids pulling in a markdown lib just for this surface.
+function renderMarkdown(md: string): React.ReactNode {
+  const lines = md.split("\n");
+  const out: React.ReactNode[] = [];
+  let listBuf: string[] = [];
+  const flushList = () => {
+    if (!listBuf.length) return;
+    out.push(
+      <ul key={`ul-${out.length}`}>
+        {listBuf.map((item, i) => (
+          <li key={i}>{renderInline(item)}</li>
+        ))}
+      </ul>,
+    );
+    listBuf = [];
+  };
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+    if (!line.trim()) {
+      flushList();
+      continue;
+    }
+    if (line.startsWith("## ")) {
+      flushList();
+      out.push(<h4 key={`h-${out.length}`} className="brief-h">{line.slice(3)}</h4>);
+    } else if (line.startsWith("- ")) {
+      listBuf.push(line.slice(2));
+    } else {
+      flushList();
+      out.push(<p key={`p-${out.length}`} className="brief-p">{renderInline(line)}</p>);
+    }
+  }
+  flushList();
+  return out;
+}
+
+function renderInline(text: string): React.ReactNode {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((p, i) =>
+    p.startsWith("**") && p.endsWith("**") ? <strong key={i}>{p.slice(2, -2)}</strong> : <span key={i}>{p}</span>,
+  );
+}
+
+function TraderWatchlist({ sop, stats }: { sop: SOP; stats: TraderStats | null }) {
   const symbols = parseSymbols(sop.assets);
   const [rows, setRows] = useState<Record<string, TickerMetrics | { error: string }>>({});
   const [loading, setLoading] = useState(true);
@@ -185,8 +178,7 @@ function TraderBrief({ sop, stats }: { sop: SOP; stats: TraderStats | null }) {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sop.assets]);
+  }, [sop.assets, symbols]);
 
   function bestStyle(m: TickerMetrics): string {
     if (m.scalp_suitable && m.swing_suitable) return "scalp / swing";
