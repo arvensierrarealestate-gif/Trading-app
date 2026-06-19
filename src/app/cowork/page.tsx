@@ -123,7 +123,8 @@ export default function CoworkPage() {
     <div style={{ maxWidth: 1100, margin: "30px auto", padding: 20, fontFamily: "system-ui, sans-serif", color: "#dde4ef" }}>
       <h1 style={{ margin: 0, fontSize: 24 }}>Cowork brief</h1>
       <p style={{ color: "#888", fontSize: 13, marginTop: 4 }}>
-        Three-bucket morning brief + per-ticker candle scan. Click any ticker chip to chart it.
+        Three-bucket morning brief + per-ticker candle scan. Click any ticker chip to chart it.{" "}
+        <a href="/cowork/portfolio" style={{ color: "#7fb", textDecoration: "none" }}>Manage portfolio →</a>
       </p>
 
       {/* Status grid */}
