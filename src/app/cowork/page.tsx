@@ -94,6 +94,21 @@ export default function CoworkPage() {
   useEffect(() => { loadStatus(); }, [loadStatus]);
   useEffect(() => { loadChart(); }, [loadChart]);
 
+  // PWA / desktop-shortcut entry point. When launched from the installed
+  // shortcut (which uses start_url=/cowork?run=all), auto-run the full brief
+  // so the owner sees a fresh report the moment the window opens.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    const bucket = url.searchParams.get("run") as "all" | "b1" | "b2" | "b3" | null;
+    if (bucket === "all" || bucket === "b1" || bucket === "b2" || bucket === "b3") {
+      url.searchParams.delete("run");
+      window.history.replaceState(null, "", url.pathname + url.search);
+      run(bucket);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function run(bucket: "all" | "b1" | "b2" | "b3") {
     setBusy(bucket);
     setError(null);
