@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { createClient } from "@/lib/supabase/server";
+import { authorizeCowork } from "@/lib/cowork-auth";
 import { type Regime } from "@/lib/regime";
 import {
   B1_TICKERS,
@@ -182,9 +182,8 @@ REMINDER:
 type Body = { user_id?: string; bucket?: "all" | "b1" | "b2" | "b3"; tickers?: string[] };
 
 export async function POST(req: Request) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await authorizeCowork(req);
+  if (!auth.ok) return auth.response;
 
   const body: Body = await req.json().catch(() => ({} as Body));
   const bucket = body.bucket ?? "all";

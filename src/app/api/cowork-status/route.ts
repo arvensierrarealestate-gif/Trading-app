@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { authorizeCowork } from "@/lib/cowork-auth";
 import { B1_TICKERS, B2_TICKERS, B3_TICKERS, EXTRA_WATCH } from "@/lib/cowork-brief";
 import { fetchBars, regimeFromCloses, evaluateB1, evaluateB2, evaluateB3 } from "@/lib/cowork-eval";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
-export async function GET() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET(req: Request) {
+  const auth = await authorizeCowork(req);
+  if (!auth.ok) return auth.response;
 
   const universe = Array.from(new Set([...B1_TICKERS, ...B2_TICKERS, ...B3_TICKERS, ...EXTRA_WATCH, "SPY", "^VIX"]));
 

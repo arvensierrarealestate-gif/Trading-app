@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { authorizeCowork } from "@/lib/cowork-auth";
 
 export const runtime = "nodejs";
 
@@ -50,9 +50,8 @@ function pctChange(closes: number[], lookback: number): number | null {
 }
 
 export async function GET(req: Request) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await authorizeCowork(req);
+  if (!auth.ok) return auth.response;
 
   const url = new URL(req.url);
   const symbol = url.searchParams.get("symbol")?.toUpperCase();

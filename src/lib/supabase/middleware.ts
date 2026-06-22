@@ -24,7 +24,11 @@ export async function updateSession(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
 
-  if (!user && path.startsWith("/app")) {
+  // Require auth on /app and /cowork pages. API routes under those paths
+  // handle their own auth (returning 401 JSON instead of redirecting), so
+  // exclude /api/* from the redirect — otherwise headless callers using the
+  // Authorization: Bearer COWORK_API_TOKEN flow would get HTML redirects.
+  if (!user && !path.startsWith("/api") && (path.startsWith("/app") || path.startsWith("/cowork"))) {
     const redirect = request.nextUrl.clone();
     redirect.pathname = "/login";
     return NextResponse.redirect(redirect);
