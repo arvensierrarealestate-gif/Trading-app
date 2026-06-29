@@ -1,6 +1,7 @@
 import { fitGaussianHMM } from "@/lib/hmm";
 import { REGIMES, type Regime } from "@/lib/regime";
-import { B3_ALERTS, SPECIAL_NOTES, VIX_PRIME } from "@/lib/cowork-brief";
+import { B3_ALERTS, SPECIAL_NOTES, VIX_PRIME, SPCX_CSP_READY_DATE } from "@/lib/cowork-brief";
+import { type CoworkPortfolio } from "@/lib/cowork-portfolio";
 
 export type Bars = { close: number[]; volume: number[]; high: number[]; low: number[] };
 
@@ -148,8 +149,10 @@ export type B2Row = {
 
 export function evaluateB2(ticker: string, bars: Bars | null, vix: number | null): B2Row {
   const notes: string[] = [];
-  if (ticker === "NVDL") notes.push(SPECIAL_NOTES.NVDL_LEVERAGE);
+  if (ticker === "NVDL") { notes.push(SPECIAL_NOTES.NVDL_LEVERAGE); notes.push(SPECIAL_NOTES.NVDL_STOP_TEST); }
   if (ticker === "PYPL") notes.push(SPECIAL_NOTES.PYPL_FOREVER);
+  if (ticker === "GUSH") notes.push(SPECIAL_NOTES.GUSH_LIMIT);
+  if (ticker === "SPCX") notes.push(SPECIAL_NOTES.SPCX_B2);
 
   if (!bars) {
     return {
@@ -165,6 +168,20 @@ export function evaluateB2(ticker: string, bars: Bars | null, vix: number | null
   const hvVal = hv30(bars.close);
   const weekly = toWeekly(bars.close);
   const m = macd(weekly);
+
+  // SPCX: CSP entry blocked until post-IPO stabilization window.
+  if (ticker === "SPCX") {
+    const today = new Date().toISOString().slice(0, 10);
+    if (today < SPCX_CSP_READY_DATE) {
+      notes.push(`CSP window opens ${SPCX_CSP_READY_DATE} — share buy only until then`);
+      return {
+        ticker, price, rsi: rsiVal, hv30: hvVal,
+        macdAboveSignal: m.aboveSignal, macdAboveZero: m.aboveZero,
+        vixGate: "CAUTION", rsiGate: "CAUTION", macdGate: "CAUTION",
+        verdict: "CAUTION", notes,
+      };
+    }
+  }
 
   let vixGate: B2Row["vixGate"];
   if (vix == null) vixGate = "UNKNOWN";
@@ -239,11 +256,230 @@ export function evaluateB3(ticker: string, bars: Bars | null, regime: Regime, to
 
   const regimeMatch = regime === "bull" || regime === "neutral";
 
+  // Verdict priority: hard exit warning first, then fired state, then regime
+  // check BEFORE near-entry (bear/crash must demote NEAR ENTRY to HOLD).
   let verdict: B3Verdict = "MONITOR";
   if (daysToHardExit != null && daysToHardExit <= 30 && daysToHardExit >= 0) verdict = "EXIT APPROACHING";
   else if (alert.fired) verdict = "FIRED";
-  else if (alert.alert && price >= alert.alert) verdict = "NEAR ENTRY";
   else if (!regimeMatch) verdict = "HOLD";
+  else if (alert.alert && price >= alert.alert) verdict = "NEAR ENTRY";
 
   return { ticker, price, alertRef, daysToHardExit, regimeMatch, verdict, notes };
+}
+
+// ───── Owned positions evaluation ─────
+
+export type OwnedOptionRow = {
+  symbol: string;
+  type: "CALL" | "PUT";
+  side: "LONG" | "SHORT";
+  strike: number;
+  expiry: string;
+  account: string;
+  contracts: number;
+  daysToExpiry: number;
+  daysToHardExit: number | null;
+  underlyingPrice: number | null;
+  costBasis: number;
+  stopInfo: string;
+  status: "green" | "amber" | "red";
+  note: string;
+};
+
+export function evaluateOwnedOption(
+  opt: CoworkPortfolio["owned_options"][0],
+  underlyingBars: Bars | null,
+  todayISO: string,
+): OwnedOptionRow {
+  const today = new Date(todayISO);
+  const expiry = new Date(opt.expiry);
+  const daysToExpiry = Math.round((expiry.getTime() - today.getTime()) / 86_400_000);
+
+  let daysToHardExit: number | null = null;
+  if (opt.hard_exit) {
+    const exit = new Date(opt.hard_exit);
+    daysToHardExit = Math.round((exit.getTime() - today.getTime()) / 86_400_000);
+  }
+
+  const underlyingPrice = underlyingBars ? underlyingBars.close[underlyingBars.close.length - 1] : null;
+
+  const stopInfo = opt.gtc_stop != null
+    ? `GTC stop $${opt.gtc_stop}`
+    : opt.stop_manual != null
+    ? `Manual stop $${opt.stop_manual}`
+    : "No stop set";
+
+  let status: "green" | "amber" | "red" = "green";
+  if (daysToHardExit != null && daysToHardExit >= 0 && daysToHardExit <= 14) status = "red";
+  else if (daysToHardExit != null && daysToHardExit >= 0 && daysToHardExit <= 30) status = "amber";
+
+  const parts: string[] = [];
+  if (daysToHardExit != null) {
+    parts.push(daysToHardExit < 0 ? "Hard exit PASSED" : `Hard exit ${daysToHardExit}d`);
+  }
+  parts.push(`DTE ${daysToExpiry}`);
+  parts.push(stopInfo);
+  const note = parts.join(" · ");
+
+  return {
+    symbol: opt.symbol,
+    type: opt.type,
+    side: opt.side,
+    strike: opt.strike,
+    expiry: opt.expiry,
+    account: opt.account,
+    contracts: opt.contracts,
+    daysToExpiry,
+    daysToHardExit,
+    underlyingPrice,
+    costBasis: opt.cost_basis,
+    stopInfo,
+    status,
+    note,
+  };
+}
+
+export type OwnedStockRow = {
+  symbol: string;
+  account: string;
+  shares: number;
+  costBasis: number;
+  livePrice: number | null;
+  pnlPct: number | null;
+  stop: number | null;
+  status: "green" | "amber" | "red";
+  note: string;
+};
+
+export function evaluateOwnedStock(
+  stock: CoworkPortfolio["owned_stocks"][0],
+  bars: Bars | null,
+): OwnedStockRow {
+  const livePrice = bars ? bars.close[bars.close.length - 1] : null;
+  const pnlPct =
+    livePrice != null && stock.cost_basis > 0
+      ? ((livePrice - stock.cost_basis) / stock.cost_basis) * 100
+      : null;
+
+  let status: "green" | "amber" | "red" = "green";
+  if (pnlPct != null && pnlPct < -10) status = "red";
+  else if (pnlPct != null && pnlPct < 0) status = "amber";
+
+  const note = [
+    pnlPct != null ? `${pnlPct >= 0 ? "+" : ""}${pnlPct.toFixed(1)}%` : "—",
+    stock.stop != null ? `Stop $${stock.stop}` : "",
+  ].filter(Boolean).join(" · ");
+
+  return {
+    symbol: stock.symbol,
+    account: stock.account,
+    shares: stock.shares,
+    costBasis: stock.cost_basis,
+    livePrice,
+    pnlPct,
+    stop: stock.stop ?? null,
+    status,
+    note,
+  };
+}
+
+// ───── Re-entry evaluation ─────
+
+export type ReentryRow = {
+  symbol: string;
+  windowStatus: "open" | "upcoming" | "passed";
+  daysToWindowOpen: number | null;
+  daysToWindowClose: number | null;
+  daysToGoNogo: number | null;
+  trigger: string;
+  status: "green" | "amber" | "neutral";
+};
+
+export function evaluateReentry(
+  entry: CoworkPortfolio["monitor_reentry"][0],
+  todayISO: string,
+): ReentryRow {
+  const today = new Date(todayISO);
+
+  let daysToWindowOpen: number | null = null;
+  let daysToWindowClose: number | null = null;
+  let daysToGoNogo: number | null = null;
+
+  if (entry.window_open) {
+    daysToWindowOpen = Math.round((new Date(entry.window_open).getTime() - today.getTime()) / 86_400_000);
+  }
+  if (entry.window_close) {
+    daysToWindowClose = Math.round((new Date(entry.window_close).getTime() - today.getTime()) / 86_400_000);
+  }
+  if (entry.go_nogo_date) {
+    daysToGoNogo = Math.round((new Date(entry.go_nogo_date).getTime() - today.getTime()) / 86_400_000);
+  }
+
+  let windowStatus: ReentryRow["windowStatus"] = "upcoming";
+  if (daysToWindowClose != null && daysToWindowClose < 0) windowStatus = "passed";
+  else if (daysToWindowOpen != null && daysToWindowOpen <= 0) windowStatus = "open";
+
+  let status: "green" | "amber" | "neutral" = "neutral";
+  if (windowStatus === "open") status = "green";
+  else if (daysToWindowOpen != null && daysToWindowOpen <= 7) status = "amber";
+
+  return {
+    symbol: entry.symbol,
+    windowStatus,
+    daysToWindowOpen,
+    daysToWindowClose,
+    daysToGoNogo,
+    trigger: entry.trigger ?? "",
+    status,
+  };
+}
+
+// ───── Scalp evaluation ─────
+
+export type ScalpRow = {
+  ticker: string;
+  status: "clear" | "blocked" | "caution";
+  reason: string;
+};
+
+export function evaluateScalp(
+  scalp: CoworkPortfolio["monitor_scalp"],
+  ownedOptions: CoworkPortfolio["owned_options"],
+  underlyingBars: Bars | null,
+  vix: number | null,
+): ScalpRow | null {
+  if (!scalp) return null;
+  const { ticker } = scalp;
+
+  // Breakeven guard: if any owned LEAPS for this ticker has a mark, check it vs cost basis.
+  const relatedLeaps = ownedOptions.filter(
+    (o) => o.symbol === ticker && o.type === "CALL" && o.side === "LONG",
+  );
+  for (const leaps of relatedLeaps) {
+    if (leaps.mark != null && leaps.mark < leaps.cost_basis / (leaps.contracts * 100)) {
+      return { ticker, status: "blocked", reason: `${ticker} LEAPS mark below cost basis — breakeven guard (SR.10)` };
+    }
+  }
+
+  // VIX gate
+  const vixCfg = scalp.gates?.vix;
+  if (vix != null && vixCfg) {
+    if (vix > vixCfg.skip_above) {
+      return { ticker, status: "blocked", reason: `VIX ${vix.toFixed(1)} > ${vixCfg.skip_above} skip threshold` };
+    }
+    if (vix > vixCfg.ok[1]) {
+      return { ticker, status: "caution", reason: `VIX ${vix.toFixed(1)} — elevated (ideal <${vixCfg.ideal_below})` };
+    }
+  }
+
+  // RSI gate for underlying
+  if (underlyingBars && scalp.gates?.rsi) {
+    const rsiVal = rsi(underlyingBars.close, 14);
+    const [rsiLo, rsiHi] = scalp.gates.rsi;
+    if (rsiVal < rsiLo || rsiVal > rsiHi) {
+      return { ticker, status: "caution", reason: `${ticker} RSI ${rsiVal.toFixed(0)} outside ideal [${rsiLo}–${rsiHi}]` };
+    }
+  }
+
+  return { ticker, status: "clear", reason: "All automated gates pass — manual gates (price, MACD, spy_macro) still apply" };
 }

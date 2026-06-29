@@ -18,10 +18,19 @@ type Range = "1w" | "1m" | "3m" | "6m" | "1y";
 type B1Status = { ticker: string; price: number | null; flag: boolean; pctFromHigh: number | null };
 type B2Status = { ticker: string; price: number | null; verdict: "GO" | "CAUTION" | "SKIP"; rsi: number | null; vixGate: string };
 type B3Status = { ticker: string; price: number | null; verdict: "MONITOR" | "NEAR ENTRY" | "EXIT APPROACHING" | "HOLD" | "FIRED"; alertRef: string; daysToHardExit: number | null };
+type OwnedOptionStatus = { symbol: string; type: string; side: string; strike: number; expiry: string; account: string; contracts: number; daysToExpiry: number; daysToHardExit: number | null; underlyingPrice: number | null; costBasis: number; status: "green" | "amber" | "red"; note: string };
+type OwnedStockStatus = { symbol: string; account: string; shares: number; livePrice: number | null; pnlPct: number | null; stop: number | null; status: "green" | "amber" | "red"; note: string };
+type ReentryStatus = { symbol: string; windowStatus: "open" | "upcoming" | "passed"; daysToWindowOpen: number | null; daysToWindowClose: number | null; daysToGoNogo: number | null; trigger: string; status: "green" | "amber" | "neutral" };
+type ScalpStatus = { ticker: string; status: "clear" | "blocked" | "caution"; reason: string };
 type Status = {
   regime: string;
   regime_confidence: number;
   vix: number | null;
+  has_portfolio: boolean;
+  owned_options: OwnedOptionStatus[];
+  owned_stocks: OwnedStockStatus[];
+  reentry: ReentryStatus[];
+  scalp: ScalpStatus | null;
   b1: B1Status[];
   b2: B2Status[];
   b3: B3Status[];
@@ -159,7 +168,75 @@ export default function CoworkPage() {
           <>
             <div style={{ fontSize: 12, color: "#9aa4b8", marginBottom: 10 }}>
               Regime: <span style={{ color: "#dde4ef", fontWeight: 600 }}>{status.regime}</span> ({(status.regime_confidence * 100).toFixed(0)}%) · VIX: <span style={{ color: "#dde4ef", fontWeight: 600 }}>{status.vix?.toFixed(2) ?? "n/a"}</span>
+              {status.has_portfolio && <span style={{ marginLeft: 10, color: "#5fb6ff", fontSize: 11 }}>● portfolio loaded</span>}
             </div>
+
+            {status.has_portfolio && (status.owned_options.length > 0 || status.owned_stocks.length > 0) && (
+              <>
+                {status.owned_options.length > 0 && (
+                  <BucketGrid
+                    title="Owned — LEAPS options"
+                    tickers={status.owned_options.map((r) => ({
+                      ticker: r.symbol,
+                      price: r.underlyingPrice,
+                      color: r.status,
+                      label: r.daysToHardExit != null && r.daysToHardExit >= 0 ? `EXIT ${r.daysToHardExit}d` : `DTE ${r.daysToExpiry}`,
+                      sub: `$${r.strike}${r.type[0]} ×${r.contracts} [${r.account.split(" ")[0]}]`,
+                    }))}
+                    active={chartSymbol}
+                    onPick={setChartSymbol}
+                  />
+                )}
+                {status.owned_stocks.length > 0 && (
+                  <BucketGrid
+                    title="Owned — Stocks"
+                    tickers={status.owned_stocks.map((r) => ({
+                      ticker: r.symbol,
+                      price: r.livePrice,
+                      color: r.status,
+                      label: r.pnlPct != null ? `${r.pnlPct >= 0 ? "+" : ""}${r.pnlPct.toFixed(1)}%` : "—",
+                      sub: `${r.shares}sh · ${r.account.split(" ")[0]}`,
+                    }))}
+                    active={chartSymbol}
+                    onPick={setChartSymbol}
+                  />
+                )}
+              </>
+            )}
+
+            {status.has_portfolio && status.reentry.length > 0 && (
+              <BucketGrid
+                title="Re-entry"
+                tickers={status.reentry.map((r) => ({
+                  ticker: r.symbol,
+                  price: null,
+                  color: r.status === "green" ? "green" : r.status === "amber" ? "amber" : "neutral",
+                  label: r.windowStatus === "open" ? "WINDOW OPEN" : r.windowStatus === "passed" ? "PASSED" : r.daysToWindowOpen != null ? `in ${r.daysToWindowOpen}d` : "UPCOMING",
+                  sub: r.daysToGoNogo != null ? `Go/No-Go ${r.daysToGoNogo >= 0 ? `in ${r.daysToGoNogo}d` : "PAST"}` : "",
+                }))}
+                active={chartSymbol}
+                onPick={setChartSymbol}
+              />
+            )}
+
+            {status.scalp && (
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 11, color: "#9aa4b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Scalp</div>
+                <div style={{
+                  display: "inline-block",
+                  padding: "8px 14px",
+                  borderRadius: 8,
+                  border: `1px solid ${status.scalp.status === "clear" ? "#1f5f4d" : status.scalp.status === "blocked" ? "#5e2a32" : "#5e4a1f"}`,
+                  background: status.scalp.status === "clear" ? "#0e2620" : status.scalp.status === "blocked" ? "#2a1417" : "#2a2010",
+                  fontSize: 12,
+                }}>
+                  <span style={{ fontWeight: 700, color: status.scalp.status === "clear" ? "#3fdc8a" : status.scalp.status === "blocked" ? "#ff7070" : "#f5b400" }}>
+                    {status.scalp.ticker} — {status.scalp.status.toUpperCase()}
+                  </span>
+                  <span style={{ color: "#9aa4b8", marginLeft: 8 }}>{status.scalp.reason}</span>
+                </div>
+              </div>
+            )}
 
             <BucketGrid
               title="B1 — Autofill (IRA)"

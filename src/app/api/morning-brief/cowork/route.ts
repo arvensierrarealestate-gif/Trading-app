@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { authorizeCowork } from "@/lib/cowork-auth";
+import { authorizeCowork, type CoworkAuth } from "@/lib/cowork-auth";
 import { type Regime } from "@/lib/regime";
 import {
   B1_TICKERS,
@@ -16,10 +16,21 @@ import {
   evaluateB1,
   evaluateB2,
   evaluateB3,
+  evaluateOwnedOption,
+  evaluateOwnedStock,
+  evaluateReentry,
+  evaluateScalp,
   type B1Row,
   type B2Row,
   type B3Row,
+  type OwnedOptionRow,
+  type OwnedStockRow,
+  type ReentryRow,
+  type ScalpRow,
 } from "@/lib/cowork-eval";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { coworkPortfolioSchema, type CoworkPortfolio } from "@/lib/cowork-portfolio";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -111,11 +122,52 @@ function formatB3(rows: B3Row[], regime: Regime): string {
   return lines.join("\n");
 }
 
-function formatExtras(spcx: B1Row, rklb: B1Row): string {
-  return [
-    `SPCX — ${fmtPrice(spcx.price)} · ${SPECIAL_NOTES.SPCX_WINDOW}`,
-    `RKLB — ${fmtPrice(rklb.price)} · ${SPECIAL_NOTES.RKLB_NOTE}`,
-  ].join("\n");
+function formatExtras(rklb: B1Row): string {
+  return `RKLB — ${fmtPrice(rklb.price)} · ${SPECIAL_NOTES.RKLB_NOTE}`;
+}
+
+function formatOwnedPositions(options: OwnedOptionRow[], stocks: OwnedStockRow[], reentry: ReentryRow[], scalp: ScalpRow | null): string {
+  const lines: string[] = [];
+
+  if (options.length) {
+    lines.push("── Options (LEAPS)");
+    for (const o of options) {
+      const urgency = o.status === "red" ? " ⚑ EXIT SOON" : o.status === "amber" ? " ⚠" : "";
+      lines.push(`  ${o.symbol} $${o.strike}${o.type[0]} ${o.expiry.slice(0, 7)} ×${o.contracts} [${o.account}]${urgency}`);
+      lines.push(`    ${o.note}`);
+    }
+  }
+
+  if (stocks.length) {
+    lines.push("── Stocks");
+    const flagged = stocks.filter((s) => s.status !== "green");
+    if (flagged.length) {
+      for (const s of flagged) {
+        lines.push(`  ${s.symbol} ${s.shares}sh [${s.account}] — ${s.note}`);
+      }
+      lines.push(`  (${stocks.length - flagged.length} of ${stocks.length} stocks at/above cost basis — OK)`);
+    } else {
+      lines.push(`  All ${stocks.length} stocks at/above cost basis.`);
+    }
+  }
+
+  if (reentry.length) {
+    lines.push("── Re-entry");
+    for (const r of reentry) {
+      const label =
+        r.windowStatus === "open" ? "WINDOW OPEN" :
+        r.windowStatus === "passed" ? "window passed" :
+        r.daysToWindowOpen != null ? `window in ${r.daysToWindowOpen}d` : "upcoming";
+      lines.push(`  ${r.symbol} — ${label}${r.daysToGoNogo != null ? ` · Go/No-Go ${r.daysToGoNogo >= 0 ? `in ${r.daysToGoNogo}d` : "PAST"}` : ""}`);
+    }
+  }
+
+  if (scalp) {
+    const icon = scalp.status === "blocked" ? "🚫" : scalp.status === "caution" ? "⚠" : "✓";
+    lines.push(`── Scalp (${scalp.ticker}): ${icon} ${scalp.status.toUpperCase()} — ${scalp.reason}`);
+  }
+
+  return lines.length ? lines.join("\n") : "No owned positions loaded.";
 }
 
 // ───── Narrative sections via Sonnet ─────
@@ -128,7 +180,9 @@ async function generateNarrative(input: {
   b2Top: string | null;
   b3Exits: { ticker: string; days: number }[];
   b3NearEntry: string | null;
-  spcxPrice: number | null;
+  ownedExitsSoon: { symbol: string; days: number }[];
+  reentryOpen: string[];
+  scalpStatus: string | null;
 }): Promise<{ priority: string; reminder: string } | null> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return null;
@@ -138,17 +192,19 @@ async function generateNarrative(input: {
 Signals:
 - Regime: ${input.regime}
 - VIX: ${input.vix ?? "n/a"}
+- Owned LEAPS hard exits within 14d: ${input.ownedExitsSoon.length ? input.ownedExitsSoon.map((e) => `${e.symbol} (${e.days}d)`).join(", ") : "none"}
 - B1 flagged (down >10% from 52w high): ${input.b1Flagged}
 - B2 GO verdicts: ${input.b2GoCount}${input.b2Top ? ` (top: ${input.b2Top})` : ""}
 - B3 near-entry candidate: ${input.b3NearEntry ?? "none"}
 - B3 hard exits within 30d: ${input.b3Exits.length ? input.b3Exits.map((e) => `${e.ticker} (${e.days}d)`).join(", ") : "none"}
-- SPCX price: ${input.spcxPrice ?? "n/a"} (30-day post-IPO window, buy ~Jul 10)
+- Re-entry windows open: ${input.reentryOpen.length ? input.reentryOpen.join(", ") : "none"}
+- Scalp status: ${input.scalpStatus ?? "n/a"}
 - IRA accounts forbid GTC stops — flag if relevant.
 
 Output exactly two sections, no header, no preamble, plain markdown:
 
 PRIORITY:
-1. [most urgent — typically a hard exit within 30d, then a NEAR ENTRY in matching regime, then top B2 GO]
+1. [most urgent — owned LEAPS exit within 14d beats everything, then B3 hard exits, then re-entry window, then B2 GO]
 2. [second item if any]
 3. [third item if any]
 
@@ -177,6 +233,38 @@ REMINDER:
   }
 }
 
+// ───── Portfolio loader (shared with status route) ─────
+
+async function loadPortfolio(auth: CoworkAuth): Promise<CoworkPortfolio | null> {
+  if (!auth.ok) return null;
+  try {
+    if (auth.source === "session") {
+      const supabase = await createClient();
+      const { data } = await supabase
+        .from("cowork_portfolio")
+        .select("document")
+        .eq("user_id", auth.userId)
+        .maybeSingle();
+      if (!data?.document) return null;
+      const parsed = coworkPortfolioSchema.safeParse(data.document);
+      return parsed.success ? parsed.data : null;
+    }
+    const userId = process.env.COWORK_USER_ID;
+    if (!userId) return null;
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("cowork_portfolio")
+      .select("document")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (!data?.document) return null;
+    const parsed = coworkPortfolioSchema.safeParse(data.document);
+    return parsed.success ? parsed.data : null;
+  } catch {
+    return null;
+  }
+}
+
 // ───── Route ─────
 
 type Body = { user_id?: string; bucket?: "all" | "b1" | "b2" | "b3"; tickers?: string[] };
@@ -189,18 +277,25 @@ export async function POST(req: Request) {
   const bucket = body.bucket ?? "all";
   const overrideTickers = Array.isArray(body.tickers) && body.tickers.length ? body.tickers.map((t) => t.toUpperCase()) : null;
 
+  // Load portfolio for Layer 1 (owned positions) and portfolio-driven tickers.
+  const portfolio = await loadPortfolio(auth);
+
   // Decide which tickers to fetch.
   const needB1 = bucket === "all" || bucket === "b1";
   const needB2 = bucket === "all" || bucket === "b2";
   const needB3 = bucket === "all" || bucket === "b3";
 
-  const b1List = needB1 ? (overrideTickers ?? Array.from(B1_TICKERS)) : [];
-  const b2List = needB2 ? (overrideTickers ?? Array.from(B2_TICKERS)) : [];
-  const b3List = needB3 ? (overrideTickers ?? Array.from(B3_TICKERS)) : [];
+  const b1List = needB1 ? (overrideTickers ?? portfolio?.monitor_B1_autofill?.tickers ?? Array.from(B1_TICKERS)) : [];
+  const b2List = needB2 ? (overrideTickers ?? portfolio?.monitor_B2_csp?.tickers ?? Array.from(B2_TICKERS)) : [];
+  const b3List = needB3 ? (overrideTickers ?? portfolio?.monitor_B3_leaps?.scan_order ?? Array.from(B3_TICKERS)) : [];
 
-  // Always fetch SPY + ^VIX + extras (SPCX/RKLB) for the header / context lines.
+  // Owned symbols for Layer 1.
+  const ownedSymbols = portfolio
+    ? [...portfolio.owned_options.map((o) => o.symbol), ...portfolio.owned_stocks.map((s) => s.symbol)]
+    : [];
+
   const extras = Array.from(EXTRA_WATCH);
-  const universe = Array.from(new Set([...b1List, ...b2List, ...b3List, ...extras, "SPY", "^VIX"]));
+  const universe = Array.from(new Set([...b1List, ...b2List, ...b3List, ...extras, ...ownedSymbols, "SPY", "^VIX"]));
 
   const fetched = await Promise.all(universe.map((sym) => fetchBars(sym).then((b) => [sym, b] as const)));
   const barsMap = new Map(fetched);
@@ -210,19 +305,36 @@ export async function POST(req: Request) {
   const spyClose = spy?.close[spy.close.length - 1] ?? null;
   const spyPrev = spy?.close[spy.close.length - 2] ?? null;
   const spyChangePct = spyClose != null && spyPrev != null ? ((spyClose - spyPrev) / spyPrev) * 100 : 0;
-  const vix = vixBars?.close[vixBars.close.length - 1] ?? null;
+  const vix = vixBars ? vixBars.close[vixBars.close.length - 1] : null;
 
   if (!spy) return NextResponse.json({ error: "Could not fetch SPY market data" }, { status: 502 });
   const { regime, confidence } = regimeFromCloses(spy.close);
 
-  // Evaluate buckets.
+  const today = new Date().toISOString().slice(0, 10);
+
+  // Layer 1 — owned positions.
+  const ownedOptionRows: OwnedOptionRow[] = portfolio
+    ? portfolio.owned_options.map((o) => evaluateOwnedOption(o, barsMap.get(o.symbol) ?? null, today))
+    : [];
+  const ownedStockRows: OwnedStockRow[] = portfolio
+    ? portfolio.owned_stocks.map((s) => evaluateOwnedStock(s, barsMap.get(s.symbol) ?? null))
+    : [];
+  const reentryRows: ReentryRow[] = portfolio
+    ? portfolio.monitor_reentry.map((e) => evaluateReentry(e, today))
+    : [];
+  const scalpTicker = portfolio?.monitor_scalp?.ticker;
+  const scalpRow: ScalpRow | null = evaluateScalp(
+    portfolio?.monitor_scalp ?? null,
+    portfolio?.owned_options ?? [],
+    scalpTicker ? (barsMap.get(scalpTicker) ?? null) : null,
+    vix,
+  );
+
+  // Layer 2 — monitoring scans.
   const b1Rows: B1Row[] = b1List.map((t) => evaluateB1(t, barsMap.get(t) ?? null));
   const b2Rows: B2Row[] = b2List.map((t) => evaluateB2(t, barsMap.get(t) ?? null, vix));
-  const today = new Date().toISOString().slice(0, 10);
   const b3Rows: B3Row[] = b3List.map((t) => evaluateB3(t, barsMap.get(t) ?? null, regime, today));
 
-  // Extras.
-  const spcxRow = evaluateB1("SPCX", barsMap.get("SPCX") ?? null);
   const rklbRow = evaluateB1("RKLB", barsMap.get("RKLB") ?? null);
 
   // Header.
@@ -230,13 +342,17 @@ export async function POST(req: Request) {
   const headerTime = new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York", timeZoneName: "short" });
   const market = buildMarketLine(regime, confidence, vix, spyChangePct, spyClose ?? 0);
 
-  // Narrative sections.
+  // Narrative inputs.
   const b2Gos = b2Rows.filter((r) => r.verdict === "GO");
   const b2Top = b2Gos.length ? b2Gos.sort((a, b) => (a.rsi ?? 100) - (b.rsi ?? 100))[0].ticker : null;
   const b3Exits = b3Rows
     .filter((r) => r.daysToHardExit != null && r.daysToHardExit >= 0 && r.daysToHardExit <= 30)
     .map((r) => ({ ticker: r.ticker, days: r.daysToHardExit! }));
   const b3NearEntry = b3Rows.find((r) => r.verdict === "NEAR ENTRY" && r.regimeMatch)?.ticker ?? null;
+  const ownedExitsSoon = ownedOptionRows
+    .filter((r) => r.daysToHardExit != null && r.daysToHardExit >= 0 && r.daysToHardExit <= 14)
+    .map((r) => ({ symbol: r.symbol, days: r.daysToHardExit! }));
+  const reentryOpen = reentryRows.filter((r) => r.windowStatus === "open").map((r) => r.symbol);
 
   const narrative = await generateNarrative({
     regime,
@@ -246,10 +362,12 @@ export async function POST(req: Request) {
     b2Top,
     b3Exits,
     b3NearEntry,
-    spcxPrice: spcxRow.price,
+    ownedExitsSoon,
+    reentryOpen,
+    scalpStatus: scalpRow ? `${scalpRow.ticker} ${scalpRow.status}` : null,
   });
 
-  // Assemble.
+  // Assemble brief.
   const sections: string[] = [];
   sections.push(`MORNING BRIEF — ${headerDate} · ${headerTime}`);
   sections.push("");
@@ -262,26 +380,36 @@ export async function POST(req: Request) {
   sections.push(market.recLine);
   sections.push("");
 
+  if (portfolio) {
+    sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
+    sections.push("LAYER 1 — OWNED POSITIONS");
+    sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
+    sections.push(formatOwnedPositions(ownedOptionRows, ownedStockRows, reentryRows, scalpRow));
+    sections.push("");
+  }
+
+  sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
+  sections.push("LAYER 2 — MONITORING SCANS");
+  sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
+  sections.push("");
+
   if (needB1) {
-    sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
     sections.push("B1 — AUTOFILL CHECK");
-    sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
+    sections.push("─────────────────────────");
     sections.push(formatB1(b1Rows));
     sections.push("");
   }
 
   if (needB2) {
-    sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
     sections.push("B2 — CSP OPPORTUNITIES");
-    sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
+    sections.push("─────────────────────────");
     sections.push(formatB2(b2Rows, vix));
     sections.push("");
   }
 
   if (needB3) {
-    sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
     sections.push("B3 — LEAPS SCAN (PATH last)");
-    sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
+    sections.push("─────────────────────────");
     sections.push(formatB3(b3Rows, regime));
     sections.push("");
   }
@@ -289,13 +417,13 @@ export async function POST(req: Request) {
   sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
   sections.push("EXTRA WATCH");
   sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
-  sections.push(formatExtras(spcxRow, rklbRow));
+  sections.push(formatExtras(rklbRow));
   sections.push("");
 
   sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
   sections.push("TODAY'S PRIORITY");
   sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
-  sections.push(narrative?.priority ?? "1. Review B3 hard exits.\n2. Re-check B2 entries if VIX shifts.\n3. Verify SPCX window timing.");
+  sections.push(narrative?.priority ?? "1. Review owned LEAPS hard exits.\n2. Re-check B2 entries if VIX shifts.\n3. Monitor re-entry windows.");
   sections.push("");
 
   sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
