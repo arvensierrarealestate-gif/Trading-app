@@ -54,6 +54,8 @@ export default function CoworkPage() {
   const [statusBusy, setStatusBusy] = useState(true);
   const [statusError, setStatusError] = useState<string | null>(null);
 
+  const [activeTab, setActiveTab] = useState<"portfolio" | "b1" | "b2" | "b3">("portfolio");
+
   const [chartSymbol, setChartSymbol] = useState<string>("NVDA");
   const [chartRange, setChartRange] = useState<Range>("3m");
   const [candles, setCandles] = useState<Candle[]>([]);
@@ -166,13 +168,55 @@ export default function CoworkPage() {
 
         {status && (
           <>
-            <div style={{ fontSize: 12, color: "#9aa4b8", marginBottom: 10 }}>
+            {/* Market conditions bar */}
+            <div style={{ fontSize: 12, color: "#9aa4b8", paddingBottom: 12, marginBottom: 14, borderBottom: "1px solid #1a1f2e" }}>
               Regime: <span style={{ color: "#dde4ef", fontWeight: 600 }}>{status.regime}</span> ({(status.regime_confidence * 100).toFixed(0)}%) · VIX: <span style={{ color: "#dde4ef", fontWeight: 600 }}>{status.vix?.toFixed(2) ?? "n/a"}</span>
               {status.has_portfolio && <span style={{ marginLeft: 10, color: "#5fb6ff", fontSize: 11 }}>● portfolio loaded</span>}
             </div>
 
-            {status.has_portfolio && (status.owned_options.length > 0 || status.owned_stocks.length > 0) && (
+            {/* Tab navigation */}
+            <div style={{ display: "flex", gap: 4, marginBottom: 18, flexWrap: "wrap" }}>
+              {(["portfolio", "b1", "b2", "b3"] as const).map((tab) => {
+                const labels = { portfolio: "Portfolio", b1: "B1 — Autofill", b2: "B2 — CSP", b3: "B3 — LEAPS" };
+                const badgeCount = {
+                  portfolio: (status.owned_options?.length ?? 0) + (status.owned_stocks?.length ?? 0),
+                  b1: status.b1.filter((r) => r.flag).length,
+                  b2: status.b2.filter((r) => r.verdict === "GO").length,
+                  b3: status.b3.filter((r) => r.verdict === "NEAR ENTRY").length,
+                }[tab];
+                const badgeColor = tab === "b1" ? { bg: "#5e2a32", fg: "#ff7070" } : { bg: "#1f5f4d", fg: "#3fdc8a" };
+                const isActive = activeTab === tab;
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    style={{
+                      padding: "7px 16px", fontSize: 12, fontWeight: 600, borderRadius: 7,
+                      border: `1px solid ${isActive ? "#4a5f8a" : "#2a3142"}`,
+                      background: isActive ? "#1a2540" : "transparent",
+                      color: isActive ? "#dde4ef" : "#9aa4b8",
+                      cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+                    }}
+                  >
+                    {labels[tab]}
+                    {badgeCount > 0 && (
+                      <span style={{ background: badgeColor.bg, color: badgeColor.fg, borderRadius: 10, padding: "1px 6px", fontSize: 10 }}>
+                        {badgeCount}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Portfolio tab */}
+            {activeTab === "portfolio" && (
               <>
+                {!status.has_portfolio && (
+                  <div style={{ color: "#666", fontSize: 13, padding: "20px 0" }}>
+                    No portfolio loaded. <a href="/cowork/portfolio" style={{ color: "#7fb", textDecoration: "none" }}>Add your positions →</a>
+                  </div>
+                )}
                 {status.owned_options.length > 0 && (
                   <BucketGrid
                     title="Owned — LEAPS options"
@@ -201,88 +245,94 @@ export default function CoworkPage() {
                     onPick={setChartSymbol}
                   />
                 )}
+                {status.reentry.length > 0 && (
+                  <BucketGrid
+                    title="Re-entry"
+                    tickers={status.reentry.map((r) => ({
+                      ticker: r.symbol,
+                      price: null,
+                      color: r.status === "green" ? "green" : r.status === "amber" ? "amber" : "neutral",
+                      label: r.windowStatus === "open" ? "WINDOW OPEN" : r.windowStatus === "passed" ? "PASSED" : r.daysToWindowOpen != null ? `in ${r.daysToWindowOpen}d` : "UPCOMING",
+                      sub: r.daysToGoNogo != null ? `Go/No-Go ${r.daysToGoNogo >= 0 ? `in ${r.daysToGoNogo}d` : "PAST"}` : "",
+                    }))}
+                    active={chartSymbol}
+                    onPick={setChartSymbol}
+                  />
+                )}
+                {status.scalp && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, color: "#9aa4b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Scalp</div>
+                    <div style={{
+                      display: "inline-block", padding: "8px 14px", borderRadius: 8, fontSize: 12,
+                      border: `1px solid ${status.scalp.status === "clear" ? "#1f5f4d" : status.scalp.status === "blocked" ? "#5e2a32" : "#5e4a1f"}`,
+                      background: status.scalp.status === "clear" ? "#0e2620" : status.scalp.status === "blocked" ? "#2a1417" : "#2a2010",
+                    }}>
+                      <span style={{ fontWeight: 700, color: status.scalp.status === "clear" ? "#3fdc8a" : status.scalp.status === "blocked" ? "#ff7070" : "#f5b400" }}>
+                        {status.scalp.ticker} — {status.scalp.status.toUpperCase()}
+                      </span>
+                      <span style={{ color: "#9aa4b8", marginLeft: 8 }}>{status.scalp.reason}</span>
+                    </div>
+                  </div>
+                )}
               </>
             )}
 
-            {status.has_portfolio && status.reentry.length > 0 && (
+            {/* B1 tab */}
+            {activeTab === "b1" && (
               <BucketGrid
-                title="Re-entry"
-                tickers={status.reentry.map((r) => ({
-                  ticker: r.symbol,
-                  price: null,
-                  color: r.status === "green" ? "green" : r.status === "amber" ? "amber" : "neutral",
-                  label: r.windowStatus === "open" ? "WINDOW OPEN" : r.windowStatus === "passed" ? "PASSED" : r.daysToWindowOpen != null ? `in ${r.daysToWindowOpen}d` : "UPCOMING",
-                  sub: r.daysToGoNogo != null ? `Go/No-Go ${r.daysToGoNogo >= 0 ? `in ${r.daysToGoNogo}d` : "PAST"}` : "",
+                title="B1 — Autofill (IRA)"
+                tickers={status.b1.map((r) => ({
+                  ticker: r.ticker,
+                  price: r.price,
+                  color: r.flag ? "red" : "neutral",
+                  label: r.flag ? "FLAGGED" : "OK",
+                  sub: r.pctFromHigh != null ? `${r.pctFromHigh >= 0 ? "+" : ""}${r.pctFromHigh.toFixed(1)}% from 52w high` : "",
                 }))}
                 active={chartSymbol}
                 onPick={setChartSymbol}
               />
             )}
 
-            {status.scalp && (
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, color: "#9aa4b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Scalp</div>
-                <div style={{
-                  display: "inline-block",
-                  padding: "8px 14px",
-                  borderRadius: 8,
-                  border: `1px solid ${status.scalp.status === "clear" ? "#1f5f4d" : status.scalp.status === "blocked" ? "#5e2a32" : "#5e4a1f"}`,
-                  background: status.scalp.status === "clear" ? "#0e2620" : status.scalp.status === "blocked" ? "#2a1417" : "#2a2010",
-                  fontSize: 12,
-                }}>
-                  <span style={{ fontWeight: 700, color: status.scalp.status === "clear" ? "#3fdc8a" : status.scalp.status === "blocked" ? "#ff7070" : "#f5b400" }}>
-                    {status.scalp.ticker} — {status.scalp.status.toUpperCase()}
-                  </span>
-                  <span style={{ color: "#9aa4b8", marginLeft: 8 }}>{status.scalp.reason}</span>
-                </div>
-              </div>
+            {/* B2 tab */}
+            {activeTab === "b2" && (
+              <BucketGrid
+                title="B2 — CSP"
+                tickers={status.b2.map((r) => ({
+                  ticker: r.ticker,
+                  price: r.price,
+                  color: r.verdict === "GO" ? "green" : r.verdict === "CAUTION" ? "amber" : "red",
+                  label: r.verdict,
+                  sub: r.rsi != null ? `RSI ${r.rsi.toFixed(0)}` : "",
+                }))}
+                active={chartSymbol}
+                onPick={setChartSymbol}
+              />
             )}
 
-            <BucketGrid
-              title="B1 — Autofill (IRA)"
-              tickers={status.b1.map((r) => ({
-                ticker: r.ticker,
-                price: r.price,
-                color: r.flag ? "red" : "neutral",
-                label: r.flag ? "FLAGGED" : "OK",
-                sub: r.pctFromHigh != null ? `${r.pctFromHigh >= 0 ? "+" : ""}${r.pctFromHigh.toFixed(1)}% from 52w high` : "",
-              }))}
-              active={chartSymbol}
-              onPick={setChartSymbol}
-            />
-            <BucketGrid
-              title="B2 — CSP"
-              tickers={status.b2.map((r) => ({
-                ticker: r.ticker,
-                price: r.price,
-                color: r.verdict === "GO" ? "green" : r.verdict === "CAUTION" ? "amber" : "red",
-                label: r.verdict,
-                sub: r.rsi != null ? `RSI ${r.rsi.toFixed(0)}` : "",
-              }))}
-              active={chartSymbol}
-              onPick={setChartSymbol}
-            />
-            <BucketGrid
-              title="B3 — LEAPS (PATH last)"
-              tickers={status.b3.map((r) => ({
-                ticker: r.ticker,
-                price: r.price,
-                color:
-                  r.verdict === "NEAR ENTRY" ? "green" :
-                  r.verdict === "EXIT APPROACHING" ? "amber" :
-                  r.verdict === "HOLD" ? "red" :
-                  r.verdict === "FIRED" ? "blue" : "neutral",
-                label: r.verdict,
-                sub: r.daysToHardExit != null && r.daysToHardExit >= 0 && r.daysToHardExit <= 30
-                  ? `${r.daysToHardExit}d to exit`
-                  : [
-                      r.pullbackPct != null ? `PB ${r.pullbackPct.toFixed(1)}% (${r.pullbackGate})` : null,
-                      r.vixB3Gate !== "UNKNOWN" ? `VIX ${r.vixB3Gate}` : null,
-                    ].filter(Boolean).join(" · ") || r.alertRef,
-              }))}
-              active={chartSymbol}
-              onPick={setChartSymbol}
-            />
+            {/* B3 tab */}
+            {activeTab === "b3" && (
+              <BucketGrid
+                title="B3 — LEAPS (PATH last)"
+                tickers={status.b3.map((r) => ({
+                  ticker: r.ticker,
+                  price: r.price,
+                  color:
+                    r.verdict === "NEAR ENTRY" ? "green" :
+                    r.verdict === "EXIT APPROACHING" ? "amber" :
+                    r.verdict === "HOLD" ? "red" :
+                    r.verdict === "FIRED" ? "blue" : "neutral",
+                  label: r.verdict,
+                  sub: r.daysToHardExit != null && r.daysToHardExit >= 0 && r.daysToHardExit <= 30
+                    ? `${r.daysToHardExit}d to exit`
+                    : [
+                        r.pullbackPct != null ? `PB ${r.pullbackPct.toFixed(1)}% (${r.pullbackGate})` : null,
+                        r.vixB3Gate !== "UNKNOWN" ? `VIX ${r.vixB3Gate}` : null,
+                      ].filter(Boolean).join(" · ") || r.alertRef,
+                }))}
+                active={chartSymbol}
+                onPick={setChartSymbol}
+              />
+            )}
           </>
         )}
       </div>
@@ -331,18 +381,18 @@ export default function CoworkPage() {
       {/* SR.5 — Session Opening Protocol */}
       <SessionProtocol status={status} />
 
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "24px 0 16px" }}>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "24px 0 16px", alignItems: "center" }}>
         <button onClick={() => run("all")} disabled={busy !== null} style={btnStyle(busy === "all")}>
           {busy === "all" ? "Generating…" : "▶ Full brief"}
         </button>
-        <button onClick={() => run("b1")} disabled={busy !== null} style={btnStyle(busy === "b1")}>
-          {busy === "b1" ? "Generating…" : "B1 — Autofill"}
+        <button onClick={() => { setActiveTab("b1"); run("b1"); }} disabled={busy !== null} style={btnStyle(busy === "b1" || (busy === null && activeTab === "b1"))}>
+          {busy === "b1" ? "Generating…" : "B1 brief"}
         </button>
-        <button onClick={() => run("b2")} disabled={busy !== null} style={btnStyle(busy === "b2")}>
-          {busy === "b2" ? "Generating…" : "B2 — CSP"}
+        <button onClick={() => { setActiveTab("b2"); run("b2"); }} disabled={busy !== null} style={btnStyle(busy === "b2" || (busy === null && activeTab === "b2"))}>
+          {busy === "b2" ? "Generating…" : "B2 brief"}
         </button>
-        <button onClick={() => run("b3")} disabled={busy !== null} style={btnStyle(busy === "b3")}>
-          {busy === "b3" ? "Generating…" : "B3 — LEAPS"}
+        <button onClick={() => { setActiveTab("b3"); run("b3"); }} disabled={busy !== null} style={btnStyle(busy === "b3" || (busy === null && activeTab === "b3"))}>
+          {busy === "b3" ? "Generating…" : "B3 brief"}
         </button>
       </div>
 
