@@ -88,7 +88,7 @@ export async function GET(req: Request) {
   // Bucket evaluation.
   const b1 = b1Tickers.map((t) => evaluateB1(t, barsMap.get(t) ?? null));
   const b2 = b2Tickers.map((t) => evaluateB2(t, barsMap.get(t) ?? null, vix));
-  const b3 = b3Tickers.map((t) => evaluateB3(t, barsMap.get(t) ?? null, regime, today));
+  const b3 = b3Tickers.map((t) => evaluateB3(t, barsMap.get(t) ?? null, regime, today, vix));
 
   // Owned positions (portfolio layer 1).
   const ownedOptions = portfolio
@@ -137,6 +137,6 @@ export async function GET(req: Request) {
     scalp: scalp ? { ticker: scalp.ticker, status: scalp.status, reason: scalp.reason } : null,
     b1: b1.map((r) => ({ ticker: r.ticker, price: r.price, flag: r.flag, pctFromHigh: r.pctFromHigh })),
     b2: b2.map((r) => ({ ticker: r.ticker, price: r.price, verdict: r.verdict, rsi: r.rsi, vixGate: r.vixGate })),
-    b3: b3.map((r) => ({ ticker: r.ticker, price: r.price, verdict: r.verdict, alertRef: r.alertRef, daysToHardExit: r.daysToHardExit })),
+    b3: b3.map((r) => ({ ticker: r.ticker, price: r.price, verdict: r.verdict, alertRef: r.alertRef, daysToHardExit: r.daysToHardExit, pullbackGate: r.pullbackGate, vixB3Gate: r.vixB3Gate, pullbackPct: r.pullbackPct })),
   });
 }

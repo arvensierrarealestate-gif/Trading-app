@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type Diagnostics = {
   regime: string;
@@ -17,7 +17,7 @@ type Range = "1w" | "1m" | "3m" | "6m" | "1y";
 
 type B1Status = { ticker: string; price: number | null; flag: boolean; pctFromHigh: number | null };
 type B2Status = { ticker: string; price: number | null; verdict: "GO" | "CAUTION" | "SKIP"; rsi: number | null; vixGate: string };
-type B3Status = { ticker: string; price: number | null; verdict: "MONITOR" | "NEAR ENTRY" | "EXIT APPROACHING" | "HOLD" | "FIRED"; alertRef: string; daysToHardExit: number | null };
+type B3Status = { ticker: string; price: number | null; verdict: "MONITOR" | "NEAR ENTRY" | "EXIT APPROACHING" | "HOLD" | "FIRED"; alertRef: string; daysToHardExit: number | null; pullbackGate: "PASS" | "CAUTION" | "FAIL" | "UNKNOWN"; vixB3Gate: "PASS" | "FAIL" | "UNKNOWN"; pullbackPct: number | null };
 type OwnedOptionStatus = { symbol: string; type: string; side: string; strike: number; expiry: string; account: string; contracts: number; daysToExpiry: number; daysToHardExit: number | null; underlyingPrice: number | null; costBasis: number; status: "green" | "amber" | "red"; note: string };
 type OwnedStockStatus = { symbol: string; account: string; shares: number; livePrice: number | null; pnlPct: number | null; stop: number | null; status: "green" | "amber" | "red"; note: string };
 type ReentryStatus = { symbol: string; windowStatus: "open" | "upcoming" | "passed"; daysToWindowOpen: number | null; daysToWindowClose: number | null; daysToGoNogo: number | null; trigger: string; status: "green" | "amber" | "neutral" };
@@ -273,7 +273,12 @@ export default function CoworkPage() {
                   r.verdict === "HOLD" ? "red" :
                   r.verdict === "FIRED" ? "blue" : "neutral",
                 label: r.verdict,
-                sub: r.daysToHardExit != null && r.daysToHardExit >= 0 && r.daysToHardExit <= 30 ? `${r.daysToHardExit}d to exit` : r.alertRef,
+                sub: r.daysToHardExit != null && r.daysToHardExit >= 0 && r.daysToHardExit <= 30
+                  ? `${r.daysToHardExit}d to exit`
+                  : [
+                      r.pullbackPct != null ? `PB ${r.pullbackPct.toFixed(1)}% (${r.pullbackGate})` : null,
+                      r.vixB3Gate !== "UNKNOWN" ? `VIX ${r.vixB3Gate}` : null,
+                    ].filter(Boolean).join(" · ") || r.alertRef,
               }))}
               active={chartSymbol}
               onPick={setChartSymbol}
@@ -322,6 +327,9 @@ export default function CoworkPage() {
           )}
         </div>
       </div>
+
+      {/* SR.5 — Session Opening Protocol */}
+      <SessionProtocol status={status} />
 
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", margin: "24px 0 16px" }}>
         <button onClick={() => run("all")} disabled={busy !== null} style={btnStyle(busy === "all")}>
@@ -518,6 +526,164 @@ function CandleChart({ candles, symbol }: { candles: Candle[]; symbol: string })
           <text key={i} x={padLeft + slot * i + slot / 2} y={H - 10} textAnchor="middle" fontSize={10} fill="#666">{candles[i].date}</text>
         ))}
       </svg>
+    </div>
+  );
+}
+
+// ───── SR.5 Session Opening Protocol ─────
+
+const SR5_STEPS = [
+  {
+    id: "market",
+    label: "Market conditions",
+    detail: "Check regime (Bull/Neutral/Bear/Crash) + VIX vs 18/25 prime window. Bear or Crash = selective entries only.",
+  },
+  {
+    id: "owned_exits",
+    label: "Owned LEAPS — exit review",
+    detail: "Any hard exit within 14 days? Any DTE < 30? Flag immediately, prioritize over new entries.",
+  },
+  {
+    id: "nvdl_stop",
+    label: "NVDL stop test (9:55 AM)",
+    detail: "If NVDL position active: run R1 MA50/10 Fidelity stop test at 9:55 AM. Error = no NVDL entry this session.",
+  },
+  {
+    id: "b2_csp",
+    label: "B2 CSP scan",
+    detail: "VIX 18–25 = prime window. Check GO verdicts — RSI < 35, weekly MACD positive. PYPL always included. SPCX: no CSP before 2026-07-19.",
+  },
+  {
+    id: "b3_leaps",
+    label: "B3 LEAPS scan",
+    detail: "NEAR ENTRY requires: regime bull/neutral + VIX < 22 (R3.3) + pullback 10–25% from 52w high (R3.2). PATH always scanned last.",
+  },
+  {
+    id: "reentry",
+    label: "Re-entry + IRA stops",
+    detail: "Check open re-entry windows. IRA accounts: no GTC stops — manual stop management required at open and close.",
+  },
+];
+
+function SessionProtocol({ status }: { status: Status | null }) {
+  const [open, setOpen] = useState(false);
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const storageKey = `sr5-${new Date().toISOString().slice(0, 10)}`;
+  const loaded = useRef(false);
+
+  useEffect(() => {
+    if (loaded.current) return;
+    loaded.current = true;
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) setChecked(JSON.parse(saved));
+    } catch {}
+  }, [storageKey]);
+
+  function toggle(id: string) {
+    setChecked((prev) => {
+      const next = { ...prev, [id]: !prev[id] };
+      try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }
+
+  const done = SR5_STEPS.filter((s) => checked[s.id]).length;
+  const allDone = done === SR5_STEPS.length;
+
+  // Derive context-aware hints from live status.
+  function hint(step: typeof SR5_STEPS[0]): string | null {
+    if (!status) return null;
+    if (step.id === "market") {
+      const r = status.regime;
+      const v = status.vix;
+      return `Regime: ${r} · VIX: ${v?.toFixed(2) ?? "n/a"}${v != null && v > 25 ? " ⚠ elevated — no B2" : v != null && v < 18 ? " ⚠ low premium" : " ✓ prime"}`;
+    }
+    if (step.id === "owned_exits") {
+      const urgent = status.owned_options.filter((o) => o.daysToHardExit != null && o.daysToHardExit >= 0 && o.daysToHardExit <= 14);
+      return urgent.length ? `⚑ ${urgent.map((o) => `${o.symbol} ${o.daysToHardExit}d`).join(", ")} — EXIT SOON` : "No hard exits within 14 days.";
+    }
+    if (step.id === "b2_csp") {
+      const gos = status.b2.filter((r) => r.verdict === "GO");
+      return gos.length ? `GO: ${gos.map((r) => r.ticker).join(", ")}` : "No GO verdicts today.";
+    }
+    if (step.id === "b3_leaps") {
+      const near = status.b3.filter((r) => r.verdict === "NEAR ENTRY");
+      return near.length ? `NEAR ENTRY: ${near.map((r) => r.ticker).join(", ")}` : "No NEAR ENTRY tickers today.";
+    }
+    if (step.id === "reentry") {
+      const open2 = status.reentry.filter((r) => r.windowStatus === "open");
+      return open2.length ? `Windows open: ${open2.map((r) => r.symbol).join(", ")}` : "No re-entry windows open.";
+    }
+    return null;
+  }
+
+  return (
+    <div style={{ background: "#0f1118", border: `1px solid ${allDone ? "#1f5f4d" : "#2a3142"}`, borderRadius: 10, padding: "14px 20px", marginTop: 20 }}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{ background: "none", border: "none", cursor: "pointer", width: "100%", textAlign: "left", padding: 0, display: "flex", alignItems: "center", gap: 10 }}
+      >
+        <span style={{ fontSize: 13, fontWeight: 600, color: allDone ? "#3fdc8a" : "#dde4ef" }}>
+          {open ? "▾" : "▸"} SR.5 — Session Opening Protocol
+        </span>
+        <span style={{ marginLeft: "auto", fontSize: 11, color: allDone ? "#3fdc8a" : "#9aa4b8" }}>
+          {done}/{SR5_STEPS.length} {allDone ? "✓ complete" : "steps"}
+        </span>
+      </button>
+
+      {open && (
+        <div style={{ marginTop: 14 }}>
+          {SR5_STEPS.map((step, i) => {
+            const h = hint(step);
+            const isDone = !!checked[step.id];
+            return (
+              <div
+                key={step.id}
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 12,
+                  padding: "10px 0",
+                  borderBottom: i < SR5_STEPS.length - 1 ? "1px solid #1a1f2e" : "none",
+                }}
+              >
+                <button
+                  onClick={() => toggle(step.id)}
+                  style={{
+                    width: 20, height: 20, marginTop: 1, flexShrink: 0,
+                    borderRadius: 4, border: `2px solid ${isDone ? "#3fdc8a" : "#3a4250"}`,
+                    background: isDone ? "#3fdc8a" : "transparent",
+                    cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                >
+                  {isDone && <span style={{ color: "#0e2620", fontSize: 12, fontWeight: 700, lineHeight: 1 }}>✓</span>}
+                </button>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: isDone ? "#9aa4b8" : "#dde4ef", textDecoration: isDone ? "line-through" : "none" }}>
+                    {i + 1}. {step.label}
+                  </div>
+                  <div style={{ fontSize: 11, color: "#7d8699", marginTop: 2 }}>{step.detail}</div>
+                  {h && (
+                    <div style={{ fontSize: 11, color: isDone ? "#555" : "#5fb6ff", marginTop: 4, fontFamily: "monospace" }}>→ {h}</div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+          <div style={{ marginTop: 10, textAlign: "right" }}>
+            <button
+              onClick={() => {
+                setChecked({});
+                try { localStorage.removeItem(storageKey); } catch {}
+              }}
+              style={{ fontSize: 10, color: "#555", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+            >
+              Reset checklist
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -219,15 +219,31 @@ export type B3Row = {
   alertRef: string;
   daysToHardExit: number | null;
   regimeMatch: boolean;
+  pullbackPct: number | null;        // % below 52w high (positive = below high)
+  pullbackGate: "PASS" | "CAUTION" | "FAIL" | "UNKNOWN"; // R3.2
+  vixB3Gate: "PASS" | "FAIL" | "UNKNOWN";                // R3.3
   verdict: B3Verdict;
   notes: string[];
 };
 
-export function evaluateB3(ticker: string, bars: Bars | null, regime: Regime, todayISO: string): B3Row {
+// R3.3: VIX must be below 22 for B3 LEAPS entry.
+export const B3_VIX_LIMIT = 22;
+
+export function evaluateB3(
+  ticker: string,
+  bars: Bars | null,
+  regime: Regime,
+  todayISO: string,
+  vix: number | null = null,
+): B3Row {
   const alert = B3_ALERTS[ticker];
   const notes: string[] = [];
   if (!bars || !alert) {
-    return { ticker, price: null, alertRef: "—", daysToHardExit: null, regimeMatch: false, verdict: "MONITOR", notes: ["no data"] };
+    return {
+      ticker, price: null, alertRef: "—", daysToHardExit: null, regimeMatch: false,
+      pullbackPct: null, pullbackGate: "UNKNOWN", vixB3Gate: "UNKNOWN",
+      verdict: "MONITOR", notes: ["no data"],
+    };
   }
   const price = bars.close[bars.close.length - 1];
 
@@ -256,15 +272,41 @@ export function evaluateB3(ticker: string, bars: Bars | null, regime: Regime, to
 
   const regimeMatch = regime === "bull" || regime === "neutral";
 
-  // Verdict priority: hard exit warning first, then fired state, then regime
-  // check BEFORE near-entry (bear/crash must demote NEAR ENTRY to HOLD).
-  let verdict: B3Verdict = "MONITOR";
-  if (daysToHardExit != null && daysToHardExit <= 30 && daysToHardExit >= 0) verdict = "EXIT APPROACHING";
-  else if (alert.fired) verdict = "FIRED";
-  else if (!regimeMatch) verdict = "HOLD";
-  else if (alert.alert && price >= alert.alert) verdict = "NEAR ENTRY";
+  // R3.2 Pullback gate: blood-in-streets zone is 10–25% below 52w high.
+  const { pctFromHigh } = week52Range(bars.high, bars.low, bars.close);
+  const pullbackPct = Math.abs(pctFromHigh); // positive = % below high
+  let pullbackGate: B3Row["pullbackGate"] = "UNKNOWN";
+  if (pullbackPct >= 10 && pullbackPct <= 25) pullbackGate = "PASS";
+  else if (pullbackPct > 25) pullbackGate = "CAUTION"; // steep drop — borderline
+  else pullbackGate = "FAIL"; // < 10% off high — chasing strength
 
-  return { ticker, price, alertRef, daysToHardExit, regimeMatch, verdict, notes };
+  // R3.3 VIX gate: VIX must be below 22 for new B3 entries.
+  const vixB3Gate: B3Row["vixB3Gate"] = vix == null ? "UNKNOWN" : vix < B3_VIX_LIMIT ? "PASS" : "FAIL";
+  if (vixB3Gate === "FAIL") notes.push(`VIX ${vix?.toFixed(1)} ≥ ${B3_VIX_LIMIT} — R3.3 blocks new entry`);
+  if (pullbackGate === "FAIL") notes.push(`Only ${pullbackPct.toFixed(1)}% below 52w high — R3.2 needs 10-25% pullback`);
+
+  // Verdict priority:
+  // 1. EXIT APPROACHING — existing position warning (always show regardless of entry gates)
+  // 2. FIRED — existing position
+  // 3. HOLD — regime blocks new entries
+  // 4. HOLD — VIX too high (R3.3)
+  // 5. NEAR ENTRY — price at alert, pullback OK, regime matches
+  // 6. MONITOR — default
+  let verdict: B3Verdict = "MONITOR";
+  if (daysToHardExit != null && daysToHardExit <= 30 && daysToHardExit >= 0) {
+    verdict = "EXIT APPROACHING";
+  } else if (alert.fired) {
+    verdict = "FIRED";
+  } else if (!regimeMatch) {
+    verdict = "HOLD";
+  } else if (vixB3Gate === "FAIL") {
+    verdict = "HOLD"; // VIX gate blocks new B3 entries
+  } else if (alert.alert && price >= alert.alert) {
+    // Price at/above alert — now check pullback quality
+    verdict = (pullbackGate === "PASS" || pullbackGate === "CAUTION") ? "NEAR ENTRY" : "MONITOR";
+  }
+
+  return { ticker, price, alertRef, daysToHardExit, regimeMatch, pullbackPct, pullbackGate, vixB3Gate, verdict, notes };
 }
 
 // ───── Owned positions evaluation ─────

@@ -103,7 +103,12 @@ function formatB3(rows: B3Row[], regime: Regime): string {
       lines.push(`${r.ticker} — no data`);
       continue;
     }
+    const gates = [
+      r.pullbackGate !== "UNKNOWN" ? `Pullback ${r.pullbackPct != null ? r.pullbackPct.toFixed(1) + "%" : "?"} (${r.pullbackGate})` : null,
+      r.vixB3Gate !== "UNKNOWN" ? `VIX gate ${r.vixB3Gate}` : null,
+    ].filter(Boolean).join(" · ");
     lines.push(`${r.ticker} — ${fmtPrice(r.price)} — ${r.alertRef} — ${r.verdict}${r.daysToHardExit != null ? ` (hard exit in ${r.daysToHardExit}d)` : ""}`);
+    if (gates) lines.push(`  Gates: ${gates}`);
     if (r.notes.length) lines.push(...r.notes.map((n) => `  · ${n}`));
   }
   const exitsSoon = rows.filter((r) => r.daysToHardExit != null && r.daysToHardExit >= 0 && r.daysToHardExit <= 30);
@@ -333,7 +338,7 @@ export async function POST(req: Request) {
   // Layer 2 — monitoring scans.
   const b1Rows: B1Row[] = b1List.map((t) => evaluateB1(t, barsMap.get(t) ?? null));
   const b2Rows: B2Row[] = b2List.map((t) => evaluateB2(t, barsMap.get(t) ?? null, vix));
-  const b3Rows: B3Row[] = b3List.map((t) => evaluateB3(t, barsMap.get(t) ?? null, regime, today));
+  const b3Rows: B3Row[] = b3List.map((t) => evaluateB3(t, barsMap.get(t) ?? null, regime, today, vix));
 
   const rklbRow = evaluateB1("RKLB", barsMap.get("RKLB") ?? null);
 
