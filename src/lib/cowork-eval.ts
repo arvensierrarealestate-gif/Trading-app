@@ -7,8 +7,8 @@ export type Bars = { close: number[]; volume: number[]; high: number[]; low: num
 
 // ───── Data fetcher ─────
 
-export async function fetchBars(symbol: string, range = "1y"): Promise<Bars | null> {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=1d`;
+export async function fetchBars(symbol: string, range = "1y", interval = "1d"): Promise<Bars | null> {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}`;
   // Per-symbol timeout so one slow/hanging quote (e.g. a futures symbol) can't
   // stall the whole batch until the route's maxDuration kills it.
   const controller = new AbortController();
@@ -701,4 +701,121 @@ export function evaluateB4(
     gates, goLive, watchlist,
     lossCap, maxTrades: b4?.max_trades_per_day ?? 2, notes,
   };
+}
+
+// ───── B4 multi-timeframe success scoring (2m / 5m / 15m / 30m) ─────
+// MasiTrades: trade level-to-level on the low timeframes, and the strongest
+// setups are where timeframes STACK. We score each timeframe for how strongly
+// it supports a directional setup, then weight higher timeframes more (a 30m
+// read is stronger than a 2m read) and reward multi-timeframe agreement.
+
+export const B4_TIMEFRAMES = ["2m", "5m", "15m", "30m"] as const;
+export type B4Timeframe = (typeof B4_TIMEFRAMES)[number];
+
+// Yahoo range per interval — enough bars for MACD(35) while staying intraday.
+export const B4_TF_RANGE: Record<B4Timeframe, string> = { "2m": "1d", "5m": "1d", "15m": "5d", "30m": "5d" };
+// Regular-session bar counts (6.5h) for slicing a single-session VWAP.
+const B4_TF_SESSION_BARS: Record<B4Timeframe, number> = { "2m": 195, "5m": 78, "15m": 26, "30m": 13 };
+// Higher timeframe = stronger signal.
+const B4_TF_WEIGHT: Record<B4Timeframe, number> = { "2m": 1, "5m": 2, "15m": 3, "30m": 4 };
+
+export type TfBias = "CALLS" | "PUTS" | "NEUTRAL";
+
+export type TfScore = {
+  tf: B4Timeframe;
+  price: number | null;
+  score: number;       // 0-100 conviction this TF supports a setup
+  bias: TfBias;
+  aboveEma9: boolean | null;
+  aboveVwap: boolean | null;
+  rsi: number | null;
+  macdUp: boolean | null;
+  volRatio: number | null; // last bar volume vs 20-bar average
+};
+
+export type B4MtfRow = {
+  ticker: string;
+  timeframes: TfScore[];
+  confluence: number;      // # of timeframes agreeing with overall bias (0-4)
+  overallBias: TfBias;
+  overallScore: number;    // weighted 0-100
+  grade: "A+" | "A" | "B" | "C" | "—";
+};
+
+function sliceBars(b: Bars, n: number): Bars {
+  return { close: b.close.slice(-n), volume: b.volume.slice(-n), high: b.high.slice(-n), low: b.low.slice(-n) };
+}
+
+export function vwap(bars: Bars): number | null {
+  let pv = 0, v = 0;
+  for (let i = 0; i < bars.close.length; i++) {
+    const tp = (bars.high[i] + bars.low[i] + bars.close[i]) / 3;
+    pv += tp * bars.volume[i];
+    v += bars.volume[i];
+  }
+  return v > 0 ? pv / v : null;
+}
+
+export function evaluateTimeframe(tf: B4Timeframe, bars: Bars | null): TfScore {
+  const empty: TfScore = { tf, price: null, score: 0, bias: "NEUTRAL", aboveEma9: null, aboveVwap: null, rsi: null, macdUp: null, volRatio: null };
+  if (!bars || bars.close.length < 20) return empty;
+
+  const price = bars.close[bars.close.length - 1];
+  const emaArr = emaSeries(bars.close, 9);
+  const ema9 = emaArr[emaArr.length - 1];
+  const vw = vwap(sliceBars(bars, B4_TF_SESSION_BARS[tf]));
+  const rsiVal = rsi(bars.close, 14);
+  const m = macd(bars.close);
+
+  const win = Math.min(20, bars.volume.length);
+  const avgVol = bars.volume.slice(-win).reduce((a, b) => a + b, 0) / win;
+  const lastVol = bars.volume[bars.volume.length - 1];
+  const volRatio = avgVol > 0 ? lastVol / avgVol : null;
+
+  const aboveEma9 = price > ema9;
+  const aboveVwap = vw != null ? price > vw : null;
+  const macdUp = m.aboveSignal;
+
+  // Directional vote across EMA9 / VWAP / RSI / MACD.
+  let net = 0;
+  let maxNet = 0;
+  net += aboveEma9 ? 1 : -1; maxNet += 1;
+  if (aboveVwap != null) { net += aboveVwap ? 1 : -1; maxNet += 1; }
+  net += rsiVal > 50 ? 1 : -1; maxNet += 1;
+  net += macdUp ? 1 : -1; maxNet += 1;
+
+  // Volume confirmation scales conviction (fake breakouts have thin volume).
+  const volFactor = volRatio == null ? 0.7 : volRatio >= 1.5 ? 1 : volRatio >= 1 ? 0.85 : 0.6;
+  const score = Math.round((Math.abs(net) / maxNet) * 100 * volFactor);
+  const bias: TfBias = net > 0 ? "CALLS" : net < 0 ? "PUTS" : "NEUTRAL";
+
+  return { tf, price, score, bias, aboveEma9, aboveVwap, rsi: rsiVal, macdUp, volRatio };
+}
+
+export function evaluateB4Mtf(ticker: string, tfBars: Partial<Record<B4Timeframe, Bars | null>>): B4MtfRow {
+  const timeframes = B4_TIMEFRAMES.map((tf) => evaluateTimeframe(tf, tfBars[tf] ?? null));
+
+  let callW = 0, putW = 0, totalW = 0, scoreAcc = 0;
+  for (const t of timeframes) {
+    const w = B4_TF_WEIGHT[t.tf];
+    if (t.bias === "CALLS") callW += w;
+    else if (t.bias === "PUTS") putW += w;
+    totalW += w;
+    scoreAcc += t.score * w;
+  }
+  const overallBias: TfBias = callW > putW ? "CALLS" : putW > callW ? "PUTS" : "NEUTRAL";
+  const confluence = overallBias === "NEUTRAL" ? 0 : timeframes.filter((t) => t.bias === overallBias).length;
+  const overallScore = totalW > 0 ? Math.round(scoreAcc / totalW) : 0;
+
+  // Grade rewards alignment: A+ needs full 4/4 confluence AND real conviction.
+  const hasData = timeframes.some((t) => t.price != null);
+  let grade: B4MtfRow["grade"] = "—";
+  if (hasData) {
+    if (confluence === 4 && overallScore >= 70) grade = "A+";
+    else if (confluence >= 3 && overallScore >= 55) grade = "A";
+    else if (confluence >= 2 && overallScore >= 40) grade = "B";
+    else grade = "C";
+  }
+
+  return { ticker, timeframes, confluence, overallBias, overallScore, grade };
 }

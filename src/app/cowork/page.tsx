@@ -50,6 +50,25 @@ type B4Status = {
   maxTrades: number;
   notes: string[];
 };
+type TfScore = {
+  tf: string;
+  price: number | null;
+  score: number;
+  bias: "CALLS" | "PUTS" | "NEUTRAL";
+  aboveEma9: boolean | null;
+  aboveVwap: boolean | null;
+  rsi: number | null;
+  macdUp: boolean | null;
+  volRatio: number | null;
+};
+type B4MtfRow = {
+  ticker: string;
+  timeframes: TfScore[];
+  confluence: number;
+  overallBias: "CALLS" | "PUTS" | "NEUTRAL";
+  overallScore: number;
+  grade: "A+" | "A" | "B" | "C" | "—";
+};
 type Status = {
   regime: string;
   regime_confidence: number;
@@ -82,6 +101,10 @@ export default function CoworkPage() {
   const [status, setStatus] = useState<Status | null>(null);
   const [statusBusy, setStatusBusy] = useState(true);
   const [statusError, setStatusError] = useState<string | null>(null);
+
+  const [b4Mtf, setB4Mtf] = useState<{ rows: B4MtfRow[]; asOf: string } | null>(null);
+  const [b4MtfBusy, setB4MtfBusy] = useState(false);
+  const [b4MtfError, setB4MtfError] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<"portfolio" | "b1" | "b2" | "b3" | "b4">("portfolio");
 
@@ -131,8 +154,32 @@ export default function CoworkPage() {
     }
   }, [chartSymbol, chartRange]);
 
+  const loadB4Mtf = useCallback(async () => {
+    setB4MtfBusy(true);
+    setB4MtfError(null);
+    try {
+      const res = await fetch("/api/cowork/b4-mtf");
+      const j = await res.json();
+      if (!res.ok) {
+        setB4MtfError(j.error ?? `HTTP ${res.status}`);
+        return;
+      }
+      setB4Mtf({ rows: j.rows ?? [], asOf: j.as_of });
+    } catch (e) {
+      setB4MtfError(e instanceof Error ? e.message : "Network error");
+    } finally {
+      setB4MtfBusy(false);
+    }
+  }, []);
+
   useEffect(() => { loadStatus(); }, [loadStatus]);
   useEffect(() => { loadChart(); }, [loadChart]);
+
+  // Lazy-load MTF scores the first time the B4 tab is opened (intraday fetches
+  // are heavy — don't run them unless the owner is looking at B4).
+  useEffect(() => {
+    if (activeTab === "b4" && !b4Mtf && !b4MtfBusy && !b4MtfError) loadB4Mtf();
+  }, [activeTab, b4Mtf, b4MtfBusy, b4MtfError, loadB4Mtf]);
 
   // PWA / desktop-shortcut entry point. When launched from the installed
   // shortcut (which uses start_url=/cowork?run=all), auto-run the full brief
@@ -414,7 +461,17 @@ export default function CoworkPage() {
 
             {/* B4 tab */}
             {activeTab === "b4" && status.b4 && (
-              <B4Panel b4={status.b4} active={chartSymbol} onPick={setChartSymbol} />
+              <>
+                <B4MtfPanel
+                  data={b4Mtf}
+                  busy={b4MtfBusy}
+                  error={b4MtfError}
+                  onRefresh={loadB4Mtf}
+                  onPick={setChartSymbol}
+                  active={chartSymbol}
+                />
+                <B4Panel b4={status.b4} active={chartSymbol} onPick={setChartSymbol} />
+              </>
             )}
           </>
         )}
@@ -750,6 +807,95 @@ function LevelLegend({ levels, last }: { levels: ChartLevel[]; last: number }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ───── B4 — Multi-timeframe success scores (2m/5m/15m/30m) ─────
+
+function B4MtfPanel({
+  data,
+  busy,
+  error,
+  onRefresh,
+  onPick,
+  active,
+}: {
+  data: { rows: B4MtfRow[]; asOf: string } | null;
+  busy: boolean;
+  error: string | null;
+  onRefresh: () => void;
+  onPick: (t: string) => void;
+  active: string;
+}) {
+  const biasColor = (b: "CALLS" | "PUTS" | "NEUTRAL") =>
+    b === "CALLS" ? { bg: "#0e2620", fg: "#3fdc8a" } : b === "PUTS" ? { bg: "#2a1417", fg: "#ff7070" } : { bg: "#181d28", fg: "#9aa4b8" };
+  const gradeColor = (g: string) =>
+    g === "A+" ? "#3fdc8a" : g === "A" ? "#7fe0a8" : g === "B" ? "#f5b400" : g === "C" ? "#ff9070" : "#9aa4b8";
+
+  return (
+    <div style={{ marginBottom: 18, background: "#0c0e15", border: "1px solid #2a3142", borderRadius: 10, padding: 14 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+        <div style={{ fontSize: 12, color: "#dde4ef", fontWeight: 700 }}>Multi-timeframe success scores</div>
+        <button onClick={onRefresh} disabled={busy} style={chipBtnStyle(false)}>{busy ? "Scoring…" : "↻ Refresh"}</button>
+      </div>
+      <div style={{ fontSize: 10, color: "#666", marginBottom: 10 }}>
+        Score 0–100 per timeframe from EMA9 · VWAP · RSI · MACD, scaled by volume. Higher timeframes weighted stronger. A+ = 4/4 stacked.
+        {data && ` · as of ${new Date(data.asOf).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" })} ET`}
+      </div>
+
+      {error && <div style={{ color: "#ff8a8a", fontSize: 12, padding: 8 }}>Scores error: {error}</div>}
+      {busy && !data && <div style={{ color: "#666", fontSize: 12, padding: 8 }}>Fetching 2m/5m/15m/30m bars…</div>}
+
+      {data && (
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 560, fontSize: 12 }}>
+            <thead>
+              <tr style={{ color: "#9aa4b8", textAlign: "left" }}>
+                <th style={{ padding: "4px 8px", fontWeight: 600 }}>Ticker</th>
+                <th style={{ padding: "4px 8px", fontWeight: 600 }}>Grade</th>
+                <th style={{ padding: "4px 8px", fontWeight: 600 }}>Bias</th>
+                <th style={{ padding: "4px 8px", fontWeight: 600 }}>Score</th>
+                <th style={{ padding: "4px 8px", fontWeight: 600 }}>Conf.</th>
+                {["2m", "5m", "15m", "30m"].map((tf) => (
+                  <th key={tf} style={{ padding: "4px 8px", fontWeight: 600, textAlign: "center" }}>{tf}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data.rows.map((r) => {
+                const ob = biasColor(r.overallBias);
+                return (
+                  <tr key={r.ticker} style={{ borderTop: "1px solid #1a1f2e" }}>
+                    <td style={{ padding: "6px 8px" }}>
+                      <button onClick={() => onPick(r.ticker)} style={{ background: "none", border: "none", cursor: "pointer", color: active === r.ticker ? "#7fb" : "#dde4ef", fontWeight: 700, fontSize: 13, padding: 0 }}>
+                        {r.ticker}
+                      </button>
+                    </td>
+                    <td style={{ padding: "6px 8px", fontWeight: 800, color: gradeColor(r.grade) }}>{r.grade}</td>
+                    <td style={{ padding: "6px 8px" }}>
+                      <span style={{ color: ob.fg, fontWeight: 600 }}>{r.overallBias}</span>
+                    </td>
+                    <td style={{ padding: "6px 8px", color: "#dde4ef", fontWeight: 600 }}>{r.overallScore}</td>
+                    <td style={{ padding: "6px 8px", color: r.confluence === 4 ? "#3fdc8a" : r.confluence >= 2 ? "#f5b400" : "#9aa4b8", fontWeight: 600 }}>{r.confluence}/4</td>
+                    {r.timeframes.map((t) => {
+                      const c = biasColor(t.bias);
+                      return (
+                        <td key={t.tf} style={{ padding: "4px 6px", textAlign: "center" }}>
+                          <div style={{ background: c.bg, border: `1px solid ${c.fg}33`, borderRadius: 5, padding: "3px 4px", minWidth: 40 }}>
+                            <div style={{ color: c.fg, fontWeight: 700, fontSize: 12 }}>{t.price == null ? "—" : t.score}</div>
+                            <div style={{ color: c.fg, fontSize: 8, letterSpacing: 0.3 }}>{t.price == null ? "" : t.bias === "CALLS" ? "▲" : t.bias === "PUTS" ? "▼" : "·"}</div>
+                          </div>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
