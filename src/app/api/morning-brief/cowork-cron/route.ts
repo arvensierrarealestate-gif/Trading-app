@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { B1_TICKERS, B2_TICKERS, B3_TICKERS, EXTRA_WATCH, SPECIAL_NOTES, VIX_PRIME } from "@/lib/cowork-brief";
+import { B1_TICKERS, B2_TICKERS, B3_TICKERS, EXTRA_WATCH, B4_WATCHLIST, B4_FUTURES, SPECIAL_NOTES, VIX_PRIME } from "@/lib/cowork-brief";
 import {
   fetchBars,
   regimeFromCloses,
@@ -11,6 +11,7 @@ import {
   evaluateOwnedStock,
   evaluateReentry,
   evaluateScalp,
+  evaluateB4,
   type B1Row,
   type B2Row,
   type B3Row,
@@ -18,6 +19,8 @@ import {
   type OwnedStockRow,
   type ReentryRow,
   type ScalpRow,
+  type B4Status,
+  type Bars,
 } from "@/lib/cowork-eval";
 import { coworkPortfolioSchema, type CoworkPortfolio } from "@/lib/cowork-portfolio";
 import { type Regime } from "@/lib/regime";
@@ -135,6 +138,22 @@ function formatOwnedSummary(options: OwnedOptionRow[], stocks: OwnedStockRow[], 
   return lines.length ? lines.join("\n") : "No owned positions.";
 }
 
+function formatB4Cron(b4: B4Status): string {
+  const lines: string[] = [];
+  lines.push(b4.live ? "● B4 LIVE" : `○ B4 NOT LIVE — ${b4.goLive.filter((d) => d.status === "OPEN").length}/4 go-live decisions open`);
+  lines.push(`Session: ${b4.etTime} · ${b4.sessionLabel}`);
+  lines.push(`Entries: ${b4.entriesAllowed ? "OPEN" : "CLOSED"}`);
+  lines.push(`Futures (daily 9-EMA proxy): ES ${b4.futures.es.bias} · NQ ${b4.futures.nq.bias} → ${b4.futures.combinedBias}`);
+  lines.push(`${b4.weeklyTask}`);
+  const mapped = b4.watchlist.filter((w) => w.bullLevel != null || w.bearLevel != null);
+  if (mapped.length) {
+    lines.push("Mapped levels:");
+    for (const w of mapped) lines.push(`  ${w.ticker} ${w.price != null ? `$${w.price.toFixed(2)}` : "—"} · ▲${w.bullLevel ?? "—"} ▼${w.bearLevel ?? "—"}`);
+  }
+  lines.push("Manual gates required: level break, volume, catalyst, liquidity, order flow.");
+  return lines.join("\n");
+}
+
 // ───── Route ─────
 
 export async function GET(req: Request) {
@@ -147,11 +166,15 @@ export async function GET(req: Request) {
   const b1List = portfolio?.monitor_B1_autofill?.tickers ?? Array.from(B1_TICKERS);
   const b2List = portfolio?.monitor_B2_csp?.tickers ?? Array.from(B2_TICKERS);
   const b3List = portfolio?.monitor_B3_leaps?.scan_order ?? Array.from(B3_TICKERS);
+  const b4List = portfolio?.monitor_B4_daytrade?.watchlist?.map((w) => w.ticker) ?? Array.from(B4_WATCHLIST);
   const ownedSymbols = portfolio
     ? [...portfolio.owned_options.map((o) => o.symbol), ...portfolio.owned_stocks.map((s) => s.symbol)]
     : [];
 
-  const universe = Array.from(new Set([...b1List, ...b2List, ...b3List, ...Array.from(EXTRA_WATCH), ...ownedSymbols, "SPY", "^VIX"]));
+  const universe = Array.from(new Set([
+    ...b1List, ...b2List, ...b3List, ...b4List, B4_FUTURES.es, B4_FUTURES.nq,
+    ...Array.from(EXTRA_WATCH), ...ownedSymbols, "SPY", "^VIX",
+  ]));
   const fetched = await Promise.all(universe.map((sym) => fetchBars(sym).then((b) => [sym, b] as const)));
   const barsMap = new Map(fetched);
 
@@ -188,6 +211,13 @@ export async function GET(req: Request) {
   const b1Rows: B1Row[] = b1List.map((t) => evaluateB1(t, barsMap.get(t) ?? null));
   const b2Rows: B2Row[] = b2List.map((t) => evaluateB2(t, barsMap.get(t) ?? null, vix));
   const b3Rows: B3Row[] = b3List.map((t) => evaluateB3(t, barsMap.get(t) ?? null, regime, today, vix));
+  const b4Status: B4Status = evaluateB4(
+    portfolio?.monitor_B4_daytrade ?? null,
+    barsMap.get(B4_FUTURES.es) ?? null,
+    barsMap.get(B4_FUTURES.nq) ?? null,
+    new Map<string, Bars | null>((b4List as string[]).map((t) => [t, barsMap.get(t) ?? null])),
+    new Date(),
+  );
   const rklbRow = evaluateB1("RKLB", barsMap.get("RKLB") ?? null);
 
   // Assemble brief.
@@ -230,6 +260,10 @@ export async function GET(req: Request) {
   sections.push("B3 — LEAPS (PATH last)");
   sections.push("─────────────────────────");
   sections.push(formatB3(b3Rows, regime));
+  sections.push("");
+  sections.push("B4 — DAY TRADE (always last)");
+  sections.push("─────────────────────────");
+  sections.push(formatB4Cron(b4Status));
   sections.push("");
   sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
   sections.push("EXTRA WATCH");

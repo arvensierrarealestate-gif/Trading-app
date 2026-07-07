@@ -22,6 +22,29 @@ type OwnedOptionStatus = { symbol: string; type: string; side: string; strike: n
 type OwnedStockStatus = { symbol: string; account: string; shares: number; livePrice: number | null; pnlPct: number | null; stop: number | null; status: "green" | "amber" | "red"; note: string };
 type ReentryStatus = { symbol: string; windowStatus: "open" | "upcoming" | "passed"; daysToWindowOpen: number | null; daysToWindowClose: number | null; daysToGoNogo: number | null; trigger: string; status: "green" | "amber" | "neutral" };
 type ScalpStatus = { ticker: string; status: "clear" | "blocked" | "caution"; reason: string };
+type B4Gate = { id: string; label: string; state: "PASS" | "FAIL" | "MANUAL" | "UNKNOWN"; detail: string };
+type B4GoLive = { id: number; label: string; status: "OPEN" | "SET"; value: string | null };
+type B4Watch = { ticker: string; price: number | null; bullLevel: number | null; bearLevel: number | null; targets: number[]; stop: number | null };
+type B4Status = {
+  live: boolean;
+  readyToGoLive: boolean;
+  sessionWindow: string;
+  sessionLabel: string;
+  etTime: string;
+  entriesAllowed: boolean;
+  weeklyTask: string;
+  futures: {
+    es: { price: number | null; pctFromEma: number | null; bias: "BULL" | "BEAR" | "UNKNOWN" };
+    nq: { price: number | null; pctFromEma: number | null; bias: "BULL" | "BEAR" | "UNKNOWN" };
+    combinedBias: "CALLS" | "PUTS" | "MIXED" | "UNKNOWN";
+  };
+  gates: B4Gate[];
+  goLive: B4GoLive[];
+  watchlist: B4Watch[];
+  lossCap: number | null;
+  maxTrades: number;
+  notes: string[];
+};
 type Status = {
   regime: string;
   regime_confidence: number;
@@ -34,6 +57,7 @@ type Status = {
   b1: B1Status[];
   b2: B2Status[];
   b3: B3Status[];
+  b4: B4Status | null;
 };
 
 const RANGES: { key: Range; label: string }[] = [
@@ -54,7 +78,7 @@ export default function CoworkPage() {
   const [statusBusy, setStatusBusy] = useState(true);
   const [statusError, setStatusError] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<"portfolio" | "b1" | "b2" | "b3">("portfolio");
+  const [activeTab, setActiveTab] = useState<"portfolio" | "b1" | "b2" | "b3" | "b4">("portfolio");
 
   const [chartSymbol, setChartSymbol] = useState<string>("NVDA");
   const [chartRange, setChartRange] = useState<Range>("3m");
@@ -176,13 +200,14 @@ export default function CoworkPage() {
 
             {/* Tab navigation */}
             <div style={{ display: "flex", gap: 4, marginBottom: 18, flexWrap: "wrap" }}>
-              {(["portfolio", "b1", "b2", "b3"] as const).map((tab) => {
-                const labels = { portfolio: "Portfolio", b1: "B1 — Autofill", b2: "B2 — CSP", b3: "B3 — LEAPS" };
+              {(["portfolio", "b1", "b2", "b3", "b4"] as const).map((tab) => {
+                const labels = { portfolio: "Portfolio", b1: "B1 — Autofill", b2: "B2 — CSP", b3: "B3 — LEAPS", b4: "B4 — Day Trade" };
                 const badgeCount = {
                   portfolio: (status.owned_options?.length ?? 0) + (status.owned_stocks?.length ?? 0),
                   b1: status.b1.filter((r) => r.flag).length,
                   b2: status.b2.filter((r) => r.verdict === "GO").length,
                   b3: status.b3.filter((r) => r.verdict === "NEAR ENTRY").length,
+                  b4: status.b4?.entriesAllowed ? 1 : 0,
                 }[tab];
                 const badgeColor = tab === "b1" ? { bg: "#5e2a32", fg: "#ff7070" } : { bg: "#1f5f4d", fg: "#3fdc8a" };
                 const isActive = activeTab === tab;
@@ -332,6 +357,11 @@ export default function CoworkPage() {
                 active={chartSymbol}
                 onPick={setChartSymbol}
               />
+            )}
+
+            {/* B4 tab */}
+            {activeTab === "b4" && status.b4 && (
+              <B4Panel b4={status.b4} active={chartSymbol} onPick={setChartSymbol} />
             )}
           </>
         )}
@@ -576,6 +606,182 @@ function CandleChart({ candles, symbol }: { candles: Candle[]; symbol: string })
           <text key={i} x={padLeft + slot * i + slot / 2} y={H - 10} textAnchor="middle" fontSize={10} fill="#666">{candles[i].date}</text>
         ))}
       </svg>
+    </div>
+  );
+}
+
+// ───── B4 — Day Trading panel ─────
+
+const B4_SCALE = [
+  { exit: "Exit 1", size: "70%", where: "Target 1 (options ~40–60% up) — lock the bulk" },
+  { exit: "Exit 2", size: "20%", where: "Target 2 — add to locked profit" },
+  { exit: "Exit 3", size: "10%", where: "Target 3 — runners" },
+];
+
+const B4_HARD_RULES = [
+  "HR.1 — No trades before 10 AM ET",
+  "HR.2 — No trades 11:30 AM–1:30 PM (dead zone)",
+  "HR.3 — All positions flat by 3:45 PM ET",
+  "HR.4 — Stop after daily max loss is hit",
+  "HR.5 — No forced trades. 0 trades = discipline pass",
+  "HR.6 — B4 never touches B2/B3 capital",
+];
+
+function B4Panel({ b4, active, onPick }: { b4: B4Status; active: string; onPick: (t: string) => void }) {
+  const gateColor: Record<B4Gate["state"], { bg: string; border: string; fg: string }> = {
+    PASS:    { bg: "#0e2620", border: "#1f5f4d", fg: "#3fdc8a" },
+    FAIL:    { bg: "#2a1417", border: "#5e2a32", fg: "#ff7070" },
+    MANUAL:  { bg: "#2a2010", border: "#5e4a1f", fg: "#f5b400" },
+    UNKNOWN: { bg: "#181d28", border: "#2a3550", fg: "#9aa4b8" },
+  };
+  const biasColor = (b: "BULL" | "BEAR" | "UNKNOWN" | "CALLS" | "PUTS" | "MIXED") =>
+    b === "BULL" || b === "CALLS" ? "#3fdc8a" : b === "BEAR" || b === "PUTS" ? "#ff7070" : b === "MIXED" ? "#f5b400" : "#9aa4b8";
+
+  return (
+    <div>
+      {/* Live / not-live banner */}
+      <div style={{
+        padding: "10px 14px", borderRadius: 8, marginBottom: 16, fontSize: 12,
+        border: `1px solid ${b4.live ? "#1f5f4d" : "#5e4a1f"}`,
+        background: b4.live ? "#0e2620" : "#2a2010",
+      }}>
+        <span style={{ fontWeight: 700, color: b4.live ? "#3fdc8a" : "#f5b400" }}>
+          {b4.live ? "● B4 LIVE" : "○ B4 NOT LIVE — documented only"}
+        </span>
+        <span style={{ color: "#9aa4b8", marginLeft: 8 }}>
+          {b4.live ? "Go-live gate met." : `${b4.goLive.filter((d) => d.status === "OPEN").length} of 4 decisions open. Individual Z33181037 only.`}
+        </span>
+      </div>
+
+      {/* Session clock */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: "#9aa4b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Session</div>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <span style={{
+            padding: "6px 12px", borderRadius: 8, fontSize: 13, fontWeight: 700,
+            border: `1px solid ${b4.entriesAllowed ? "#1f5f4d" : "#5e2a32"}`,
+            background: b4.entriesAllowed ? "#0e2620" : "#2a1417",
+            color: b4.entriesAllowed ? "#3fdc8a" : "#ff7070",
+          }}>
+            {b4.entriesAllowed ? "ENTRIES OPEN" : "NO ENTRIES"}
+          </span>
+          <span style={{ fontSize: 13, color: "#dde4ef", fontWeight: 600 }}>{b4.etTime}</span>
+          <span style={{ fontSize: 12, color: "#9aa4b8" }}>{b4.sessionLabel}</span>
+        </div>
+        <div style={{ fontSize: 11, color: "#5fb6ff", marginTop: 6, fontStyle: "italic" }}>→ {b4.weeklyTask}</div>
+      </div>
+
+      {/* Futures */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: "#9aa4b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>
+          Futures bias <span style={{ textTransform: "none", color: "#666" }}>(daily 9-EMA proxy — confirm intraday VWAP+9EMA)</span>
+        </div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {[{ k: "ES", f: b4.futures.es }, { k: "NQ", f: b4.futures.nq }].map(({ k, f }) => (
+            <div key={k} style={{ background: "#181d28", border: "1px solid #2a3550", borderRadius: 8, padding: "8px 12px", minWidth: 130 }}>
+              <div style={{ fontSize: 13, fontWeight: 700 }}>{k} <span style={{ color: biasColor(f.bias), fontSize: 11 }}>{f.bias}</span></div>
+              <div style={{ fontSize: 11, color: "#9aa4b8", marginTop: 2 }}>
+                {f.price != null ? f.price.toFixed(2) : "—"} · {f.pctFromEma != null ? `${f.pctFromEma >= 0 ? "+" : ""}${f.pctFromEma.toFixed(2)}% vs 9EMA` : "no data"}
+              </div>
+            </div>
+          ))}
+          <div style={{ background: "#10212e", border: "1px solid #1f4a6e", borderRadius: 8, padding: "8px 12px", minWidth: 130 }}>
+            <div style={{ fontSize: 11, color: "#9aa4b8" }}>Combined</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: biasColor(b4.futures.combinedBias) }}>{b4.futures.combinedBias}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Gate stack */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: "#9aa4b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Gate stack — all must pass before entry</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          {b4.gates.map((g) => {
+            const c = gateColor[g.state];
+            return (
+              <div key={g.id} style={{ display: "flex", alignItems: "flex-start", gap: 10, background: c.bg, border: `1px solid ${c.border}`, borderRadius: 6, padding: "7px 10px" }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: c.fg, minWidth: 52 }}>{g.state}</span>
+                <div style={{ flex: 1 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#dde4ef" }}>{g.id} · {g.label}</span>
+                  <div style={{ fontSize: 11, color: "#7d8699", marginTop: 1 }}>{g.detail}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Watchlist with mapped levels */}
+      {b4.watchlist.length > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 11, color: "#9aa4b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Watchlist — pre-mapped levels</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {b4.watchlist.map((w) => (
+              <button key={w.ticker} onClick={() => onPick(w.ticker)} style={{
+                background: "#181d28", border: `1px solid ${active === w.ticker ? "#4a5f8a" : "#2a3550"}`,
+                borderRadius: 8, padding: "8px 10px", cursor: "pointer", textAlign: "left", minWidth: 150, color: "#dde4ef",
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                  <span style={{ fontWeight: 700, fontSize: 13 }}>{w.ticker}</span>
+                  <span style={{ fontSize: 11, color: "#9aa4b8" }}>{w.price != null ? `$${w.price.toFixed(2)}` : "—"}</span>
+                </div>
+                <div style={{ fontSize: 10, color: "#7d8699", marginTop: 3 }}>
+                  {w.bullLevel != null || w.bearLevel != null
+                    ? `▲ ${w.bullLevel ?? "—"} · ▼ ${w.bearLevel ?? "—"}`
+                    : "levels not mapped"}
+                </div>
+                {w.targets.length > 0 && (
+                  <div style={{ fontSize: 10, color: "#5fb6ff", marginTop: 1 }}>T: {w.targets.join(" → ")}</div>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 70/20/10 exit plan */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: "#9aa4b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Exit — 70 / 20 / 10 scale-out</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+          {B4_SCALE.map((s) => (
+            <div key={s.exit} style={{ display: "flex", gap: 10, fontSize: 12, background: "#181d28", border: "1px solid #2a3550", borderRadius: 6, padding: "6px 10px" }}>
+              <span style={{ color: "#3fdc8a", fontWeight: 700, minWidth: 40 }}>{s.size}</span>
+              <span style={{ color: "#9aa4b8" }}>{s.where}</span>
+            </div>
+          ))}
+          <div style={{ fontSize: 11, color: "#f5b400", marginTop: 4 }}>
+            ⚠ Momentum exit overrides all targets: futures reject / wicky price / opposing order flow → exit now.
+          </div>
+        </div>
+      </div>
+
+      {/* Go-live decisions */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: "#9aa4b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Go-live decisions</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          {b4.goLive.map((d) => (
+            <div key={d.id} style={{
+              background: d.status === "SET" ? "#0e2620" : "#2a2010",
+              border: `1px solid ${d.status === "SET" ? "#1f5f4d" : "#5e4a1f"}`,
+              borderRadius: 8, padding: "8px 12px", minWidth: 150,
+            }}>
+              <div style={{ fontSize: 10, color: d.status === "SET" ? "#3fdc8a" : "#f5b400", fontWeight: 700 }}>{d.id}. {d.status}</div>
+              <div style={{ fontSize: 12, color: "#dde4ef", marginTop: 2 }}>{d.label}</div>
+              <div style={{ fontSize: 11, color: "#9aa4b8", marginTop: 1 }}>{d.value ?? "—"}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Hard rules */}
+      <div>
+        <div style={{ fontSize: 11, color: "#9aa4b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Hard session rules</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          {B4_HARD_RULES.map((r) => (
+            <span key={r} style={{ fontSize: 11, color: "#9aa4b8", background: "#181d28", border: "1px solid #2a3550", borderRadius: 6, padding: "4px 8px" }}>{r}</span>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

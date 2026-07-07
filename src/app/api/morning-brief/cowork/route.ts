@@ -7,6 +7,8 @@ import {
   B2_TICKERS,
   B3_TICKERS,
   EXTRA_WATCH,
+  B4_WATCHLIST,
+  B4_FUTURES,
   SPECIAL_NOTES,
   VIX_PRIME,
 } from "@/lib/cowork-brief";
@@ -20,6 +22,7 @@ import {
   evaluateOwnedStock,
   evaluateReentry,
   evaluateScalp,
+  evaluateB4,
   type B1Row,
   type B2Row,
   type B3Row,
@@ -27,6 +30,7 @@ import {
   type OwnedStockRow,
   type ReentryRow,
   type ScalpRow,
+  type B4Status,
 } from "@/lib/cowork-eval";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -175,6 +179,26 @@ function formatOwnedPositions(options: OwnedOptionRow[], stocks: OwnedStockRow[]
   return lines.length ? lines.join("\n") : "No owned positions loaded.";
 }
 
+function formatB4(b4: B4Status): string {
+  const lines: string[] = [];
+  lines.push(b4.live ? "● B4 LIVE" : `○ B4 NOT LIVE — ${b4.goLive.filter((d) => d.status === "OPEN").length}/4 go-live decisions open`);
+  lines.push(`Session: ${b4.etTime} · ${b4.sessionLabel}`);
+  lines.push(`Entries: ${b4.entriesAllowed ? "OPEN" : "CLOSED"} · ${b4.weeklyTask}`);
+  lines.push(`Futures (daily 9-EMA proxy): ES ${b4.futures.es.bias} · NQ ${b4.futures.nq.bias} → ${b4.futures.combinedBias}`);
+  const autoGates = b4.gates.filter((g) => g.state === "PASS" || g.state === "FAIL");
+  if (autoGates.length) {
+    lines.push("Auto gates:");
+    for (const g of autoGates) lines.push(`  ${g.state === "PASS" ? "✓" : "✗"} ${g.id} ${g.label} — ${g.detail}`);
+  }
+  lines.push("Manual gates still required: level break, volume, catalyst, liquidity, order flow.");
+  const mapped = b4.watchlist.filter((w) => w.bullLevel != null || w.bearLevel != null);
+  if (mapped.length) {
+    lines.push("Mapped levels:");
+    for (const w of mapped) lines.push(`  ${w.ticker} ${w.price != null ? `$${w.price.toFixed(2)}` : "—"} · ▲${w.bullLevel ?? "—"} ▼${w.bearLevel ?? "—"}${w.targets.length ? ` · T ${w.targets.join("→")}` : ""}`);
+  }
+  return lines.join("\n");
+}
+
 // ───── Narrative sections via Sonnet ─────
 
 async function generateNarrative(input: {
@@ -289,10 +313,12 @@ export async function POST(req: Request) {
   const needB1 = bucket === "all" || bucket === "b1";
   const needB2 = bucket === "all" || bucket === "b2";
   const needB3 = bucket === "all" || bucket === "b3";
+  const needB4 = bucket === "all"; // B4 (day trade) only in the full brief
 
   const b1List = needB1 ? (overrideTickers ?? portfolio?.monitor_B1_autofill?.tickers ?? Array.from(B1_TICKERS)) : [];
   const b2List = needB2 ? (overrideTickers ?? portfolio?.monitor_B2_csp?.tickers ?? Array.from(B2_TICKERS)) : [];
   const b3List = needB3 ? (overrideTickers ?? portfolio?.monitor_B3_leaps?.scan_order ?? Array.from(B3_TICKERS)) : [];
+  const b4List = needB4 ? (portfolio?.monitor_B4_daytrade?.watchlist?.map((w) => w.ticker) ?? Array.from(B4_WATCHLIST)) : [];
 
   // Owned symbols for Layer 1.
   const ownedSymbols = portfolio
@@ -300,7 +326,8 @@ export async function POST(req: Request) {
     : [];
 
   const extras = Array.from(EXTRA_WATCH);
-  const universe = Array.from(new Set([...b1List, ...b2List, ...b3List, ...extras, ...ownedSymbols, "SPY", "^VIX"]));
+  const b4Futures = needB4 ? [B4_FUTURES.es, B4_FUTURES.nq] : [];
+  const universe = Array.from(new Set([...b1List, ...b2List, ...b3List, ...b4List, ...b4Futures, ...extras, ...ownedSymbols, "SPY", "^VIX"]));
 
   const fetched = await Promise.all(universe.map((sym) => fetchBars(sym).then((b) => [sym, b] as const)));
   const barsMap = new Map(fetched);
@@ -339,6 +366,17 @@ export async function POST(req: Request) {
   const b1Rows: B1Row[] = b1List.map((t) => evaluateB1(t, barsMap.get(t) ?? null));
   const b2Rows: B2Row[] = b2List.map((t) => evaluateB2(t, barsMap.get(t) ?? null, vix));
   const b3Rows: B3Row[] = b3List.map((t) => evaluateB3(t, barsMap.get(t) ?? null, regime, today, vix));
+
+  // B4 — day trading (always last). Only in the full brief.
+  const b4Status: B4Status | null = needB4
+    ? evaluateB4(
+        portfolio?.monitor_B4_daytrade ?? null,
+        barsMap.get(B4_FUTURES.es) ?? null,
+        barsMap.get(B4_FUTURES.nq) ?? null,
+        new Map(b4List.map((t) => [t, barsMap.get(t) ?? null] as const)),
+        new Date(),
+      )
+    : null;
 
   const rklbRow = evaluateB1("RKLB", barsMap.get("RKLB") ?? null);
 
@@ -416,6 +454,13 @@ export async function POST(req: Request) {
     sections.push("B3 — LEAPS SCAN (PATH last)");
     sections.push("─────────────────────────");
     sections.push(formatB3(b3Rows, regime));
+    sections.push("");
+  }
+
+  if (needB4 && b4Status) {
+    sections.push("B4 — DAY TRADE (always last)");
+    sections.push("─────────────────────────");
+    sections.push(formatB4(b4Status));
     sections.push("");
   }
 

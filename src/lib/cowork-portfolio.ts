@@ -171,6 +171,32 @@ const otherWatchSchema = z.object({
   approved: z.boolean().optional(),
 });
 
+// B4 day-trade watchlist ticker with its pre-mapped level roadmap.
+const b4WatchSchema = z.object({
+  ticker: z.string(),
+  bull_level: z.number().nullable().optional(),   // one bullish break level (rounded to 5/10)
+  bear_level: z.number().nullable().optional(),   // one bearish break level
+  targets: z.array(z.number()).optional(),        // sequential levels = Target 1/2/3 for 70/20/10
+  stop: z.number().nullable().optional(),         // where you're wrong, rounded
+  gaps: z.array(z.number()).optional(),           // unfilled gaps (act as magnets)
+  note: z.string().optional(),
+});
+
+const b4MonitorSchema = z.object({
+  account: z.string().default("Individual Z33181037"), // R4.1 — Individual ONLY
+  live: z.boolean().default(false),               // set true only when go-live gate met
+  daily_loss_cap: z.number().nullable().optional(),   // decision 1 (R4.2/R4.G8/HR.4)
+  order_flow_tool: z.enum(["bookmap", "atp_proxy", "volume_spike"]).nullable().optional(), // decision 2
+  launch_instrument: z.enum(["spx_0dte", "single_stock"]).nullable().optional(),           // decision 3
+  paper_trade: z
+    .object({ mode: z.enum(["paper", "live_small_cap"]).nullable(), window: z.string().nullable() })
+    .partial()
+    .optional(),                                  // decision 4
+  max_trades_per_day: z.number().int().default(2), // R4.4
+  watchlist: z.array(b4WatchSchema).default([]),
+  notes: z.string().optional(),
+});
+
 export const coworkPortfolioSchema = z.object({
   portfolio_total: z.number().optional(),
   target: z.number().optional(),
@@ -187,6 +213,7 @@ export const coworkPortfolioSchema = z.object({
   monitor_B3_leaps: b3MonitorSchema.optional(),
   monitor_reentry: z.array(reentrySchema).default([]),
   monitor_scalp: scalpSchema.optional(),
+  monitor_B4_daytrade: b4MonitorSchema.optional(),
   other_watch: z.array(otherWatchSchema).default([]),
 });
 
@@ -304,6 +331,22 @@ export const PORTFOLIO_TEMPLATE = `{
     "staged_trade": { "instrument": "", "gtc": null, "stop": null }
   },
 
+  "monitor_B4_daytrade": {
+    "account": "Individual Z33181037",
+    "live": false,
+    "daily_loss_cap": null,
+    "order_flow_tool": null,
+    "launch_instrument": null,
+    "paper_trade": { "mode": null, "window": null },
+    "max_trades_per_day": 2,
+    "watchlist": [
+      { "ticker": "SPY",  "bull_level": null, "bear_level": null, "targets": [], "stop": null, "gaps": [], "note": "SPX roadmap proxy" },
+      { "ticker": "NVDA", "bull_level": null, "bear_level": null, "targets": [], "stop": null, "gaps": [] },
+      { "ticker": "TSLA", "bull_level": null, "bear_level": null, "targets": [], "stop": null, "gaps": [] }
+    ],
+    "notes": "NOT live until 4 go-live decisions locked. Levels rounded to nearest 5/10."
+  },
+
   "other_watch": [
     { "symbol": "SPCX", "status": "30-day post-IPO window, buy ~Jul 10", "alerts": [], "approved": true },
     { "symbol": "RKLB", "status": "SpaceX ecosystem play", "alerts": [], "approved": true }
@@ -330,6 +373,20 @@ export function checkInvariants(p: CoworkPortfolio): string[] {
   for (const s of p.owned_stocks) {
     if (/ira|roth/i.test(s.account) && s.has_stop && s.stop != null) {
       // Not strictly an error — stocks can have stops in IRAs in some brokers — leave as info.
+    }
+  }
+
+  // B4 — R4.1: Individual account only, IRAs blocked (PDT, no margin).
+  const b4 = p.monitor_B4_daytrade;
+  if (b4) {
+    if (/ira|roth/i.test(b4.account)) {
+      errs.push(`monitor_B4_daytrade.account: "${b4.account}" is an IRA — B4 day-trading is Individual-account ONLY (R4.1).`);
+    }
+    // Go-live gate: live=true requires cap set (1), instrument+tool defaulted (2,3), paper-trade decided (4).
+    if (b4.live) {
+      if (b4.daily_loss_cap == null) errs.push("monitor_B4_daytrade: live=true but daily_loss_cap not set (go-live decision 1).");
+      if (b4.launch_instrument == null) errs.push("monitor_B4_daytrade: live=true but launch_instrument not set (go-live decision 3).");
+      if (!b4.paper_trade?.mode) errs.push("monitor_B4_daytrade: live=true but paper_trade.mode not decided (go-live decision 4).");
     }
   }
 

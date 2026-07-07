@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { authorizeCowork, type CoworkAuth } from "@/lib/cowork-auth";
-import { B1_TICKERS, B2_TICKERS, B3_TICKERS, EXTRA_WATCH } from "@/lib/cowork-brief";
+import { B1_TICKERS, B2_TICKERS, B3_TICKERS, EXTRA_WATCH, B4_WATCHLIST, B4_FUTURES } from "@/lib/cowork-brief";
 import {
   fetchBars,
   regimeFromCloses,
@@ -11,6 +11,8 @@ import {
   evaluateOwnedStock,
   evaluateReentry,
   evaluateScalp,
+  evaluateB4,
+  type Bars,
 } from "@/lib/cowork-eval";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -61,6 +63,7 @@ export async function GET(req: Request) {
   const b2Tickers = portfolio?.monitor_B2_csp?.tickers ?? Array.from(B2_TICKERS);
   const b3Tickers = portfolio?.monitor_B3_leaps?.scan_order ?? Array.from(B3_TICKERS);
   const extraTickers = Array.from(EXTRA_WATCH);
+  const b4Tickers = portfolio?.monitor_B4_daytrade?.watchlist?.map((w) => w.ticker) ?? Array.from(B4_WATCHLIST);
 
   // Include underlying symbols for owned positions.
   const ownedSymbols = portfolio
@@ -71,7 +74,10 @@ export async function GET(req: Request) {
     : [];
 
   const universe = Array.from(
-    new Set([...b1Tickers, ...b2Tickers, ...b3Tickers, ...extraTickers, ...ownedSymbols, "SPY", "^VIX"]),
+    new Set([
+      ...b1Tickers, ...b2Tickers, ...b3Tickers, ...extraTickers, ...b4Tickers, ...ownedSymbols,
+      B4_FUTURES.es, B4_FUTURES.nq, "SPY", "^VIX",
+    ]),
   );
 
   const fetched = await Promise.all(universe.map((sym) => fetchBars(sym).then((b) => [sym, b] as const)));
@@ -112,6 +118,18 @@ export async function GET(req: Request) {
     vix,
   );
 
+  // B4 — day trading (session clock, futures proxy, go-live readiness).
+  const b4WatchMap = new Map<string, Bars | null>(
+    (b4Tickers as string[]).map((t) => [t, barsMap.get(t) ?? null]),
+  );
+  const b4 = evaluateB4(
+    portfolio?.monitor_B4_daytrade ?? null,
+    barsMap.get(B4_FUTURES.es) ?? null,
+    barsMap.get(B4_FUTURES.nq) ?? null,
+    b4WatchMap,
+    new Date(),
+  );
+
   return NextResponse.json({
     regime,
     regime_confidence: confidence,
@@ -138,5 +156,6 @@ export async function GET(req: Request) {
     b1: b1.map((r) => ({ ticker: r.ticker, price: r.price, flag: r.flag, pctFromHigh: r.pctFromHigh })),
     b2: b2.map((r) => ({ ticker: r.ticker, price: r.price, verdict: r.verdict, rsi: r.rsi, vixGate: r.vixGate })),
     b3: b3.map((r) => ({ ticker: r.ticker, price: r.price, verdict: r.verdict, alertRef: r.alertRef, daysToHardExit: r.daysToHardExit, pullbackGate: r.pullbackGate, vixB3Gate: r.vixB3Gate, pullbackPct: r.pullbackPct })),
+    b4,
   });
 }

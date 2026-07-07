@@ -1,6 +1,6 @@
 import { fitGaussianHMM } from "@/lib/hmm";
 import { REGIMES, type Regime } from "@/lib/regime";
-import { B3_ALERTS, SPECIAL_NOTES, VIX_PRIME, SPCX_CSP_READY_DATE } from "@/lib/cowork-brief";
+import { B3_ALERTS, SPECIAL_NOTES, VIX_PRIME, SPCX_CSP_READY_DATE, B4_SESSION, B4_GATES } from "@/lib/cowork-brief";
 import { type CoworkPortfolio } from "@/lib/cowork-portfolio";
 
 export type Bars = { close: number[]; volume: number[]; high: number[]; low: number[] };
@@ -485,7 +485,7 @@ export type ScalpRow = {
 };
 
 export function evaluateScalp(
-  scalp: CoworkPortfolio["monitor_scalp"],
+  scalp: CoworkPortfolio["monitor_scalp"] | null,
   ownedOptions: CoworkPortfolio["owned_options"],
   underlyingBars: Bars | null,
   vix: number | null,
@@ -524,4 +524,175 @@ export function evaluateScalp(
   }
 
   return { ticker, status: "clear", reason: "All automated gates pass — manual gates (price, MACD, spy_macro) still apply" };
+}
+
+// ───── B4 — Day Trading evaluation ─────
+// B4 is heavily discretionary (charting, catalyst, order flow are the owner's
+// eye). This evaluator computes only what's honestly automatable: the session
+// clock (10 AM rule / dead zone / 3:45 close), a daily futures-bias proxy, and
+// go-live readiness. Everything else is surfaced as MANUAL-confirm.
+
+export type B4SessionWindow =
+  | "PRE_MARKET" | "PRE_10AM" | "MORNING_ENTRY" | "DEAD_ZONE"
+  | "AFTERNOON_ENTRY" | "WIND_DOWN" | "CLOSED" | "WEEKEND";
+
+export type B4GateState = "PASS" | "FAIL" | "MANUAL" | "UNKNOWN";
+export type B4Bias = "BULL" | "BEAR" | "UNKNOWN";
+
+export type B4Status = {
+  live: boolean;                 // config.live AND go-live gate satisfied
+  readyToGoLive: boolean;        // all required decisions locked
+  sessionWindow: B4SessionWindow;
+  sessionLabel: string;
+  etTime: string;                // "10:23 AM ET"
+  etMinutes: number;
+  entriesAllowed: boolean;
+  weeklyTask: string;
+  futures: {
+    es: { price: number | null; pctFromEma: number | null; bias: B4Bias };
+    nq: { price: number | null; pctFromEma: number | null; bias: B4Bias };
+    combinedBias: "CALLS" | "PUTS" | "MIXED" | "UNKNOWN";
+  };
+  gates: { id: string; label: string; state: B4GateState; detail: string }[];
+  goLive: { id: number; label: string; status: "OPEN" | "SET"; value: string | null }[];
+  watchlist: { ticker: string; price: number | null; bullLevel: number | null; bearLevel: number | null; targets: number[]; stop: number | null }[];
+  lossCap: number | null;
+  maxTrades: number;
+  notes: string[];
+};
+
+// Derive ET hour/minute/weekday from a Date without external tz libs.
+function etParts(now: Date): { minutes: number; weekday: number; label: string } {
+  const fmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false,
+  });
+  const parts = fmt.formatToParts(now);
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? "";
+  let hour = parseInt(get("hour"), 10);
+  if (hour === 24) hour = 0; // en-US hour12:false can emit "24" at midnight
+  const minute = parseInt(get("minute"), 10);
+  const wdMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+  const weekday = wdMap[get("weekday")] ?? 0;
+  const label = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York", hour: "numeric", minute: "2-digit",
+  }).format(now) + " ET";
+  return { minutes: hour * 60 + minute, weekday, label };
+}
+
+function futureBias(bars: Bars | null): { price: number | null; pctFromEma: number | null; bias: B4Bias } {
+  if (!bars || bars.close.length < 10) return { price: null, pctFromEma: null, bias: "UNKNOWN" };
+  const price = bars.close[bars.close.length - 1];
+  const ema = emaSeries(bars.close, 9);
+  const e = ema[ema.length - 1];
+  const pctFromEma = ((price - e) / e) * 100;
+  return { price, pctFromEma, bias: price > e ? "BULL" : price < e ? "BEAR" : "UNKNOWN" };
+}
+
+export function evaluateB4(
+  b4: CoworkPortfolio["monitor_B4_daytrade"] | null,
+  esBars: Bars | null,
+  nqBars: Bars | null,
+  watchBars: Map<string, Bars | null>,
+  now: Date,
+): B4Status {
+  const { minutes, weekday, label } = etParts(now);
+  const notes: string[] = [SPECIAL_NOTES.B4_NOT_LIVE];
+
+  // Session window from ET clock.
+  let sessionWindow: B4SessionWindow;
+  if (weekday === 0 || weekday === 6) sessionWindow = "WEEKEND";
+  else if (minutes < 570) sessionWindow = "PRE_MARKET";                       // < 9:30
+  else if (minutes < B4_SESSION.entryOpen) sessionWindow = "PRE_10AM";         // 9:30–9:59
+  else if (minutes < B4_SESSION.morningClose) sessionWindow = "MORNING_ENTRY"; // 10:00–11:29
+  else if (minutes < B4_SESSION.afternoonOpen) sessionWindow = "DEAD_ZONE";    // 11:30–13:29
+  else if (minutes < B4_SESSION.afternoonClose) sessionWindow = "AFTERNOON_ENTRY"; // 13:30–15:29
+  else if (minutes < B4_SESSION.hardClose) sessionWindow = "WIND_DOWN";        // 15:30–15:44
+  else sessionWindow = "CLOSED";                                              // 15:45+
+
+  const sessionLabels: Record<B4SessionWindow, string> = {
+    WEEKEND: "Weekend — market closed",
+    PRE_MARKET: "Pre-market — set levels, read futures, no entries",
+    PRE_10AM: "Open but pre-10 AM — no entries yet (R4.G1)",
+    MORNING_ENTRY: "Morning entry window (10:00–11:30)",
+    DEAD_ZONE: "Midday dead zone — manage only, no new entries (HR.2)",
+    AFTERNOON_ENTRY: "Afternoon entry window (1:30–3:30)",
+    WIND_DOWN: "Wind-down — close positions, no new (flat by 3:45)",
+    CLOSED: "Session closed — all B4 positions must be flat (HR.3)",
+  };
+  const entriesAllowed = sessionWindow === "MORNING_ENTRY" || sessionWindow === "AFTERNOON_ENTRY";
+
+  // Weekly cadence (Mon rebuild, Tue–Thu refine, Fri close-out note).
+  const weeklyTask =
+    weekday === 1 ? "Monday — build the week's roadmap (upside + downside levels, gaps, round numbers), then trade." :
+    weekday === 5 ? "Friday — trade, then an optional 5-min close-out note on where the map ended." :
+    weekday >= 2 && weekday <= 4 ? "Confirm + refine Monday's map, trade the breaks. No rebuild." :
+    "Weekend — no B4 work.";
+
+  // Futures bias (DAILY 9-EMA proxy — true rule is intraday VWAP+9EMA).
+  const es = futureBias(esBars);
+  const nq = futureBias(nqBars);
+  let combinedBias: B4Status["futures"]["combinedBias"] = "UNKNOWN";
+  if (es.bias !== "UNKNOWN" && nq.bias !== "UNKNOWN") {
+    if (es.bias === "BULL" && nq.bias === "BULL") combinedBias = "CALLS";
+    else if (es.bias === "BEAR" && nq.bias === "BEAR") combinedBias = "PUTS";
+    else combinedBias = "MIXED";
+  }
+  notes.push("Futures bias is a DAILY 9-EMA proxy — confirm intraday VWAP + 9 EMA before any entry (R4.G2).");
+
+  // Go-live decisions.
+  const lossCap = b4?.daily_loss_cap ?? null;
+  const flowTool = b4?.order_flow_tool ?? null;
+  const instrument = b4?.launch_instrument ?? null;
+  const paperMode = b4?.paper_trade?.mode ?? null;
+  const goLive: B4Status["goLive"] = [
+    { id: 1, label: "Daily loss cap ($)", status: lossCap != null ? "SET" : "OPEN", value: lossCap != null ? `$${lossCap}` : null },
+    { id: 2, label: "Order-flow tool", status: flowTool != null ? "SET" : "OPEN", value: flowTool },
+    { id: 3, label: "Launch instrument", status: instrument != null ? "SET" : "OPEN", value: instrument },
+    { id: 4, label: "Paper-trade validation", status: paperMode != null ? "SET" : "OPEN", value: paperMode },
+  ];
+  const readyToGoLive = lossCap != null && instrument != null && paperMode != null;
+  const live = !!b4?.live && readyToGoLive;
+
+  // Gate stack — auto where honest, MANUAL otherwise.
+  const gates = B4_GATES.map((g) => {
+    let state: B4GateState = g.auto ? "UNKNOWN" : "MANUAL";
+    let detail: string = g.detail;
+    if (g.id === "R4.G1") {
+      state = entriesAllowed ? "PASS" : "FAIL";
+      detail = entriesAllowed ? `In entry window (${label}).` : `${sessionLabels[sessionWindow]}.`;
+    } else if (g.id === "R4.G2") {
+      state = combinedBias === "UNKNOWN" ? "UNKNOWN" : combinedBias === "MIXED" ? "FAIL" : "PASS";
+      detail = combinedBias === "UNKNOWN" ? "Futures data unavailable." :
+        combinedBias === "MIXED" ? "ES/NQ mixed vs 9-EMA — skip (proxy; confirm intraday)." :
+        `ES + NQ both ${combinedBias === "CALLS" ? "above" : "below"} 9-EMA → ${combinedBias} bias (proxy).`;
+    } else if (g.id === "R4.G8") {
+      state = lossCap != null ? "MANUAL" : "FAIL";
+      detail = lossCap != null ? `Cap $${lossCap} — confirm not hit before entering.` : "Loss cap not set (go-live decision 1).";
+    }
+    return { id: g.id, label: g.label, state, detail };
+  });
+
+  // Watchlist with live prices + pre-mapped levels.
+  const watchlist = (b4?.watchlist ?? []).map((w) => {
+    const bars = watchBars.get(w.ticker) ?? null;
+    return {
+      ticker: w.ticker,
+      price: bars ? bars.close[bars.close.length - 1] : null,
+      bullLevel: w.bull_level ?? null,
+      bearLevel: w.bear_level ?? null,
+      targets: w.targets ?? [],
+      stop: w.stop ?? null,
+    };
+  });
+
+  if (!readyToGoLive) notes.push(`Go-live gate NOT met — ${goLive.filter((d) => d.status === "OPEN").map((d) => d.label).join(", ")} still open.`);
+
+  return {
+    live, readyToGoLive, sessionWindow, sessionLabel: sessionLabels[sessionWindow],
+    etTime: label, etMinutes: minutes, entriesAllowed, weeklyTask,
+    futures: { es, nq, combinedBias },
+    gates, goLive, watchlist,
+    lossCap, maxTrades: b4?.max_trades_per_day ?? 2, notes,
+  };
 }
