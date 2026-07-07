@@ -457,6 +457,13 @@ export default function CoworkPage() {
             <>
               <TVChart candles={candles} levels={chartLevels} />
               <LevelLegend levels={chartLevels} last={candles[candles.length - 1].close} />
+              <LevelEditor
+                key={chartSymbol}
+                symbol={chartSymbol}
+                initial={status?.b4?.watchlist.find((w) => w.ticker === chartSymbol) ?? null}
+                price={candles[candles.length - 1].close}
+                onSaved={loadStatus}
+              />
             </>
           ) : (
             <div style={{ color: "#666", fontSize: 13, padding: 20 }}>No data</div>
@@ -592,6 +599,130 @@ function GrowthStrip({ growth }: { growth: Growth }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+// Inline B4 level editor — read wick levels off the chart, type them, save.
+// Persists to the portfolio's B4 watchlist for this symbol; chart redraws on
+// save. "Round to zones" applies the 5/10-point rounding principle.
+function LevelEditor({
+  symbol,
+  initial,
+  price,
+  onSaved,
+}: {
+  symbol: string;
+  initial: B4Watch | null;
+  price: number;
+  onSaved: () => void;
+}) {
+  const s = (n: number | null | undefined) => (n == null ? "" : String(n));
+  const [open, setOpen] = useState(false);
+  const [bull, setBull] = useState(s(initial?.bullLevel));
+  const [bear, setBear] = useState(s(initial?.bearLevel));
+  const [t1, setT1] = useState(s(initial?.targets?.[0]));
+  const [t2, setT2] = useState(s(initial?.targets?.[1]));
+  const [t3, setT3] = useState(s(initial?.targets?.[2]));
+  const [stop, setStop] = useState(s(initial?.stop));
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const num = (v: string): number | null => {
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? n : null;
+  };
+  const step = price >= 100 ? 5 : price >= 20 ? 1 : 0.5;
+  const roundZone = (v: string): string => {
+    const n = num(v);
+    return n == null ? v : String(Math.round(n / step) * step);
+  };
+  const pctHint = (v: string): string => {
+    const n = num(v);
+    if (n == null) return "";
+    const p = ((n - price) / price) * 100;
+    return `${p >= 0 ? "+" : ""}${p.toFixed(2)}%`;
+  };
+
+  async function save(round: boolean) {
+    setSaving(true);
+    setMsg(null);
+    let bV = bull, brV = bear, t1V = t1, t2V = t2, t3V = t3, stV = stop;
+    if (round) {
+      bV = roundZone(bull); brV = roundZone(bear);
+      t1V = roundZone(t1); t2V = roundZone(t2); t3V = roundZone(t3); stV = roundZone(stop);
+      setBull(bV); setBear(brV); setT1(t1V); setT2(t2V); setT3(t3V); setStop(stV);
+    }
+    const targets = [num(t1V), num(t2V), num(t3V)].filter((x): x is number => x != null);
+    try {
+      const res = await fetch("/api/cowork/b4-levels", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker: symbol, bull_level: num(bV), bear_level: num(brV), targets, stop: num(stV) }),
+      });
+      const j = await res.json();
+      if (!res.ok) { setMsg({ ok: false, text: j.error ?? (j.issues?.join("; ")) ?? `HTTP ${res.status}` }); return; }
+      setMsg({ ok: true, text: "Saved — levels drawn on chart." });
+      onSaved();
+    } catch (e) {
+      setMsg({ ok: false, text: e instanceof Error ? e.message : "Network error" });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const rows: { label: string; val: string; set: (v: string) => void; color: string }[] = [
+    { label: "▲ Bull break", val: bull, set: setBull, color: "#3fdc8a" },
+    { label: "▼ Bear break", val: bear, set: setBear, color: "#ff7070" },
+    { label: "T1 target", val: t1, set: setT1, color: "#5fb6ff" },
+    { label: "T2 target", val: t2, set: setT2, color: "#5fb6ff" },
+    { label: "T3 target", val: t3, set: setT3, color: "#5fb6ff" },
+    { label: "Stop", val: stop, set: setStop, color: "#f5b400" },
+  ];
+
+  return (
+    <div style={{ marginTop: 12, borderTop: "1px solid #1a1f2e", paddingTop: 10 }}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{ background: "none", border: "none", cursor: "pointer", color: "#9aa4b8", fontSize: 12, fontWeight: 600, padding: 0 }}
+      >
+        {open ? "▾" : "▸"} Map B4 levels for {symbol}
+      </button>
+
+      {open && (
+        <div style={{ marginTop: 10 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {rows.map((r) => (
+              <div key={r.label} style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 120 }}>
+                <label style={{ fontSize: 10, color: r.color, fontWeight: 600 }}>{r.label}</label>
+                <input
+                  type="number"
+                  step="any"
+                  value={r.val}
+                  onChange={(e) => r.set(e.target.value)}
+                  placeholder="—"
+                  style={{
+                    width: 100, padding: "6px 8px", fontSize: 13, borderRadius: 6,
+                    border: "1px solid #2a3550", background: "#0a0c12", color: "#dde4ef",
+                  }}
+                />
+                <span style={{ fontSize: 10, color: "#666", fontFamily: "monospace", minHeight: 12 }}>{pctHint(r.val)}</span>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 10, flexWrap: "wrap" }}>
+            <button onClick={() => save(false)} disabled={saving} style={btnStyle(false)}>
+              {saving ? "Saving…" : "Save levels"}
+            </button>
+            <button onClick={() => save(true)} disabled={saving} style={chipBtnStyle(false)} title={`Round to nearest ${step}`}>
+              Round to zones & save
+            </button>
+            <span style={{ fontSize: 11, color: "#666" }}>Rounds to nearest {step} (markets respect zones, not pennies)</span>
+            {msg && <span style={{ fontSize: 12, color: msg.ok ? "#3fdc8a" : "#ff7070" }}>{msg.text}</span>}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
