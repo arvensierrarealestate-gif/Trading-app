@@ -1,6 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import type { ChartLevel } from "@/components/TVChart";
+
+// Lightweight Charts touches the DOM — load client-side only.
+const TVChart = dynamic(() => import("@/components/TVChart"), { ssr: false });
 
 type Diagnostics = {
   regime: string;
@@ -152,6 +157,37 @@ export default function CoworkPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Level overlays for the charted symbol — the B4 roadmap (bull/bear/targets/
+  // stop) plus nearest round-number levels. Distance vs last close is baked
+  // into each label so "distance to the next level" is always on screen.
+  const chartLevels = useMemo<ChartLevel[]>(() => {
+    const last = candles.length ? candles[candles.length - 1].close : null;
+    const dist = (p: number) => {
+      if (last == null) return "";
+      const pct = ((p - last) / last) * 100;
+      return `  ${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`;
+    };
+    const out: ChartLevel[] = [];
+    const w = status?.b4?.watchlist.find((x) => x.ticker === chartSymbol);
+    if (w) {
+      if (w.bullLevel != null) out.push({ price: w.bullLevel, color: "#3fdc8a", label: `▲ ${w.bullLevel}${dist(w.bullLevel)}` });
+      if (w.bearLevel != null) out.push({ price: w.bearLevel, color: "#ff7070", label: `▼ ${w.bearLevel}${dist(w.bearLevel)}` });
+      (w.targets ?? []).forEach((t, i) => out.push({ price: t, color: "#5fb6ff", label: `T${i + 1} ${t}${dist(t)}` }));
+      if (w.stop != null) out.push({ price: w.stop, color: "#f5b400", label: `stop ${w.stop}${dist(w.stop)}`, dashed: true });
+    }
+    // Nearest round-number levels (psychological S/R — a core B4 principle).
+    if (last != null) {
+      const step = last < 20 ? 1 : last < 100 ? 5 : last < 1000 ? 10 : 50;
+      const base = Math.round(last / step) * step;
+      for (let k = -2; k <= 2; k++) {
+        const p = base + k * step;
+        if (p <= 0 || out.some((l) => Math.abs(l.price - p) < step * 0.25)) continue;
+        out.push({ price: p, color: "#3a4250", label: `${p}${dist(p)}`, dashed: true });
+      }
+    }
+    return out;
+  }, [status, chartSymbol, candles]);
 
   async function run(bucket: "all" | "b1" | "b2" | "b3") {
     setBusy(bucket);
@@ -418,7 +454,10 @@ export default function CoworkPage() {
           ) : chartError ? (
             <div style={{ color: "#ff8a8a", fontSize: 13, padding: 20 }}>Chart error: {chartError}</div>
           ) : candles.length ? (
-            <CandleChart candles={candles} symbol={chartSymbol} />
+            <>
+              <TVChart candles={candles} levels={chartLevels} />
+              <LevelLegend levels={chartLevels} last={candles[candles.length - 1].close} />
+            </>
           ) : (
             <div style={{ color: "#666", fontSize: 13, padding: 20 }}>No data</div>
           )}
@@ -557,72 +596,29 @@ function GrowthStrip({ growth }: { growth: Growth }) {
   );
 }
 
-function CandleChart({ candles, symbol }: { candles: Candle[]; symbol: string }) {
-  const W = 1000;
-  const H = 280;
-  const padTop = 10;
-  const padBottom = 30;
-  const padLeft = 50;
-  const padRight = 10;
-  const plotW = W - padLeft - padRight;
-  const plotH = H - padTop - padBottom;
-  const n = candles.length;
-
-  const yMax = Math.max(...candles.map((c) => c.high)) * 1.005;
-  const yMin = Math.min(...candles.map((c) => c.low)) * 0.995;
-  const yRange = yMax - yMin || 1;
-
-  const slot = plotW / n;
-  const candleWidth = Math.max(2, slot * 0.7);
-
-  const yPx = (price: number) => padTop + (1 - (price - yMin) / yRange) * plotH;
-
-  const last = candles[n - 1];
-  const first = candles[0];
-  const periodChange = ((last.close - first.open) / first.open) * 100;
-  const periodColor = periodChange >= 0 ? "#3fdc8a" : "#ff7070";
-
-  const ticks: number[] = [];
-  for (let i = 0; i <= 4; i++) ticks.push(yMin + (yRange * i) / 4);
-
+// Compact distance table under the chart — every drawn level with its gap to
+// price in points and %. This is the "make distance" surface: sorted top-down.
+function LevelLegend({ levels, last }: { levels: ChartLevel[]; last: number }) {
+  const mapped = levels.filter((l) => l.color !== "#3a4250"); // skip faint round-numbers
+  if (!mapped.length) return null;
+  const rows = mapped
+    .map((l) => ({ ...l, gap: l.price - last, pct: ((l.price - last) / last) * 100 }))
+    .sort((a, b) => b.price - a.price);
   return (
-    <div>
-      <div style={{ display: "flex", gap: 16, alignItems: "baseline", marginBottom: 8 }}>
-        <div style={{ fontSize: 14, color: "#9aa4b8" }}>${last.close.toFixed(2)}</div>
-        <div style={{ fontSize: 13, color: periodColor, fontWeight: 600 }}>
-          {periodChange >= 0 ? "+" : ""}{periodChange.toFixed(2)}% over window
-        </div>
-        <div style={{ fontSize: 11, color: "#666", marginLeft: "auto" }}>
-          {first.date} → {last.date} · {n} bars
-        </div>
+    <div style={{ marginTop: 12 }}>
+      <div style={{ fontSize: 11, color: "#9aa4b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>
+        Levels & distance <span style={{ textTransform: "none", color: "#666" }}>(from ${last.toFixed(2)})</span>
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", background: "#0a0c12", borderRadius: 6 }}>
-        {ticks.map((t, i) => (
-          <g key={i}>
-            <line x1={padLeft} x2={W - padRight} y1={yPx(t)} y2={yPx(t)} stroke="#1a1f2e" strokeWidth={1} />
-            <text x={padLeft - 6} y={yPx(t) + 3} textAnchor="end" fontSize={10} fill="#666">{t.toFixed(2)}</text>
-          </g>
+      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {rows.map((r, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12, fontFamily: "monospace", padding: "3px 8px", background: "#141a24", borderRadius: 4 }}>
+            <span style={{ width: 10, height: 10, borderRadius: 2, background: r.color, flexShrink: 0 }} />
+            <span style={{ color: "#dde4ef", minWidth: 130 }}>{r.label.replace(/\s+[+-][\d.]+%$/, "")}</span>
+            <span style={{ color: "#9aa4b8", minWidth: 90 }}>{r.gap >= 0 ? "+" : ""}{r.gap.toFixed(2)} pts</span>
+            <span style={{ color: r.pct >= 0 ? "#3fdc8a" : "#ff7070", fontWeight: 600 }}>{r.pct >= 0 ? "+" : ""}{r.pct.toFixed(2)}%</span>
+          </div>
         ))}
-
-        {candles.map((c, i) => {
-          const cx = padLeft + slot * i + slot / 2;
-          const isUp = c.close >= c.open;
-          const color = isUp ? "#3fdc8a" : "#ff7070";
-          const bodyTop = yPx(Math.max(c.open, c.close));
-          const bodyBot = yPx(Math.min(c.open, c.close));
-          const bodyH = Math.max(1, bodyBot - bodyTop);
-          return (
-            <g key={i}>
-              <line x1={cx} x2={cx} y1={yPx(c.high)} y2={yPx(c.low)} stroke={color} strokeWidth={1} />
-              <rect x={cx - candleWidth / 2} y={bodyTop} width={candleWidth} height={bodyH} fill={color} opacity={isUp ? 0.85 : 0.95} />
-            </g>
-          );
-        })}
-
-        {[0, Math.floor(n / 2), n - 1].map((i) => (
-          <text key={i} x={padLeft + slot * i + slot / 2} y={H - 10} textAnchor="middle" fontSize={10} fill="#666">{candles[i].date}</text>
-        ))}
-      </svg>
+      </div>
     </div>
   );
 }
