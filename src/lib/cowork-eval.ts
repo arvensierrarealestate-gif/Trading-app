@@ -9,8 +9,12 @@ export type Bars = { close: number[]; volume: number[]; high: number[]; low: num
 
 export async function fetchBars(symbol: string, range = "1y"): Promise<Bars | null> {
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=1d`;
+  // Per-symbol timeout so one slow/hanging quote (e.g. a futures symbol) can't
+  // stall the whole batch until the route's maxDuration kills it.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
   try {
-    const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (TradeReady)" } });
+    const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (TradeReady)" }, signal: controller.signal });
     if (!res.ok) return null;
     const j = (await res.json()) as {
       chart: { result?: Array<{ timestamp?: number[]; indicators: { quote: Array<{ close?: (number | null)[]; volume?: (number | null)[]; high?: (number | null)[]; low?: (number | null)[] }> } }> };
@@ -34,6 +38,8 @@ export async function fetchBars(symbol: string, range = "1y"): Promise<Bars | nu
     return close.length ? { close, volume, high, low } : null;
   } catch {
     return null;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
