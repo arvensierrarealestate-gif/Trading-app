@@ -132,9 +132,18 @@ export default function CoworkPage() {
   // PWA / desktop-shortcut entry point. When launched from the installed
   // shortcut (which uses start_url=/cowork?run=all), auto-run the full brief
   // so the owner sees a fresh report the moment the window opens.
+  // Also supports ?tab=b4 (etc.) to deep-link straight to a status tab.
   useEffect(() => {
     if (typeof window === "undefined") return;
     const url = new URL(window.location.href);
+
+    // ?tab=b4 deep-link — persists in the URL so refresh/bookmark keeps the tab.
+    const tab = url.searchParams.get("tab");
+    if (tab === "portfolio" || tab === "b1" || tab === "b2" || tab === "b3" || tab === "b4") {
+      setActiveTab(tab);
+    }
+
+    // ?run=all one-shot — strip after firing the brief.
     const bucket = url.searchParams.get("run") as "all" | "b1" | "b2" | "b3" | null;
     if (bucket === "all" || bucket === "b1" || bucket === "b2" || bucket === "b3") {
       url.searchParams.delete("run");
@@ -214,7 +223,15 @@ export default function CoworkPage() {
                 return (
                   <button
                     key={tab}
-                    onClick={() => setActiveTab(tab)}
+                    onClick={() => {
+                      setActiveTab(tab);
+                      if (typeof window !== "undefined") {
+                        const u = new URL(window.location.href);
+                        if (tab === "portfolio") u.searchParams.delete("tab");
+                        else u.searchParams.set("tab", tab);
+                        window.history.replaceState(null, "", u.pathname + u.search);
+                      }
+                    }}
                     style={{
                       padding: "7px 16px", fontSize: 12, fontWeight: 600, borderRadius: 7,
                       border: `1px solid ${isActive ? "#4a5f8a" : "#2a3142"}`,
