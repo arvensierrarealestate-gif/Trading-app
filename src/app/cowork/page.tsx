@@ -470,6 +470,7 @@ export default function CoworkPage() {
                   onPick={setChartSymbol}
                   active={chartSymbol}
                 />
+                <B4EntryCheck b4={status.b4} />
                 <B4Panel b4={status.b4} active={chartSymbol} onPick={setChartSymbol} />
               </>
             )}
@@ -807,6 +808,178 @@ function LevelLegend({ levels, last }: { levels: ChartLevel[]; last: number }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ───── B4 — Entry check (browser counterpart to the skill engine call) ─────
+
+type EntryResult = {
+  et_time: string;
+  bias: string;
+  gates: { code: string; name: string; status: "pass" | "fail" | "pending" | "na"; reason: string }[];
+  all_gates_pass: boolean;
+  can_open: { ok: boolean; reason: string };
+  clear_to_enter: boolean;
+  exit_plan: { scaling: boolean; legs: { pct: number; target: number }[]; note: string };
+  stop: { stop: boolean; reason: string } | null;
+  retest: string | null;
+};
+
+function B4EntryCheck({ b4 }: { b4: B4Status }) {
+  const mapBias = (x: "BULL" | "BEAR" | "UNKNOWN"): "bullish" | "bearish" | "mixed" =>
+    x === "BULL" ? "bullish" : x === "BEAR" ? "bearish" : "mixed";
+
+  const [open, setOpen] = useState(false);
+  const [obs, setObs] = useState({
+    macroEventToday: "",
+    releaseConfirmed: false,
+    esBias: mapBias(b4.futures.es.bias),
+    nqBias: mapBias(b4.futures.nq.bias),
+    esBrokeLevel: false,
+    nqBrokeLevel: false,
+    instrumentBroke: false,
+    volumeRoseAtBreak: false,
+    aggressiveFlowFollows: false,
+    hasCatalyst: false,
+    spread: "0.15",
+    spreadType: "option" as "option" | "share",
+    wallFullyAbsorbed: false,
+    dailyLossCapHit: false,
+    contracts: "1",
+  });
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<EntryResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const set = <K extends keyof typeof obs>(k: K, v: (typeof obs)[K]) => setObs((o) => ({ ...o, [k]: v }));
+
+  async function run() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/cowork/b4-evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...obs,
+          macroEventToday: obs.macroEventToday || null,
+          spread: parseFloat(obs.spread) || 999,
+          contracts: parseInt(obs.contracts, 10) || 1,
+        }),
+      });
+      const j = await res.json();
+      if (!res.ok) { setError(j.error ?? `HTTP ${res.status}`); return; }
+      setResult(j);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Network error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const check = (k: keyof typeof obs, label: string) => (
+    <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#dde4ef", cursor: "pointer" }}>
+      <input type="checkbox" checked={obs[k] as boolean} onChange={(e) => set(k, e.target.checked as never)} />
+      {label}
+    </label>
+  );
+  const biasSel = (k: "esBias" | "nqBias", label: string) => (
+    <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#9aa4b8" }}>
+      {label}
+      <select value={obs[k]} onChange={(e) => set(k, e.target.value as never)} style={selStyle}>
+        <option value="bullish">bullish</option>
+        <option value="bearish">bearish</option>
+        <option value="mixed">mixed</option>
+      </select>
+    </label>
+  );
+
+  const statusColor = (s: string) =>
+    s === "pass" ? "#3fdc8a" : s === "fail" ? "#ff7070" : s === "pending" ? "#f5b400" : "#9aa4b8";
+
+  return (
+    <div style={{ marginBottom: 18, background: "#0c0e15", border: "1px solid #2a3142", borderRadius: 10, padding: 14 }}>
+      <button onClick={() => setOpen((v) => !v)} style={{ background: "none", border: "none", cursor: "pointer", color: "#dde4ef", fontSize: 12, fontWeight: 700, padding: 0 }}>
+        {open ? "▾" : "▸"} Entry check — run the gate engine
+      </button>
+      <div style={{ fontSize: 10, color: "#666", marginTop: 2 }}>
+        Toggle what you observe (futures breaks, volume+flow, wall, spread) and get the canonical b4-rules verdict. Unchecked = conservative.
+      </div>
+
+      {open && (
+        <div style={{ marginTop: 12 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 20px", marginBottom: 12 }}>
+            {biasSel("esBias", "ES")}
+            {biasSel("nqBias", "NQ")}
+            {check("esBrokeLevel", "ES broke level")}
+            {check("nqBrokeLevel", "NQ broke level")}
+            {check("instrumentBroke", "Instrument broke + closed")}
+            {check("volumeRoseAtBreak", "Volume rose at break")}
+            {check("aggressiveFlowFollows", "Aggressive flow follows")}
+            {check("wallFullyAbsorbed", "Wall fully absorbed")}
+            {check("hasCatalyst", "Catalyst present")}
+            {check("dailyLossCapHit", "Daily loss cap hit")}
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#9aa4b8" }}>
+              Macro event
+              <select value={obs.macroEventToday} onChange={(e) => set("macroEventToday", e.target.value as never)} style={selStyle}>
+                <option value="">none</option>
+                <option value="FOMC_DECISION">FOMC decision</option>
+                <option value="FOMC_MINUTES">FOMC minutes</option>
+                <option value="CPI">CPI</option>
+                <option value="PCE">PCE</option>
+                <option value="NFP">NFP</option>
+              </select>
+            </label>
+            {obs.macroEventToday && check("releaseConfirmed", "Release confirmed")}
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#9aa4b8" }}>
+              Spread
+              <input type="number" step="0.01" value={obs.spread} onChange={(e) => set("spread", e.target.value as never)} style={{ ...inpStyle, width: 60 }} />
+              <select value={obs.spreadType} onChange={(e) => set("spreadType", e.target.value as never)} style={selStyle}>
+                <option value="option">option</option>
+                <option value="share">share</option>
+              </select>
+            </label>
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#9aa4b8" }}>
+              Contracts
+              <input type="number" value={obs.contracts} onChange={(e) => set("contracts", e.target.value as never)} style={{ ...inpStyle, width: 50 }} />
+            </label>
+          </div>
+
+          <button onClick={run} disabled={busy} style={btnStyle(false)}>{busy ? "Checking…" : "Run entry check"}</button>
+          {error && <span style={{ fontSize: 12, color: "#ff7070", marginLeft: 10 }}>{error}</span>}
+
+          {result && (
+            <div style={{ marginTop: 12 }}>
+              <div style={{
+                padding: "8px 14px", borderRadius: 8, marginBottom: 10, fontSize: 14, fontWeight: 700,
+                border: `1px solid ${result.clear_to_enter ? "#1f5f4d" : "#5e2a32"}`,
+                background: result.clear_to_enter ? "#0e2620" : "#2a1417",
+                color: result.clear_to_enter ? "#3fdc8a" : "#ff7070",
+              }}>
+                {result.clear_to_enter ? "✓ CLEAR TO ENTER" : "✗ NO ENTRY"}
+                <span style={{ color: "#9aa4b8", fontWeight: 400, fontSize: 12, marginLeft: 10 }}>
+                  {result.can_open.reason} · bias {result.bias} · {result.et_time} ET
+                </span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 3, marginBottom: 10 }}>
+                {result.gates.map((g) => (
+                  <div key={g.code} style={{ display: "flex", gap: 10, fontSize: 12, background: "#141a24", borderRadius: 5, padding: "5px 9px" }}>
+                    <span style={{ color: statusColor(g.status), fontWeight: 700, minWidth: 58, textTransform: "uppercase" }}>{g.status}</span>
+                    <span style={{ color: "#dde4ef", minWidth: 160 }}>{g.code} · {g.name}</span>
+                    <span style={{ color: "#9aa4b8" }}>{g.reason}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ fontSize: 12, color: "#9aa4b8" }}>
+                <span style={{ color: "#5fb6ff", fontWeight: 600 }}>Exit:</span> {result.exit_plan.note} — {result.exit_plan.legs.map((l) => `${Math.round(l.pct * 100)}%@T${l.target}`).join(" · ")}
+                {result.stop?.stop && <span style={{ color: "#ff7070", marginLeft: 10 }}>⚠ STOP: {result.stop.reason}</span>}
+                {result.retest && <span style={{ color: "#f5b400", marginLeft: 10 }}>retest → {result.retest}</span>}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -1282,6 +1455,24 @@ function chipBtnStyle(active: boolean): React.CSSProperties {
     fontWeight: 500,
   };
 }
+
+const inpStyle: React.CSSProperties = {
+  padding: "5px 8px",
+  fontSize: 12,
+  borderRadius: 6,
+  border: "1px solid #2a3550",
+  background: "#0a0c12",
+  color: "#dde4ef",
+};
+
+const selStyle: React.CSSProperties = {
+  padding: "4px 6px",
+  fontSize: 12,
+  borderRadius: 6,
+  border: "1px solid #2a3550",
+  background: "#0a0c12",
+  color: "#dde4ef",
+};
 
 const preStyle: React.CSSProperties = {
   background: "#0f1118",
