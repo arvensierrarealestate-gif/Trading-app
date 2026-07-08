@@ -64,7 +64,10 @@ of truth. It only READS and formats; it never places trades.
    }
    ```
    Returns `{ et_time, bias, gates:[{code,name,status,reason}], all_gates_pass,
-   can_open:{ok,reason}, clear_to_enter, exit_plan:{scaling,legs,note}, stop, retest }`.
+   can_open:{ok,reason}, live, setup_ok, clear_to_enter, reason,
+   exit_plan:{scaling,legs,note}, stop, retest, auto_trade:false }`.
+   `setup_ok` = the setup itself is valid (FAIL blocks; PENDING allowed) —
+   paper-safe. `clear_to_enter` = `setup_ok` AND B4 is live. Report `reason`.
 
 5. **B4 brief block** — the morning-brief B4 section, engine-backed
    `POST /api/cowork/b4-brief`

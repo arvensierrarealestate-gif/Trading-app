@@ -820,7 +820,10 @@ type EntryResult = {
   gates: { code: string; name: string; status: "pass" | "fail" | "pending" | "na"; reason: string }[];
   all_gates_pass: boolean;
   can_open: { ok: boolean; reason: string };
+  live: boolean;
+  setup_ok: boolean;
   clear_to_enter: boolean;
+  reason: string;
   exit_plan: { scaling: boolean; legs: { pct: number; target: number }[]; note: string };
   stop: { stop: boolean; reason: string } | null;
   retest: string | null;
@@ -953,13 +956,22 @@ function B4EntryCheck({ b4 }: { b4: B4Status }) {
             <div style={{ marginTop: 12 }}>
               <div style={{
                 padding: "8px 14px", borderRadius: 8, marginBottom: 10, fontSize: 14, fontWeight: 700,
-                border: `1px solid ${result.clear_to_enter ? "#1f5f4d" : "#5e2a32"}`,
-                background: result.clear_to_enter ? "#0e2620" : "#2a1417",
-                color: result.clear_to_enter ? "#3fdc8a" : "#ff7070",
+                border: `1px solid ${result.setup_ok ? "#1f5f4d" : "#5e2a32"}`,
+                background: result.setup_ok ? "#0e2620" : "#2a1417",
+                color: result.setup_ok ? "#3fdc8a" : "#ff7070",
+                display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
               }}>
-                {result.clear_to_enter ? "✓ CLEAR TO ENTER" : "✗ NO ENTRY"}
-                <span style={{ color: "#9aa4b8", fontWeight: 400, fontSize: 12, marginLeft: 10 }}>
-                  {result.can_open.reason} · bias {result.bias} · {result.et_time} ET
+                <span>{result.setup_ok ? "✓ SETUP VALID" : "✗ NO-GO"}</span>
+                <span style={{
+                  fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 10,
+                  background: result.live ? "#0e2620" : "#2a2010",
+                  color: result.live ? "#3fdc8a" : "#f5b400",
+                  border: `1px solid ${result.live ? "#1f5f4d" : "#5e4a1f"}`,
+                }}>
+                  {result.live ? "B4 LIVE" : "B4 NOT LIVE"}
+                </span>
+                <span style={{ color: "#9aa4b8", fontWeight: 400, fontSize: 12 }}>
+                  {result.reason} · bias {result.bias} · {result.et_time} ET
                 </span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 3, marginBottom: 10 }}>
