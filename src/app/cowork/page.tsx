@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { ChartLevel } from "@/components/TVChart";
 
+import B4GateChecklist from "@/components/B4GateChecklist";
+
 // Lightweight Charts touches the DOM — load client-side only.
 const TVChart = dynamic(() => import("@/components/TVChart"), { ssr: false });
 
@@ -898,8 +900,6 @@ function B4EntryCheck({ b4 }: { b4: B4Status }) {
     </label>
   );
 
-  const statusColor = (s: string) =>
-    s === "pass" ? "#3fdc8a" : s === "fail" ? "#ff7070" : s === "pending" ? "#f5b400" : "#9aa4b8";
 
   return (
     <div style={{ marginBottom: 18, background: "#0c0e15", border: "1px solid #2a3142", borderRadius: 10, padding: 14 }}>
@@ -954,40 +954,13 @@ function B4EntryCheck({ b4 }: { b4: B4Status }) {
 
           {result && (
             <div style={{ marginTop: 12 }}>
-              <div style={{
-                padding: "8px 14px", borderRadius: 8, marginBottom: 10, fontSize: 14, fontWeight: 700,
-                border: `1px solid ${result.setup_ok ? "#1f5f4d" : "#5e2a32"}`,
-                background: result.setup_ok ? "#0e2620" : "#2a1417",
-                color: result.setup_ok ? "#3fdc8a" : "#ff7070",
-                display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
-              }}>
-                <span>{result.setup_ok ? "✓ SETUP VALID" : "✗ NO-GO"}</span>
-                <span style={{
-                  fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 10,
-                  background: result.live ? "#0e2620" : "#2a2010",
-                  color: result.live ? "#3fdc8a" : "#f5b400",
-                  border: `1px solid ${result.live ? "#1f5f4d" : "#5e4a1f"}`,
-                }}>
-                  {result.live ? "B4 LIVE" : "B4 NOT LIVE"}
-                </span>
-                <span style={{ color: "#9aa4b8", fontWeight: 400, fontSize: 12 }}>
-                  {result.reason} · bias {result.bias} · {result.et_time} ET
-                </span>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 3, marginBottom: 10 }}>
-                {result.gates.map((g) => (
-                  <div key={g.code} style={{ display: "flex", gap: 10, fontSize: 12, background: "#141a24", borderRadius: 5, padding: "5px 9px" }}>
-                    <span style={{ color: statusColor(g.status), fontWeight: 700, minWidth: 58, textTransform: "uppercase" }}>{g.status}</span>
-                    <span style={{ color: "#dde4ef", minWidth: 160 }}>{g.code} · {g.name}</span>
-                    <span style={{ color: "#9aa4b8" }}>{g.reason}</span>
-                  </div>
-                ))}
-              </div>
-              <div style={{ fontSize: 12, color: "#9aa4b8" }}>
-                <span style={{ color: "#5fb6ff", fontWeight: 600 }}>Exit:</span> {result.exit_plan.note} — {result.exit_plan.legs.map((l) => `${Math.round(l.pct * 100)}%@T${l.target}`).join(" · ")}
-                {result.stop?.stop && <span style={{ color: "#ff7070", marginLeft: 10 }}>⚠ STOP: {result.stop.reason}</span>}
-                {result.retest && <span style={{ color: "#f5b400", marginLeft: 10 }}>retest → {result.retest}</span>}
-              </div>
+              <B4GateChecklist result={result} />
+              {(result.stop?.stop || result.retest) && (
+                <div style={{ fontSize: 12, color: "#9aa4b8", marginTop: 6 }}>
+                  {result.stop?.stop && <span style={{ color: "#ff7070", marginRight: 10 }}>⚠ STOP: {result.stop.reason}</span>}
+                  {result.retest && <span style={{ color: "#f5b400" }}>retest → {result.retest}</span>}
+                </div>
+              )}
             </div>
           )}
         </div>
