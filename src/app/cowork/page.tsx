@@ -1039,9 +1039,32 @@ function B4Panel({ b4, active, onPick }: { b4: B4Status; active: string; onPick:
               <span style={{ color: "#9aa4b8" }}>{s.where}</span>
             </div>
           ))}
+          <div style={{ fontSize: 11, color: "#9aa4b8", marginTop: 4 }}>
+            <span style={{ color: "#f5b400", fontWeight: 600 }}>Event day (FOMC/CPI/PCE/NFP): 80 / 10 / 10</span> — reversals come faster.
+          </div>
+          <div style={{ fontSize: 11, color: "#9aa4b8" }}>
+            <span style={{ color: "#5fb6ff", fontWeight: 600 }}>R4.9:</span> under 7 contracts — do not scale, exit 100% at Target 1.
+          </div>
           <div style={{ fontSize: 11, color: "#f5b400", marginTop: 4 }}>
             ⚠ Momentum exit overrides all targets: futures reject / wicky price / opposing order flow → exit now.
           </div>
+        </div>
+      </div>
+
+      {/* Trade-management refinements (Jul 8) */}
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: "#9aa4b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Trade management</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          {[
+            "R4.G0 Event lock — FOMC/CPI/PCE/NFP: no entry until release + price confirms (FOMC = 2PM + 2:30 Powell).",
+            "R4.G2 Futures confluence — ES AND NQ must BREAK their mapped levels with the instrument, not just sit on a VWAP side.",
+            "R4.G4 Fake-breakout filter — volume must rise AND aggressive flow follow; no follow-through = fake → skip.",
+            "R4.G7 Absorption — wait for the defending wall to be FULLY absorbed. Trigger = wall gone, not wall present.",
+            "Paired stop — exit if EITHER the daily dollar cap OR a level-reclaim (broken level reclaimed) triggers.",
+            "R4.10 Retest — after a break: retest rejected = valid add; retest reclaims the level = exit, break failing.",
+          ].map((r) => (
+            <div key={r} style={{ fontSize: 11, color: "#9aa4b8", background: "#141a24", borderRadius: 5, padding: "5px 9px", lineHeight: 1.4 }}>{r}</div>
+          ))}
         </div>
       </div>
 

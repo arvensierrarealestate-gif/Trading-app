@@ -1,6 +1,7 @@
 import { fitGaussianHMM } from "@/lib/hmm";
 import { REGIMES, type Regime } from "@/lib/regime";
-import { B3_ALERTS, SPECIAL_NOTES, VIX_PRIME, SPCX_CSP_READY_DATE, B4_SESSION, B4_GATES } from "@/lib/cowork-brief";
+import { B3_ALERTS, SPECIAL_NOTES, VIX_PRIME, SPCX_CSP_READY_DATE, B4_SESSION } from "@/lib/cowork-brief";
+import { GATES as B4_GATE_DEFS } from "@/lib/b4-rules";
 import { type CoworkPortfolio } from "@/lib/cowork-portfolio";
 
 export type Bars = { close: number[]; volume: number[]; high: number[]; low: number[] };
@@ -660,23 +661,30 @@ export function evaluateB4(
   const readyToGoLive = lossCap != null && instrument != null && paperMode != null;
   const live = !!b4?.live && readyToGoLive;
 
-  // Gate stack — auto where honest, MANUAL otherwise.
-  const gates = B4_GATES.map((g) => {
-    let state: B4GateState = g.auto ? "UNKNOWN" : "MANUAL";
-    let detail: string = g.detail;
-    if (g.id === "R4.G1") {
+  // Gate stack (G0–G8) from the canonical ruleset (b4-rules.ts). The app can
+  // only auto-evaluate the gates it has data for — G1 (clock), G2 (futures
+  // proxy), G8 (loss cap). Everything else — event lock, level break,
+  // volume+flow, catalyst, liquidity, absorption — needs live/manual inputs
+  // (Bookmap, live spread, the owner's eye) and renders as MANUAL.
+  const gates = B4_GATE_DEFS.map((g) => {
+    let state: B4GateState = "MANUAL";
+    let detail: string = g.description;
+    if (g.code === "R4.G0") {
+      state = "MANUAL";
+      detail = "FOMC/CPI/PCE/NFP days: no entry until release + price confirms. FOMC = 2PM + 2:30 Powell. Confirm none today.";
+    } else if (g.code === "R4.G1") {
       state = entriesAllowed ? "PASS" : "FAIL";
       detail = entriesAllowed ? `In entry window (${label}).` : `${sessionLabels[sessionWindow]}.`;
-    } else if (g.id === "R4.G2") {
-      state = combinedBias === "UNKNOWN" ? "UNKNOWN" : combinedBias === "MIXED" ? "FAIL" : "PASS";
+    } else if (g.code === "R4.G2") {
+      state = combinedBias === "UNKNOWN" ? "UNKNOWN" : combinedBias === "MIXED" ? "FAIL" : "MANUAL";
       detail = combinedBias === "UNKNOWN" ? "Futures data unavailable." :
-        combinedBias === "MIXED" ? "ES/NQ mixed vs 9-EMA — skip (proxy; confirm intraday)." :
-        `ES + NQ both ${combinedBias === "CALLS" ? "above" : "below"} 9-EMA → ${combinedBias} bias (proxy).`;
-    } else if (g.id === "R4.G8") {
+        combinedBias === "MIXED" ? "ES/NQ bias mixed vs 9-EMA — skip (proxy)." :
+        `ES/NQ lean ${combinedBias} (daily 9-EMA proxy) — confirm BOTH break their mapped levels in confluence with the instrument.`;
+    } else if (g.code === "R4.G8") {
       state = lossCap != null ? "MANUAL" : "FAIL";
       detail = lossCap != null ? `Cap $${lossCap} — confirm not hit before entering.` : "Loss cap not set (go-live decision 1).";
     }
-    return { id: g.id, label: g.label, state, detail };
+    return { id: g.code, label: g.name, state, detail };
   });
 
   // Watchlist with live prices + pre-mapped levels.
