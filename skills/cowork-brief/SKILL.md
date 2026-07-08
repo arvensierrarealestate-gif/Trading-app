@@ -66,10 +66,35 @@ of truth. It only READS and formats; it never places trades.
    Returns `{ et_time, bias, gates:[{code,name,status,reason}], all_gates_pass,
    can_open:{ok,reason}, clear_to_enter, exit_plan:{scaling,legs,note}, stop, retest }`.
 
+5. **B4 brief block** — the morning-brief B4 section, engine-backed
+   `POST /api/cowork/b4-brief`
+   Runs `buildB4Brief()` (src/lib/b4-brief.ts) over the whole B4 watchlist.
+   Server fills ET time, day-of-week (Monday = map-build day), the per-user
+   `live` flag, and each symbol's mapped levels from the saved portfolio. You
+   pass today's macro event + optional per-symbol observations:
+   ```jsonc
+   {
+     "macroEventToday": null,            // or FOMC_DECISION | CPI | ...
+     "releaseConfirmed": false,
+     "symbols": [                        // optional; omit a symbol = conservative defaults
+       { "symbol": "SPY", "esBias": "bullish", "nqBias": "bullish",
+         "esBrokeLevel": true, "nqBrokeLevel": true, "instrumentBroke": true,
+         "volumeRoseAtBreak": true, "aggressiveFlowFollows": true,
+         "spread": 0.12, "wallFullyAbsorbed": true, "contracts": 8 }
+     ]
+   }
+   ```
+   Returns `{ header, live, weeklyMapDue, eventLockActive, lines[], perSymbol[],
+   autoTrade:false }`. Print `lines` verbatim; `autoTrade` is always false —
+   this is guidance, never orders.
+
 ## How to run (map the user's phrase to calls)
 
 - **"morning brief" / "run my brief" / "session start" / "what do we have today"**
   → `POST /api/morning-brief/cowork` with `{"bucket":"all"}` → print `brief`.
+  If you have live B4 observations (futures breaks, wall, volume+flow), also
+  `POST /api/cowork/b4-brief` and append its `lines` as the richer B4 section —
+  otherwise the brief's built-in B4 block (daily proxy) is fine.
 - **"b1 check" / "b2 check" / "b3 scan"** → same POST with that bucket.
 - **"cowork status" / "where are my buckets"** → `GET /api/cowork-status` →
   summarize: regime + VIX, owned position flags (hard exits ≤14d, stops),
