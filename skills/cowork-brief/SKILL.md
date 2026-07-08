@@ -38,6 +38,34 @@ of truth. It only READS and formats; it never places trades.
    Returns `{ as_of, rows:[{ ticker, grade, overallBias, overallScore,
    confluence, timeframes:[{ tf, score, bias, rsi, volRatio, ... }] }] }`.
 
+4. **B4 entry check — FULL ENGINE** (authoritative gate verdict)
+   `POST /api/cowork/b4-evaluate`
+   Runs the canonical ruleset (`src/lib/b4-rules.ts`) server-side against the
+   observations you supply. This is the real engine — do NOT re-derive the
+   gates yourself; collect the inputs, POST, and report what it returns.
+   Body (all optional; anything omitted defaults to the CONSERVATIVE value so a
+   gate never passes on an unstated assumption):
+   ```jsonc
+   {
+     "macroEventToday": null,          // or "FOMC_DECISION"|"FOMC_MINUTES"|"CPI"|"PCE"|"NFP"
+     "releaseConfirmed": false,        // event released AND price picked a side + held
+     "esBias": "mixed", "nqBias": "mixed", // "bullish"|"bearish"|"mixed" (VWAP+9EMA)
+     "esBrokeLevel": false, "nqBrokeLevel": false, "instrumentBroke": false,
+     "volumeRoseAtBreak": false, "aggressiveFlowFollows": false,
+     "hasCatalyst": false,
+     "spread": 0.15, "spreadType": "option", // or "share"
+     "wallFullyAbsorbed": false,       // Bookmap: defending wall fully absorbed
+     "dailyLossCapHit": false,
+     "tradesToday": 0, "roundTripsLast5Days": 0, "accountValue": 0,
+     "contracts": 1,
+     // optional position reads:
+     "entryLevel": 0, "currentPrice": 0, "direction": "long", // "long"|"short"
+     "brokeLevel": 0, "retestPrice": 0, "retestRejected": false
+   }
+   ```
+   Returns `{ et_time, bias, gates:[{code,name,status,reason}], all_gates_pass,
+   can_open:{ok,reason}, clear_to_enter, exit_plan:{scaling,legs,note}, stop, retest }`.
+
 ## How to run (map the user's phrase to calls)
 
 - **"morning brief" / "run my brief" / "session start" / "what do we have today"**
@@ -52,6 +80,18 @@ of truth. It only READS and formats; it never places trades.
   2. Futures bias (`b4.futures.combinedBias`) and any FAIL gates.
   3. The MTF table sorted by grade: `ticker · grade · bias · score · conf/4`,
      then the per-timeframe scores.
+- **"can I take this trade?" / "B4 entry check" / "check the gates"** →
+  Collect the observations conversationally (only ask what you don't already
+  know from status/scores): is there a macro event today and has it confirmed?
+  did ES/NQ/instrument break their levels? volume rise + flow follow? spread?
+  is the wall fully absorbed? contracts? loss cap hit? Then
+  `POST /api/cowork/b4-evaluate` with those fields and report the engine's
+  answer verbatim in priority order:
+  1. `clear_to_enter` (the headline yes/no) + `can_open.reason`.
+  2. Each gate `code · name · STATUS — reason`, failing/pending ones first.
+  3. `exit_plan` (scaling legs + note) and, if a position is open, `stop` /
+     `retest`.
+  Never override the engine — if `clear_to_enter` is false, the answer is no.
 
 ## curl reference
 
@@ -69,6 +109,12 @@ curl -s "$BASE/api/cowork-status" \
 # B4 multi-timeframe scores
 curl -s "$BASE/api/cowork/b4-mtf" \
   -H "Authorization: Bearer $COWORK_API_TOKEN"
+
+# B4 entry check — full engine (POST observations, get gate verdict)
+curl -s -X POST "$BASE/api/cowork/b4-evaluate" \
+  -H "Authorization: Bearer $COWORK_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"esBias":"bullish","nqBias":"bullish","esBrokeLevel":true,"nqBrokeLevel":true,"instrumentBroke":true,"volumeRoseAtBreak":true,"aggressiveFlowFollows":true,"spread":0.12,"spreadType":"option","wallFullyAbsorbed":true,"contracts":8}'
 ```
 
 ## Output format
@@ -82,6 +128,12 @@ curl -s "$BASE/api/cowork/b4-mtf" \
 
 - **B4 is documented but NOT live.** Never suggest or simulate placing a live
   trade. Report signals only; entries are the owner's manual decision.
+- **The gate verdict comes from the engine, not from you.** For any "can I
+  enter?" question, call `POST /api/cowork/b4-evaluate` and report its result —
+  do not re-derive the gates from memory or talk the owner past a failing gate.
+- **Never assume an unstated observation is favorable.** If you don't know
+  whether the wall is absorbed or the levels broke, ask — omitted fields default
+  to conservative (fail), which is correct.
 - **B4 gates G3–G7 are manual** (level break, volume, catalyst, liquidity, order
   flow). The scores tell you *where to look*, never *when to click*.
 - **MTF intraday scores are meaningful only during market hours** (09:30–16:00 ET,
