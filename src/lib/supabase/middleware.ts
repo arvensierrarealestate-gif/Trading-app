@@ -21,7 +21,16 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  const { data: { user } } = await supabase.auth.getUser();
+  // Never let a Supabase hiccup (paused project, network blip) crash the
+  // middleware — that would 5xx EVERY route. On failure, treat as no session
+  // and let the request through; page-level auth still applies downstream.
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    return response;
+  }
   const path = request.nextUrl.pathname;
 
   // Require auth on /app and /cowork pages. API routes under those paths
