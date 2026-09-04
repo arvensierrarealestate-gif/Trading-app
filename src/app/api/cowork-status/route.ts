@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { authorizeCowork, type CoworkAuth } from "@/lib/cowork-auth";
-import { B1_TICKERS, B2_TICKERS, B3_TICKERS, EXTRA_WATCH, B4_WATCHLIST, B4_FUTURES } from "@/lib/cowork-brief";
+import { B1_TICKERS, B2_TICKERS, B3_TICKERS, EXTRA_WATCH, WATCHLIST, B4_WATCHLIST, B4_FUTURES } from "@/lib/cowork-brief";
 import {
   fetchBars,
   regimeFromCloses,
@@ -63,6 +63,7 @@ export async function GET(req: Request) {
   const b2Tickers = portfolio?.monitor_B2_csp?.tickers ?? Array.from(B2_TICKERS);
   const b3Tickers = portfolio?.monitor_B3_leaps?.scan_order ?? Array.from(B3_TICKERS);
   const extraTickers = Array.from(EXTRA_WATCH);
+  const watchlistTickers = Array.from(WATCHLIST);
   const b4Tickers = portfolio?.monitor_B4_daytrade?.watchlist?.map((w) => w.ticker) ?? Array.from(B4_WATCHLIST);
 
   // Include underlying symbols for owned positions.
@@ -75,7 +76,7 @@ export async function GET(req: Request) {
 
   const universe = Array.from(
     new Set([
-      ...b1Tickers, ...b2Tickers, ...b3Tickers, ...extraTickers, ...b4Tickers, ...ownedSymbols,
+      ...b1Tickers, ...b2Tickers, ...b3Tickers, ...extraTickers, ...watchlistTickers, ...b4Tickers, ...ownedSymbols,
       B4_FUTURES.es, B4_FUTURES.nq, "SPY", "^VIX",
     ]),
   );
@@ -90,6 +91,9 @@ export async function GET(req: Request) {
   const vix = vixBars ? vixBars.close[vixBars.close.length - 1] : null;
   const { regime, confidence } = regimeFromCloses(spy.close);
   const today = new Date().toISOString().slice(0, 10);
+
+  // Watchlist (cross-bucket, shown every morning).
+  const watchlist = watchlistTickers.map((t) => evaluateB1(t, barsMap.get(t) ?? null));
 
   // Bucket evaluation.
   const b1 = b1Tickers.map((t) => evaluateB1(t, barsMap.get(t) ?? null));
@@ -156,6 +160,7 @@ export async function GET(req: Request) {
     b1: b1.map((r) => ({ ticker: r.ticker, price: r.price, flag: r.flag, pctFromHigh: r.pctFromHigh })),
     b2: b2.map((r) => ({ ticker: r.ticker, price: r.price, verdict: r.verdict, rsi: r.rsi, vixGate: r.vixGate })),
     b3: b3.map((r) => ({ ticker: r.ticker, price: r.price, verdict: r.verdict, alertRef: r.alertRef, daysToHardExit: r.daysToHardExit, pullbackGate: r.pullbackGate, vixB3Gate: r.vixB3Gate, pullbackPct: r.pullbackPct })),
+    watchlist: watchlist.map((r) => ({ ticker: r.ticker, price: r.price, pctFromHigh: r.pctFromHigh, flag: r.flag })),
     b4,
   });
 }

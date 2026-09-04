@@ -80,6 +80,7 @@ type Status = {
   owned_stocks: OwnedStockStatus[];
   reentry: ReentryStatus[];
   scalp: ScalpStatus | null;
+  watchlist: B1Status[];
   b1: B1Status[];
   b2: B2Status[];
   b3: B3Status[];
@@ -339,6 +340,20 @@ export default function CoworkPage() {
             {/* Portfolio tab */}
             {activeTab === "portfolio" && (
               <>
+                {status.watchlist.length > 0 && (
+                  <BucketGrid
+                    title="Watchlist"
+                    tickers={status.watchlist.map((r) => ({
+                      ticker: r.ticker,
+                      price: r.price,
+                      color: r.flag ? "red" : "neutral",
+                      label: r.flag ? "FLAGGED" : "WATCH",
+                      sub: r.pctFromHigh != null ? `${r.pctFromHigh >= 0 ? "+" : ""}${r.pctFromHigh.toFixed(1)}% from 52w high` : "",
+                    }))}
+                    active={chartSymbol}
+                    onPick={setChartSymbol}
+                  />
+                )}
                 {!status.has_portfolio && (
                   <div style={{ color: "#666", fontSize: 13, padding: "20px 0" }}>
                     No portfolio loaded. <a href="/cowork/portfolio" style={{ color: "#7fb", textDecoration: "none" }}>Add your positions →</a>

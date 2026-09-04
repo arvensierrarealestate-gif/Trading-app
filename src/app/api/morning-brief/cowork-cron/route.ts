@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { B1_TICKERS, B2_TICKERS, B3_TICKERS, EXTRA_WATCH, B4_WATCHLIST, B4_FUTURES, SPECIAL_NOTES, VIX_PRIME } from "@/lib/cowork-brief";
+import { B1_TICKERS, B2_TICKERS, B3_TICKERS, EXTRA_WATCH, WATCHLIST, B4_WATCHLIST, B4_FUTURES, SPECIAL_NOTES, VIX_PRIME } from "@/lib/cowork-brief";
 import {
   fetchBars,
   regimeFromCloses,
@@ -173,7 +173,7 @@ export async function GET(req: Request) {
 
   const universe = Array.from(new Set([
     ...b1List, ...b2List, ...b3List, ...b4List, B4_FUTURES.es, B4_FUTURES.nq,
-    ...Array.from(EXTRA_WATCH), ...ownedSymbols, "SPY", "^VIX",
+    ...Array.from(EXTRA_WATCH), ...Array.from(WATCHLIST), ...ownedSymbols, "SPY", "^VIX",
   ]));
   const fetched = await Promise.all(universe.map((sym) => fetchBars(sym).then((b) => [sym, b] as const)));
   const barsMap = new Map(fetched);
@@ -264,6 +264,20 @@ export async function GET(req: Request) {
   sections.push("B4 — DAY TRADE (always last)");
   sections.push("─────────────────────────");
   sections.push(formatB4Cron(b4Status));
+  sections.push("");
+  sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
+  sections.push("WATCHLIST");
+  sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
+  sections.push(
+    Array.from(WATCHLIST)
+      .map((t) => {
+        const r = evaluateB1(t, barsMap.get(t) ?? null);
+        if (r.price == null) return `${t} — no data`;
+        const pos = r.pctFromHigh != null ? ` (${r.pctFromHigh >= 0 ? "+" : ""}${r.pctFromHigh.toFixed(1)}% from 52w high)` : "";
+        return `${t} — ${fmtPrice(r.price)}${pos}${r.flag ? " ⚑" : ""}`;
+      })
+      .join("\n"),
+  );
   sections.push("");
   sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
   sections.push("EXTRA WATCH");

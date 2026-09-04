@@ -7,6 +7,7 @@ import {
   B2_TICKERS,
   B3_TICKERS,
   EXTRA_WATCH,
+  WATCHLIST,
   B4_WATCHLIST,
   B4_FUTURES,
   SPECIAL_NOTES,
@@ -133,6 +134,16 @@ function formatB3(rows: B3Row[], regime: Regime): string {
 
 function formatExtras(rklb: B1Row): string {
   return `RKLB — ${fmtPrice(rklb.price)} · ${SPECIAL_NOTES.RKLB_NOTE}`;
+}
+
+function formatWatchlist(rows: B1Row[]): string {
+  return rows
+    .map((r) => {
+      if (r.price == null) return `${r.ticker} — no data`;
+      const pos = r.pctFromHigh != null ? ` (${r.pctFromHigh >= 0 ? "+" : ""}${r.pctFromHigh.toFixed(1)}% from 52w high)` : "";
+      return `${r.ticker} — ${fmtPrice(r.price)}${pos}${r.flag ? " ⚑" : ""}`;
+    })
+    .join("\n");
 }
 
 function formatOwnedPositions(options: OwnedOptionRow[], stocks: OwnedStockRow[], reentry: ReentryRow[], scalp: ScalpRow | null): string {
@@ -326,8 +337,9 @@ export async function POST(req: Request) {
     : [];
 
   const extras = Array.from(EXTRA_WATCH);
+  const watchlistTickers = Array.from(WATCHLIST);
   const b4Futures = needB4 ? [B4_FUTURES.es, B4_FUTURES.nq] : [];
-  const universe = Array.from(new Set([...b1List, ...b2List, ...b3List, ...b4List, ...b4Futures, ...extras, ...ownedSymbols, "SPY", "^VIX"]));
+  const universe = Array.from(new Set([...b1List, ...b2List, ...b3List, ...b4List, ...b4Futures, ...extras, ...watchlistTickers, ...ownedSymbols, "SPY", "^VIX"]));
 
   const fetched = await Promise.all(universe.map((sym) => fetchBars(sym).then((b) => [sym, b] as const)));
   const barsMap = new Map(fetched);
@@ -379,6 +391,7 @@ export async function POST(req: Request) {
     : null;
 
   const rklbRow = evaluateB1("RKLB", barsMap.get("RKLB") ?? null);
+  const watchlistRows: B1Row[] = watchlistTickers.map((t) => evaluateB1(t, barsMap.get(t) ?? null));
 
   // Header.
   const headerDate = new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
@@ -463,6 +476,12 @@ export async function POST(req: Request) {
     sections.push(formatB4(b4Status));
     sections.push("");
   }
+
+  sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
+  sections.push("WATCHLIST");
+  sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
+  sections.push(formatWatchlist(watchlistRows));
+  sections.push("");
 
   sections.push("━━━━━━━━━━━━━━━━━━━━━━━");
   sections.push("EXTRA WATCH");

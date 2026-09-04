@@ -25,6 +25,10 @@ export const B3_PIPELINE = ["CRDO", "ALAB"] as const;
 // RKLB is extra watch (not in any bucket). SPCX moved to B2 (Jun 29 update).
 export const EXTRA_WATCH = ["RKLB"] as const;
 
+// General watchlist — surfaced in every morning report and on /cowork,
+// regardless of which bucket a name also lives in. Added Sep 4 2026.
+export const WATCHLIST = ["META", "VRT", "XOM", "JPM", "PATH"] as const;
+
 // ───── B4 — Day Trading (MasiTrades framework) ─────
 // Individual Z33181037 ONLY. Documented Jul 6–7 2026, NOT yet live (4 open
 // go-live decisions). B4 is the fourth bucket: B1 accumulates · B2 sells
