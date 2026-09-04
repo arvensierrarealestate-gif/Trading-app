@@ -27,7 +27,10 @@ export const EXTRA_WATCH = ["RKLB"] as const;
 
 // General watchlist — surfaced in every morning report and on /cowork,
 // regardless of which bucket a name also lives in. Added Sep 4 2026.
-export const WATCHLIST = ["META", "VRT", "XOM", "JPM", "PATH"] as const;
+export const WATCHLIST = [
+  "META", "VRT", "XOM", "JPM", "PATH",
+  "RIOT", "SOFI", "NVDL", "TQQQ", "TNA", "GUSH",
+] as const;
 
 // ───── B4 — Day Trading (MasiTrades framework) ─────
 // Individual Z33181037 ONLY. Documented Jul 6–7 2026, NOT yet live (4 open
