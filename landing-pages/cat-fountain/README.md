@@ -1,0 +1,8 @@
+# Cat fountain landing page (mock)
+
+Mock direct-to-consumer landing page for the Cordless Stainless Steel Cat Water Fountain, built while supplier validation is underway. Kept separate from the Next.js app in `src/`; nothing here is imported by the app or its build.
+
+- `index.html` — the mock page. Self-contained, mobile-first. Open it directly in a browser. Append `?angle=bowl|cordless|clean` to preview the hero for each ad angle. The amber bar at the top toggles internal build notes.
+- `LANDING_PAGE_MODEL.md` — page architecture, final mock copy, visual direction, mobile and desktop layout, CTA map, placeholder map, Shopify handoff, conversion rationale, analytics plan, and the pre-launch checklist.
+
+All product claims, prices, package contents, and policy copy are provisional placeholders until the supplier sample and specifications are confirmed. No reviews or social proof are populated.

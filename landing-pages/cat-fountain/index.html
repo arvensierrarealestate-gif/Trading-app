@@ -1,0 +1,704 @@
+<title>Cordless Stainless Cat Fountain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<style>
+  /* ───────────── Tokens ───────────── */
+  :root {
+    --ground: #FAF9F7;
+    --surface: #FFFFFF;
+    --surface-2: #F1EFEB;
+    --ink: #1B1D1F;
+    --ink-2: #4A4F54;
+    --ink-3: #7A8087;
+    --line: #E3E0DB;
+    --steel: #C9CDD1;
+    --steel-2: #9EA5AB;
+    --water: #2E6E7E;
+    --water-soft: #E4EFF1;
+    --cta: #1B1D1F;
+    --cta-text: #FFFFFF;
+    --note-bg: #FFF4D6;
+    --note-ink: #7A4E00;
+    --note-line: #E9C86F;
+    --ph-a: #F4F2EE;
+    --ph-b: #D6DADD;
+    --shadow: 0 18px 40px -24px rgba(27,29,31,0.35);
+    --display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+    --body: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+    --mono: "DM Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #141618; --surface: #1C1F22; --surface-2: #232729;
+      --ink: #F2F1EE; --ink-2: #C4C6C8; --ink-3: #8C9195; --line: #2E3236;
+      --steel: #5C636A; --steel-2: #8B9299; --water: #7FBCCB; --water-soft: #1F3238;
+      --cta: #F2F1EE; --cta-text: #141618;
+      --note-bg: #3A2E10; --note-ink: #F0C060; --note-line: #6B4F12;
+      --ph-a: #2A2E32; --ph-b: #40474D;
+      --shadow: 0 18px 40px -24px rgba(0,0,0,0.8);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #141618; --surface: #1C1F22; --surface-2: #232729;
+    --ink: #F2F1EE; --ink-2: #C4C6C8; --ink-3: #8C9195; --line: #2E3236;
+    --steel: #5C636A; --steel-2: #8B9299; --water: #7FBCCB; --water-soft: #1F3238;
+    --cta: #F2F1EE; --cta-text: #141618;
+    --note-bg: #3A2E10; --note-ink: #F0C060; --note-line: #6B4F12;
+    --ph-a: #2A2E32; --ph-b: #40474D;
+    --shadow: 0 18px 40px -24px rgba(0,0,0,0.8);
+  }
+
+  /* ───────────── Base ───────────── */
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: var(--body); font-size: 17px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+    padding-bottom: 84px; /* room for sticky mobile CTA */
+  }
+  h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; line-height: 1.08; letter-spacing: -0.015em; margin: 0; text-wrap: balance; }
+  h1 { font-size: clamp(34px, 7.5vw, 62px); font-weight: 700; }
+  h2 { font-size: clamp(27px, 4.6vw, 42px); }
+  h3 { font-size: clamp(20px, 2.6vw, 24px); }
+  p { margin: 0; max-width: 62ch; }
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid var(--water); outline-offset: 3px; border-radius: 6px; }
+  .wrap { width: min(100% - 40px, 1120px); margin-inline: auto; }
+  .narrow { width: min(100% - 40px, 720px); margin-inline: auto; }
+  section { padding: 64px 0; }
+  @media (min-width: 820px) { section { padding: 96px 0; } }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--water); margin-bottom: 14px; }
+  .lede { font-size: clamp(17px, 2vw, 20px); color: var(--ink-2); }
+  .muted { color: var(--ink-3); }
+  .stack { display: flex; flex-direction: column; gap: 18px; }
+  .center { text-align: center; }
+  .center p { margin-inline: auto; }
+
+  /* CTA buttons: one shape, everywhere */
+  .cta {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 56px; padding: 0 28px; border-radius: 999px;
+    background: var(--cta); color: var(--cta-text); text-decoration: none;
+    font-family: var(--display); font-weight: 600; font-size: 16px; letter-spacing: 0.04em; text-transform: uppercase;
+    border: 1px solid var(--cta); cursor: pointer; transition: transform .15s ease, opacity .15s ease;
+    white-space: nowrap;
+  }
+  .cta:hover { transform: translateY(-1px); opacity: .92; }
+  .cta.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+  .cta.ghost:hover { border-color: var(--ink); }
+  .cta.full { width: 100%; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+  /* ───────────── Internal mock bar ───────────── */
+  .mockbar {
+    position: relative; z-index: 60; background: var(--note-bg); color: var(--note-ink);
+    border-bottom: 1px solid var(--note-line); font-family: var(--mono); font-size: 12px;
+  }
+  .mockbar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; min-height: 44px; padding-block: 6px; }
+  .mockbar strong { font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+  .mockbar label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .mockbar .angles { display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .mockbar button { font: inherit; color: inherit; background: transparent; border: 1px solid var(--note-line); border-radius: 999px; padding: 3px 10px; cursor: pointer; }
+  .mockbar button[aria-pressed="true"] { background: var(--note-ink); color: var(--note-bg); border-color: var(--note-ink); }
+
+  /* Annotations — visible only when internal notes are on */
+  .note { display: none; }
+  body.notes .note { display: block; }
+  .note, .tag { font-family: var(--mono); font-size: 11.5px; line-height: 1.45; }
+  .note { background: var(--note-bg); color: var(--note-ink); border: 1px dashed var(--note-line); border-radius: 8px; padding: 10px 12px; max-width: none; }
+  .note b { font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+  .tag { display: inline-block; background: var(--note-bg); color: var(--note-ink); border: 1px solid var(--note-line); border-radius: 4px; padding: 2px 7px; letter-spacing: 0.04em; }
+  body:not(.notes) .tag { display: none; }
+
+  /* Visual placeholders — always labeled (this is a mock) */
+  .ph {
+    position: relative; display: grid; place-items: center; overflow: hidden;
+    background: linear-gradient(135deg, var(--ph-a), var(--ph-b)); border: 1px dashed var(--steel-2); border-radius: 20px;
+    color: var(--ink-2); text-align: center; padding: 20px; aspect-ratio: 4 / 5;
+  }
+  .ph.wide { aspect-ratio: 16 / 10; }
+  .ph.square { aspect-ratio: 1; }
+  .ph.tall { aspect-ratio: 3 / 4; }
+  .ph .ph-id { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+  .ph .ph-name { font-family: var(--display); font-weight: 600; font-size: 18px; color: var(--ink); text-wrap: balance; }
+  .ph .ph-brief { font-size: 13px; color: var(--ink-2); margin-top: 8px; max-width: 34ch; }
+  .ph::before { /* hint of the product: a soft "stainless" disc */
+    content: ""; position: absolute; inset: auto -10% -35% auto; width: 70%; aspect-ratio: 1; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, var(--surface), var(--steel) 55%, var(--steel-2)); opacity: .55;
+  }
+  .ph > * { position: relative; }
+  .ph.video .ph-name::before { content: "▶  "; }
+
+  /* ───────────── Nav ───────────── */
+  .nav { position: sticky; top: 0; z-index: 50; background: color-mix(in srgb, var(--ground) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 64px; gap: 16px; }
+  .logo { font-family: var(--display); font-weight: 700; font-size: 18px; letter-spacing: -0.01em; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+  .logo i { width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, var(--steel-2)); border: 1px solid var(--steel-2); }
+  .nav ul { display: none; list-style: none; margin: 0; padding: 0; gap: 28px; }
+  .nav ul a { text-decoration: none; font-size: 15px; font-weight: 500; color: var(--ink-2); }
+  .nav ul a:hover { color: var(--ink); }
+  .nav .cta { min-height: 44px; padding: 0 20px; font-size: 14px; }
+  @media (min-width: 820px) { .nav ul { display: flex; } }
+
+  /* ───────────── Hero ───────────── */
+  .hero { padding: 40px 0 56px; }
+  .hero .wrap { display: grid; gap: 28px; }
+  .hero .copy { display: flex; flex-direction: column; gap: 18px; }
+  .hero .benefit { font-family: var(--display); font-weight: 600; font-size: 15px; letter-spacing: 0.02em; color: var(--ink-2); }
+  .hero .benefit span { color: var(--steel-2); margin: 0 8px; }
+  .hero .ph { aspect-ratio: 4 / 5; box-shadow: var(--shadow); }
+  @media (min-width: 820px) {
+    .hero { padding: 72px 0 96px; }
+    .hero .wrap { grid-template-columns: 1.05fr 1fr; align-items: center; gap: 56px; }
+    .hero .ph { aspect-ratio: 4 / 4.6; }
+  }
+
+  /* ───────────── Problem ───────────── */
+  .problem { background: var(--surface); border-block: 1px solid var(--line); }
+  .behaviors { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .behaviors li { display: flex; gap: 12px; align-items: flex-start; font-size: 17px; color: var(--ink-2); }
+  .behaviors li::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; margin-top: 10px; background: var(--water); }
+  .then-now { display: grid; gap: 14px; margin-top: 12px; }
+  .then-now .cell { background: var(--surface-2); border-radius: 16px; padding: 18px; display: grid; gap: 10px; }
+  .then-now .cell h4 { font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); font-family: var(--mono); font-weight: 500; }
+  .then-now .arrow { justify-self: center; color: var(--steel-2); font-size: 24px; line-height: 1; }
+  @media (min-width: 820px) {
+    .problem .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+    .then-now { grid-template-columns: 1fr auto 1fr; align-items: center; }
+    .then-now .arrow { transform: rotate(-90deg); }
+  }
+
+  /* ───────────── Benefit cards ───────────── */
+  .cards { display: grid; gap: 16px; margin-top: 36px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 24px; display: grid; gap: 10px; }
+  .card .k { width: 40px; height: 40px; border-radius: 12px; background: var(--water-soft); color: var(--water); display: grid; place-items: center; font-family: var(--display); font-weight: 700; font-size: 16px; }
+  .card p { color: var(--ink-2); font-size: 16px; }
+  @media (min-width: 820px) { .cards { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+  .solution .lead { display: grid; gap: 22px; }
+  @media (min-width: 820px) { .solution .lead { grid-template-columns: 1.1fr 0.9fr; align-items: center; gap: 56px; } }
+
+  /* ───────────── Demo (sequence — order matters here) ───────────── */
+  .demo { background: var(--surface); border-block: 1px solid var(--line); }
+  .steps { counter-reset: step; list-style: none; margin: 32px 0 0; padding: 0; display: grid; gap: 12px; }
+  .steps li { counter-increment: step; display: grid; grid-template-columns: 40px 1fr; gap: 14px; align-items: center; background: var(--surface-2); border-radius: 14px; padding: 14px 16px; font-weight: 500; }
+  .steps li::before { content: counter(step, decimal-leading-zero); font-family: var(--mono); font-size: 13px; color: var(--water); border: 1px solid var(--line); border-radius: 10px; height: 40px; display: grid; place-items: center; background: var(--surface); }
+  .steps li small { display: block; font-weight: 400; color: var(--ink-3); font-size: 14px; }
+  @media (min-width: 820px) {
+    .demo .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+    .steps { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ───────────── Feature grid ───────────── */
+  .features { display: grid; gap: 14px; margin-top: 36px; }
+  .feature { border-top: 1px solid var(--line); padding: 18px 0 6px; display: grid; gap: 6px; }
+  .feature h3 { font-size: 19px; }
+  .feature p { color: var(--ink-2); font-size: 16px; }
+  @media (min-width: 620px) { .features { grid-template-columns: 1fr 1fr; column-gap: 40px; } }
+  @media (min-width: 960px) { .features { grid-template-columns: 1fr 1fr 1fr; } }
+
+  /* ───────────── Cordless / rooms ───────────── */
+  .cordless { background: var(--ink); color: var(--ground); }
+  .cordless .eyebrow { color: var(--steel); }
+  .cordless .lede, .cordless .muted { color: var(--steel); }
+  .cordless .ph { --ph-a: #2A2E32; --ph-b: #40474D; color: var(--steel); border-color: var(--steel-2); }
+  .cordless .ph .ph-name { color: var(--ground); }
+  .cordless .ph .ph-brief { color: var(--steel); }
+  .cordless .cta { background: var(--ground); color: var(--ink); border-color: var(--ground); }
+  .rooms { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 32px; }
+  .rooms .ph { aspect-ratio: 1; padding: 14px; }
+  .rooms .ph .ph-name { font-size: 15px; }
+  .rooms .ph .ph-brief { display: none; }
+  @media (min-width: 820px) {
+    .cordless .wrap { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 56px; align-items: center; }
+    .rooms { margin-top: 0; }
+    .rooms .ph .ph-brief { display: block; }
+  }
+
+  /* ───────────── Cleaning ───────────── */
+  .clean-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 32px; }
+  .clean-grid .ph { aspect-ratio: 1; padding: 14px; }
+  .clean-grid .ph .ph-name { font-size: 15px; }
+  .clean-grid .ph .ph-brief { display: none; }
+  .clean-points { display: grid; gap: 14px; margin-top: 24px; }
+  .clean-points div { display: grid; gap: 4px; }
+  .clean-points strong { font-family: var(--display); font-weight: 600; font-size: 18px; }
+  .clean-points span { color: var(--ink-2); font-size: 16px; }
+  @media (min-width: 820px) {
+    .cleaning .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+    .clean-grid { grid-template-columns: repeat(3, 1fr); margin-top: 0; }
+  }
+
+  /* ───────────── Compare ───────────── */
+  .compare { background: var(--surface); border-block: 1px solid var(--line); }
+  .table-wrap { overflow-x: auto; margin-top: 32px; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 15px; }
+  th, td { padding: 14px 12px; text-align: center; border-bottom: 1px solid var(--line); }
+  th { font-family: var(--display); font-weight: 600; font-size: 14px; letter-spacing: 0.02em; }
+  td:first-child, th:first-child { text-align: left; font-weight: 500; }
+  th.ours { color: var(--water); }
+  td.ours { background: var(--water-soft); font-weight: 600; }
+  td .no { color: var(--ink-3); }
+  td .yes { color: var(--water); font-weight: 600; }
+
+  /* ───────────── Included ───────────── */
+  .box { display: grid; gap: 24px; margin-top: 32px; }
+  .box ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+  .box li { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 16px; }
+  .box li .qty { font-family: var(--mono); font-size: 13px; color: var(--ink-3); flex: none; }
+  @media (min-width: 820px) { .box { grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; } }
+
+  /* ───────────── Offer ───────────── */
+  .offer { background: var(--surface-2); }
+  .offers { display: grid; gap: 16px; margin-top: 36px; }
+  .plan { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 26px; display: grid; gap: 16px; }
+  .plan.best { border: 2px solid var(--ink); box-shadow: var(--shadow); }
+  .plan .badge { position: absolute; top: -13px; left: 24px; background: var(--ink); color: var(--ground); font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 10px; border-radius: 999px; }
+  .plan .price { font-family: var(--display); font-size: 40px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .plan .price small { font-family: var(--body); font-size: 14px; font-weight: 400; color: var(--ink-3); letter-spacing: 0; margin-left: 8px; }
+  .plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 16px; color: var(--ink-2); }
+  .plan li::before { content: "—"; color: var(--steel-2); margin-right: 10px; }
+  .plan .cta { margin-top: 6px; }
+  @media (min-width: 820px) { .offers { grid-template-columns: 1fr 1fr; gap: 24px; max-width: 880px; margin-inline: auto; } .plan.best { transform: translateY(-8px); } }
+
+  /* ───────────── Proof placeholder ───────────── */
+  .proof .slots { display: grid; gap: 14px; margin-top: 32px; }
+  .proof .slot { border: 1px dashed var(--steel-2); border-radius: 18px; padding: 22px; min-height: 150px; display: grid; gap: 8px; align-content: start; }
+  .proof .slot .ph-id { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); }
+  .proof .slot .ph-name { font-family: var(--display); font-weight: 600; font-size: 17px; }
+  .proof .slot p { font-size: 14px; color: var(--ink-2); }
+  @media (min-width: 820px) { .proof .slots { grid-template-columns: repeat(3, 1fr); } }
+
+  /* ───────────── FAQ ───────────── */
+  .faq { background: var(--surface); border-block: 1px solid var(--line); }
+  .faq-list { margin-top: 28px; border-top: 1px solid var(--line); }
+  details { border-bottom: 1px solid var(--line); }
+  summary { list-style: none; cursor: pointer; padding: 18px 0; display: flex; justify-content: space-between; align-items: center; gap: 16px; font-family: var(--display); font-weight: 600; font-size: 18px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-weight: 500; color: var(--ink-3); font-size: 22px; flex: none; transition: transform .2s ease; }
+  details[open] summary::after { transform: rotate(45deg); }
+  details .a { padding: 0 0 20px; display: grid; gap: 10px; color: var(--ink-2); font-size: 16px; }
+
+  /* ───────────── Final ───────────── */
+  .final { padding-bottom: 96px; }
+  .final .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 28px; padding: 40px 24px; display: grid; gap: 22px; text-align: center; justify-items: center; }
+  .final .micro { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; font-size: 13px; color: var(--ink-3); }
+  .final .micro span { border: 1px dashed var(--steel-2); border-radius: 999px; padding: 4px 12px; }
+  @media (min-width: 820px) { .final .panel { padding: 64px 40px; } }
+
+  footer { border-top: 1px solid var(--line); padding: 28px 0 40px; font-size: 13px; color: var(--ink-3); }
+  footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; }
+
+  /* ───────────── Sticky mobile CTA ───────────── */
+  .sticky {
+    position: fixed; inset: auto 0 0 0; z-index: 55; background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line); padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .sticky .t { display: grid; }
+  .sticky .t strong { font-family: var(--display); font-size: 14px; font-weight: 600; }
+  .sticky .t span { font-size: 12px; color: var(--ink-3); }
+  .sticky .cta { min-height: 48px; padding: 0 20px; font-size: 14px; }
+  @media (min-width: 820px) { .sticky { display: none; } body { padding-bottom: 0; } }
+</style>
+
+<!-- ═══════════════ INTERNAL MOCK BAR (remove before launch) ═══════════════ -->
+<div class="mockbar" id="mockbar">
+  <div class="wrap">
+    <strong>Internal mock · not live</strong>
+    <label><input type="checkbox" id="notesToggle" checked> Show build notes</label>
+    <span class="angles" aria-label="Preview hero by ad angle">Hero angle:
+      <button type="button" data-angle="bowl" aria-pressed="true">A · Ignores the bowl</button>
+      <button type="button" data-angle="cordless" aria-pressed="false">B · Cordless freedom</button>
+      <button type="button" data-angle="clean" aria-pressed="false">C · Easy cleaning</button>
+    </span>
+  </div>
+</div>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav class="nav" aria-label="Page">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Brand home"><i aria-hidden="true"></i>BRAND NAME</a>
+    <ul>
+      <li><a href="#demo">How It Works</a></li>
+      <li><a href="#solution">Benefits</a></li>
+      <li><a href="#included">What's Included</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <a class="cta shop" data-cta="nav_shop" href="#SHOPIFY_PRODUCT_URL">Shop Now</a>
+  </div>
+</nav>
+
+<main id="top">
+
+<!-- ═══════════════ 1 · HERO ═══════════════ -->
+<section class="hero" id="hero">
+  <div class="wrap">
+    <div class="copy">
+      <div class="note"><b>Section 1 · Hero</b> — Answers: what is it, why care, main benefit, what next. Headline/eyebrow swap per ad angle via <code>?angle=bowl|cordless|clean</code>. Variant A shown by default.</div>
+      <div class="eyebrow" data-hero="eyebrow">For cats who ignore the bowl</div>
+      <h1 data-hero="headline">Give Them Fresh, Flowing Water Wherever They Prefer to Drink</h1>
+      <p class="lede" data-hero="sub">A cordless stainless-steel fountain designed to give your cat fresh flowing water without tying their drinking station to a wall outlet.</p>
+      <div class="benefit">Cordless<span>·</span>Easy to clean<span>·</span>Made for everyday cat life</div>
+      <div class="cta-row">
+        <a class="cta shop" data-cta="hero_primary" href="#SHOPIFY_PRODUCT_URL">Shop the Fountain</a>
+        <a class="cta ghost" data-cta="hero_secondary" href="#demo">See how it works</a>
+      </div>
+      <span class="tag">CTA: hero_primary → Shopify product page (exact variant)</span>
+    </div>
+    <div class="ph">
+      <div class="ph-id">Placeholder 01 · Hero lifestyle image</div>
+      <div class="ph-name">Cat mid-drink at the fountain</div>
+      <div class="ph-brief">Clean modern kitchen or living space. Product fully visible, stainless drinking surface catching light, matte white body. No cable in frame. Natural daylight, not a studio render.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 2 · CUSTOMER PROBLEM ═══════════════ -->
+<section class="problem" id="problem">
+  <div class="wrap">
+    <div class="stack">
+      <div class="note"><b>Section 2 · Problem</b> — Recognition, not fear. Goal: "that sounds exactly like my cat." No health or medical framing.</div>
+      <h2>Still refilling a bowl your cat barely touches?</h2>
+      <ul class="behaviors">
+        <li>The bowl sits full all day. Untouched.</li>
+        <li>But the moment a tap runs, they're on the counter.</li>
+        <li>Your water glass. The bathroom sink. The shower floor.</li>
+        <li>So you rinse, refill, and move the bowl again. And again.</li>
+      </ul>
+      <p class="lede">Some cats just prefer moving water in a spot of their choosing. Give them another option.</p>
+    </div>
+    <div class="then-now">
+      <div class="cell">
+        <h4>Traditional bowl</h4>
+        <div class="ph square"><div class="ph-id">Placeholder 02a</div><div class="ph-name">Full, still bowl. Cat walking past.</div></div>
+      </div>
+      <div class="arrow" aria-hidden="true">↓</div>
+      <div class="cell">
+        <h4>Cordless flowing fountain</h4>
+        <div class="ph square"><div class="ph-id">Placeholder 02b</div><div class="ph-name">Same cat, drinking from the fountain.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 3 · PRODUCT AS SOLUTION ═══════════════ -->
+<section class="solution" id="solution">
+  <div class="wrap">
+    <div class="lead">
+      <div class="stack">
+        <div class="note"><b>Section 3 · Solution</b> — First clear product introduction. Three benefit pillars only; engineering detail waits for Section 5.</div>
+        <div class="eyebrow">The Cordless Stainless Steel Cat Water Fountain</div>
+        <h2>Fresh flowing water, without the cord deciding where it goes.</h2>
+        <p class="lede">A rechargeable fountain with a stainless-steel drinking surface and multi-stage filtration, built to fit into a real home and a real cleaning routine.</p>
+      </div>
+      <div class="ph">
+        <div class="ph-id">Placeholder 03 · Product isolated image</div>
+        <div class="ph-name">Fountain, three-quarter view</div>
+        <div class="ph-brief">Matte white body, stainless top tray. Soft neutral backdrop. This is the one "clean product" shot on the page.</div>
+      </div>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="k">1</div><h3>Cordless Freedom</h3><p>Place the fountain where it works best for your home and your cat, not where the nearest outlet happens to be.</p></div>
+      <div class="card"><div class="k">2</div><h3>Stainless Drinking Surface</h3><p>A clean, modern surface designed for easier everyday maintenance.</p></div>
+      <div class="card"><div class="k">3</div><h3>Flowing, Filtered Water</h3><p>Circulating water with multi-stage filtration, designed for everyday pet use.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 4 · DEMONSTRATION ═══════════════ -->
+<section class="demo" id="demo">
+  <div class="wrap">
+    <div class="ph wide video">
+      <div class="ph-id">Placeholder 02 · Cat drinking video (15–30s, muted autoplay, captions)</div>
+      <div class="ph-name">Fill it. Set it down. Let the fountain do its job.</div>
+      <div class="ph-brief">Cuts follow the nine steps at right. Ends on the cat drinking, then the tray lifting out. Also cover: Placeholder 06 (sensor demo) and 07 (cleaning demo).</div>
+    </div>
+    <div class="stack">
+      <div class="note"><b>Section 4 · Demonstration</b> — Demonstrate, don't describe. Numbered because the order is the actual routine. Video-first; the list is the storyboard and the fallback if video fails to load.</div>
+      <h2>Simple for them. Simple for you.</h2>
+      <p class="lede">Fill it. Set it down. Let the fountain do its job.</p>
+      <ol class="steps">
+        <li><span>Fill the reservoir</span></li>
+        <li><span>Drop in the filter</span></li>
+        <li><span>Set the stainless tray in place</span></li>
+        <li><span>Put it where your cat actually drinks<small>No outlet needed</small></span></li>
+        <li><span>Cat approaches</span></li>
+        <li><span>Sensor starts the flow</span></li>
+        <li><span>Cat drinks</span></li>
+        <li><span>Lift the tray out for cleaning</span></li>
+        <li><span>Rinse, reassemble, done</span></li>
+      </ol>
+      <div class="cta-row"><a class="cta shop" data-cta="demo_shop" href="#SHOPIFY_PRODUCT_URL">Shop the Fountain</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 5 · FEATURE GRID ═══════════════ -->
+<section class="featuregrid" id="features">
+  <div class="wrap">
+    <div class="note"><b>Section 5 · Features</b> — Six blocks, benefit-led, no exact measurements. Every line uses "designed for / approximately" language pending supplier validation.</div>
+    <div class="eyebrow">Designed around everyday cat life</div>
+    <h2>What's built in</h2>
+    <div class="features">
+      <div class="feature"><h3>Approximately 3L Capacity</h3><p>Generous water capacity without an oversized footprint.</p></div>
+      <div class="feature"><h3>Rechargeable Cordless Design</h3><p>Designed to operate without remaining permanently connected to a wall outlet. Charges over USB-C.</p></div>
+      <div class="feature"><h3>Motion-Activated Flow</h3><p>Designed to activate when your pet approaches, with timed and continuous modes for how your cat likes it.</p></div>
+      <div class="feature"><h3>Multi-Stage Filtration</h3><p>Designed to help capture debris while circulating the water. Replacement filters available.</p></div>
+      <div class="feature"><h3>Quiet Operation</h3><p>Designed for everyday use throughout the home, bedroom included.</p></div>
+      <div class="feature"><h3>Easy-Clean Components</h3><p>Removable stainless tray, filter, and pump, designed to simplify routine cleaning. Low-water auto shutoff protects the pump.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 6 · WHY CORDLESS MATTERS ═══════════════ -->
+<section class="cordless" id="cordless">
+  <div class="wrap">
+    <div class="stack">
+      <div class="note"><b>Section 6 · Why cordless</b> — The differentiator. Dark band on purpose: the one tonal shift on the page marks the one argument only this product makes. Four room placeholders show the same fountain, four rooms.</div>
+      <div class="eyebrow">Why cordless matters</div>
+      <h2>Put Their Water Where It Makes Sense</h2>
+      <p class="lede">Your cat's favorite drinking spot doesn't always happen to be beside an electrical outlet. Cordless operation gives you the flexibility to create a water station where it works best: the kitchen corner, the bedroom, the hallway, next to the food, or wherever they already go looking.</p>
+      <div class="cta-row"><a class="cta shop" data-cta="cordless_shop" href="#SHOPIFY_PRODUCT_URL">Shop the Fountain</a></div>
+    </div>
+    <div class="rooms">
+      <div class="ph"><div class="ph-id">Placeholder 09</div><div class="ph-name">Kitchen</div><div class="ph-brief">Floor corner, no outlet in view.</div></div>
+      <div class="ph"><div class="ph-id">Placeholder 10a</div><div class="ph-name">Bedroom</div><div class="ph-brief">Beside a bed, low light.</div></div>
+      <div class="ph"><div class="ph-id">Placeholder 10b</div><div class="ph-name">Living room</div><div class="ph-brief">Under a side table, cat nearby.</div></div>
+      <div class="ph"><div class="ph-id">Placeholder 10c</div><div class="ph-name">Feeding station</div><div class="ph-brief">Next to the food bowl on a mat.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 7 · CLEANING / CONVENIENCE ═══════════════ -->
+<section class="cleaning" id="cleaning">
+  <div class="wrap">
+    <div class="stack">
+      <div class="note"><b>Section 7 · Cleaning</b> — Resolves the "another gadget to scrub" objection. No dishwasher claim until confirmed.</div>
+      <div class="eyebrow">Owner convenience</div>
+      <h2>Because Nobody Wants Another Complicated Pet Gadget</h2>
+      <p class="lede">Fewer fiddly parts. Pieces that come apart in a way that makes sense. A routine you'll actually keep up with.</p>
+      <div class="clean-points">
+        <div><strong>Lift the tray</strong><span>The stainless drinking surface comes off in one piece.</span></div>
+        <div><strong>Pull the filter</strong><span>Swap it out, drop the new one in.</span></div>
+        <div><strong>Reach the reservoir</strong><span>Open access for a proper rinse.</span></div>
+        <div><strong>Remove the pump</strong><span>Detachable, so nothing hides where you can't clean it.</span></div>
+      </div>
+      <span class="tag">Do not claim dishwasher-safe until confirmed by supplier.</span>
+    </div>
+    <div class="clean-grid">
+      <div class="ph"><div class="ph-id">Placeholder 05</div><div class="ph-name">Stainless tray close-up</div></div>
+      <div class="ph"><div class="ph-id">Placeholder 08</div><div class="ph-name">Filter close-up</div></div>
+      <div class="ph"><div class="ph-id">Placeholder 07a</div><div class="ph-name">Reservoir access</div></div>
+      <div class="ph"><div class="ph-id">Placeholder 07b</div><div class="ph-name">Pump removal</div></div>
+      <div class="ph"><div class="ph-id">Placeholder 07c</div><div class="ph-name">Rinsing at the sink</div></div>
+      <div class="ph"><div class="ph-id">Placeholder 07d</div><div class="ph-name">Reassembly</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 8 · COMPARISON ═══════════════ -->
+<section class="compare" id="compare">
+  <div class="narrow">
+    <div class="note"><b>Section 8 · Comparison</b> — Generic categories only, no named competitor. Bowl rows are honest: a bowl does go anywhere. The middle "typical plug-in fountain" column is optional; drop it if the team prefers a strict two-way comparison.</div>
+    <div class="eyebrow">Side by side</div>
+    <h2 class="center">How it compares</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col"></th><th scope="col">Traditional bowl</th><th scope="col">Typical plug-in fountain</th><th scope="col" class="ours">Our cordless fountain</th></tr></thead>
+        <tbody>
+          <tr><td>Flowing water</td><td><span class="no">—</span></td><td><span class="yes">Yes</span></td><td class="ours"><span class="yes">Yes</span></td></tr>
+          <tr><td>Place it anywhere</td><td><span class="yes">Yes</span></td><td><span class="no">Near an outlet</span></td><td class="ours"><span class="yes">Yes</span></td></tr>
+          <tr><td>Filtration</td><td><span class="no">—</span></td><td><span class="yes">Usually</span></td><td class="ours"><span class="yes">Multi-stage</span></td></tr>
+          <tr><td>Stainless drinking surface</td><td><span class="no">Varies</span></td><td><span class="no">Varies</span></td><td class="ours"><span class="yes">Yes</span></td></tr>
+          <tr><td>Motion activation</td><td><span class="no">—</span></td><td><span class="no">Varies</span></td><td class="ours"><span class="yes">Yes</span></td></tr>
+          <tr><td>Water circulation</td><td><span class="no">—</span></td><td><span class="yes">Yes</span></td><td class="ours"><span class="yes">Yes</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 9 · WHAT'S INCLUDED ═══════════════ -->
+<section class="included" id="included">
+  <div class="wrap">
+    <div class="note"><b>Section 9 · What's included</b> — <b>Provisional until supplier confirmation.</b> Remove this marker (and adjust the list) once the packing list is locked. Never show "provisional" to the customer on the live page.</div>
+    <div class="eyebrow">In the box</div>
+    <h2>Everything to set it up tonight</h2>
+    <div class="box">
+      <ul>
+        <li><span>Cordless Stainless Cat Water Fountain</span><span class="qty">×1</span></li>
+        <li><span>Rechargeable power system</span><span class="qty">×1</span></li>
+        <li><span>Replaceable pump</span><span class="qty">×1</span></li>
+        <li><span>Filters</span><span class="qty">×2</span></li>
+        <li><span>Pump sponges</span><span class="qty">set</span></li>
+        <li><span>Cleaning brush</span><span class="qty">×1</span></li>
+        <li><span>USB-C charging cable</span><span class="qty">×1</span></li>
+        <li><span>U.S. power adapter</span><span class="qty">×1</span></li>
+        <li><span>Quick-start guide (English)</span><span class="qty">×1</span></li>
+      </ul>
+      <div class="stack">
+        <div class="ph wide"><div class="ph-id">Placeholder 11 · What's-in-the-box flat lay</div><div class="ph-name">All contents, top-down, on a light surface</div></div>
+        <div class="ph wide"><div class="ph-id">Placeholder 12 · Product packaging</div><div class="ph-name">Retail box, front and side</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 10 · OFFER ═══════════════ -->
+<section class="offer" id="offer">
+  <div class="wrap">
+    <div class="note"><b>Section 10 · Offer</b> — <b>Mock pricing only, not final.</b> Option B is the visually preferred offer; A stays a real choice. Each CTA must link to its own exact Shopify product or variant, never the store home.</div>
+    <div class="center stack">
+      <div class="eyebrow">Choose your set</div>
+      <h2>Pick the fountain, or the complete set</h2>
+      <p class="lede">Both start with the same cordless stainless fountain.</p>
+    </div>
+    <div class="offers">
+      <div class="plan">
+        <h3>Cordless Stainless Fountain</h3>
+        <div class="price">$59.99 <small>working mock price</small></div>
+        <ul>
+          <li>The fountain</li>
+          <li>2 filters</li>
+          <li>Cleaning accessories</li>
+        </ul>
+        <a class="cta ghost full shop" data-cta="offer_a" href="#SHOPIFY_VARIANT_A_URL">Shop Now</a>
+        <span class="tag">→ Shopify variant A (standard)</span>
+      </div>
+      <div class="plan best">
+        <div class="badge">Best value</div>
+        <h3>Complete Hydration Set</h3>
+        <div class="price">$69.99 <small>working mock price</small></div>
+        <ul>
+          <li>The fountain</li>
+          <li>Additional replacement filters</li>
+          <li>Cleaning brush</li>
+          <li>Silicone mat <em class="muted">(if supplier economics support it)</em></li>
+        </ul>
+        <a class="cta full shop" data-cta="offer_b" href="#SHOPIFY_VARIANT_B_URL">Shop Now</a>
+        <span class="tag">→ Shopify bundle / variant B (complete set)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 11 · SOCIAL PROOF PLACEHOLDER ═══════════════ -->
+<section class="proof" id="proof">
+  <div class="wrap">
+    <div class="note"><b>Section 11 · Customer Reviews / Social Proof — To Be Added After Validation.</b> Slots are wired for real reviews (Judge.me / Loox / Shopify Reviews import). No ratings, names, photos, or counts until they exist. Hide this section entirely on launch if nothing real is available yet.</div>
+    <div class="eyebrow">Customer reviews</div>
+    <h2>What owners say</h2>
+    <p class="lede muted">Reviews from verified purchases will appear here once available.</p>
+    <div class="slots">
+      <div class="slot"><div class="ph-id">Review slot 1</div><div class="ph-name">Verified purchase</div><p>Quote, first name, and city to be pulled from the review app after launch.</p></div>
+      <div class="slot"><div class="ph-id">Review slot 2</div><div class="ph-name">Customer photo + short quote</div><p>Real photo of a customer's cat using the fountain.</p></div>
+      <div class="slot"><div class="ph-id">Review slot 3</div><div class="ph-name">Aggregate rating widget</div><p>Live widget only. No manual star graphic.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 12 · FAQ ═══════════════ -->
+<section class="faq" id="faq">
+  <div class="narrow">
+    <div class="note"><b>Section 12 · FAQ</b> — Objection handling before the final ask. Each answer is provisional text sized to be swapped one-for-one with the verified answer.</div>
+    <div class="eyebrow">Questions</div>
+    <h2>Before you decide</h2>
+    <div class="faq-list">
+      <details open><summary>Does the fountain need to stay plugged in?</summary><div class="a"><p>No. The planned product is rechargeable and designed for cordless operation. You charge it over USB-C, then place it wherever your cat drinks.</p></div></details>
+      <details><summary>What size is the reservoir?</summary><div class="a"><p>Our selected target specification is approximately 3.0–3.2 liters.</p><span class="tag">Replace with final measured capacity.</span></div></details>
+      <details><summary>Is the drinking surface stainless steel?</summary><div class="a"><p>Our target production specification requires SUS304 stainless steel for the drinking surface. Final components will be confirmed after supplier validation.</p><span class="tag">Replace with confirmed material list.</span></div></details>
+      <details><summary>How often should the filter be replaced?</summary><div class="a"><p>Final replacement schedule pending production-model confirmation. Replacement filters will be available.</p><span class="tag">Replace with confirmed interval and filter SKU.</span></div></details>
+      <details><summary>How long does the battery last?</summary><div class="a"><p>Final runtime will be confirmed through supplier documentation and sample testing.</p><span class="tag">Replace with tested runtime per mode.</span></div></details>
+      <details><summary>Is the fountain noisy?</summary><div class="a"><p>The product specification targets quiet household operation. Final performance will be confirmed during sample testing.</p><span class="tag">Replace with measured dB only if verified.</span></div></details>
+      <details><summary>Can replacement filters be purchased?</summary><div class="a"><p>Yes. Long-term replacement-filter availability is a requirement we've set for our supplier.</p><span class="tag">Link to filter product page once created.</span></div></details>
+      <details><summary>Does it require an app?</summary><div class="a"><p>No. No app, no Wi-Fi, and no subscription are planned or required.</p></div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ 13 · FINAL CTA ═══════════════ -->
+<section class="final" id="final">
+  <div class="wrap">
+    <div class="note"><b>Section 13 · Final CTA</b> — Microcopy chips (shipping, returns, guarantee, secure checkout) are placeholders. Do not populate until policies are confirmed.</div>
+    <div class="panel">
+      <div class="eyebrow">Cordless Stainless Steel Cat Water Fountain</div>
+      <h2>A Better Water Station for Your Cat</h2>
+      <p class="lede">Cordless convenience. Flowing water. Easy everyday maintenance.</p>
+      <a class="cta shop" data-cta="final_primary" href="#SHOPIFY_PRODUCT_URL">Shop the Cordless Fountain</a>
+      <div class="micro" aria-label="Policy placeholders">
+        <span>Shipping · TBD</span><span>Returns · TBD</span><span>Guarantee · TBD</span><span>Secure checkout · TBD</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© BRAND NAME · Cordless Stainless Cat Water Fountain</span>
+    <span>Privacy · Terms · Contact (placeholders)</span>
+  </div>
+</footer>
+
+<!-- Sticky mobile CTA (hidden on desktop) -->
+<div class="sticky" id="stickyCta">
+  <div class="t"><strong>Cordless Stainless Fountain</strong><span>Rechargeable · stainless tray · filtered flow</span></div>
+  <a class="cta shop" data-cta="sticky_mobile" href="#SHOPIFY_PRODUCT_URL">Shop Now</a>
+</div>
+
+<script>
+  // ── Ad-angle hero variants (message continuity with Meta / TikTok) ──
+  // Live use: ?angle=bowl | cordless | clean, set per ad in the destination URL.
+  var HERO = {
+    bowl: {
+      eyebrow: "For cats who ignore the bowl",
+      headline: "Give Them Fresh, Flowing Water Wherever They Prefer to Drink",
+      sub: "A cordless stainless-steel fountain designed to give your cat fresh flowing water without tying their drinking station to a wall outlet."
+    },
+    cordless: {
+      eyebrow: "No outlet required",
+      headline: "Flowing Water. Anywhere in the House.",
+      sub: "A rechargeable stainless-steel fountain designed to go where your cat actually drinks: the kitchen corner, the bedroom, the hallway. No cord deciding for you."
+    },
+    clean: {
+      eyebrow: "Easy everyday maintenance",
+      headline: "Fresh Flowing Water, Without the Cleaning Chore",
+      sub: "A cordless fountain with a lift-out stainless tray and removable pump, designed so a proper clean takes minutes, not a Sunday."
+    }
+  };
+  function setAngle(key) {
+    var v = HERO[key] || HERO.bowl;
+    document.querySelectorAll("[data-hero]").forEach(function (el) { el.textContent = v[el.getAttribute("data-hero")]; });
+    document.querySelectorAll("[data-angle]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-angle") === key)); });
+  }
+  var params = new URLSearchParams(location.search);
+  setAngle(params.get("angle") || "bowl");
+  document.querySelectorAll("[data-angle]").forEach(function (b) { b.addEventListener("click", function () { setAngle(b.getAttribute("data-angle")); }); });
+
+  // ── Internal notes toggle ──
+  var toggle = document.getElementById("notesToggle");
+  function applyNotes() { document.body.classList.toggle("notes", toggle.checked); }
+  toggle.addEventListener("change", applyNotes); applyNotes();
+
+  // ── Analytics placeholders (wire to GA4 / Meta Pixel / TikTok Pixel at build) ──
+  // Events: lp_view, lp_scroll_25/50/75/100, lp_cta_primary_click, lp_cta_secondary_click.
+  // Key metric: LP→Shopify CTR = unique Shopify CTA clicks ÷ unique LP visitors.
+  function track(name, data) { if (window.dataLayer) { window.dataLayer.push(Object.assign({ event: name }, data || {})); } }
+  track("lp_view", { angle: params.get("angle") || "bowl" });
+  var marks = [25, 50, 75, 100], seen = {};
+  window.addEventListener("scroll", function () {
+    var h = document.documentElement, pct = Math.round((h.scrollTop + window.innerHeight) / h.scrollHeight * 100);
+    marks.forEach(function (m) { if (pct >= m && !seen[m]) { seen[m] = true; track("lp_scroll_" + m); } });
+  }, { passive: true });
+  document.querySelectorAll("[data-cta]").forEach(function (a) {
+    a.addEventListener("click", function (ev) {
+      var id = a.getAttribute("data-cta");
+      track(a.classList.contains("shop") ? "lp_cta_primary_click" : "lp_cta_secondary_click", { cta: id });
+      // Mock: placeholder hrefs stay on the page. Real build: pass UTMs through to the Shopify product URL.
+      if (a.getAttribute("href").indexOf("#SHOPIFY") === 0) { ev.preventDefault(); a.blur(); }
+    });
+  });
+</script>
