@@ -1,0 +1,121 @@
+{
+  "01-hero": {
+    "file": "assets/standins/01-hero.jpg",
+    "canva_file": "assets/01-hero.jpg",
+    "label": "Hero lifestyle image",
+    "export_px": "1200x1500",
+    "scene": "kitchen"
+  },
+  "02-video": {
+    "file": "assets/standins/02-video.jpg",
+    "canva_file": "assets/02-video.jpg",
+    "label": "Cat drinking video poster",
+    "export_px": "1600x1000",
+    "scene": "kitchen"
+  },
+  "02a-bowl": {
+    "file": "assets/standins/02a-bowl.jpg",
+    "canva_file": "assets/02a-bowl.jpg",
+    "label": "Traditional bowl still",
+    "export_px": "1200x1200",
+    "scene": "studio"
+  },
+  "02b-fountain": {
+    "file": "assets/standins/02b-fountain.jpg",
+    "canva_file": "assets/02b-fountain.jpg",
+    "label": "Same cat drinking from the fountain",
+    "export_px": "1200x1200",
+    "scene": "kitchen"
+  },
+  "03-product": {
+    "file": "assets/standins/03-product.jpg",
+    "canva_file": "assets/03-product.jpg",
+    "label": "Product isolated image",
+    "export_px": "1200x1500",
+    "scene": "studio"
+  },
+  "05-tray": {
+    "file": "assets/standins/05-tray.jpg",
+    "canva_file": "assets/05-tray.jpg",
+    "label": "Stainless tray close-up",
+    "export_px": "1000x1000",
+    "scene": "macro"
+  },
+  "07a-reservoir": {
+    "file": "assets/standins/07a-reservoir.jpg",
+    "canva_file": "assets/07a-reservoir.jpg",
+    "label": "Reservoir access",
+    "export_px": "1000x1000",
+    "scene": "macro"
+  },
+  "07b-pump": {
+    "file": "assets/standins/07b-pump.jpg",
+    "canva_file": "assets/07b-pump.jpg",
+    "label": "Pump removal",
+    "export_px": "1000x1000",
+    "scene": "macro"
+  },
+  "07c-rinse": {
+    "file": "assets/standins/07c-rinse.jpg",
+    "canva_file": "assets/07c-rinse.jpg",
+    "label": "Rinsing at the sink",
+    "export_px": "1000x1000",
+    "scene": "sink"
+  },
+  "07d-reassembly": {
+    "file": "assets/standins/07d-reassembly.jpg",
+    "canva_file": "assets/07d-reassembly.jpg",
+    "label": "Reassembly",
+    "export_px": "1000x1000",
+    "scene": "studio"
+  },
+  "08-filter": {
+    "file": "assets/standins/08-filter.jpg",
+    "canva_file": "assets/08-filter.jpg",
+    "label": "Filter close-up",
+    "export_px": "1000x1000",
+    "scene": "macro"
+  },
+  "09-kitchen": {
+    "file": "assets/standins/09-kitchen.jpg",
+    "canva_file": "assets/09-kitchen.jpg",
+    "label": "Fountain in kitchen",
+    "export_px": "1000x1000",
+    "scene": "kitchen"
+  },
+  "10a-bedroom": {
+    "file": "assets/standins/10a-bedroom.jpg",
+    "canva_file": "assets/10a-bedroom.jpg",
+    "label": "Fountain in bedroom",
+    "export_px": "1000x1000",
+    "scene": "bedroom"
+  },
+  "10b-living": {
+    "file": "assets/standins/10b-living.jpg",
+    "canva_file": "assets/10b-living.jpg",
+    "label": "Fountain in living room",
+    "export_px": "1000x1000",
+    "scene": "living"
+  },
+  "10c-feeding": {
+    "file": "assets/standins/10c-feeding.jpg",
+    "canva_file": "assets/10c-feeding.jpg",
+    "label": "Fountain at feeding station",
+    "export_px": "1000x1000",
+    "scene": "kitchen"
+  },
+  "11-flatlay": {
+    "file": "assets/standins/11-flatlay.jpg",
+    "canva_file": "assets/11-flatlay.jpg",
+    "label": "What's-in-the-box flat lay",
+    "export_px": "1600x1000",
+    "scene": "flatlay"
+  },
+  "12-packaging": {
+    "file": "assets/standins/12-packaging.jpg",
+    "canva_file": "assets/12-packaging.jpg",
+    "label": "Product packaging",
+    "export_px": "1600x1000",
+    "scene": "studio"
+  }
+}

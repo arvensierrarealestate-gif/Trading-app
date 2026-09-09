@@ -169,6 +169,32 @@ Every visual placeholder on the page is numbered to this list:
 
 All images: compressed WebP/AVIF, ≤200 KB above the fold, lazy-loaded below. Video: MP4 H.264 + WebM, poster image from 01.
 
+### Canva export map
+
+Each slot on the mock carries a stand-in background and accepts a Canva export. Design at the size below, export PNG or JPG, then drop the file onto the slot (build notes on) or save it to `assets/` under the filename.
+
+| Slot file | Placeholder | Section | Export size (px) | Crop |
+|---|---|---|---|---|
+| `01-hero.jpg` | 01 Hero lifestyle | 1 | 1200 × 1500 | 4:5 portrait |
+| `02-video.jpg` | 02 Video poster | 4 | 1600 × 1000 | 16:10 |
+| `02a-bowl.jpg` | 02a Bowl still | 2 | 1200 × 1200 | square |
+| `02b-fountain.jpg` | 02b Fountain still | 2 | 1200 × 1200 | square |
+| `03-product.jpg` | 03 Product isolated | 3 | 1200 × 1500 | 4:5 portrait |
+| `05-tray.jpg` | 05 Stainless tray | 7 | 1000 × 1000 | square |
+| `07a-reservoir.jpg` | 07 Reservoir access | 7 | 1000 × 1000 | square |
+| `07b-pump.jpg` | 07 Pump removal | 7 | 1000 × 1000 | square |
+| `07c-rinse.jpg` | 07 Rinsing | 7 | 1000 × 1000 | square |
+| `07d-reassembly.jpg` | 07 Reassembly | 7 | 1000 × 1000 | square |
+| `08-filter.jpg` | 08 Filter close-up | 7 | 1000 × 1000 | square |
+| `09-kitchen.jpg` | 09 Kitchen | 6 | 1000 × 1000 | square |
+| `10a-bedroom.jpg` | 10 Bedroom | 6 | 1000 × 1000 | square |
+| `10b-living.jpg` | 10 Living room | 6 | 1000 × 1000 | square |
+| `10c-feeding.jpg` | 10 Feeding station | 6 | 1000 × 1000 | square |
+| `11-flatlay.jpg` | 11 Flat lay | 9 | 1600 × 1000 | 16:10 |
+| `12-packaging.jpg` | 12 Packaging | 9 | 1600 × 1000 | 16:10 |
+
+Placeholders 04 (side view) and 06 (sensor demo) have no slot on the page; 04 is a Shopify gallery image and 06 lives inside the demo video. Slots use `background-size: cover`, so a slightly larger export is fine; a different aspect ratio will be centre-cropped.
+
 ---
 
 ## 4. Mobile layout
