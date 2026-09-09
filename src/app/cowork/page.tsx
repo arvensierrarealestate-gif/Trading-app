@@ -495,24 +495,23 @@ export default function CoworkPage() {
         )}
       </div>
 
-      {/* Chart */}
+      {/* Ticker detail — comprehensive per-ticker panel */}
       <div style={{ background: "#0f1118", border: "1px solid #2a3142", borderRadius: 10, padding: 20, marginTop: 20 }}>
-        <div style={{ display: "flex", gap: 12, alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-          <div style={{ fontSize: 18, fontWeight: 700 }}>{chartSymbol}</div>
+        <div style={{ display: "flex", gap: 12, alignItems: "flex-start", justifyContent: "space-between", marginBottom: 4, flexWrap: "wrap" }}>
+          {candles.length ? (
+            <TickerHeader symbol={chartSymbol} candles={candles} tags={status ? bucketTagsFor(chartSymbol, status) : []} />
+          ) : (
+            <div style={{ fontSize: 22, fontWeight: 800 }}>{chartSymbol}</div>
+          )}
           <div style={{ display: "flex", gap: 4 }}>
             {RANGES.map((r) => (
               <button
                 key={r.key}
                 onClick={() => setChartRange(r.key)}
                 style={{
-                  padding: "5px 12px",
-                  fontSize: 12,
-                  borderRadius: 6,
-                  border: "1px solid #2a3550",
+                  padding: "5px 12px", fontSize: 12, borderRadius: 6, border: "1px solid #2a3550",
                   background: chartRange === r.key ? "#1f2a40" : "#181d28",
-                  color: chartRange === r.key ? "#7fb" : "#9aa4b8",
-                  cursor: "pointer",
-                  fontWeight: 600,
+                  color: chartRange === r.key ? "#7fb" : "#9aa4b8", cursor: "pointer", fontWeight: 600,
                 }}
               >
                 {r.label}
@@ -521,7 +520,9 @@ export default function CoworkPage() {
           </div>
         </div>
 
-        {growth && <GrowthStrip growth={growth} />}
+        {candles.length > 0 && <KeyStats candles={candles} rangeLabel={RANGES.find((r) => r.key === chartRange)?.label ?? ""} />}
+
+        <div style={{ marginTop: 14 }}>{growth && <GrowthStrip growth={growth} />}</div>
 
         <div style={{ marginTop: 14, minHeight: 220 }}>
           {chartBusy ? (
@@ -532,6 +533,7 @@ export default function CoworkPage() {
             <>
               <TVChart candles={candles} levels={chartLevels} />
               <LevelLegend levels={chartLevels} last={candles[candles.length - 1].close} />
+              <QuotesTable candles={candles} />
               <LevelEditor
                 key={chartSymbol}
                 symbol={chartSymbol}
@@ -655,6 +657,137 @@ function TickerChip({
       <div style={{ marginTop: 4, fontSize: 10, color: p.accent, fontWeight: 600, letterSpacing: 0.3 }}>{label}</div>
       {sub && <div style={{ marginTop: 1, fontSize: 10, color: "#7d8699" }}>{sub}</div>}
     </button>
+  );
+}
+
+// ───── Ticker detail: bucket tags, header, key stats, recent quotes ─────
+
+const TAG_PALETTE: Record<ChipColor, { bg: string; border: string; fg: string }> = {
+  green:   { bg: "#0e2620", border: "#1f5f4d", fg: "#3fdc8a" },
+  red:     { bg: "#2a1417", border: "#5e2a32", fg: "#ff7070" },
+  amber:   { bg: "#2a2010", border: "#5e4a1f", fg: "#f5b400" },
+  blue:    { bg: "#10212e", border: "#1f4a6e", fg: "#5fb6ff" },
+  neutral: { bg: "#181d28", border: "#2a3550", fg: "#9aa4b8" },
+};
+
+function bucketTagsFor(sym: string, s: Status): { label: string; color: ChipColor }[] {
+  const tags: { label: string; color: ChipColor }[] = [];
+  const o = s.owned_options.find((x) => x.symbol === sym);
+  if (o) tags.push({ label: `Owned $${o.strike}${o.type[0]} ×${o.contracts}`, color: o.status === "red" ? "red" : o.status === "amber" ? "amber" : "green" });
+  const st = s.owned_stocks.find((x) => x.symbol === sym);
+  if (st) tags.push({ label: `Owned ${st.pnlPct != null ? `${st.pnlPct >= 0 ? "+" : ""}${st.pnlPct.toFixed(1)}%` : "stock"}`, color: st.status === "red" ? "red" : st.status === "amber" ? "amber" : "green" });
+  if (s.watchlist.some((x) => x.ticker === sym)) tags.push({ label: "Watchlist", color: "blue" });
+  const b1 = s.b1.find((x) => x.ticker === sym);
+  if (b1) tags.push({ label: b1.flag ? "B1 ⚑" : "B1", color: b1.flag ? "red" : "neutral" });
+  const b2 = s.b2.find((x) => x.ticker === sym);
+  if (b2) tags.push({ label: `B2 ${b2.verdict}`, color: b2.verdict === "GO" ? "green" : b2.verdict === "CAUTION" ? "amber" : "red" });
+  const b3 = s.b3.find((x) => x.ticker === sym);
+  if (b3) tags.push({ label: `B3 ${b3.verdict}`, color: b3.verdict === "NEAR ENTRY" ? "green" : b3.verdict === "EXIT APPROACHING" ? "amber" : b3.verdict === "HOLD" ? "red" : "neutral" });
+  if (s.b4?.watchlist.some((x) => x.ticker === sym)) tags.push({ label: "B4", color: "neutral" });
+  return tags;
+}
+
+function TickerHeader({ symbol, candles, tags }: { symbol: string; candles: Candle[]; tags: { label: string; color: ChipColor }[] }) {
+  const n = candles.length;
+  const last = candles[n - 1];
+  const prev = candles[n - 2] ?? last;
+  const dayChg = last.close - prev.close;
+  const dayPct = prev.close ? (dayChg / prev.close) * 100 : 0;
+  const winPct = candles[0].open ? ((last.close - candles[0].open) / candles[0].open) * 100 : 0;
+  const col = (v: number) => (v >= 0 ? "#3fdc8a" : "#ff7070");
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 14, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: 0.5 }}>{symbol}</span>
+        <span style={{ fontSize: 22, fontWeight: 700, color: "#dde4ef" }}>${last.close.toFixed(2)}</span>
+        <span style={{ fontSize: 14, fontWeight: 600, color: col(dayChg) }}>
+          {dayChg >= 0 ? "+" : ""}{dayChg.toFixed(2)} ({dayPct >= 0 ? "+" : ""}{dayPct.toFixed(2)}%) today
+        </span>
+        <span style={{ fontSize: 12, color: col(winPct) }}>
+          {winPct >= 0 ? "+" : ""}{winPct.toFixed(2)}% over window
+        </span>
+      </div>
+      {tags.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+          {tags.map((t) => {
+            const p = TAG_PALETTE[t.color];
+            return (
+              <span key={t.label} style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 10, background: p.bg, border: `1px solid ${p.border}`, color: p.fg }}>
+                {t.label}
+              </span>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function KeyStats({ candles, rangeLabel }: { candles: Candle[]; rangeLabel: string }) {
+  const n = candles.length;
+  const last = candles[n - 1];
+  const prev = candles[n - 2] ?? last;
+  const hi = Math.max(...candles.map((c) => c.high));
+  const lo = Math.min(...candles.map((c) => c.low));
+  const pctFromHi = hi ? ((last.close - hi) / hi) * 100 : 0;
+  const avgVol = candles.reduce((a, c) => a + c.volume, 0) / n;
+  const fmtVol = (v: number) => (v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${(v / 1e3).toFixed(0)}K` : `${v}`);
+  const cells: { k: string; v: string; c?: string }[] = [
+    { k: "Last", v: `$${last.close.toFixed(2)}` },
+    { k: "Prev close", v: `$${prev.close.toFixed(2)}` },
+    { k: `${rangeLabel} high`, v: `$${hi.toFixed(2)}` },
+    { k: `${rangeLabel} low`, v: `$${lo.toFixed(2)}` },
+    { k: "From high", v: `${pctFromHi >= 0 ? "+" : ""}${pctFromHi.toFixed(1)}%`, c: pctFromHi <= -10 ? "#ff7070" : "#9aa4b8" },
+    { k: "Volume", v: fmtVol(last.volume) },
+    { k: "Avg vol", v: fmtVol(avgVol) },
+  ];
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
+      {cells.map((c) => (
+        <div key={c.k} style={{ flex: "1 1 90px", minWidth: 80, background: "#141a24", border: "1px solid #2a3550", borderRadius: 6, padding: "6px 10px" }}>
+          <div style={{ fontSize: 10, color: "#7d8699", textTransform: "uppercase", letterSpacing: 0.4 }}>{c.k}</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: c.c ?? "#dde4ef" }}>{c.v}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function QuotesTable({ candles }: { candles: Candle[] }) {
+  const rows = candles.slice(-10).reverse();
+  const fmtVol = (v: number) => (v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${(v / 1e3).toFixed(0)}K` : `${v}`);
+  return (
+    <div style={{ marginTop: 14 }}>
+      <div style={{ fontSize: 11, color: "#9aa4b8", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 6 }}>Recent quotes</div>
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 340, fontSize: 12 }}>
+          <thead>
+            <tr style={{ color: "#7d8699", textAlign: "left" }}>
+              <th style={{ padding: "4px 8px", fontWeight: 600 }}>Date</th>
+              <th style={{ padding: "4px 8px", fontWeight: 600, textAlign: "right" }}>Close</th>
+              <th style={{ padding: "4px 8px", fontWeight: 600, textAlign: "right" }}>Chg %</th>
+              <th style={{ padding: "4px 8px", fontWeight: 600, textAlign: "right" }}>Volume</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((c, i) => {
+              const prev = rows[i + 1];
+              const chg = prev && prev.close ? ((c.close - prev.close) / prev.close) * 100 : null;
+              return (
+                <tr key={c.date} style={{ borderTop: "1px solid #1a1f2e" }}>
+                  <td style={{ padding: "5px 8px", color: "#9aa4b8", fontFamily: "monospace" }}>{c.date}</td>
+                  <td style={{ padding: "5px 8px", textAlign: "right", color: "#dde4ef" }}>${c.close.toFixed(2)}</td>
+                  <td style={{ padding: "5px 8px", textAlign: "right", color: chg == null ? "#666" : chg >= 0 ? "#3fdc8a" : "#ff7070" }}>
+                    {chg == null ? "—" : `${chg >= 0 ? "+" : ""}${chg.toFixed(2)}%`}
+                  </td>
+                  <td style={{ padding: "5px 8px", textAlign: "right", color: "#9aa4b8", fontFamily: "monospace" }}>{fmtVol(c.volume)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
 
