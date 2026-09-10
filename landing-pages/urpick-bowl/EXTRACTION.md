@@ -1,6 +1,6 @@
 # URPICK "The Elevated Bowl" — extraction from the CodeDesign.ai page
 
-Source: 43-second screen recording of the generated page (WhatsApp video, 848×480, 10 Sep 2026). The CodeDesign link itself is not reachable from this environment, so everything below is transcribed from the video. Copy marked *(approx.)* was partly blurred and should be checked against the live page.
+Source: 43-second screen recording of the generated page (WhatsApp video, 848×480, 10 Sep 2026) plus five desktop screenshots of the CodeDesign editor (hero, product grid, both lifestyle trios, video block). The CodeDesign link itself is not reachable from this environment. Prices, tile labels, nav and the video block are confirmed from the screenshots; copy still marked *(approx.)* comes from the blurrier video frames and should be checked against the live page.
 
 ## What the page is
 
@@ -10,12 +10,12 @@ A single-page brand site for **URPICK**, an elevated silicone enrichment bowl fo
 
 | # | Section | Content observed |
 |---|---|---|
-| 0 | Nav | THE BOWL · BUNDLES · BENEFITS · HOW TO USE · REVIEWS · centred wordmark URPICK · search, wishlist, account, cart icons |
-| 1 | Hero (full-bleed video/photo) | Retriever eating from a dark elevated bowl on a concrete floor. Overlay: **THE ELEVATED BOWL** · underline · **SHOP THE BOWL** |
-| 2 | Product grid (4 up) | **Elevated Lick Bowl** $19.99 AUD *(approx.)* · **Enrichment Bowl Bundle** $32.99 AUD · **Suction Base Bowl** $19.99 AUD *(approx.)* · **Interactive Snuffle Pair** $32.99 AUD *(approx.)* |
-| 3 | Lifestyle trio | ENRICHMENT · GROOMING · RECIPES (photos: dog licking elevated bowl, dog licking a suction bowl on shower wall, kibble in a bowl) |
-| 4 | Video block | Border collie at a bath, play button, 00:00 / 00:18, label **SEE IT IN ACTION** |
-| 5 | Lifestyle trio | GROOMING DISTRACTION · FROZEN ENRICHMENT · TEXTURED SILICONE |
+| 0 | Nav | THE BOWL · BUNDLES · BENEFITS · HOW TO USE · REVIEWS · centred wordmark URPICK (heavy geometric sans, wide tracking) · search, wishlist star, account, cart with count |
+| 1 | Hero (full-bleed photo) | Toller retriever licking a salmon-coloured purée from a dark grey elevated bowl on a warm stone floor, dark vase and plants, low-key lighting. Centred overlay near the bottom: **THE ELEVATED BOWL** · thin rule · **SHOP THE BOWL** |
+| 2 | Product grid (4 up) | **Elevated Lick Bowl** $19.99 AUD (sage green, ridged spiral licking channels, pedestal base) · **Enrichment Bowl Bundle** $32.99 AUD (sage elevated bowl with dotted texture plus a grey snuffle mat with rust flower) · **Suction Base Bowl** $19.99 AUD (pastel silicone bowls in blush, plum and blue with wooden-handled spoons) · **Interactive Snuffle Pair** $32.99 AUD (dog nosing a red, white and teal puzzle feeder) |
+| 3 | Lifestyle trio | ENRICHMENT (golden retriever licking a sage pedestal bowl on oak floor) · GROOMING (Australian shepherd licking a suction lick pad on a white tiled shower wall while being combed) · RECIPES (kibble in a ridged cream bowl on a wooden table) |
+| 4 | Video block | Border collie beside a white bowl in a bright room, soft focus. Centred play button, counter 00:00 / 00:10, label **SEE IT IN ACTION** with underline |
+| 5 | Lifestyle trio | GROOMING DISTRACTION (Pomeranian in a pink towel having nails trimmed) · FROZEN ENRICHMENT (spaniel biting a frozen treat bar) · TEXTURED SILICONE (two cream ceramic-look bowls of kibble on a ribbed white stand) |
 | 6 | Statement | **ELEVATED INTERACTIVE ENRICHMENT FOR EVERY PET ROUTINE** — "Bath time and grooming should never feel like a wrestling match. Crafted from heavy-gauge one-piece silicone, our elevated wobble bowl locks firmly to smooth surfaces while stimulating your dog through natural movement and textured licking channels." *(approx.)* · **SHOP THE BOWL** |
 | 7 | Feature row (4 icons) | **DESIGNED FOR ENRICHMENT** — Dynamic Wobble Motion: "The elevated rounded profile introduces responsive movement, keeping your dog engaged longer than standard flat mats." · Industrial Suction Base: "A reinforced silicone base locks firmly to tile, glass, or polished tubs for distraction-free grooming and baths." · Freeze Friendly Build: "Fill textured contours with purées or bone broth and freeze solid to extend enrichment duration effortlessly." · Seamless Silicone Care: "Moulded in solid BPA-free food-grade silicone for swift dishwasher cycles and complete post-use hygiene." *(all approx.)* |
 | 8 | Moments grid (4 up) | **CURATED ENRICHMENT MOMENTS** — Bath Time · Nail Trims · Grooming · Daily Enrichment |
@@ -26,6 +26,13 @@ A single-page brand site for **URPICK**, an elevated silicone enrichment bowl fo
 | 13 | Footer | CLIENT SERVICES: Order Tracking, Shipping & Handling, 30-Day Guarantee, Bowl Care & Dishwasher Safety, (one more, cut off) · ABOUT URPICK: Our Mission, Silicone Safety Standards, Enrichment Design Lab, Supervised Play Guidelines, Grooming Distraction Studies, Wholesale Enquiries · SHOP & EXPLORE: Elevated Lick Bowl, Bowl & Snuffle Mat Bundle, Freezer Prep Recipes, Bath & Grooming Routine, Customer Reviews |
 
 Visual language: white ground, thin uppercase letter-spaced labels, centred serif-free wordmark, dark hero, muted sage/blush/stone product colours, editorial photography, minimal chrome. Reads as a premium DTC template.
+
+## Consistency notes from the screenshots
+
+- The four product photos show four different objects: a sage pedestal lick bowl, a dotted-texture bowl with a snuffle mat, pastel suction bowls with spoons, and a plastic puzzle feeder. The copy describes one "elevated wobble bowl" in "one-piece silicone". The ad landing page must show one consistent product, photographed for real.
+- The "Textured Silicone" tile shows ceramic-look bowls of kibble, and the "Recipes" tile shows a ridged feeding bowl. Neither is the lick bowl. Replace with shots of the actual product.
+- Video block runtime is 10 seconds. Fine for a demonstration loop if it shows the routine end to end.
+- Photography style to carry forward: warm floors, white walls, real dogs mid-action, product low in frame. The hero is the strongest image on the page.
 
 ## What works and is worth keeping
 
