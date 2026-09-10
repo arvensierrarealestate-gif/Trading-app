@@ -1,0 +1,121 @@
+{
+  "01-hero": {
+    "file": "assets/standins/01-hero.jpg",
+    "canva_file": "assets/01-hero.jpg",
+    "label": "Hero: dog licking the elevated bowl",
+    "export_px": "1200x1500",
+    "source": "video frame t01"
+  },
+  "02-food": {
+    "file": "assets/standins/02-food.jpg",
+    "canva_file": "assets/02-food.jpg",
+    "label": "Bowl with colourful pet-safe food",
+    "export_px": "1000x1000",
+    "source": "video frame t06"
+  },
+  "03-bath": {
+    "file": "assets/standins/03-bath.jpg",
+    "canva_file": "assets/03-bath.jpg",
+    "label": "Bath-time use",
+    "export_px": "1000x1000",
+    "source": "video frame t29"
+  },
+  "04-nails": {
+    "file": "assets/standins/04-nails.jpg",
+    "canva_file": "assets/04-nails.jpg",
+    "label": "Nail-trim use",
+    "export_px": "1000x1000",
+    "source": "video frame t29"
+  },
+  "05-grooming": {
+    "file": "assets/standins/05-grooming.jpg",
+    "canva_file": "assets/05-grooming.jpg",
+    "label": "Grooming use",
+    "export_px": "1000x1000",
+    "source": "video frame t18"
+  },
+  "06-suction": {
+    "file": "assets/standins/06-suction.jpg",
+    "canva_file": "assets/06-suction.jpg",
+    "label": "Suction demonstration",
+    "export_px": "1000x1000",
+    "source": "video frame t10"
+  },
+  "07-wobble": {
+    "file": "assets/standins/07-wobble.jpg",
+    "canva_file": "assets/07-wobble.jpg",
+    "label": "Wobble / movement video poster",
+    "export_px": "1600x900",
+    "source": "video frame t13"
+  },
+  "08-texture": {
+    "file": "assets/standins/08-texture.jpg",
+    "canva_file": "assets/08-texture.jpg",
+    "label": "Texture close-up",
+    "export_px": "1000x1000",
+    "source": "video frame t06"
+  },
+  "09-onepiece": {
+    "file": "assets/standins/09-onepiece.jpg",
+    "canva_file": "assets/09-onepiece.jpg",
+    "label": "One-piece silicone construction",
+    "export_px": "1200x900",
+    "source": "video frame t33"
+  },
+  "10-freezer": {
+    "file": "assets/standins/10-freezer.jpg",
+    "canva_file": "assets/10-freezer.jpg",
+    "label": "Bowl in the freezer",
+    "export_px": "1000x1000",
+    "source": "video frame t18"
+  },
+  "11-recipes": {
+    "file": "assets/standins/11-recipes.jpg",
+    "canva_file": "assets/11-recipes.jpg",
+    "label": "Three frozen recipe bowls, overhead",
+    "export_px": "1600x900",
+    "source": "video frame t06"
+  },
+  "12-cleaning": {
+    "file": "assets/standins/12-cleaning.jpg",
+    "canva_file": "assets/12-cleaning.jpg",
+    "label": "Cleaning / rinsing sequence",
+    "export_px": "1000x1000",
+    "source": "video frame t10"
+  },
+  "13-bundle": {
+    "file": "assets/standins/13-bundle.jpg",
+    "canva_file": "assets/13-bundle.jpg",
+    "label": "Bowl + snuffle mat bundle",
+    "export_px": "1000x1000",
+    "source": "video frame t06"
+  },
+  "14-flatlay": {
+    "file": "assets/standins/14-flatlay.jpg",
+    "canva_file": "assets/14-flatlay.jpg",
+    "label": "What's-in-the-box flat lay",
+    "export_px": "1600x900",
+    "source": "video frame t06"
+  },
+  "15-final": {
+    "file": "assets/standins/15-final.jpg",
+    "canva_file": "assets/15-final.jpg",
+    "label": "Final dog and owner lifestyle",
+    "export_px": "1600x900",
+    "source": "video frame t10"
+  },
+  "16-problem": {
+    "file": "assets/standins/16-problem.jpg",
+    "canva_file": "assets/16-problem.jpg",
+    "label": "Problem: dog resisting bath or grooming",
+    "export_px": "1200x900",
+    "source": "video frame t29"
+  },
+  "17-intro": {
+    "file": "assets/standins/17-intro.jpg",
+    "canva_file": "assets/17-intro.jpg",
+    "label": "Solution: the bowl being introduced",
+    "export_px": "1200x900",
+    "source": "video frame t06"
+  }
+}
