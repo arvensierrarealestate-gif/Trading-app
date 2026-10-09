@@ -1,0 +1,462 @@
+<title>UrPick</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap">
+<style>
+  /* Tokens lifted from the UrPick template build (tailwind theme) */
+  :root {
+    --cream: #FAF6EF; --sand: #EFE6D8; --sand-2: #E3D6C2; --white: #FFFFFF;
+    --ink: #1F2A24; --taupe: #7A6F66;
+    --sage: #4F6B57; --sage-deep: #2F4A3A; --sage-soft: #C9D6CB;
+    --clay: #C2653F;
+    --display: "Fraunces", Georgia, serif; --body: "Inter", system-ui, sans-serif;
+    --r-card: 16px; --r-btn: 28px;
+    --shadow-card: 0 8px 30px -12px rgba(31,42,36,.18);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; color-scheme: light; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } }
+  body { margin: 0; background: var(--cream); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 600; letter-spacing: -.025em; color: var(--ink); text-wrap: balance; }
+  p { margin: 0; }
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--sage); outline-offset: 3px; }
+  .container { width: 100%; max-width: 1280px; margin-inline: auto; padding-inline: 1rem; }
+  @media (min-width: 640px) { .container { padding-inline: 1.5rem; } } @media (min-width: 1024px) { .container { padding-inline: 2rem; } }
+  .sec { padding-block: 5rem; } @media (min-width: 1024px) { .sec { padding-block: 7rem; } }
+  .eyebrow { font-size: .75rem; line-height: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: .18em; color: var(--sage); }
+  .h2 { font-size: 1.875rem; line-height: 1.08; } @media (min-width: 640px) { .h2 { font-size: 2.25rem; } } @media (min-width: 1024px) { .h2 { font-size: 3rem; } }
+  .head { max-width: 42rem; } .head.center { margin-inline: auto; text-align: center; }
+  .head .h2 { margin-top: .75rem; } .head .sub { margin-top: 1rem; font-size: 1rem; color: var(--taupe); line-height: 1.7; } @media (min-width: 640px) { .head .sub { font-size: 1.125rem; } }
+  .taupe { color: var(--taupe); }
+  .btn { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: .5rem; border-radius: var(--r-btn); padding: .875rem 1.5rem; font-size: .875rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: all .2s cubic-bezier(.4,0,.2,1); border: 1px solid transparent; font-family: var(--body); }
+  .btn-primary { background: var(--clay); color: #fff; box-shadow: 0 6px 18px -6px rgba(194,101,63,.6); } .btn-primary:hover { background: #AD5736; transform: translateY(-1px); }
+  .btn-secondary { background: transparent; color: var(--ink); border-color: rgba(31,42,36,.2); } .btn-secondary:hover { background: var(--sand); }
+  .card { border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card); }
+  .ph { position: relative; overflow: hidden; border-radius: var(--r-card); background: linear-gradient(to bottom right, var(--sand), var(--sand-2)); background-size: cover; background-position: center; }
+  .ph .cap { position: absolute; left: .75rem; right: .75rem; bottom: .75rem; border-radius: .5rem; background: rgba(255,255,255,.72); padding: .5rem .75rem; font-size: 11px; line-height: 1.4; color: var(--taupe); backdrop-filter: blur(6px); }
+  .ph .cap b { color: var(--ink); font-weight: 600; }
+  body:not(.notes) .ph .cap { display: none; }
+  .icon { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* internal bar */
+  .mockbar { background: #FFF4D6; color: #7A4E00; border-bottom: 1px solid #E9C86F; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+  .mockbar .container { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; min-height: 40px; padding-block: 6px; }
+  .mockbar label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .note { display: none; font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; line-height: 1.45; background: #FFF4D6; color: #7A4E00; border: 1px dashed #E9C86F; border-radius: 8px; padding: 10px 12px; margin-bottom: 1rem; }
+  body.notes .note { display: block; }
+
+  /* announcement + header */
+  .announce { background: var(--sage-deep); color: var(--cream); text-align: center; font-size: .8rem; font-weight: 500; letter-spacing: .02em; padding: .65rem 1rem; } @media (min-width: 640px) { .announce { font-size: .875rem; } }
+  header.site { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 40; background: rgba(250,246,239,.9); backdrop-filter: blur(8px); }
+  header.site.scrolled { box-shadow: 0 1px 0 rgba(31,42,36,.08); }
+  header.site .container { display: flex; height: 4rem; align-items: center; justify-content: space-between; gap: 1rem; }
+  .brand { font-family: var(--display); font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; text-decoration: none; }
+  nav.primary { display: none; } nav.primary ul { display: flex; align-items: center; gap: 2rem; list-style: none; margin: 0; padding: 0; }
+  nav.primary a { font-size: .875rem; font-weight: 500; color: rgba(31,42,36,.8); text-decoration: none; padding: .5rem 0; } nav.primary a:hover { color: var(--ink); }
+  @media (min-width: 1024px) { nav.primary { display: block; } }
+  .hdr-actions { display: flex; align-items: center; gap: .25rem; }
+  .iconbtn { display: inline-flex; height: 2.75rem; width: 2.75rem; align-items: center; justify-content: center; border-radius: 999px; background: transparent; border: 0; color: var(--ink); cursor: pointer; } .iconbtn:hover { background: var(--sand); }
+  .hdr-cta { display: none; } @media (min-width: 640px) { .hdr-cta { display: inline-flex; min-height: 40px; padding: .5rem 1.1rem; font-size: .8rem; } }
+  .menubtn { display: inline-flex; } @media (min-width: 1024px) { .menubtn { display: none; } }
+  #mobile-nav { border-top: 1px solid rgba(31,42,36,.05); background: var(--cream); } #mobile-nav ul { list-style: none; margin: 0; padding: 1rem 0; display: flex; flex-direction: column; } #mobile-nav a { display: block; padding: .75rem 0; font-weight: 500; text-decoration: none; }
+  @media (min-width: 1024px) { #mobile-nav { display: none !important; } }
+
+  /* hero */
+  .hero > .container { display: grid; align-items: center; gap: 2.5rem; padding-block: 3rem; }
+  .hero h1 { font-size: 2.6rem; line-height: 1.02; margin-top: 1rem; } @media (min-width: 640px) { .hero h1 { font-size: 3.75rem; } } @media (min-width: 1024px) { .hero h1 { font-size: 4.25rem; } }
+  .hero .sub { margin-top: 1.5rem; max-width: 36rem; font-size: 1.125rem; color: var(--taupe); line-height: 1.7; }
+  .hero .ctas { margin-top: 2rem; display: flex; flex-direction: column; gap: .75rem; } @media (min-width: 640px) { .hero .ctas { flex-direction: row; } }
+  .hero .ph { aspect-ratio: 4 / 5; box-shadow: var(--shadow-card); }
+  @media (min-width: 1024px) { .hero > .container { grid-template-columns: repeat(12, 1fr); gap: 3rem; padding-block: 5rem; } .hero .copy { grid-column: span 6; } .hero .visual { grid-column: span 6; } }
+
+  /* benefit strip */
+  .strip { border-block: 1px solid rgba(31,42,36,.05); background: rgba(239,230,216,.6); }
+  .strip ul { list-style: none; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 0; padding-block: 1.25rem; } @media (min-width: 640px) { .strip ul { grid-template-columns: repeat(4, 1fr); } }
+  .strip li { display: flex; align-items: center; justify-content: center; gap: .625rem; font-size: .875rem; font-weight: 500; }
+  .strip li span { display: flex; height: 2.25rem; width: 2.25rem; align-items: center; justify-content: center; border-radius: 999px; background: var(--white); color: var(--sage); box-shadow: 0 0 0 1px rgba(31,42,36,.05); }
+  .strip .icon { width: 1.1rem; height: 1.1rem; }
+
+  /* use cases */
+  .cases { margin-top: 3rem; display: flex; gap: 1.25rem; overflow-x: auto; padding-bottom: 1rem; scroll-snap-type: x mandatory; list-style: none; padding-left: 0; margin-inline: 0; -webkit-overflow-scrolling: touch; }
+  .cases li { min-width: 78%; scroll-snap-align: start; overflow: hidden; transition: transform .2s; } @media (min-width: 640px) { .cases li { min-width: 46%; } }
+  @media (min-width: 1024px) { .cases { display: grid; grid-template-columns: repeat(4, 1fr); overflow: visible; padding-bottom: 0; } .cases li { min-width: 0; } .cases li:hover { transform: translateY(-4px); } }
+  .cases .ph { aspect-ratio: 4 / 5; border-radius: 0; }
+  .cases .body { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; padding: 1.25rem; }
+  .cases h3 { font-size: 1.25rem; } .cases p { margin-top: .375rem; font-size: .875rem; color: var(--taupe); line-height: 1.6; }
+  .cases .arrow { margin-top: .25rem; display: flex; height: 2rem; width: 2rem; flex: none; align-items: center; justify-content: center; border-radius: 999px; background: var(--sand); color: var(--sage); } .cases li:hover .arrow { background: var(--clay); color: #fff; }
+  .cases .arrow .icon { width: 1rem; height: 1rem; }
+
+  /* how it works */
+  .how { background: rgba(239,230,216,.6); }
+  .steps { margin-top: 3.5rem; display: grid; gap: 2.5rem; list-style: none; padding: 0; counter-reset: s; } @media (min-width: 1024px) { .steps { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; } }
+  .step { position: relative; display: flex; gap: 1.25rem; } @media (min-width: 1024px) { .step { display: block; } }
+  .step .vis { position: relative; flex: none; width: 7rem; } @media (min-width: 1024px) { .step .vis { width: 100%; } }
+  .step .ph { aspect-ratio: 1; }
+  .step .n { position: absolute; left: -.5rem; top: -.5rem; display: flex; height: 2.5rem; width: 2.5rem; align-items: center; justify-content: center; border-radius: 999px; background: var(--sage-deep); color: var(--cream); font-family: var(--display); font-size: 1.125rem; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  .step .next { display: none; } @media (min-width: 1024px) { .step .next { display: flex; position: absolute; right: -1.25rem; top: 50%; height: 2rem; width: 2rem; transform: translate(50%, -50%); align-items: center; justify-content: center; border-radius: 999px; background: var(--white); color: var(--sage); box-shadow: 0 0 0 1px rgba(31,42,36,.1); z-index: 2; } .step .next .icon { width: 1rem; height: 1rem; } }
+  .step .txt h3 { font-size: 1.5rem; text-transform: uppercase; letter-spacing: .04em; } @media (min-width: 1024px) { .step .txt { margin-top: 1.25rem; } }
+  .step .txt p { margin-top: .375rem; font-size: .875rem; color: var(--taupe); line-height: 1.6; }
+
+  /* why different */
+  .why .container { display: grid; align-items: center; gap: 3rem; } @media (min-width: 1024px) { .why .container { grid-template-columns: 1fr 1fr; gap: 4rem; } }
+  .why .sub { margin-top: 1.25rem; font-size: 1.125rem; color: var(--taupe); line-height: 1.7; }
+  .feats { margin-top: 2.5rem; display: grid; gap: 1.5rem; list-style: none; padding: 0; } @media (min-width: 640px) { .feats { grid-template-columns: 1fr 1fr; } }
+  .feats li { display: flex; gap: 1rem; } .feats li > span { margin-top: .125rem; display: flex; height: 2rem; width: 2rem; flex: none; align-items: center; justify-content: center; border-radius: 999px; background: var(--sage-soft); color: var(--sage-deep); } .feats .icon { width: 1rem; height: 1rem; }
+  .feats h3 { font-family: var(--body); font-size: 1rem; font-weight: 600; } .feats p { margin-top: .25rem; font-size: .875rem; color: var(--taupe); line-height: 1.6; }
+  .callout-box { position: relative; aspect-ratio: 1; border-radius: 32px; overflow: hidden; box-shadow: 0 0 0 1px rgba(31,42,36,.05); background-size: cover; background-position: center; }
+  .callout { position: absolute; display: flex; align-items: center; gap: .5rem; border-radius: 999px; background: rgba(255,255,255,.9); padding: .375rem .75rem; font-size: .75rem; font-weight: 600; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.15), 0 0 0 1px rgba(31,42,36,.05); backdrop-filter: blur(6px); }
+  .callout i { height: .5rem; width: .5rem; border-radius: 999px; background: var(--clay); }
+
+  /* gallery band */
+  .gallery { background: var(--sage-deep); color: var(--cream); }
+  .gallery .eyebrow { color: var(--sage-soft); } .gallery .h2 { color: var(--cream); } .gallery .sub { color: rgba(250,246,239,.7); }
+  .tiles { margin-top: 3rem; columns: 2; column-gap: 1rem; list-style: none; padding: 0; } @media (min-width: 640px) { .tiles { columns: 3; } }
+  .tiles li { break-inside: avoid; margin-bottom: 1rem; overflow: hidden; border-radius: var(--r-card); box-shadow: 0 0 0 1px rgba(255,255,255,.1); } .tiles li:hover { box-shadow: 0 0 0 1px rgba(255,255,255,.3); }
+  .tiles .ph { border-radius: 0; }
+  .reviews-note { margin-top: 2.5rem; border-radius: var(--r-card); border: 1px dashed rgba(250,246,239,.3); padding: 1.5rem; text-align: center; font-size: .875rem; color: rgba(250,246,239,.7); } .reviews-note b { color: var(--cream); }
+
+  /* coming soon (replaces shop block) */
+  .soon .container { display: grid; gap: 2.5rem; } @media (min-width: 1024px) { .soon .container { grid-template-columns: repeat(12, 1fr); gap: 3.5rem; } .soon .media { grid-column: span 7; } .soon .panel { grid-column: span 5; position: sticky; top: 6rem; align-self: start; } }
+  .soon .main.ph { aspect-ratio: 1; }
+  .thumbs { margin-top: 1rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; list-style: none; padding: 0; }
+  .thumbs button { display: block; width: 100%; padding: 0; border: 0; background: none; border-radius: .75rem; overflow: hidden; cursor: pointer; box-shadow: 0 0 0 2px transparent; transition: box-shadow .15s; } .thumbs button[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--clay); }
+  .thumbs .ph { aspect-ratio: 1; border-radius: 0; }
+  .soon h2 { margin-top: .75rem; font-size: 2.25rem; line-height: 1.1; } .soon .desc { margin-top: .75rem; color: var(--taupe); line-height: 1.7; }
+  .soon .pricebox { margin-top: 1.25rem; display: flex; align-items: baseline; gap: .75rem; } .soon .pricebox b { font-family: var(--display); font-size: 1.875rem; font-weight: 600; } .soon .pricebox span { font-size: .75rem; color: var(--taupe); }
+  .ratings-note { margin-top: .5rem; display: inline-block; border-radius: .375rem; background: rgba(239,230,216,.7); padding: .5rem .75rem; font-size: .75rem; color: var(--taupe); }
+  .wait { margin-top: 1.75rem; display: grid; gap: .75rem; }
+  .wait legend { font-size: .875rem; font-weight: 600; padding: 0; } .wait fieldset { border: 0; margin: 0; padding: 0; }
+  .chips { margin-top: .75rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+  .chip { display: inline-flex; align-items: center; gap: .5rem; border-radius: 999px; border: 1px solid rgba(31,42,36,.15); padding: .55rem .9rem; font-size: .875rem; cursor: pointer; background: var(--white); } .chip input { accent-color: var(--sage-deep); margin: 0; }
+  .wait .row { display: flex; flex-direction: column; gap: .75rem; } @media (min-width: 640px) { .wait .row { flex-direction: row; } }
+  .wait input[type="email"] { min-height: 48px; flex: 1; border-radius: var(--r-btn); border: 1px solid rgba(31,42,36,.2); background: var(--white); padding: 0 1.25rem; font: inherit; font-size: .95rem; color: var(--ink); width: 100%; }
+  .wait .ok { display: none; margin-top: .5rem; font-weight: 600; color: var(--sage-deep); }
+  .reassure { margin-top: 1.75rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; border-top: 1px solid rgba(31,42,36,.1); padding-top: 1.5rem; list-style: none; padding-left: 0; }
+  .reassure li { text-align: center; } .reassure b { display: block; font-size: .75rem; font-weight: 600; } .reassure span { display: block; margin-top: .25rem; font-size: 11px; line-height: 1.4; color: var(--taupe); }
+
+  /* faq */
+  .faq { background: rgba(239,230,216,.6); } .faq .container { max-width: 48rem; }
+  .faq ul { margin-top: 3rem; list-style: none; padding: 0 1.5rem; border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card), 0 0 0 1px rgba(31,42,36,.05); }
+  .faq li + li { border-top: 1px solid rgba(31,42,36,.1); }
+  .faq h3 { font-family: var(--body); font-size: 1rem; }
+  .faq button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 1rem; min-height: 56px; padding: 1.25rem 0; text-align: left; font: inherit; font-weight: 600; color: var(--ink); background: none; border: 0; cursor: pointer; } .faq button:hover { color: var(--sage-deep); }
+  .faq button .icon { flex: none; color: var(--taupe); transition: transform .2s; } .faq button[aria-expanded="true"] .icon { transform: rotate(180deg); }
+  .faq .a { padding-bottom: 1.25rem; margin-top: -.25rem; color: var(--taupe); line-height: 1.7; }
+
+  /* newsletter */
+  .news { padding-block: 5rem; } .news .box { margin-inline: auto; max-width: 42rem; border-radius: 28px; background: var(--sage-deep); padding: 3rem 1.5rem; text-align: center; color: var(--cream); } @media (min-width: 640px) { .news .box { padding-inline: 3rem; } }
+  .news h2 { font-size: 1.875rem; color: var(--cream); } @media (min-width: 640px) { .news h2 { font-size: 2.25rem; } } .news p { margin-top: .75rem; color: rgba(250,246,239,.75); }
+  .news form { margin-top: 1.75rem; display: flex; flex-direction: column; gap: .75rem; } @media (min-width: 640px) { .news form { flex-direction: row; } }
+  .news input { min-height: 48px; flex: 1; border-radius: var(--r-btn); border: 1px solid rgba(250,246,239,.2); background: rgba(255,255,255,.1); padding: 0 1.25rem; color: var(--cream); font: inherit; } .news input::placeholder { color: rgba(250,246,239,.5); }
+  .news .ok { display: none; margin-top: 1.5rem; font-weight: 600; }
+
+  /* footer */
+  footer.site { border-top: 1px solid rgba(31,42,36,.1); padding-block: 3.5rem; }
+  footer.site .grid { display: grid; gap: 2.5rem; } @media (min-width: 768px) { footer.site .grid { grid-template-columns: repeat(12, 1fr); } footer.site .about { grid-column: span 5; } footer.site nav { grid-column: span 3; } }
+  footer.site .about p.name { font-family: var(--display); font-size: 1.5rem; font-weight: 600; } footer.site .about p.tag { margin-top: .5rem; max-width: 20rem; font-size: .875rem; color: var(--taupe); }
+  .social { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; padding: 0; } .social a { display: inline-flex; min-height: 40px; align-items: center; border-radius: 999px; border: 1px solid rgba(31,42,36,.15); padding: 0 1rem; font-size: .75rem; font-weight: 600; text-decoration: none; } .social a:hover { background: var(--ink); color: var(--cream); }
+  footer.site nav p { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .15em; color: var(--taupe); } footer.site nav ul { margin: 1rem 0 0; padding: 0; list-style: none; display: grid; gap: .625rem; } footer.site nav a { font-size: .875rem; text-decoration: none; } footer.site nav a:hover { color: var(--sage-deep); }
+  .legal { margin-top: 3rem; display: flex; flex-direction: column; gap: .5rem; border-top: 1px solid rgba(31,42,36,.1); padding-top: 1.5rem; font-size: .75rem; color: var(--taupe); } @media (min-width: 640px) { .legal { flex-direction: row; justify-content: space-between; } }
+</style>
+
+<div class="mockbar">
+  <div class="container">
+    <strong>INTERNAL MOCK · URPICK PRE-LAUNCH</strong>
+    <label><input type="checkbox" id="notesToggle"> Show build notes</label>
+  </div>
+</div>
+
+<div class="announce">Coming soon: thoughtfully designed essentials for everyday pet life</div>
+
+<header class="site" id="siteHeader">
+  <div class="container">
+    <a href="#top" class="brand" aria-label="UrPick home">UrPick</a>
+    <nav class="primary" aria-label="Primary">
+      <ul>
+        <li><a href="#moments">Everyday Moments</a></li>
+        <li><a href="#how-we-work">How We Work</a></li>
+        <li><a href="#why-urpick">Why UrPick</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </nav>
+    <div class="hdr-actions">
+      <a href="#coming-soon" class="btn btn-primary hdr-cta">Join the list</a>
+      <a href="#" class="iconbtn" aria-label="Account (placeholder: link to Shopify customer account)"><svg class="icon" viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0"/></svg></a>
+      <button type="button" class="iconbtn menubtn" id="menuBtn" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+  <div id="mobile-nav" hidden>
+    <nav class="container" aria-label="Mobile">
+      <ul>
+        <li><a href="#moments">Everyday Moments</a></li>
+        <li><a href="#how-we-work">How We Work</a></li>
+        <li><a href="#why-urpick">Why UrPick</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#coming-soon">Join the list</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="container">
+    <div class="copy">
+      <div class="note"><b>HERO</b> — Template slot: 4:5 lifestyle photo, dog using the launch product. No product yet, so the whole-household photo (6) carries it. Headline and sub are the brand copy from the pre-launch site.</div>
+      <p class="eyebrow">UrPick · Pet essentials</p>
+      <h1>Everyday Pet Life, Made a Little Easier</h1>
+      <p class="sub">We're building thoughtfully designed essentials for the routines you and your pets share: bath time, grooming, treat time, and the quiet afternoons in between.</p>
+      <div class="ctas">
+        <a href="#coming-soon" class="btn btn-primary">Join the list</a>
+        <a href="#how-we-work" class="btn btn-secondary">See How We Work</a>
+      </div>
+    </div>
+    <div class="visual">
+      <div class="ph photo-family-all" role="img" aria-label="A golden retriever, a tabby cat, a rabbit and a guinea pig resting together on a rug"><span class="cap"><b>Photo · 4/5</b> — hero, whole household (photo 6). Replace with the dog-using-product shot once a product exists.</span></div>
+    </div>
+  </div>
+  <div class="strip">
+    <ul class="container">
+      <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 21c0-9 4-15 14-16-1 10-7 14-14 16Zm0 0c3-5 6-8 10-10"/></svg></span>Built for routines</li>
+      <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M12 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 4v14m-7-7a7 7 0 0 0 14 0M3 14h2m14 0h2"/></svg></span>Dogs and cats, both</li>
+      <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z"/></svg></span>Simple to care for</li>
+      <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M12 3v4m0 10v4M3 12h4m10 0h4m-3.5-7.5-2.8 2.8M8.3 15.7l-2.8 2.8m0-13 2.8 2.8m7.4 7.4 2.8 2.8"/></svg></span>Honest by design</li>
+    </ul>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section class="sec" id="moments">
+  <div class="container">
+    <div class="note"><b>USE CASES</b> — Template: "One product. So many moments." Reframed to the household since there is no product. Photos 3, 4, 5, 2.</div>
+    <div class="head center">
+      <p class="eyebrow">Made for everyday moments</p>
+      <h2 class="h2">One home. So many moments.</h2>
+    </div>
+    <ul class="cases">
+      <li class="card"><div class="ph photo-dog-cockapoo" role="img" aria-label="A curly apricot cockapoo trotting across a rug"><span class="cap"><b>Photo · 4/5</b> — bath time, grooming (photo 3)</span></div><div class="body"><div><h3>Bath time &amp; grooming</h3><p>The routines that take four hands and a lot of patience. Where we started looking.</p></div><span class="arrow"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></li>
+      <li class="card"><div class="ph photo-dog-and-cat" role="img" aria-label="A golden retriever lying beside a tabby cat"><span class="cap"><b>Photo · 4/5</b> — treat time (photo 5)</span></div><div class="body"><div><h3>Treat time</h3><p>Fast, messy, over in seconds. We think it can be slower and more fun.</p></div><span class="arrow"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></li>
+      <li class="card"><div class="ph photo-cat-tabby" role="img" aria-label="A tabby cat sitting upright in sunlight"><span class="cap"><b>Photo · 4/5</b> — quiet afternoons (photo 4)</span></div><div class="body"><div><h3>Quiet afternoons</h3><p>Home alone, or just bored. Small things that give them something to do.</p></div><span class="arrow"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></li>
+      <li class="card"><div class="ph photo-cat-fluffy" role="img" aria-label="A long-haired cat with blue eyes standing on a rug"><span class="cap"><b>Photo · 4/5</b> — on the cat's terms (photo 2)</span></div><div class="body"><div><h3>On their terms</h3><p>Cats decide where, when, and whether. We design for that, because there's no other way.</p></div><span class="arrow"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- HOW WE WORK -->
+<section class="sec how" id="how-we-work">
+  <div class="container">
+    <div class="note"><b>HOW IT WORKS</b> — Template's four numbered steps, used for how the brand works until a product's own steps replace them.</div>
+    <div class="head center">
+      <p class="eyebrow">How we work</p>
+      <h2 class="h2">Simple to use. Easy to explain.</h2>
+    </div>
+    <ol class="steps">
+      <li class="step"><div class="vis"><div class="ph photo-dog-cockapoo" role="img" aria-label=""><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">1</span><span class="next"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div><div class="txt"><h3>Watch</h3><p>We start with how the moment actually goes at home, not with a product category.</p></div></li>
+      <li class="step"><div class="vis"><div class="ph photo-cat-tabby" role="img" aria-label=""><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">2</span><span class="next"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div><div class="txt"><h3>Simplify</h3><p>Fewer pieces to lose, clean, or chew. Nothing on the product that isn't doing a job.</p></div></li>
+      <li class="step"><div class="vis"><div class="ph photo-dog-and-cat" role="img" aria-label=""><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">3</span><span class="next"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div><div class="txt"><h3>Test</h3><p>Used in real homes, with real dogs and cats, before anything ships.</p></div></li>
+      <li class="step"><div class="vis"><div class="ph photo-family-all" role="img" aria-label=""><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">4</span></div><div class="txt"><h3>Say it plainly</h3><p>What it does, in plain words. Only the claims we can stand behind.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- WHY URPICK -->
+<section class="sec why" id="why-urpick">
+  <div class="container">
+    <div>
+      <div class="note"><b>WHY IT'S DIFFERENT</b> — Template: differentiator with four checked features and a 1:1 callout image. Filled with brand principles; callouts become product features later.</div>
+      <p class="eyebrow">Why UrPick</p>
+      <h2 class="h2">Simple things, done properly.</h2>
+      <p class="sub">Most pet products are made for a category. Ours are made for a moment: the bath, the brush, the nail trim, the long afternoon. That changes what we leave out.</p>
+      <ul class="feats">
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Routine first</h3><p>Designed around what happens every week, not what sells on a shelf.</p></div></li>
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Dogs and cats</h3><p>Different animals, different habits. One idea is not shrunk to fit the other.</p></div></li>
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Nothing unnecessary</h3><p>Fewer parts, simpler care, less to go wrong.</p></div></li>
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Honest claims</h3><p>If we haven't tested it, we won't say it.</p></div></li>
+      </ul>
+    </div>
+    <div>
+      <div class="callout-box photo-hero-family" role="img" aria-label="A golden retriever and two cats resting together on a rug in a bright living room">
+        <span class="callout" style="left:6%;top:14%"><i></i>Dogs &amp; cats</span>
+        <span class="callout" style="right:5%;top:26%"><i></i>Fewer parts</span>
+        <span class="callout" style="left:8%;bottom:22%"><i></i>Tested at home</span>
+        <span class="callout" style="right:8%;bottom:10%"><i></i>Plain words</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="sec gallery" id="gallery">
+  <div class="container">
+    <div class="note"><b>GALLERY</b> — Template reserves this band for real customer photos and tagged posts. Our six photos hold the layout; customer content replaces them tile by tile as it arrives. The review widget note stays as in the template.</div>
+    <div class="head center">
+      <p class="eyebrow">Real homes. Real pets.</p>
+      <h2 class="h2">See it in homes, not studios.</h2>
+      <p class="sub">This gallery will carry real customer photos, videos and tagged posts once we launch. Nothing here is fabricated.</p>
+    </div>
+    <ul class="tiles">
+      <li><div class="ph photo-cat-fluffy" style="aspect-ratio:1" role="img" aria-label="Long-haired cat"><span class="cap"><b>Photo · 1/1</b> — photo 2</span></div></li>
+      <li><div class="ph photo-dog-cockapoo" style="aspect-ratio:4/5" role="img" aria-label="Cockapoo"><span class="cap"><b>Photo · 4/5</b> — photo 3</span></div></li>
+      <li><div class="ph photo-hero-family" style="aspect-ratio:1" role="img" aria-label="Dog and two cats"><span class="cap"><b>Photo · 1/1</b> — photo 1</span></div></li>
+      <li><div class="ph photo-cat-tabby" style="aspect-ratio:1" role="img" aria-label="Tabby cat"><span class="cap"><b>Photo · 1/1</b> — photo 4</span></div></li>
+      <li><div class="ph photo-family-all" style="aspect-ratio:4/5" role="img" aria-label="Whole household"><span class="cap"><b>Photo · 4/5</b> — photo 6</span></div></li>
+      <li><div class="ph photo-dog-and-cat" style="aspect-ratio:1" role="img" aria-label="Dog and cat"><span class="cap"><b>Photo · 1/1</b> — photo 5</span></div></li>
+    </ul>
+    <div class="reviews-note"><b>Reviews</b> — a verified review widget (Judge.me, Okendo or Shopify Reviews) mounts here once reviews exist. No ratings are shown until real data is available.</div>
+  </div>
+</section>
+
+<!-- COMING SOON (template's shop block, without a product) -->
+<section class="sec soon" id="coming-soon">
+  <div class="container">
+    <div class="media">
+      <div class="note"><b>SHOP</b> — Template's product block: 1:1 gallery with thumbnails, title, price, colour picker, quantity, add to cart. No product yet, so the price, variants and cart are replaced by the waitlist. The layout stays, so the product drops straight in later.</div>
+      <div class="ph main photo-family-all" id="soonMain" role="img" aria-label="Selected photo"><span class="cap"><b>Photo · 1/1</b> — main product shot slot</span></div>
+      <ul class="thumbs" aria-label="Photo thumbnails">
+        <li><button type="button" data-photo="photo-family-all" aria-pressed="true" aria-label="Show photo 1"><div class="ph photo-family-all"></div></button></li>
+        <li><button type="button" data-photo="photo-dog-and-cat" aria-pressed="false" aria-label="Show photo 2"><div class="ph photo-dog-and-cat"></div></button></li>
+        <li><button type="button" data-photo="photo-cat-tabby" aria-pressed="false" aria-label="Show photo 3"><div class="ph photo-cat-tabby"></div></button></li>
+        <li><button type="button" data-photo="photo-dog-cockapoo" aria-pressed="false" aria-label="Show photo 4"><div class="ph photo-dog-cockapoo"></div></button></li>
+      </ul>
+    </div>
+    <div class="panel">
+      <p class="eyebrow">Coming soon</p>
+      <h2>Our first product is on its way</h2>
+      <p class="desc">Designed around one everyday routine, for dogs and cats. Name, details and photos when they're real. Leave your email and we'll tell you first, and nothing else in between.</p>
+      <div class="pricebox"><b>Price at launch</b><span>set in Shopify once the product exists</span></div>
+      <p class="ratings-note">★ Ratings appear here once verified reviews exist. None are shown until then.</p>
+      <form class="wait" id="waitForm" novalidate>
+        <fieldset>
+          <legend>Who's at home?</legend>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" name="pet" value="dog" id="petDog"> I have a dog</label>
+            <label class="chip"><input type="checkbox" name="pet" value="cat" id="petCat"> I have a cat</label>
+            <label class="chip"><input type="checkbox" name="pet" value="other" id="petOther"> I have another pet</label>
+          </div>
+        </fieldset>
+        <div class="row">
+          <input type="email" id="waitEmail" name="email" placeholder="you@example.com" autocomplete="email" aria-label="Email address" required>
+          <button type="submit" class="btn btn-primary">Join the list</button>
+        </div>
+        <p class="taupe" style="font-size:.75rem">One email when we launch. Unsubscribe any time.</p>
+        <p class="ok" id="waitOk" role="status">Thanks, you're on the list.</p>
+      </form>
+      <ul class="reassure">
+        <li><b>Shipping</b><span>To be announced</span></li>
+        <li><b>Returns</b><span>To be announced</span></li>
+        <li><b>Secure Checkout</b><span>Powered by Shopify</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec faq" id="faq">
+  <div class="container">
+    <div class="note"><b>FAQ</b> — Template accordion. Product questions return once there is a product; policy answers stay placeholders until terms are set.</div>
+    <div class="head center">
+      <p class="eyebrow">Questions</p>
+      <h2 class="h2">Anything you'd like to know?</h2>
+    </div>
+    <ul id="faqList">
+      <li><h3><button type="button" aria-expanded="true" aria-controls="faq-0" id="faq-btn-0">What is UrPick?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-0" role="region" aria-labelledby="faq-btn-0" class="a">A new pet-care brand making thoughtfully designed essentials for the routines you and your pets share. The first product is in development now.</div></li>
+      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-1" id="faq-btn-1">Is it for dogs or cats?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-1" role="region" aria-labelledby="faq-btn-1" class="a" hidden>Both. We design for each animal's habits rather than shrinking one idea to fit the other. We're also listening to households with other pets.</div></li>
+      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-2" id="faq-btn-2">When does the first product launch?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-2" role="region" aria-labelledby="faq-btn-2" class="a" hidden>We don't have a date to share yet. Join the list and you'll hear first, with nothing else in between.</div></li>
+      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-3" id="faq-btn-3">What is your shipping policy?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-3" role="region" aria-labelledby="faq-btn-3" class="a" hidden>PLACEHOLDER — shipping regions, cost and timeframe will be published at launch.</div></li>
+      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-4" id="faq-btn-4">What is your return policy?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-4" role="region" aria-labelledby="faq-btn-4" class="a" hidden>PLACEHOLDER — return window and conditions will be published at launch.</div></li>
+      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-5" id="faq-btn-5">How do I get in touch?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-5" role="region" aria-labelledby="faq-btn-5" class="a" hidden>PLACEHOLDER — contact email and social handles to be added.</div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="news" id="newsletter">
+  <div class="container">
+    <div class="box">
+      <h2>Join the UrPick pack.</h2>
+      <p>Launch news, tips and early access. No spam.</p>
+      <form id="newsForm" novalidate>
+        <label for="newsEmail" class="sr-only" style="position:absolute;left:-9999px">Email address</label>
+        <input id="newsEmail" type="email" required placeholder="you@example.com" autocomplete="email">
+        <button type="submit" class="btn btn-primary">Subscribe</button>
+      </form>
+      <p class="ok" id="newsOk" role="status">Thanks, you're on the list.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="container grid">
+    <div class="about">
+      <p class="name">UrPick</p>
+      <p class="tag">Everyday essentials for pets and the people who love them.</p>
+      <ul class="social" aria-label="Social links">
+        <li><a href="#" aria-label="Instagram (placeholder URL)">Instagram</a></li>
+        <li><a href="#" aria-label="TikTok (placeholder URL)">TikTok</a></li>
+        <li><a href="#" aria-label="Facebook (placeholder URL)">Facebook</a></li>
+        <li><a href="#" aria-label="Pinterest (placeholder URL)">Pinterest</a></li>
+        <li><a href="#" aria-label="YouTube (placeholder URL)">YouTube</a></li>
+      </ul>
+    </div>
+    <nav aria-label="Explore">
+      <p>Explore</p>
+      <ul><li><a href="#moments">Everyday Moments</a></li><li><a href="#how-we-work">How We Work</a></li><li><a href="#why-urpick">Why UrPick</a></li><li><a href="#faq">FAQ</a></li></ul>
+    </nav>
+    <nav aria-label="Company">
+      <p>Company</p>
+      <ul><li><a href="#">About</a></li><li><a href="#">Contact</a></li><li><a href="#">Shipping &amp; Returns</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms</a></li></ul>
+    </nav>
+  </div>
+  <div class="container legal">
+    <p>© <span id="year">2026</span> UrPick. All rights reserved.</p>
+    <p>Checkout powered by Shopify.</p>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+  var toggle = document.getElementById("notesToggle");
+  function applyNotes() { document.body.classList.toggle("notes", toggle.checked); }
+  toggle.addEventListener("change", applyNotes); applyNotes();
+
+  var hdr = document.getElementById("siteHeader");
+  function onScroll() { hdr.classList.toggle("scrolled", window.scrollY > 8); }
+  window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+  var menuBtn = document.getElementById("menuBtn"), mnav = document.getElementById("mobile-nav");
+  menuBtn.addEventListener("click", function () { var open = mnav.hidden; mnav.hidden = !open; menuBtn.setAttribute("aria-expanded", String(open)); menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu"); });
+  mnav.querySelectorAll("a").forEach(function (a) { a.addEventListener("click", function () { mnav.hidden = true; menuBtn.setAttribute("aria-expanded", "false"); }); });
+
+  var main = document.getElementById("soonMain");
+  document.querySelectorAll(".thumbs button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll(".thumbs button").forEach(function (o) { o.setAttribute("aria-pressed", "false"); });
+      b.setAttribute("aria-pressed", "true");
+      main.className = "ph main " + b.getAttribute("data-photo");
+    });
+  });
+
+  document.querySelectorAll("#faqList button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var open = btn.getAttribute("aria-expanded") === "true";
+      document.querySelectorAll("#faqList button").forEach(function (o) { o.setAttribute("aria-expanded", "false"); document.getElementById(o.getAttribute("aria-controls")).hidden = true; });
+      if (!open) { btn.setAttribute("aria-expanded", "true"); document.getElementById(btn.getAttribute("aria-controls")).hidden = false; }
+    });
+  });
+
+  function wire(formId, emailId, okId) {
+    var form = document.getElementById(formId), email = document.getElementById(emailId), ok = document.getElementById(okId);
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      if (!email.value || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value)) { email.focus(); email.setAttribute("aria-invalid", "true"); return; }
+      email.removeAttribute("aria-invalid"); ok.style.display = "block";
+      if (window.dataLayer) window.dataLayer.push({ event: "waitlist_submit", form: formId });
+    });
+  }
+  wire("waitForm", "waitEmail", "waitOk"); wire("newsForm", "newsEmail", "newsOk");
+</script>
