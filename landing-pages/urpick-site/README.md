@@ -39,3 +39,5 @@ Tests: `tools/test_nav.py` now covers the shop block, cart, and checkout as well
 3. Set the production branch to `claude/relaxed-brown-bm2ob8` (or merge it to the default branch). Every push that changes `site/` redeploys.
 
 Before launch: connect the waitlist/newsletter form to an email service, publish Privacy and Terms, fill the contact, shipping and returns placeholders, and connect Shopify (see "Cart and checkout").
+
+Deployed from this folder by the `urpick` Vercel project (root directory `landing-pages/urpick-site/site`).
