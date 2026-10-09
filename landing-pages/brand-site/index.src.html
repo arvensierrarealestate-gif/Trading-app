@@ -87,6 +87,11 @@
   .pair .card p { font-size: 16px; color: var(--ink-2); }
   @media (min-width: 840px) { .pair { grid-template-columns: 1fr 1fr; gap: 40px; } }
 
+  /* family (shares the moment layout) */
+  .family .wrap { display: grid; gap: 28px; align-items: center; }
+  .family .photo { aspect-ratio: 4 / 5; width: min(100%, 460px); }
+  @media (min-width: 840px) { .family .wrap { grid-template-columns: minmax(0, 460px) 1fr; gap: 64px; } }
+
   /* approach */
   .approach .wrap { display: grid; gap: 28px; }
   .approach .points { display: grid; gap: 16px; margin-top: 6px; }
@@ -195,6 +200,18 @@
         <h3>For cats</h3>
         <p>Particular about where things go, when, and whether they'll bother at all. We design for the cat's terms, because there are no others.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="family band-white" id="family">
+  <div class="wrap">
+    <div class="photo" style="background-image:url('{{PHOTO:family-all}}')" role="img" aria-label="A golden retriever, a tabby cat, a rabbit and a guinea pig resting together on a rug"><span class="cap">Photo 6 · family-all</span></div>
+    <div class="stack">
+      <div class="note"><b>Every kind of family</b> — Photo: uploaded 6 (dog, cat, rabbit, guinea pig). Copy keeps dogs and cats as the starting point and stays product-free.</div>
+      <div class="eyebrow">Every kind of family</div>
+      <h2>Big, Small, and the Ones Who Think They're in Charge</h2>
+      <p class="lede">Most homes aren't one pet. They're a dog, a cat, and whoever else moved in. We start with dogs and cats, and we're paying attention to the rest of the household too.</p>
     </div>
   </div>
 </section>
