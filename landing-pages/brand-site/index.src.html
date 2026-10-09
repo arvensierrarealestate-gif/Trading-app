@@ -1,0 +1,284 @@
+<title>Everyday Pet Life</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gabarito:wght@500;600;700;800&family=Figtree:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --cream: #F7F2EA; --cream-2: #EFE7DA; --white: #FFFDF9;
+    --sage: #8FA58C; --sage-soft: #E3EBDF; --sage-deep: #5F7A5C;
+    --terra: #C4693F; --terra-deep: #A5542F; --sand: #E6D6BF;
+    --ink: #2B2A28; --ink-2: #5B5955; --ink-3: #8A8680; --line: #E2D9CC;
+    --note-bg: #FFF4D6; --note-ink: #7A4E00; --note-line: #E9C86F;
+    --shadow: 0 24px 48px -28px rgba(43,42,40,.35);
+    --display: "Gabarito", "Avenir Next", "Segoe UI", sans-serif;
+    --body: "Figtree", "Helvetica Neue", Arial, sans-serif;
+    --mono: "DM Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; color-scheme: light; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+  body { margin: 0; background: var(--cream); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.55; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.06; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+  h1 { font-size: clamp(38px, 7.6vw, 64px); font-weight: 800; }
+  h2 { font-size: clamp(28px, 4.6vw, 44px); }
+  h3 { font-size: clamp(19px, 2.4vw, 22px); }
+  p { margin: 0; max-width: 58ch; }
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--sage-deep); outline-offset: 3px; border-radius: 8px; }
+  .wrap { width: min(100% - 40px, 1140px); margin-inline: auto; }
+  .narrow { width: min(100% - 40px, 720px); margin-inline: auto; }
+  section { padding: 64px 0; }
+  @media (min-width: 840px) { section { padding: 104px 0; } }
+  .eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--sage-deep); margin-bottom: 14px; }
+  .lede { font-size: clamp(17px, 2vw, 20px); color: var(--ink-2); }
+  .muted { color: var(--ink-3); } .small { font-size: 14px; color: var(--ink-3); }
+  .stack { display: flex; flex-direction: column; gap: 18px; }
+  .center { text-align: center; } .center p { margin-inline: auto; }
+  .band-white { background: var(--white); border-block: 1px solid var(--line); }
+  .band-sage { background: var(--sage-soft); }
+  .band-ink { background: var(--ink); color: var(--cream); } .band-ink h2, .band-ink h3 { color: var(--cream); } .band-ink .lede, .band-ink .small { color: #CFC9BE; } .band-ink .eyebrow { color: var(--sage); }
+
+  .cta { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 56px; padding: 0 28px; border-radius: 999px; background: var(--terra); color: #FFF7F0; text-decoration: none; font-family: var(--display); font-weight: 700; font-size: 16px; letter-spacing: .04em; text-transform: uppercase; border: 1px solid var(--terra); cursor: pointer; transition: transform .15s ease, background .15s ease; white-space: nowrap; }
+  .cta:hover { transform: translateY(-1px); background: var(--terra-deep); }
+  .cta.ghost { background: transparent; color: var(--ink); border-color: var(--ink); } .cta.ghost:hover { background: var(--ink); color: var(--cream); }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+  /* photos */
+  .photo { position: relative; overflow: hidden; border-radius: 24px; background: var(--sand); background-size: cover; background-position: center; }
+  .photo.p45 { aspect-ratio: 4 / 5; } .photo.p43 { aspect-ratio: 4 / 3; } .photo.p169 { aspect-ratio: 16 / 9; } .photo.p11 { aspect-ratio: 1; }
+  .photo .cap { position: absolute; left: 12px; bottom: 12px; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; background: color-mix(in srgb, var(--white) 86%, transparent); color: var(--ink-2); padding: 6px 10px; border-radius: 999px; }
+  body:not(.notes) .photo .cap { display: none; }
+
+  /* internal bar */
+  .mockbar { background: var(--note-bg); color: var(--note-ink); border-bottom: 1px solid var(--note-line); font-family: var(--mono); font-size: 12px; }
+  .mockbar .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; min-height: 40px; padding-block: 6px; }
+  .mockbar strong { font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+  .mockbar label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .note { display: none; font-family: var(--mono); font-size: 11.5px; line-height: 1.45; background: var(--note-bg); color: var(--note-ink); border: 1px dashed var(--note-line); border-radius: 8px; padding: 10px 12px; max-width: none; }
+  body.notes .note { display: block; } .note b { font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
+
+  /* announce + nav */
+  .announce { background: var(--sage-deep); color: #F2F6F0; text-align: center; font-size: 13px; letter-spacing: .04em; padding: 9px 16px; font-weight: 500; }
+  .nav { position: sticky; top: 0; z-index: 50; background: color-mix(in srgb, var(--cream) 90%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; min-height: 66px; gap: 16px; }
+  .logo { font-family: var(--display); font-weight: 800; font-size: 21px; letter-spacing: .02em; text-decoration: none; display: inline-flex; align-items: center; gap: 9px; }
+  .logo i { width: 22px; height: 16px; border-radius: 0 0 11px 11px / 0 0 10px 10px; background: var(--sage); position: relative; } .logo i::after { content: ""; position: absolute; left: 6px; right: 6px; bottom: -5px; height: 5px; border-radius: 0 0 4px 4px; background: var(--sage-deep); }
+  .nav ul { display: none; list-style: none; margin: 0; padding: 0; gap: 26px; } .nav ul a { text-decoration: none; font-size: 15px; font-weight: 500; color: var(--ink-2); } .nav ul a:hover { color: var(--ink); }
+  .nav .cta { min-height: 44px; padding: 0 20px; font-size: 14px; }
+  @media (min-width: 840px) { .nav ul { display: flex; } }
+
+  /* hero */
+  .hero { padding: 36px 0 56px; }
+  .hero .wrap { display: grid; gap: 26px; }
+  .hero .copy { display: flex; flex-direction: column; gap: 18px; }
+  .hero .photo { box-shadow: var(--shadow); aspect-ratio: 4 / 3; }
+  @media (min-width: 840px) { .hero { padding: 72px 0 104px; } .hero .wrap { grid-template-columns: 1fr 1.05fr; align-items: center; gap: 56px; } .hero .photo { aspect-ratio: 16 / 11; } }
+
+  /* pillars */
+  .pillars { display: grid; gap: 14px; margin-top: 36px; }
+  .pillar { background: var(--white); border: 1px solid var(--line); border-radius: 20px; padding: 24px; display: grid; gap: 10px; }
+  .pillar .k { width: 40px; height: 40px; border-radius: 12px; background: var(--sage-soft); display: grid; place-items: center; }
+  .pillar .k svg { width: 22px; height: 22px; stroke: var(--sage-deep); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .pillar p { font-size: 16px; color: var(--ink-2); }
+  @media (min-width: 840px) { .pillars { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+
+  /* dogs & cats */
+  .pair { display: grid; gap: 28px; margin-top: 36px; }
+  .pair .card { display: grid; gap: 14px; }
+  .pair .card p { font-size: 16px; color: var(--ink-2); }
+  @media (min-width: 840px) { .pair { grid-template-columns: 1fr 1fr; gap: 40px; } }
+
+  /* approach */
+  .approach .wrap { display: grid; gap: 28px; }
+  .approach .points { display: grid; gap: 16px; margin-top: 6px; }
+  .approach .points div { display: grid; gap: 4px; padding-left: 18px; border-left: 3px solid var(--sage); }
+  .approach .points b { font-family: var(--display); font-size: 18px; } .approach .points span { font-size: 16px; color: var(--ink-2); }
+  @media (min-width: 840px) { .approach .wrap { grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; } }
+
+  /* quiet moment */
+  .moment .wrap { display: grid; gap: 28px; align-items: center; }
+  .moment blockquote { margin: 0; font-family: var(--display); font-weight: 600; font-size: clamp(24px, 3.4vw, 36px); line-height: 1.15; letter-spacing: -.01em; }
+  .moment .photo { aspect-ratio: 4 / 5; width: min(100%, 420px); }
+  @media (min-width: 840px) { .moment .wrap { grid-template-columns: minmax(0, 420px) 1fr; gap: 64px; } }
+
+  /* waitlist */
+  .wait .panel { background: var(--white); border: 1px solid var(--line); border-radius: 28px; padding: 32px 24px; display: grid; gap: 22px; box-shadow: var(--shadow); }
+  .wait form { display: grid; gap: 12px; }
+  .wait .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .wait .chip { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--cream); font-size: 15px; cursor: pointer; }
+  .wait .chip input { accent-color: var(--sage-deep); margin: 0; }
+  .wait .row { display: grid; gap: 10px; }
+  .wait input[type="email"] { min-height: 56px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--cream); font: inherit; font-size: 16px; color: var(--ink); width: 100%; }
+  .wait .ok { display: none; background: var(--sage-soft); color: var(--sage-deep); border-radius: 14px; padding: 14px 16px; font-weight: 500; }
+  @media (min-width: 640px) { .wait .row { grid-template-columns: 1fr auto; } }
+  @media (min-width: 840px) { .wait .panel { padding: 48px; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; } }
+
+  footer { border-top: 1px solid var(--line); padding: 36px 0 48px; font-size: 14px; color: var(--ink-3); }
+  footer .wrap { display: grid; gap: 18px; }
+  footer .cols { display: grid; gap: 14px; }
+  footer .cols b { font-family: var(--display); color: var(--ink); font-size: 14px; letter-spacing: .06em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+  footer .cols span { display: block; }
+  @media (min-width: 640px) { footer .cols { grid-template-columns: repeat(3, 1fr); } footer .wrap { grid-template-columns: 1fr 2fr; } }
+</style>
+
+<div class="mockbar">
+  <div class="wrap">
+    <strong>Internal mock · pre-launch brand site</strong>
+    <label><input type="checkbox" id="notesToggle"> Show build notes</label>
+  </div>
+</div>
+
+<div class="announce">Coming soon: thoughtfully designed products for everyday pet life</div>
+
+<nav class="nav" aria-label="Page">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Brand home"><i aria-hidden="true"></i>BRAND</a>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#pets">Dogs &amp; cats</a></li>
+      <li><a href="#approach">Our approach</a></li>
+      <li><a href="#waitlist">Coming soon</a></li>
+    </ul>
+    <a class="cta" href="#waitlist">Join the list</a>
+  </div>
+</nav>
+
+<main id="top">
+
+<section class="hero" id="hero">
+  <div class="wrap">
+    <div class="copy">
+      <div class="note"><b>Hero</b> — Brand site, no products. "BRAND" is a placeholder until the name is final. Photo: uploaded 1 (dog and two cats).</div>
+      <div class="eyebrow">A new pet-care brand</div>
+      <h1>Everyday Pet Life, Made a Little Easier</h1>
+      <p class="lede">We're building thoughtfully designed products for the routines you and your pets share: bath time, grooming, treat time, and the quiet afternoons in between.</p>
+      <div class="cta-row">
+        <a class="cta" href="#waitlist">Join the list</a>
+        <a class="cta ghost" href="#about">What we're about</a>
+      </div>
+      <p class="small">For dogs, for cats, and for the people who look after them.</p>
+    </div>
+    <div class="photo" style="background-image:url('{{PHOTO:hero-family}}')" role="img" aria-label="A golden retriever and two cats resting together on a rug in a bright living room"><span class="cap">Photo 1 · hero-family</span></div>
+  </div>
+</section>
+
+<section class="about band-white" id="about">
+  <div class="wrap">
+    <div class="note"><b>About / pillars</b> — Brand promises only. No product features, materials, or claims until products are announced.</div>
+    <div class="center stack">
+      <div class="eyebrow">What we're about</div>
+      <h2>Designed Around the Moments You Actually Have</h2>
+      <p class="lede">Not more stuff. A few things that make the ordinary parts of pet care easier, calmer, and a little more fun.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar"><div class="k"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13c0 4 3.6 7 8 7s8-3 8-7"/><path d="M3 13h18"/><path d="M8 9c1-2 7-2 8 0"/></svg></div><h3>Built for routines</h3><p>Baths, brushing, nail trims, treat time. We start from the moments that happen every week, not from a product category.</p></div>
+      <div class="pillar"><div class="k"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M4 20c1-4 4-6 8-6s7 2 8 6"/></svg></div><h3>Dogs and cats, both</h3><p>Different animals, different habits. We design for each rather than shrinking one idea to fit the other.</p></div>
+      <div class="pillar"><div class="k"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg></div><h3>Honest by design</h3><p>Fewer parts, simpler care, and only the claims we can stand behind. If we haven't tested it, we won't say it.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="pets" id="pets">
+  <div class="wrap">
+    <div class="note"><b>Dogs &amp; cats</b> — Photos: uploaded 3 (cockapoo) and 4 (tabby). Copy stays product-free.</div>
+    <div class="stack">
+      <div class="eyebrow">Who it's for</div>
+      <h2>For the Dog Who Won't Sit Still, and the Cat Who Decides Everything</h2>
+    </div>
+    <div class="pair">
+      <div class="card">
+        <div class="photo p45" style="background-image:url('{{PHOTO:dog-cockapoo}}')" role="img" aria-label="A curly apricot cockapoo trotting across a rug"><span class="cap">Photo 3 · dog-cockapoo</span></div>
+        <h3>For dogs</h3>
+        <p>The ones who treat bath time like a negotiation and nail trims like a heist. We're working on ways to give them something better to focus on.</p>
+      </div>
+      <div class="card">
+        <div class="photo p45" style="background-image:url('{{PHOTO:cat-tabby}}')" role="img" aria-label="A tabby cat sitting upright on a rug in sunlight"><span class="cap">Photo 4 · cat-tabby</span></div>
+        <h3>For cats</h3>
+        <p>Particular about where things go, when, and whether they'll bother at all. We design for the cat's terms, because there are no others.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="approach band-sage" id="approach">
+  <div class="wrap">
+    <div class="photo p43" style="background-image:url('{{PHOTO:dog-and-cat}}')" role="img" aria-label="A golden retriever lying beside a tabby cat on a rug"><span class="cap">Photo 5 · dog-and-cat</span></div>
+    <div class="stack">
+      <div class="note"><b>Our approach</b> — Three principles, no specifications.</div>
+      <div class="eyebrow">Our approach</div>
+      <h2>Simple Things, Done Properly</h2>
+      <div class="points">
+        <div><b>Start with the routine</b><span>We watch how the moment actually goes before we decide what to make.</span></div>
+        <div><b>Leave out what isn't needed</b><span>Fewer pieces to lose, clean, or chew. Nothing on the product that isn't doing a job.</span></div>
+        <div><b>Say only what we've tested</b><span>No miracle language. What a product does, in plain words, after we've used it ourselves.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="moment" id="moment">
+  <div class="wrap">
+    <div class="photo" style="background-image:url('{{PHOTO:cat-fluffy}}')" role="img" aria-label="A long-haired cat with blue eyes standing on a rug"><span class="cap">Photo 2 · cat-fluffy</span></div>
+    <div class="stack">
+      <div class="note"><b>Quiet moment</b> — Editorial pause between the brand story and the ask.</div>
+      <blockquote>Most of pet life isn't the big moments. It's the small ones, repeated. That's where we're paying attention.</blockquote>
+      <p class="muted">The first product is in development now. Details when they're real.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wait" id="waitlist">
+  <div class="wrap">
+    <div class="note"><b>Waitlist</b> — Form is front-end only in the mock. Wire to the email tool of choice (Klaviyo, Shopify Email, Mailchimp) before launch. No launch dates or discounts promised.</div>
+    <div class="panel">
+      <div class="stack">
+        <div class="eyebrow">Coming soon</div>
+        <h2>Be First to Know</h2>
+        <p class="lede">Our first product is on its way. Leave your email and we'll tell you when it's ready, and nothing else in between.</p>
+      </div>
+      <form id="waitForm" novalidate>
+        <div class="chips" aria-label="Who do you have at home?">
+          <label class="chip"><input type="checkbox" name="pet" value="dog"> I have a dog</label>
+          <label class="chip"><input type="checkbox" name="pet" value="cat"> I have a cat</label>
+        </div>
+        <div class="row">
+          <input type="email" name="email" placeholder="you@example.com" aria-label="Email address" required>
+          <button class="cta" type="submit">Join the list</button>
+        </div>
+        <p class="small">One email when we launch. Unsubscribe any time.</p>
+        <div class="ok" id="waitOk">Thanks, you're on the list. We'll be in touch when there's something worth saying.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <a class="logo" href="#top" aria-label="Brand home"><i aria-hidden="true"></i>BRAND</a>
+      <p class="small" style="margin-top:10px">Thoughtfully designed products for everyday pet life. Coming soon.</p>
+    </div>
+    <div class="cols">
+      <div><b>Company</b><span>About</span><span>Our approach</span><span>Contact (placeholder)</span></div>
+      <div><b>Follow</b><span>Instagram (placeholder)</span><span>TikTok (placeholder)</span><span>Pinterest (placeholder)</span></div>
+      <div><b>Legal</b><span>Privacy (placeholder)</span><span>Terms (placeholder)</span></div>
+    </div>
+    <span class="small">© 2026 BRAND · All rights reserved.</span>
+  </div>
+</footer>
+
+<script>
+  var toggle = document.getElementById("notesToggle");
+  function applyNotes() { document.body.classList.toggle("notes", toggle.checked); }
+  toggle.addEventListener("change", applyNotes); applyNotes();
+  var form = document.getElementById("waitForm");
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var email = form.querySelector("input[type=email]");
+    if (!email.value || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value)) { email.focus(); email.setAttribute("aria-invalid", "true"); return; }
+    email.removeAttribute("aria-invalid");
+    document.getElementById("waitOk").style.display = "block";
+    if (window.dataLayer) window.dataLayer.push({ event: "waitlist_submit" });
+  });
+</script>
