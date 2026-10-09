@@ -36,6 +36,7 @@
   .ph .cap { position: absolute; left: .75rem; right: .75rem; bottom: .75rem; border-radius: .5rem; background: rgba(255,255,255,.72); padding: .5rem .75rem; font-size: 11px; line-height: 1.4; color: var(--taupe); backdrop-filter: blur(6px); }
   .ph .cap b { color: var(--ink); font-weight: 600; }
   body:not(.notes) .ph .cap { display: none; }
+  .ph.vid video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .icon { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
   /* internal bar */
@@ -216,7 +217,7 @@
       </div>
     </div>
     <div class="visual">
-      <div class="ph photo-family-all" role="img" aria-label="A golden retriever, a tabby cat, a rabbit and a guinea pig resting together on a rug"><span class="cap"><b>Photo · 4/5</b> — hero, whole household (photo 6). Replace with the dog-using-product shot once a product exists.</span></div>
+      <div class="ph vid photo-family-all"><video data-video="hero-loop" muted loop playsinline preload="metadata" aria-label="Household pets playing together in a bright living room"></video><span class="cap"><b>Video · 4/5</b> — hero loop, household pets (uploaded 9 Oct). Poster: photo 6. Replace with the dog-using-product clip once a product exists.</span></div>
     </div>
   </div>
   <div class="strip">
@@ -303,7 +304,7 @@
       <li><div class="ph photo-dog-cockapoo" style="aspect-ratio:4/5" role="img" aria-label="Cockapoo"><span class="cap"><b>Photo · 4/5</b> — photo 3</span></div></li>
       <li><div class="ph photo-hero-family" style="aspect-ratio:1" role="img" aria-label="Dog and two cats"><span class="cap"><b>Photo · 1/1</b> — photo 1</span></div></li>
       <li><div class="ph photo-cat-tabby" style="aspect-ratio:1" role="img" aria-label="Tabby cat"><span class="cap"><b>Photo · 1/1</b> — photo 4</span></div></li>
-      <li><div class="ph photo-family-all" style="aspect-ratio:4/5" role="img" aria-label="Whole household"><span class="cap"><b>Photo · 4/5</b> — photo 6</span></div></li>
+      <li><div class="ph vid photo-family-all" style="aspect-ratio:4/5"><video data-video="hero-loop" muted loop playsinline preload="metadata" aria-label="Household pets playing together"></video><span class="cap"><b>Video · 4/5</b> — the template's customer-video tile, holding the household clip for now</span></div></li>
       <li><div class="ph photo-dog-and-cat" style="aspect-ratio:1" role="img" aria-label="Dog and cat"><span class="cap"><b>Photo · 1/1</b> — photo 5</span></div></li>
     </ul>
     <div class="reviews-note"><b>Reviews</b> — a verified review widget (Judge.me, Okendo or Shopify Reviews) mounts here once reviews exist. No ratings are shown until real data is available.</div>
@@ -421,6 +422,14 @@
 
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
+  var VIDEO_SRC = "{{VIDEO:hero-loop}}";
+  var players = Array.prototype.slice.call(document.querySelectorAll('video[data-video="hero-loop"]'));
+  players.forEach(function (v) { v.src = VIDEO_SRC; });
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduce && "IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) { entries.forEach(function (e) { var v = e.target; if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } else { v.pause(); } }); }, { threshold: 0.25 });
+    players.forEach(function (v) { io.observe(v); });
+  } else if (!reduce) { players.forEach(function (v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }); }
   var toggle = document.getElementById("notesToggle");
   function applyNotes() { document.body.classList.toggle("notes", toggle.checked); }
   toggle.addEventListener("change", applyNotes); applyNotes();

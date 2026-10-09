@@ -20,5 +20,12 @@ for path in sorted(glob.glob(os.path.join(ROOT, "assets", "photos", "*.jpg"))):
 
 block = "<style>\n" + "\n".join(rules) + "\n</style>\n"
 out = src.replace("</style>\n", "</style>\n" + block, 1)
+
+# videos: {{VIDEO:<name>}} -> data URI of assets/video/<name>.mp4 (inlined once; players share it via JS)
+import re
+def video(m):
+    with open(os.path.join(ROOT, "assets", "video", m.group(1) + ".mp4"), "rb") as f:
+        return "data:video/mp4;base64," + base64.b64encode(f.read()).decode()
+out = re.sub(r"\{\{VIDEO:([a-z0-9-]+)\}\}", video, out)
 open(os.path.join(ROOT, "index.html"), "w").write(out)
 print(f"index.html written: {len(out) // 1024} KB, {len(rules)} photos inlined")
