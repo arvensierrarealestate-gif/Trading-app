@@ -79,5 +79,11 @@ favicon = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect w
 open(os.path.join(site, "assets", "favicon.svg"), "w").write(favicon)
 open(os.path.join(site, "index.html"), "w").write(doc)
 open(os.path.join(site, "vercel.json"), "w").write('{\n  "cleanUrls": true,\n  "headers": [\n    { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] }\n  ]\n}\n')
+# mirror into the repo's Next.js public/ folder so the existing Vercel deployment serves it at /urpick/
+pub = os.path.normpath(os.path.join(ROOT, "..", "..", "public", "urpick"))
+if os.path.isdir(os.path.dirname(pub)):
+    shutil.rmtree(pub, ignore_errors=True)
+    shutil.copytree(site, pub, ignore=shutil.ignore_patterns("vercel.json"))
+    print(f"mirrored to {os.path.relpath(pub, os.path.join(ROOT, '..', '..'))}/")
 total = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(site) for f in fs)
 print(f"site/ written: index.html {len(doc) // 1024} KB, folder {total // 1024} KB, mock bar and notes stripped")
