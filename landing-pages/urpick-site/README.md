@@ -5,7 +5,8 @@ Static rebuild of the UrPick site template (the React/Tailwind build supplied on
 The product block is the template's shop block with placeholder data: "[Product Name]", $0.00 "price set in Shopify", four colour options (A to D), a four-image gallery with the template's shot notes, quantity stepper, Add to Cart, and the reassurance row. All of it is driven by the `PRODUCT` object at the top of the shop script and is replaced by live Shopify data once the product exists. The waitlist (dog / cat / other pet chips) now lives in the newsletter box.
 
 - `index.src.html` — source. Edit this.
-- `index.html` — built page with the six photos inlined once each as CSS classes `.photo-<name>`. Regenerate with `python3 tools/build.py`.
+- `index.html` — preview build, one file with all media inlined (used for the artifact link). Regenerate with `python3 tools/build.py`.
+- `site/` — **deploy build**: a full HTML document plus `assets/` (photos, video, favicon) and a `vercel.json` with cache headers. Internal build-notes bar and notes are stripped. Regenerate with `python3 tools/build.py --deploy`. Point the host at this folder.
 - `assets/photos/` — the six supplied lifestyle photos.
 
 Placeholders still open: shipping, returns and contact answers in the FAQ and reassurance row; social and company footer links; account link; the review widget. "Show build notes" in the top bar reveals the mapping of each photo to its template slot.
@@ -30,3 +31,11 @@ Tests: `python3 tools/test_nav.py "$(pwd)/index.html" <screenshot-dir>` runs 90 
 - To go live: connect the Shopify Storefront API (domain and token as in the template's `.env`), load the product by handle into `PRODUCT`, set `SHOPIFY_CONNECTED = true`, and point the checkout button at the cart's `checkoutUrl`.
 
 Tests: `tools/test_nav.py` now covers the shop block, cart, and checkout as well (126 checks across desktop, tablet, mobile).
+
+## Going live
+
+1. Vercel → Add New Project → import this GitHub repo → Root Directory `landing-pages/urpick-site/site` → Framework "Other", no build command, output directory `.` → Deploy. (Netlify / Cloudflare Pages: same folder, no build.)
+2. Project → Settings → Domains → add the domain. Add the A and CNAME records it shows at the registrar. HTTPS is automatic.
+3. Set the production branch to `claude/relaxed-brown-bm2ob8` (or merge it to the default branch). Every push that changes `site/` redeploys.
+
+Before launch: connect the waitlist/newsletter form to an email service, publish Privacy and Terms, fill the contact, shipping and returns placeholders, and connect Shopify (see "Cart and checkout").

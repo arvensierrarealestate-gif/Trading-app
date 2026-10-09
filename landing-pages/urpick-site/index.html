@@ -594,8 +594,8 @@
     players.forEach(function (v) { io.observe(v); });
   } else if (!reduce) { players.forEach(function (v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }); }
   var toggle = document.getElementById("notesToggle");
-  function applyNotes() { document.body.classList.toggle("notes", toggle.checked); }
-  toggle.addEventListener("change", applyNotes); applyNotes();
+  function applyNotes() { document.body.classList.toggle("notes", !!(toggle && toggle.checked)); }
+  if (toggle) { toggle.addEventListener("change", applyNotes); } applyNotes();
 
   var hdr = document.getElementById("siteHeader");
   function onScroll() { hdr.classList.toggle("scrolled", window.scrollY > 8); }

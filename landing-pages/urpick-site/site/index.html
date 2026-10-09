@@ -1,5 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>UrPick</title>
+<meta name="description" content="UrPick — everyday essentials for pets and the people who love them. Coming soon.">
+<meta property="og:title" content="UrPick">
+<meta property="og:description" content="Everyday essentials for pets and the people who love them.">
+<meta property="og:image" content="assets/photos/hero-family.jpg">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" as="video" href="assets/video/hero-loop.mp4" type="video/mp4">
+</head>
+<body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap">
 <style>
@@ -218,13 +230,18 @@
   footer.site nav p { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .15em; color: var(--taupe); } footer.site nav ul { margin: 1rem 0 0; padding: 0; list-style: none; display: grid; gap: .625rem; } footer.site nav a { font-size: .875rem; text-decoration: none; } footer.site nav a:hover { color: var(--sage-deep); }
   .legal { margin-top: 3rem; display: flex; flex-direction: column; gap: .5rem; border-top: 1px solid rgba(31,42,36,.1); padding-top: 1.5rem; font-size: .75rem; color: var(--taupe); } @media (min-width: 640px) { .legal { flex-direction: row; justify-content: space-between; } }
 </style>
+<style>
+.photo-bath-grooming{background-image:url('assets/photos/bath-grooming.jpg')}
+.photo-cat-fluffy{background-image:url('assets/photos/cat-fluffy.jpg')}
+.photo-cat-tabby{background-image:url('assets/photos/cat-tabby.jpg')}
+.photo-dog-and-cat{background-image:url('assets/photos/dog-and-cat.jpg')}
+.photo-dog-cockapoo{background-image:url('assets/photos/dog-cockapoo.jpg')}
+.photo-family-all{background-image:url('assets/photos/family-all.jpg')}
+.photo-hero-family{background-image:url('assets/photos/hero-family.jpg')}
+.photo-quiet-afternoon{background-image:url('assets/photos/quiet-afternoon.jpg')}
+.photo-treat-time{background-image:url('assets/photos/treat-time.jpg')}
+</style>
 
-<div class="mockbar">
-  <div class="container">
-    <strong>INTERNAL MOCK · URPICK PRE-LAUNCH</strong>
-    <label><input type="checkbox" id="notesToggle"> Show build notes</label>
-  </div>
-</div>
 
 <div class="announce">Coming soon: thoughtfully designed essentials for everyday pet life</div>
 
@@ -289,7 +306,6 @@
 <section class="hero" id="top">
   <div class="container">
     <div class="copy">
-      <div class="note"><b>HERO</b> — Template slot: 4:5 lifestyle photo, dog using the launch product. No product yet, so the whole-household photo (6) carries it. Headline and sub are the brand copy from the pre-launch site.</div>
       <p class="eyebrow">UrPick · Pet essentials</p>
       <h1>Everyday Pet Life, Made a Little Easier</h1>
       <p class="sub">We're building thoughtfully designed essentials for the routines you and your pets share: bath time, grooming, treat time, and the quiet afternoons in between.</p>
@@ -315,7 +331,6 @@
 <!-- USE CASES -->
 <section class="sec" id="moments">
   <div class="container">
-    <div class="note"><b>USE CASES</b> — Template: "One product. So many moments." Reframed to the household since there is no product. Photos 3, 4, 5, 2.</div>
     <div class="head center">
       <p class="eyebrow">Made for everyday moments</p>
       <h2 class="h2">One home. So many moments.</h2>
@@ -332,7 +347,6 @@
 <!-- HOW WE WORK -->
 <section class="sec how" id="how-we-work">
   <div class="container">
-    <div class="note"><b>HOW IT WORKS</b> — Template's four numbered steps, used for how the brand works until a product's own steps replace them.</div>
     <div class="head center">
       <p class="eyebrow">How we work</p>
       <h2 class="h2">Simple to use. Easy to explain.</h2>
@@ -350,7 +364,6 @@
 <section class="sec why" id="why-urpick">
   <div class="container">
     <div>
-      <div class="note"><b>WHY IT'S DIFFERENT</b> — Template: differentiator with four checked features and a 1:1 callout image. Filled with brand principles; callouts become product features later.</div>
       <p class="eyebrow">Why UrPick</p>
       <h2 class="h2">Simple things, done properly.</h2>
       <p class="sub">Most pet products are made for a category. Ours are made for a moment: the bath, the brush, the nail trim, the long afternoon. That changes what we leave out.</p>
@@ -375,7 +388,6 @@
 <!-- GALLERY -->
 <section class="sec gallery" id="gallery">
   <div class="container">
-    <div class="note"><b>GALLERY</b> — Template reserves this band for real customer photos and tagged posts. Our six photos hold the layout; customer content replaces them tile by tile as it arrives. The review widget note stays as in the template.</div>
     <div class="head center">
       <p class="eyebrow">Real homes. Real pets.</p>
       <h2 class="h2">See it in homes, not studios.</h2>
@@ -394,7 +406,6 @@
 <section class="sec shop" id="shop">
   <div class="container">
     <div class="media">
-      <div class="note"><b>SHOP</b> — Template's product block as supplied: 1:1 gallery with four thumbnails, title, description, price, colour options, quantity, Add to Cart, reassurance row. All product data is placeholder and comes from the PRODUCT object in the script; the live values arrive from Shopify once the product exists in the store.</div>
       <div class="ph main pmain" id="shopMain" role="img" aria-label="Product image placeholder"><div class="psil" id="shopSil"><span>[ PRODUCT ]</span></div><span class="cap always" id="shopMainCap"></span></div>
       <ul class="thumbs" id="shopThumbs" aria-label="Product image thumbnails"></ul>
     </div>
@@ -425,7 +436,6 @@
 <!-- FAQ -->
 <section class="sec faq" id="faq">
   <div class="container">
-    <div class="note"><b>FAQ</b> — Template accordion. Product questions return once there is a product; policy answers stay placeholders until terms are set.</div>
     <div class="head center">
       <p class="eyebrow">Questions</p>
       <h2 class="h2">Anything you'd like to know?</h2>
@@ -574,7 +584,7 @@
 
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
-  var VIDEO_SRC = "{{VIDEO:hero-loop}}";
+  var VIDEO_SRC = "assets/video/hero-loop.mp4";
   var players = Array.prototype.slice.call(document.querySelectorAll('video[data-video="hero-loop"]'));
   players.forEach(function (v) { v.src = VIDEO_SRC; });
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -782,3 +792,6 @@
   }
   wire("newsForm", "newsEmail", "newsOk");
 </script>
+
+</body>
+</html>
