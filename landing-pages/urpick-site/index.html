@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>UrPick</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap">
@@ -145,21 +146,51 @@
   .reviews-note { margin-top: 2.5rem; border-radius: var(--r-card); border: 1px dashed rgba(250,246,239,.3); padding: 1.5rem; text-align: center; font-size: .875rem; color: rgba(250,246,239,.7); } .reviews-note b { color: var(--cream); }
 
   /* coming soon (replaces shop block) */
-  .soon .container { display: grid; gap: 2.5rem; } @media (min-width: 1024px) { .soon .container { grid-template-columns: repeat(12, 1fr); gap: 3.5rem; } .soon .media { grid-column: span 7; } .soon .panel { grid-column: span 5; position: sticky; top: 6rem; align-self: start; } }
-  .soon .main.ph { aspect-ratio: 1; }
+  .shop .container { display: grid; gap: 2.5rem; } @media (min-width: 1024px) { .shop .container { grid-template-columns: repeat(12, 1fr); gap: 3.5rem; } .shop .media { grid-column: span 7; } .shop .panel { grid-column: span 5; position: sticky; top: 6rem; align-self: start; } }
+  .shop .main.ph { aspect-ratio: 1; display: grid; place-items: center; background: linear-gradient(to bottom right, var(--sand), var(--sand-2)); }
+  .ph.pmain::before { content: ""; position: absolute; inset: 0; opacity: .07; background-image: radial-gradient(circle at 1px 1px, #1F2A24 1px, transparent 0); background-size: 18px 18px; }
+  .psil { position: relative; width: 56%; aspect-ratio: 1; display: grid; place-items: end center; }
+  .psil::before { content: ""; position: absolute; left: 50%; bottom: -4%; width: 70%; height: 9%; transform: translateX(-50%); border-radius: 50%; background: rgba(31,42,36,.1); }
+  .psil span { position: relative; width: 100%; aspect-ratio: 1 / 1.05; border-radius: 18%; background: var(--sil, #7E9A86); display: grid; place-items: center; color: rgba(255,255,255,.88); font-weight: 600; font-size: clamp(.8rem, 2vw, 1.4rem); letter-spacing: .04em; box-shadow: inset 0 0 0 999px rgba(255,255,255,.12); transition: background .3s; }
+  .psil span::before { content: ""; position: absolute; top: 14%; left: 14%; right: 14%; height: 44%; border-radius: 14%; background: rgba(31,42,36,.12); }
+  .ph .cap.always { display: block; }
   .thumbs { margin-top: 1rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; list-style: none; padding: 0; }
-  .thumbs button { display: block; width: 100%; padding: 0; border: 0; background: none; border-radius: .75rem; overflow: hidden; cursor: pointer; box-shadow: 0 0 0 2px transparent; transition: box-shadow .15s; } .thumbs button[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--clay); }
-  .thumbs .ph { aspect-ratio: 1; border-radius: 0; }
-  .soon h2 { margin-top: .75rem; font-size: 2.25rem; line-height: 1.1; } .soon .desc { margin-top: .75rem; color: var(--taupe); line-height: 1.7; }
-  .soon .pricebox { margin-top: 1.25rem; display: flex; align-items: baseline; gap: .75rem; } .soon .pricebox b { font-family: var(--display); font-size: 1.875rem; font-weight: 600; } .soon .pricebox span { font-size: .75rem; color: var(--taupe); }
-  .ratings-note { margin-top: .5rem; display: inline-block; border-radius: .375rem; background: rgba(239,230,216,.7); padding: .5rem .75rem; font-size: .75rem; color: var(--taupe); }
-  .wait { margin-top: 1.75rem; display: grid; gap: .75rem; }
-  .wait legend { font-size: .875rem; font-weight: 600; padding: 0; } .wait fieldset { border: 0; margin: 0; padding: 0; }
-  .chips { margin-top: .75rem; display: flex; flex-wrap: wrap; gap: .5rem; }
-  .chip { display: inline-flex; align-items: center; gap: .5rem; border-radius: 999px; border: 1px solid rgba(31,42,36,.15); padding: .55rem .9rem; font-size: .875rem; cursor: pointer; background: var(--white); } .chip input { accent-color: var(--sage-deep); margin: 0; }
-  .wait .row { display: flex; flex-direction: column; gap: .75rem; } @media (min-width: 640px) { .wait .row { flex-direction: row; } }
-  .wait input[type="email"] { min-height: 48px; flex: 1; border-radius: var(--r-btn); border: 1px solid rgba(31,42,36,.2); background: var(--white); padding: 0 1.25rem; font: inherit; font-size: .95rem; color: var(--ink); width: 100%; }
-  .wait .ok { display: none; margin-top: .5rem; font-weight: 600; color: var(--sage-deep); }
+  .thumbs button { display: block; width: 100%; padding: 0; border: 0; background: none; border-radius: .75rem; overflow: hidden; cursor: pointer; box-shadow: 0 0 0 2px transparent; transition: box-shadow .15s; } .thumbs button[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--clay); } .thumbs button:hover { box-shadow: 0 0 0 2px rgba(31,42,36,.2); }
+  .thumbs .t { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; padding: .5rem; text-align: center; font-size: 10px; line-height: 1.3; color: var(--taupe); background: linear-gradient(to bottom right, var(--sand), var(--sand-2)); }
+  .shop h2 { margin-top: .75rem; font-size: 2.25rem; line-height: 1.1; } .shop .desc { margin-top: .75rem; color: var(--taupe); line-height: 1.7; }
+  .shop .pricebox { margin-top: 1.25rem; display: flex; align-items: baseline; gap: .75rem; } .shop .pricebox b { font-family: var(--display); font-size: 1.875rem; font-weight: 600; font-variant-numeric: tabular-nums; } .shop .pricebox span { font-size: .75rem; color: var(--taupe); }
+  .colors { border: 0; margin: 1.75rem 0 0; padding: 0; } .colors legend { font-size: .875rem; font-weight: 600; padding: 0; } .colors legend span { font-weight: 400; color: var(--taupe); }
+  .swatches { margin-top: .75rem; display: flex; flex-wrap: wrap; gap: .75rem; }
+  .swatches button { height: 2.75rem; width: 2.75rem; border-radius: 999px; border: 0; cursor: pointer; box-shadow: 0 0 0 2px var(--cream), 0 0 0 4px transparent; transition: box-shadow .15s, transform .15s; } .swatches button[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--cream), 0 0 0 4px var(--ink); transform: scale(1.05); } .swatches button:hover { box-shadow: 0 0 0 2px var(--cream), 0 0 0 4px rgba(31,42,36,.3); }
+  .buyrow { margin-top: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+  .qty { display: inline-flex; align-items: center; border-radius: var(--r-btn); border: 1px solid rgba(31,42,36,.15); } .qty button { height: 3rem; width: 3rem; display: inline-flex; align-items: center; justify-content: center; border: 0; background: none; cursor: pointer; color: var(--ink); border-radius: var(--r-btn); } .qty button:hover { background: var(--sand); } .qty output { width: 2.5rem; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .addbtn { flex: 1; min-height: 56px; font-size: 1rem; } .addbtn:disabled { opacity: .6; cursor: not-allowed; }
+  .connect-note { margin-top: 1rem; border-radius: .375rem; border: 1px dashed rgba(31,42,36,.2); padding: .5rem .75rem; font-size: 11px; color: var(--taupe); } .connect-note code { font-family: ui-monospace, Menlo, monospace; font-size: 10px; }
+  .cart-badge { position: absolute; right: -2px; top: -2px; display: flex; height: 1.25rem; min-width: 1.25rem; align-items: center; justify-content: center; border-radius: 999px; background: var(--clay); color: #fff; padding: 0 .3rem; font-size: 11px; font-weight: 600; }
+  .cartbtn { position: relative; }
+  /* cart drawer */
+  .cart-root { position: fixed; inset: 0; z-index: 65; }
+  .cart-overlay { position: absolute; inset: 0; background: rgba(31,42,36,.4); backdrop-filter: blur(2px); opacity: 0; transition: opacity .25s ease; }
+  .cart { position: absolute; right: 0; top: 0; height: 100%; width: min(92vw, 28rem); background: var(--cream); box-shadow: 0 10px 40px rgba(31,42,36,.25); display: flex; flex-direction: column; transform: translateX(24px); opacity: 0; transition: transform .25s ease-out, opacity .25s ease-out; outline: none; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .cart-root.open .cart-overlay { opacity: 1; } .cart-root.open .cart { transform: none; opacity: 1; }
+  .cart-head { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(31,42,36,.1); padding: 1.25rem 1.5rem; } .cart-head h2 { font-size: 1.5rem; }
+  .cart-body { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
+  .cart-line { display: flex; justify-content: space-between; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid rgba(31,42,36,.1); } .cart-line:last-child { border-bottom: 0; }
+  .cart-line p { margin: 0; } .cart-line .t { font-weight: 600; } .cart-line .m { font-size: .875rem; color: var(--taupe); } .cart-line .r { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .cart-line .rm { margin-top: .25rem; background: none; border: 0; padding: 0; font: inherit; font-size: .8rem; color: var(--taupe); text-decoration: underline; cursor: pointer; min-height: 32px; } .cart-line .rm:hover { color: var(--clay); }
+  .cart-foot { border-top: 1px solid rgba(31,42,36,.1); padding: 1.25rem 1.5rem; } .cart-sub { display: flex; justify-content: space-between; font-size: 1rem; } .cart-sub span:last-child { font-weight: 600; font-variant-numeric: tabular-nums; } .cart-fine { margin-top: .25rem; font-size: .75rem; }
+  .cart-checkout { margin-top: 1rem; width: 100%; } .cart-checkout[aria-disabled="true"] { opacity: .6; pointer-events: none; }
+  body.cart-open { overflow: hidden; }
+  /* checkout page */
+  .page .container.wide { max-width: 72rem; }
+  .co-grid { margin-top: 2rem; display: grid; gap: 2rem; } @media (min-width: 1024px) { .co-grid { grid-template-columns: 1.1fr .9fr; gap: 3rem; align-items: start; } }
+  .co-summary, .co-pay { border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card), 0 0 0 1px rgba(31,42,36,.05); padding: 1.5rem; } .co-grid h2 { font-size: 1.5rem; }
+  .co-pay { display: grid; gap: 1rem; } .co-pay .status { margin-top: 0; } .co-pay .back { margin-top: .5rem; } .co-pay .btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+  .co-totals { margin-top: 1rem; border-top: 1px solid rgba(31,42,36,.1); padding-top: 1rem; display: grid; gap: .5rem; font-size: .9375rem; } .co-totals > div { display: flex; justify-content: space-between; } .co-totals .co-total { margin-top: .5rem; border-top: 1px solid rgba(31,42,36,.1); padding-top: .75rem; font-weight: 600; font-size: 1.125rem; }
+  .co-empty { color: var(--taupe); }
+  .co-reassure { margin-top: .5rem; }
+  .news .chips { justify-content: center; } .news .chip { background: rgba(255,255,255,.1); border-color: rgba(250,246,239,.25); color: var(--cream); }
+  .news form { flex-direction: column; } .news .row { display: flex; flex-direction: column; gap: .75rem; } @media (min-width: 640px) { .news .row { flex-direction: row; } }
   .reassure { margin-top: 1.75rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; border-top: 1px solid rgba(31,42,36,.1); padding-top: 1.5rem; list-style: none; padding-left: 0; }
   .reassure li { text-align: center; } .reassure b { display: block; font-size: .75rem; font-weight: 600; } .reassure span { display: block; margin-top: .25rem; font-size: 11px; line-height: 1.4; color: var(--taupe); }
 
@@ -210,11 +241,27 @@
     <button type="button" class="iconbtn menubtn" id="menuBtn" aria-expanded="false" aria-controls="navDrawer" aria-haspopup="dialog" aria-label="Open menu"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     <a href="#top" class="brand" aria-label="UrPick home">UrPick</a>
     <div class="hdr-actions">
-      <a href="#coming-soon" class="btn btn-primary hdr-cta">Join the list</a>
+      <a href="#shop" class="btn btn-primary hdr-cta">Shop Now</a>
       <a href="#" class="iconbtn" aria-label="Account (placeholder: link to Shopify customer account)"><svg class="icon" viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0"/></svg></a>
+      <button type="button" class="iconbtn cartbtn" id="cartBtn" aria-label="Cart, 0 items" aria-haspopup="dialog" aria-controls="cartDrawer"><svg class="icon" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.5L21 8H6.2M9 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/></svg><span class="cart-badge" id="cartCount" hidden>0</span></button>
     </div>
   </div>
 </header>
+
+
+<!-- Cart drawer (template's cart, local until Shopify is connected) -->
+<div class="cart-root" id="cartRoot" hidden>
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle" tabindex="-1">
+    <header class="cart-head"><h2 id="cartTitle">Your cart</h2><button type="button" class="iconbtn" id="cartClose" aria-label="Close"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+    <div class="cart-body" id="cartBody"></div>
+    <footer class="cart-foot">
+      <div class="cart-sub"><span class="taupe">Subtotal</span><span id="cartSubtotal">$0.00</span></div>
+      <p class="taupe cart-fine">Shipping and taxes calculated at checkout.</p>
+      <a href="#checkout" class="btn btn-primary cart-checkout" id="cartCheckout">Checkout</a>
+    </footer>
+  </aside>
+</div>
 
 <!-- Navigation drawer -->
 <div class="drawer-root" id="drawerRoot" hidden>
@@ -226,7 +273,7 @@
     </div>
     <nav aria-label="Main" class="drawer-nav">
       <ul class="drawer-primary">
-        <li><a href="#coming-soon" data-route="home">Product</a></li>
+        <li><a href="#shop" data-route="home">Product</a></li>
         <li><a href="#contact" data-route="contact">Contact</a></li>
         <li><a href="#track-order" data-route="track-order">Track Your Order</a></li>
         <li><a href="#about" data-route="about">About Us</a></li>
@@ -240,7 +287,7 @@
         <li><a href="#faq">FAQ</a></li>
       </ul>
     </nav>
-    <div class="drawer-foot"><a href="#coming-soon" class="btn btn-primary">Join the list</a></div>
+    <div class="drawer-foot"><a href="#shop" class="btn btn-primary">Shop Now</a></div>
   </aside>
 </div>
 
@@ -255,7 +302,7 @@
       <h1>Everyday Pet Life, Made a Little Easier</h1>
       <p class="sub">We're building thoughtfully designed essentials for the routines you and your pets share: bath time, grooming, treat time, and the quiet afternoons in between.</p>
       <div class="ctas">
-        <a href="#coming-soon" class="btn btn-primary">Join the list</a>
+        <a href="#shop" class="btn btn-primary">Shop Now</a>
         <a href="#how-we-work" class="btn btn-secondary">See How We Work</a>
       </div>
     </div>
@@ -354,46 +401,34 @@
   </div>
 </section>
 
-<!-- COMING SOON (template's shop block, without a product) -->
-<section class="sec soon" id="coming-soon">
+<!-- SHOP (template's product block; placeholder product until Shopify is connected) -->
+<section class="sec shop" id="shop">
   <div class="container">
     <div class="media">
-      <div class="note"><b>SHOP</b> — Template's product block: 1:1 gallery with thumbnails, title, price, colour picker, quantity, add to cart. No product yet, so the price, variants and cart are replaced by the waitlist. The layout stays, so the product drops straight in later.</div>
-      <div class="ph main photo-family-all" id="soonMain" role="img" aria-label="Selected photo"><span class="cap"><b>Photo · 1/1</b> — main product shot slot</span></div>
-      <ul class="thumbs" aria-label="Photo thumbnails">
-        <li><button type="button" data-photo="photo-family-all" aria-pressed="true" aria-label="Show photo 1"><div class="ph photo-family-all"></div></button></li>
-        <li><button type="button" data-photo="photo-dog-and-cat" aria-pressed="false" aria-label="Show photo 2"><div class="ph photo-dog-and-cat"></div></button></li>
-        <li><button type="button" data-photo="photo-cat-tabby" aria-pressed="false" aria-label="Show photo 3"><div class="ph photo-cat-tabby"></div></button></li>
-        <li><button type="button" data-photo="photo-dog-cockapoo" aria-pressed="false" aria-label="Show photo 4"><div class="ph photo-dog-cockapoo"></div></button></li>
-      </ul>
+      <div class="note"><b>SHOP</b> — Template's product block as supplied: 1:1 gallery with four thumbnails, title, description, price, colour options, quantity, Add to Cart, reassurance row. All product data is placeholder and comes from the PRODUCT object in the script; the live values arrive from Shopify once the product exists in the store.</div>
+      <div class="ph main pmain" id="shopMain" role="img" aria-label="Product image placeholder"><div class="psil" id="shopSil"><span>[ PRODUCT ]</span></div><span class="cap always" id="shopMainCap"></span></div>
+      <ul class="thumbs" id="shopThumbs" aria-label="Product image thumbnails"></ul>
     </div>
     <div class="panel">
-      <p class="eyebrow">Coming soon</p>
-      <h2>Our first product is on its way</h2>
-      <p class="desc">Designed around one everyday routine, for dogs and cats. Name, details and photos when they're real. Leave your email and we'll tell you first, and nothing else in between.</p>
-      <div class="pricebox"><b>Price at launch</b><span>set in Shopify once the product exists</span></div>
+      <p class="eyebrow">Shop</p>
+      <h2 id="shopName"></h2>
+      <p class="desc" id="shopDesc"></p>
+      <div class="pricebox"><b id="shopPrice"></b><span id="shopPriceNote">PLACEHOLDER — price set in Shopify</span></div>
       <p class="ratings-note">★ Ratings appear here once verified reviews exist. None are shown until then.</p>
-      <form class="wait" id="waitForm" novalidate>
-        <fieldset>
-          <legend>Who's at home?</legend>
-          <div class="chips">
-            <label class="chip"><input type="checkbox" name="pet" value="dog" id="petDog"> I have a dog</label>
-            <label class="chip"><input type="checkbox" name="pet" value="cat" id="petCat"> I have a cat</label>
-            <label class="chip"><input type="checkbox" name="pet" value="other" id="petOther"> I have another pet</label>
-          </div>
-        </fieldset>
-        <div class="row">
-          <input type="email" id="waitEmail" name="email" placeholder="you@example.com" autocomplete="email" aria-label="Email address" required>
-          <button type="submit" class="btn btn-primary">Join the list</button>
+      <fieldset class="colors">
+        <legend>Color: <span id="shopColorName"></span></legend>
+        <div class="swatches" id="shopSwatches"></div>
+      </fieldset>
+      <div class="buyrow">
+        <div class="qty" role="group" aria-label="Quantity">
+          <button type="button" id="qtyMinus" aria-label="Decrease quantity"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+          <output id="qtyOut" aria-live="polite">1</output>
+          <button type="button" id="qtyPlus" aria-label="Increase quantity"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
         </div>
-        <p class="taupe" style="font-size:.75rem">One email when we launch. Unsubscribe any time.</p>
-        <p class="ok" id="waitOk" role="status">Thanks, you're on the list.</p>
-      </form>
-      <ul class="reassure">
-        <li><b>Shipping</b><span>To be announced</span></li>
-        <li><b>Returns</b><span>To be announced</span></li>
-        <li><b>Secure Checkout</b><span>Powered by Shopify</span></li>
-      </ul>
+        <button type="button" class="btn btn-primary addbtn" id="addToCart">Add to Cart</button>
+      </div>
+      <ul class="reassure" id="shopReassure"></ul>
+      <p class="connect-note">Shopify not connected yet — cart runs locally. Add <code>VITE_SHOPIFY_DOMAIN</code> and <code>VITE_SHOPIFY_STOREFRONT_TOKEN</code> to <code>.env</code> to enable live checkout.</p>
     </div>
   </div>
 </section>
@@ -424,9 +459,16 @@
       <h2>Join the UrPick pack.</h2>
       <p>Launch news, tips and early access. No spam.</p>
       <form id="newsForm" novalidate>
-        <label for="newsEmail" class="sr-only" style="position:absolute;left:-9999px">Email address</label>
-        <input id="newsEmail" type="email" required placeholder="you@example.com" autocomplete="email">
-        <button type="submit" class="btn btn-primary">Subscribe</button>
+        <div class="chips" aria-label="Who's at home?">
+          <label class="chip"><input type="checkbox" name="pet" value="dog" id="petDog"> I have a dog</label>
+          <label class="chip"><input type="checkbox" name="pet" value="cat" id="petCat"> I have a cat</label>
+          <label class="chip"><input type="checkbox" name="pet" value="other" id="petOther"> I have another pet</label>
+        </div>
+        <div class="row">
+          <label for="newsEmail" style="position:absolute;left:-9999px">Email address</label>
+          <input id="newsEmail" type="email" required placeholder="you@example.com" autocomplete="email">
+          <button type="submit" class="btn btn-primary">Subscribe</button>
+        </div>
       </form>
       <p class="ok" id="newsOk" role="status">Thanks, you're on the list.</p>
     </div>
@@ -468,6 +510,33 @@
     </div>
   </section>
 
+  <section class="page" id="page-checkout" aria-labelledby="checkoutTitle">
+    <div class="container wide">
+      <p class="eyebrow">Checkout</p>
+      <h1 id="checkoutTitle">Review your order</h1>
+      <div class="co-grid">
+        <div class="co-summary">
+          <h2>Order summary</h2>
+          <div id="checkoutLines"></div>
+          <div class="co-totals">
+            <div><span>Subtotal</span><span id="checkoutSubtotal">$0.00</span></div>
+            <div><span>Shipping</span><span class="taupe">Calculated at checkout</span></div>
+            <div><span>Taxes</span><span class="taupe">Calculated at checkout</span></div>
+            <div class="co-total"><span>Total</span><span id="checkoutTotal">$0.00</span></div>
+          </div>
+        </div>
+        <div class="co-pay">
+          <h2>Secure checkout</h2>
+          <p class="taupe">Payment, shipping address and delivery options are handled by Shopify's secure checkout.</p>
+          <button type="button" class="btn btn-primary" id="checkoutGo" disabled title="Connect Shopify to enable checkout">Continue to Shopify checkout</button>
+          <div class="status show"><b>Checkout isn't connected yet.</b>This button sends the cart to Shopify's hosted checkout once the store is connected (Storefront API domain and token). No payment is taken on this page and no order is created before then.</div>
+          <ul class="reassure co-reassure" id="checkoutReassure"></ul>
+          <p class="back"><a href="#shop" class="btn btn-secondary">Back to shop</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="page" id="page-about" aria-labelledby="aboutTitle">
     <div class="container">
       <p class="eyebrow">About us</p>
@@ -481,7 +550,7 @@
         <p><strong>Honest by design.</strong> Only the claims we can stand behind. If we haven't tested it, we won't say it.</p>
         <p>Our first product is in development now. Details when they're real.</p>
       </div>
-      <p class="back"><a href="#coming-soon" class="btn btn-primary">Join the list</a> <a href="#top" class="btn btn-secondary">Back to home</a></p>
+      <p class="back"><a href="#shop" class="btn btn-primary">Shop Now</a> <a href="#top" class="btn btn-secondary">Back to home</a></p>
     </div>
   </section>
 </div>
@@ -569,7 +638,7 @@
   drawer.querySelectorAll("a[href]").forEach(function (a) { a.addEventListener("click", function () { closeDrawer(false); }); });
 
   // ── Hash router: home is <main>; #contact, #track-order, #about are pages ──
-  var ROUTES = { "contact": "page-contact", "track-order": "page-track", "about": "page-about" };
+  var ROUTES = { "contact": "page-contact", "track-order": "page-track", "about": "page-about", "checkout": "page-checkout" };
   var homeMain = document.getElementById("main");
   var pageEls = Array.prototype.slice.call(document.querySelectorAll(".page"));
   var baseTitle = document.title;
@@ -581,12 +650,13 @@
     homeMain.hidden = !!pageId;
     var current = pageId ? hash : "home";
     document.querySelectorAll('.drawer-primary a[data-route]').forEach(function (a) { if (a.getAttribute("data-route") === current) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-    var names = { "contact": "Contact", "track-order": "Track your order", "about": "About us" };
+    var names = { "contact": "Contact", "track-order": "Track your order", "about": "About us", "checkout": "Checkout" };
     document.title = pageId ? names[hash] + " · " + baseTitle : baseTitle;
+    if (pageId === "page-checkout" && typeof renderCheckout === "function") renderCheckout();
     if (pageId) { window.scrollTo(0, 0); var h = document.getElementById(pageId).querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } }
     else if (hash) { var target = document.getElementById(hash); if (target) target.scrollIntoView({ behavior: wasOnPage ? "auto" : "smooth", block: "start" }); }
   }
-  window.addEventListener("hashchange", route); route();
+  window.addEventListener("hashchange", route); // initial route() runs after the cart is initialised (below)
 
   // ── Page forms: validate, then say plainly that the backend isn't connected ──
   function wirePlaceholderForm(formId, statusId) {
@@ -602,14 +672,107 @@
   }
   wirePlaceholderForm("contactForm", "contactStatus"); wirePlaceholderForm("trackForm", "trackStatus");
 
-  var main = document.getElementById("soonMain");
-  document.querySelectorAll(".thumbs button").forEach(function (b) {
-    b.addEventListener("click", function () {
-      document.querySelectorAll(".thumbs button").forEach(function (o) { o.setAttribute("aria-pressed", "false"); });
-      b.setAttribute("aria-pressed", "true");
-      main.className = "ph main " + b.getAttribute("data-photo");
+
+  // ── Product (placeholder data mirrors the template's config; Shopify replaces it) ──
+  var PRODUCT = {
+    name: "[Product Name]",
+    shortDescription: "[Short product description — two sentences, benefit first. Pulled live from Shopify once the product exists in the store.]",
+    price: 0, currency: "USD",
+    colors: [
+      { name: "Option A", hex: "#7E9A86", variantId: "gid://shopify/ProductVariant/PLACEHOLDER_A" },
+      { name: "Option B", hex: "#C98A6B", variantId: "gid://shopify/ProductVariant/PLACEHOLDER_B" },
+      { name: "Option C", hex: "#D9CDB8", variantId: "gid://shopify/ProductVariant/PLACEHOLDER_C" },
+      { name: "Option D", hex: "#4A4F4C", variantId: "gid://shopify/ProductVariant/PLACEHOLDER_D" }
+    ],
+    gallery: [
+      { note: "Main product shot — 3/4 angle, cream background" },
+      { note: "Alternate angle / detail" },
+      { note: "Underside or mechanism detail" },
+      { note: "In use — dog with product" }
+    ],
+    reassurance: [
+      { label: "Shipping", value: "PLACEHOLDER — e.g. \"Ships in 1–2 business days\"" },
+      { label: "Returns", value: "PLACEHOLDER — e.g. \"30-day returns\"" },
+      { label: "Secure Checkout", value: "Powered by Shopify" }
+    ]
+  };
+  var SHOPIFY_CONNECTED = false; // true once VITE_SHOPIFY_DOMAIN + VITE_SHOPIFY_STOREFRONT_TOKEN are wired
+  function money(n) { return new Intl.NumberFormat("en-US", { style: "currency", currency: PRODUCT.currency }).format(n); }
+  var colorIdx = 0, imgIdx = 0, qty = 1;
+  var shopSil = document.getElementById("shopSil"), shopMainCap = document.getElementById("shopMainCap"), shopThumbs = document.getElementById("shopThumbs");
+  document.getElementById("shopName").textContent = PRODUCT.name;
+  document.getElementById("shopDesc").textContent = PRODUCT.shortDescription;
+  document.getElementById("shopPrice").textContent = money(PRODUCT.price);
+  function fillReassure(ul) { ul.innerHTML = ""; PRODUCT.reassurance.forEach(function (r) { var li = document.createElement("li"); var b = document.createElement("b"); b.textContent = r.label; var sp = document.createElement("span"); sp.textContent = r.value; li.appendChild(b); li.appendChild(sp); ul.appendChild(li); }); }
+  fillReassure(document.getElementById("shopReassure")); fillReassure(document.getElementById("checkoutReassure"));
+  function renderGallery() {
+    shopMainCap.innerHTML = "<b>Photo · 1/1</b> — " + PRODUCT.gallery[imgIdx].note;
+    shopThumbs.innerHTML = "";
+    PRODUCT.gallery.forEach(function (g, i) {
+      var li = document.createElement("li"), b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", "Show image " + (i + 1)); b.setAttribute("aria-pressed", String(i === imgIdx));
+      var d = document.createElement("div"); d.className = "t"; d.textContent = g.note; b.appendChild(d); b.addEventListener("click", function () { imgIdx = i; renderGallery(); }); li.appendChild(b); shopThumbs.appendChild(li);
     });
+  }
+  function renderColors() {
+    var c = PRODUCT.colors[colorIdx]; document.getElementById("shopColorName").textContent = c.name; shopSil.style.setProperty("--sil", c.hex);
+    var wrap = document.getElementById("shopSwatches"); wrap.innerHTML = "";
+    PRODUCT.colors.forEach(function (col, i) { var b = document.createElement("button"); b.type = "button"; b.style.backgroundColor = col.hex; b.setAttribute("aria-label", col.name); b.setAttribute("aria-pressed", String(i === colorIdx)); b.addEventListener("click", function () { colorIdx = i; renderColors(); }); wrap.appendChild(b); });
+    renderAddLabel();
+  }
+  function renderAddLabel() { document.getElementById("addToCart").textContent = "Add to Cart — " + money(PRODUCT.price * qty); document.getElementById("qtyOut").textContent = qty; }
+  document.getElementById("qtyMinus").addEventListener("click", function () { qty = Math.max(1, qty - 1); renderAddLabel(); });
+  document.getElementById("qtyPlus").addEventListener("click", function () { qty = Math.min(10, qty + 1); renderAddLabel(); });
+  renderGallery(); renderColors();
+
+  // ── Cart (local; mirrors the template's CartProvider, key kept for continuity) ──
+  var CART_KEY = "eb_cart_v1", cart = { lines: [] };
+  try { var saved = localStorage.getItem(CART_KEY); if (saved) { var parsed = JSON.parse(saved); cart.lines = (parsed && parsed.lines) || []; } } catch (e) {}
+  function saveCart() { try { localStorage.setItem(CART_KEY, JSON.stringify({ lines: cart.lines })); } catch (e) {} }
+  function cartCount() { return cart.lines.reduce(function (n, l) { return n + l.qty; }, 0); }
+  function cartSubtotal() { return cart.lines.reduce(function (n, l) { return n + l.qty * l.price; }, 0); }
+  var cartRoot = document.getElementById("cartRoot"), cartDrawer = document.getElementById("cartDrawer"), cartBtn = document.getElementById("cartBtn"), cartClose = document.getElementById("cartClose"), cartOverlay = document.getElementById("cartOverlay"), cartLast = null, cartTimer = null;
+  function lineEl(l, removable) {
+    var row = document.createElement("div"); row.className = "cart-line";
+    var left = document.createElement("div"); var t = document.createElement("p"); t.className = "t"; t.textContent = l.title; var m = document.createElement("p"); m.className = "m"; m.textContent = l.color + " · Qty " + l.qty; left.appendChild(t); left.appendChild(m);
+    if (removable) { var rm = document.createElement("button"); rm.type = "button"; rm.className = "rm"; rm.textContent = "Remove"; rm.addEventListener("click", function () { cart.lines = cart.lines.filter(function (x) { return x.variantId !== l.variantId; }); saveCart(); renderCart(); renderCheckout(); }); left.appendChild(rm); }
+    var right = document.createElement("p"); right.className = "r"; right.textContent = money(l.price * l.qty); row.appendChild(left); row.appendChild(right); return row;
+  }
+  function renderCart() {
+    var body = document.getElementById("cartBody"); body.innerHTML = "";
+    if (!cart.lines.length) { var e = document.createElement("p"); e.className = "taupe"; e.textContent = "Your cart is empty."; body.appendChild(e); }
+    cart.lines.forEach(function (l) { body.appendChild(lineEl(l, true)); });
+    document.getElementById("cartSubtotal").textContent = money(cartSubtotal());
+    var n = cartCount(), badge = document.getElementById("cartCount"); badge.textContent = n; badge.hidden = n === 0; cartBtn.setAttribute("aria-label", "Cart, " + n + " item" + (n === 1 ? "" : "s"));
+    var co = document.getElementById("cartCheckout"); co.setAttribute("aria-disabled", String(!cart.lines.length)); co.textContent = cart.lines.length ? "Checkout" : "Checkout";
+  }
+  function renderCheckout() {
+    var lines = document.getElementById("checkoutLines"); if (!lines) return; lines.innerHTML = "";
+    if (!cart.lines.length) { var e = document.createElement("p"); e.className = "co-empty"; e.textContent = "Your cart is empty. Add the product to review an order here."; lines.appendChild(e); }
+    cart.lines.forEach(function (l) { lines.appendChild(lineEl(l, true)); });
+    document.getElementById("checkoutSubtotal").textContent = money(cartSubtotal()); document.getElementById("checkoutTotal").textContent = money(cartSubtotal());
+    var go = document.getElementById("checkoutGo"); go.disabled = !(SHOPIFY_CONNECTED && cart.lines.length);
+  }
+  function openCart() { if (!cartRoot.hidden) return; cartLast = document.activeElement; clearTimeout(cartTimer); cartRoot.hidden = false; document.body.classList.add("cart-open"); requestAnimationFrame(function () { cartRoot.classList.add("open"); cartClose.focus(); }); }
+  function closeCart(restore) { if (cartRoot.hidden) return; cartRoot.classList.remove("open"); document.body.classList.remove("cart-open"); var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; cartTimer = setTimeout(function () { cartRoot.hidden = true; }, reduce ? 0 : 260); if (restore !== false && cartLast && cartLast.focus) cartLast.focus(); }
+  cartBtn.addEventListener("click", function () { if (typeof closeDrawer === "function") closeDrawer(false); cartRoot.hidden ? openCart() : closeCart(); });
+  cartClose.addEventListener("click", function () { closeCart(); }); cartOverlay.addEventListener("click", function () { closeCart(); });
+  document.getElementById("cartCheckout").addEventListener("click", function () { closeCart(false); });
+  document.addEventListener("keydown", function (ev) {
+    if (cartRoot.hidden) return;
+    if (ev.key === "Escape") { ev.preventDefault(); closeCart(); return; }
+    if (ev.key === "Tab") { var f = Array.prototype.slice.call(cartDrawer.querySelectorAll('a[href], button:not([disabled])')).filter(function (el) { return el.offsetParent !== null; }); if (!f.length) return; var first = f[0], last = f[f.length - 1]; if (ev.shiftKey && (document.activeElement === first || document.activeElement === cartDrawer)) { ev.preventDefault(); last.focus(); } else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); } }
   });
+  var addBtn = document.getElementById("addToCart");
+  addBtn.addEventListener("click", function () {
+    var c = PRODUCT.colors[colorIdx]; var existing = cart.lines.filter(function (l) { return l.variantId === c.variantId; })[0];
+    if (existing) existing.qty += qty; else cart.lines.push({ variantId: c.variantId, title: PRODUCT.name, color: c.name, price: PRODUCT.price, qty: qty });
+    saveCart(); renderCart(); renderCheckout();
+    addBtn.textContent = "Added ✓"; setTimeout(renderAddLabel, 1800);
+    if (window.dataLayer) window.dataLayer.push({ event: "add_to_cart", variant: c.variantId, qty: qty });
+    openCart();
+  });
+  renderCart(); renderCheckout();
+  route();
 
   document.querySelectorAll("#faqList button").forEach(function (btn) {
     btn.addEventListener("click", function () {
@@ -628,5 +791,5 @@
       if (window.dataLayer) window.dataLayer.push({ event: "waitlist_submit", form: formId });
     });
   }
-  wire("waitForm", "waitEmail", "waitOk"); wire("newsForm", "newsEmail", "newsOk");
+  wire("newsForm", "newsEmail", "newsOk");
 </script>
