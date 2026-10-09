@@ -78,7 +78,7 @@ for path in glob.glob(os.path.join(ROOT, "assets", "video", "hero-loop*")):
 favicon = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#2F4A3A"/><text x="32" y="43" text-anchor="middle" font-family="Georgia,serif" font-size="34" font-weight="600" fill="#FAF6EF">U</text></svg>"""
 open(os.path.join(site, "assets", "favicon.svg"), "w").write(favicon)
 open(os.path.join(site, "index.html"), "w").write(doc)
-open(os.path.join(site, "vercel.json"), "w").write('{\n  "cleanUrls": true,\n  "headers": [\n    { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] }\n  ]\n}\n')
+open(os.path.join(site, "vercel.json"), "w").write('{\n  "framework": null,\n  "buildCommand": null,\n  "installCommand": null,\n  "outputDirectory": null,\n  "cleanUrls": true,\n  "headers": [\n    { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] }\n  ]\n}\n')
 # mirror into the repo's Next.js public/ folder so the existing Vercel deployment serves it at /urpick/
 pub = os.path.normpath(os.path.join(ROOT, "..", "..", "public", "urpick"))
 if os.path.isdir(os.path.dirname(pub)):
