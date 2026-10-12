@@ -9,7 +9,7 @@ The product block is the template's shop block with placeholder data: "[Product 
 - `site/` — **deploy build**: a full HTML document plus `assets/` (photos, video, favicon) and a `vercel.json` with cache headers. Internal build-notes bar and notes are stripped. Regenerate with `python3 tools/build.py --deploy`. Point the host at this folder.
 - `assets/photos/` — the six supplied lifestyle photos.
 
-Placeholders still open: shipping and returns answers in the FAQ and reassurance row; company footer links (Shipping & Returns, Privacy, Terms); the contact email and TikTok link are live; account link; the review widget. "Show build notes" in the top bar reveals the mapping of each photo to its template slot.
+Placeholders still open: shipping and returns answers in the FAQ and reassurance row; company footer links (Shipping & Returns, Privacy, Terms); the contact email, TikTok and Facebook links are live; account link; the review widget. "Show build notes" in the top bar reveals the mapping of each photo to its template slot.
 
 ## Navigation drawer (added 9 Oct 2026)
 
