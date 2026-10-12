@@ -38,4 +38,4 @@ Tests: `tools/test_nav.py` now covers the shop block, cart, and checkout as well
 2. Project → Settings → Domains → add the domain. Add the A and CNAME records it shows at the registrar. HTTPS is automatic.
 3. Set the production branch to `claude/relaxed-brown-bm2ob8` (or merge it to the default branch). Every push that changes `site/` redeploys.
 
-Before launch: connect the waitlist/newsletter form to an email service, publish Privacy and Terms, fill the contact, shipping and returns placeholders, and connect Shopify (see "Cart and checkout").
+Before launch: connect the waitlist/newsletter form to an email service, publish Privacy and Terms, fill the shipping and returns placeholders (contact email yourpick2025@gmail.com is published in the FAQ, Contact page, Track page and footer), and connect Shopify (see "Cart and checkout").
