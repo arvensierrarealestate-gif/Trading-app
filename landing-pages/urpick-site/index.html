@@ -157,8 +157,8 @@
   .reviews-note { margin-top: 2.5rem; border-radius: var(--r-card); border: 1px dashed rgba(250,246,239,.3); padding: 1.5rem; text-align: center; font-size: .875rem; color: rgba(250,246,239,.7); } .reviews-note b { color: var(--cream); }
 
   /* coming soon (replaces shop block) */
-  .shop .cats { grid-column: 1 / -1; } .shop .cats .eyebrow { text-align: center; }
-  .cat-tabs { margin-top: .75rem; display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; }
+  .shop .cats { grid-column: 1 / -1; } .cat-title { text-align: center; font-family: var(--display); font-size: 1.875rem; font-weight: 600; letter-spacing: -.01em; color: var(--ink); } @media (min-width: 640px) { .cat-title { font-size: 2.25rem; } }
+  .cat-tabs { margin-top: 1.25rem; display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; }
   .cat-tabs button { min-height: 44px; padding: 0 1.25rem; border-radius: 999px; border: 1px solid rgba(31,42,36,.18); background: var(--white); color: var(--ink); font: inherit; font-size: .9375rem; font-weight: 500; cursor: pointer; transition: background .15s, border-color .15s, color .15s; }
   .cat-tabs button:hover { background: var(--sand); } .cat-tabs button[aria-pressed="true"] { background: var(--sage-deep); border-color: var(--sage-deep); color: var(--cream); }
   .cat-empty { margin: 1.5rem auto 0; max-width: 36rem; text-align: center; border-radius: var(--r-card); border: 1px dashed rgba(31,42,36,.25); background: rgba(239,230,216,.5); padding: 2rem 1.5rem; } .cat-empty[hidden] { display: none; }
@@ -440,7 +440,7 @@
 <section class="sec shop" id="shop">
   <div class="container">
     <div class="cats" id="shopCats">
-      <p class="eyebrow">Shop by pet</p>
+      <h2 class="cat-title">Shop by pet</h2>
       <div class="cat-tabs" role="group" aria-label="Product categories">
         <button type="button" data-cat="all" aria-pressed="true">All</button>
         <button type="button" data-cat="dogs" aria-pressed="false">Dogs</button>
