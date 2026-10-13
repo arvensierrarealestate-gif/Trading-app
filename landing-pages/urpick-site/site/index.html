@@ -142,12 +142,15 @@
   /* how it works */
   .how { background: rgba(239,230,216,.6); }
   .steps { margin-top: 3.5rem; display: grid; gap: 2.5rem; list-style: none; padding: 0; counter-reset: s; } @media (min-width: 1024px) { .steps { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; } }
-  .step { position: relative; display: flex; gap: 1.25rem; } @media (min-width: 1024px) { .step { display: block; } }
-  .step .vis { position: relative; flex: none; width: 7rem; } @media (min-width: 1024px) { .step .vis { width: 100%; } }
-  .step .ph { aspect-ratio: 1; }
+  .step { position: relative; display: block; }
+  .step .vis { position: relative; width: 100%; }
+  .step .ph { aspect-ratio: 4 / 3; } @media (min-width: 1024px) { .step .ph { aspect-ratio: 1; } }
+  .step .ph.pos-left { background-position: 30% center; } .step .ph.pos-bottom { background-position: center 70%; }
   .step .n { position: absolute; left: -.5rem; top: -.5rem; display: flex; height: 2.5rem; width: 2.5rem; align-items: center; justify-content: center; border-radius: 999px; background: var(--sage-deep); color: var(--cream); font-family: var(--display); font-size: 1.125rem; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
-  .step .next { display: none; } @media (min-width: 1024px) { .step .next { display: flex; position: absolute; right: -1.25rem; top: 50%; height: 2rem; width: 2rem; transform: translate(50%, -50%); align-items: center; justify-content: center; border-radius: 999px; background: var(--white); color: var(--sage); box-shadow: 0 0 0 1px rgba(31,42,36,.1); z-index: 2; } .step .next .icon { width: 1rem; height: 1rem; } }
-  .step .txt h3 { font-size: 1.5rem; text-transform: uppercase; letter-spacing: .04em; } @media (min-width: 1024px) { .step .txt { margin-top: 1.25rem; } }
+  .step .next { display: none !important; } @media (min-width: 1024px) { .step .next { display: flex; position: absolute; right: -1.25rem; top: 50%; height: 2rem; width: 2rem; transform: translate(50%, -50%); align-items: center; justify-content: center; border-radius: 999px; background: var(--white); color: var(--sage); box-shadow: 0 0 0 1px rgba(31,42,36,.1); z-index: 2; } .step .next .icon { width: 1rem; height: 1rem; } }
+  .step .txt { margin-top: 1.125rem; } .step .txt h3 { font-size: 1.375rem; line-height: 1.2; text-transform: uppercase; letter-spacing: .04em; } @media (min-width: 1024px) { .step .txt { margin-top: 1.25rem; } .step .txt h3 { font-size: 1.25rem; } }
+  .steps-cta { margin-top: 3rem; text-align: center; }
+  .textlink { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: .25rem .25rem; font-size: .875rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--sage-deep); text-decoration: none; border-bottom: 1.5px solid transparent; transition: border-color .15s, gap .15s; } .textlink:hover { border-bottom-color: var(--sage-deep); gap: .75rem; } .textlink:focus-visible { outline: 2px solid var(--sage-deep); outline-offset: 4px; }
   .step .txt p { margin-top: .375rem; font-size: .875rem; color: var(--taupe); line-height: 1.6; }
 
   /* why different */
@@ -384,15 +387,16 @@
 <section class="sec how" id="how-we-work">
   <div class="container">
     <div class="head center">
-      <p class="eyebrow">How we work</p>
-      <h2 class="h2">Simple to use. Easy to explain.</h2>
+      <p class="eyebrow">How we choose</p>
+      <h2 class="h2">Only products that make pet life easier make the cut.</h2>
     </div>
     <ol class="steps">
-      <li class="step"><div class="vis"><div class="ph photo-dog-cockapoo" role="img" aria-label=""><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">1</span><span class="next"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div><div class="txt"><h3>Watch</h3><p>We start with how the moment actually goes at home, not with a product category.</p></div></li>
-      <li class="step"><div class="vis"><div class="ph photo-cat-tabby" role="img" aria-label=""><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">2</span><span class="next"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div><div class="txt"><h3>Simplify</h3><p>Fewer pieces to lose, clean, or chew. Nothing on the product that isn't doing a job.</p></div></li>
-      <li class="step"><div class="vis"><div class="ph photo-dog-and-cat" role="img" aria-label=""><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">3</span><span class="next"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div><div class="txt"><h3>Test</h3><p>Used in real homes, with real dogs and cats, before anything ships.</p></div></li>
-      <li class="step"><div class="vis"><div class="ph photo-garden-three" role="img" aria-label="A golden retriever, a fluffy grey-and-white cat and a toy poodle together on a sunny garden lawn"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">4</span></div><div class="txt"><h3>Say it plainly</h3><p>What it does, in plain words. Only the claims we can stand behind.</p></div></li>
+      <li class="step"><div class="vis"><div class="ph photo-bath-grooming pos-left" role="img" aria-label="A pet parent towelling off a golden retriever after a bath"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">1</span></div><div class="txt"><h3>Start with the real problem</h3><p>We start with the everyday frustrations pet parents actually deal with and look for where things could simply work better.</p></div></li>
+      <li class="step"><div class="vis"><div class="ph photo-treat-time pos-bottom" role="img" aria-label="A dog and a cat eating from slow-feeder bowls on a living-room rug"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">2</span></div><div class="txt"><h3>Find the smarter solution</h3><p>We look for products that solve the problem simply, practically, and without adding unnecessary steps to the routine.</p></div></li>
+      <li class="step"><div class="vis"><div class="ph photo-cat-tabby" role="img" aria-label="A tabby cat looking closely at the camera in a bright living room"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">3</span></div><div class="txt"><h3>Look closer</h3><p>We look at how the product works, how it is used, what it claims to do, and whether the solution actually makes sense for pet parents.</p></div></li>
+      <li class="step"><div class="vis"><div class="ph photo-quiet-afternoon" role="img" aria-label="A golden retriever and a tabby cat asleep together on a soft blanket"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">4</span></div><div class="txt"><h3>Only the good stuff makes the cut</h3><p>If we can’t clearly explain what it does, why it helps, and who it’s for, it doesn’t belong in our store.</p></div></li>
     </ol>
+    <p class="steps-cta"><a href="#shop" class="textlink">Shop what made the cut <span aria-hidden="true">→</span></a></p>
   </div>
 </section>
 
