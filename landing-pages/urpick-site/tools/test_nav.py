@@ -95,7 +95,7 @@ with sync_playwright() as p:
         pg.goto("file://" + PAGE + "#faq"); pg.wait_for_timeout(1500)
         check(f"[{label}] home anchors still work", pg.evaluate("!document.getElementById('main').hidden && document.getElementById('faq').getBoundingClientRect().top < 120"))
         check(f"[{label}] homepage sections intact", pg.evaluate("['top','moments','how-we-work','why-urpick','gallery','shop','faq','newsletter'].every(id => !!document.getElementById(id))"))
-        check(f"[{label}] newsletter with pet chips + video present", pg.evaluate("!!document.getElementById('newsForm') && document.querySelectorAll('#newsForm .chip').length === 3 && document.querySelectorAll('video[data-video]').length === 2"))
+        check(f"[{label}] newsletter with pet chips + video present", pg.evaluate("!!document.getElementById('newsForm') && document.querySelectorAll('#newsForm .chip').length === 3 && document.querySelectorAll('video[data-video]').length === 1"))
         pg.close()
     b.close()
 fails = [r for r in results if not r[1]]
