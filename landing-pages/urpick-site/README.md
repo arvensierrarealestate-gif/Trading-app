@@ -15,7 +15,7 @@ Placeholders still open: shipping and returns answers in the FAQ and reassurance
 
 Header: hamburger (left), logo (centre), "Join the list" and account icon (right). The template's horizontal links and its separate mobile panel were consolidated into the drawer's "On this page" group; nothing was removed.
 
-Drawer items, in order: Product (`#coming-soon`), Contact (`#contact`), Track Your Order (`#track-order`), About Us (`#about`). The last three are routed pages inside `index.html`: the hash shows the page and hides the homepage; any other hash shows the homepage and scrolls to that section. Active item carries `aria-current="page"`.
+Drawer items, in order: Products (a dropdown with Dogs `#products-dogs`, Cats `#products-cats`, Other Pets `#products-other`, each opening the shop section with that category selected), Contact (`#contact`), Track Your Order (`#track-order`), About Us (`#about`). The shop section has a matching All / Dogs / Cats / Other Pets bar; a category with no products shows a plain "coming soon" notice instead of a fake listing. The last three are routed pages inside `index.html`: the hash shows the page and hides the homepage; any other hash shows the homepage and scrolls to that section. Active item carries `aria-current="page"`.
 
 Behaviour: slides in from the left, closes on X, overlay click, Escape, or choosing an item; focus moves to the close button on open and back to the hamburger on close; Tab is trapped inside; background scroll is locked; reduced-motion disables the animation; all targets are 44 px or taller.
 
