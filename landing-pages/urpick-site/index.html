@@ -205,6 +205,12 @@
   body.cart-open { overflow: hidden; }
   /* checkout page */
   .page .container.wide { max-width: 72rem; }
+  /* About us: one lifestyle image beside the copy */
+  .about-grid { display: grid; gap: 2rem; } @media (min-width: 1024px) { .about-grid { grid-template-columns: 5fr 7fr; gap: 4rem; align-items: center; } }
+  .about-photo { aspect-ratio: 4 / 5; border-radius: var(--r-card); background: var(--sand) center/cover no-repeat; } @media (max-width: 1023px) { .about-photo { aspect-ratio: 4 / 3; } }
+  .about-photo.placeholder { display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border: 1px dashed rgba(31,42,36,.3); background: var(--sand); color: var(--taupe); font-size: .9375rem; line-height: 1.6; } .about-photo.placeholder b { display: block; margin-bottom: .375rem; font-family: var(--display); font-size: 1.25rem; font-weight: 600; color: var(--ink); }
+  .about-copy h1 { margin-top: .75rem; } .about-copy .body { margin-top: 1.5rem; }
+  .about-closing { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(31,42,36,.12); font-family: var(--display); font-size: 1.375rem; line-height: 1.35; color: var(--sage-deep); display: grid; gap: .5rem; } @media (min-width: 640px) { .about-closing { font-size: 1.625rem; } }
   .co-grid { margin-top: 2rem; display: grid; gap: 2rem; } @media (min-width: 1024px) { .co-grid { grid-template-columns: 1.1fr .9fr; gap: 3rem; align-items: start; } }
   .co-summary, .co-pay { border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card), 0 0 0 1px rgba(31,42,36,.05); padding: 1.5rem; } .co-grid h2 { font-size: 1.5rem; }
   .co-pay { display: grid; gap: 1rem; } .co-pay .status { margin-top: 0; } .co-pay .back { margin-top: .5rem; } .co-pay .btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
@@ -816,19 +822,26 @@
   </section>
 
   <section class="page" id="page-about" aria-labelledby="aboutTitle">
-    <div class="container">
-      <p class="eyebrow">About us</p>
-      <h1 id="aboutTitle">Everyday essentials for pets and the people who love them.</h1>
-      <p class="lead">UrPick is a new pet-care brand making thoughtfully designed essentials for the routines you and your pets share: bath time, grooming, treat time, and the quiet afternoons in between.</p>
-      <div class="photo photo-hero-family" role="img" aria-label="A golden retriever and two cats resting together on a rug in a bright living room"></div>
-      <div class="body">
-        <p><strong>Built for routines.</strong> We start with how a moment actually goes at home, not with a product category. Baths, brushing, nail trims, treat time: the things that happen every week.</p>
-        <p><strong>Dogs and cats, both.</strong> Different animals, different habits. We design for each rather than shrinking one idea to fit the other, and we're listening to households with other pets too.</p>
-        <p><strong>Nothing unnecessary.</strong> Fewer parts, simpler care, less to go wrong. Nothing on a product that isn't doing a job.</p>
-        <p><strong>Honest by design.</strong> Only the claims we can stand behind. If we haven't tested it, we won't say it.</p>
-        <p>Our first product is in development now. Details when they're real.</p>
+    <div class="container wide about-grid">
+      <div class="about-media">
+        <div class="about-photo placeholder" role="img" aria-label="Photo to come: a real everyday moment between a pet and their owner at home">
+          <span><b>Photo to come</b>A real, unposed moment at home between a pet and their person. The photos already on the site are not repeated here.</span>
+        </div>
       </div>
-      <p class="back"><a href="#shop" class="btn btn-primary">Shop Now</a> <a href="#top" class="btn btn-secondary">Back to home</a></p>
+      <div class="about-copy">
+        <p class="eyebrow">About us</p>
+        <h1 id="aboutTitle">Made for real life with the pets who are already family.</h1>
+        <div class="body">
+          <p>Pets bring a lot into our lives: companionship, personality, comfort, laughter, and occasionally a mess we definitely did not plan for.</p>
+          <p>UrPick was created around a simple idea: the everyday parts of living with pets should be easier.</p>
+          <p>We look for practical products that solve real problems pet parents deal with, whether that means making a routine simpler, keeping the home cleaner, making walks more comfortable, or helping everyday care feel a little less complicated.</p>
+        </div>
+        <div class="about-closing">
+          <p>We are not trying to fill a store with everything made for pets.</p>
+          <p>We want to find the things that are actually worth bringing into your home.</p>
+        </div>
+        <p class="back"><a href="#shop" class="btn btn-primary">Shop Now</a> <a href="#top" class="btn btn-secondary">Back to home</a></p>
+      </div>
     </div>
   </section>
 </div>
