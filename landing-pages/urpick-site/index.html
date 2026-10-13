@@ -194,8 +194,16 @@
   .co-totals { margin-top: 1rem; border-top: 1px solid rgba(31,42,36,.1); padding-top: 1rem; display: grid; gap: .5rem; font-size: .9375rem; } .co-totals > div { display: flex; justify-content: space-between; } .co-totals .co-total { margin-top: .5rem; border-top: 1px solid rgba(31,42,36,.1); padding-top: .75rem; font-weight: 600; font-size: 1.125rem; }
   .co-empty { color: var(--taupe); }
   .co-reassure { margin-top: .5rem; }
-  .news .chips { justify-content: center; } .news .chip { background: rgba(255,255,255,.1); border-color: rgba(250,246,239,.25); color: var(--cream); }
-  .news form { flex-direction: column; } .news .row { display: flex; flex-direction: column; gap: .75rem; } @media (min-width: 640px) { .news .row { flex-direction: row; } }
+  /* newsletter: pet chips (pill toggles) above the email row */
+  .news .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; }
+  .news .chip { position: relative; display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: 0 1.125rem; border-radius: 999px; border: 1px solid rgba(250,246,239,.3); background: rgba(255,255,255,.08); color: var(--cream); font-size: .9375rem; font-weight: 500; cursor: pointer; user-select: none; transition: background .15s, border-color .15s; }
+  .news .chip:hover { background: rgba(255,255,255,.14); }
+  .news .chip input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+  .news .chip::before { content: ""; width: 1rem; height: 1rem; border-radius: 999px; border: 1.5px solid rgba(250,246,239,.6); background: transparent; flex: none; transition: background .15s, border-color .15s; }
+  .news .chip:has(input:checked) { background: var(--cream); border-color: var(--cream); color: var(--sage-deep); }
+  .news .chip:has(input:checked)::before { border-color: var(--clay); background: var(--clay) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-6' fill='none' stroke='%23FAF6EF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat; }
+  .news .chip:has(input:focus-visible) { outline: 2px solid var(--cream); outline-offset: 2px; }
+  .news .row { display: flex; flex-direction: column; gap: .75rem; } @media (min-width: 640px) { .news .row { flex-direction: row; align-items: center; } }
   .reassure { margin-top: 1.75rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; border-top: 1px solid rgba(31,42,36,.1); padding-top: 1.5rem; list-style: none; padding-left: 0; }
   .reassure li { text-align: center; } .reassure b { display: block; font-size: .75rem; font-weight: 600; } .reassure span { display: block; margin-top: .25rem; font-size: 11px; line-height: 1.4; color: var(--taupe); }
 
@@ -211,8 +219,9 @@
   /* newsletter */
   .news { padding-block: 5rem; } .news .box { margin-inline: auto; max-width: 42rem; border-radius: 28px; background: var(--sage-deep); padding: 3rem 1.5rem; text-align: center; color: var(--cream); } @media (min-width: 640px) { .news .box { padding-inline: 3rem; } }
   .news h2 { font-size: 1.875rem; color: var(--cream); } @media (min-width: 640px) { .news h2 { font-size: 2.25rem; } } .news p { margin-top: .75rem; color: rgba(250,246,239,.75); }
-  .news form { margin-top: 1.75rem; display: flex; flex-direction: column; gap: .75rem; } @media (min-width: 640px) { .news form { flex-direction: row; } }
-  .news input { min-height: 48px; flex: 1; border-radius: var(--r-btn); border: 1px solid rgba(250,246,239,.2); background: rgba(255,255,255,.1); padding: 0 1.25rem; color: var(--cream); font: inherit; } .news input::placeholder { color: rgba(250,246,239,.5); }
+  .news form { margin-top: 1.75rem; display: flex; flex-direction: column; gap: 1rem; }
+  .news .row input { min-height: 48px; max-height: 48px; flex: 1; min-width: 0; border-radius: var(--r-btn); border: 1px solid rgba(250,246,239,.2); background: rgba(255,255,255,.1); padding: 0 1.25rem; color: var(--cream); font: inherit; } .news .row input::placeholder { color: rgba(250,246,239,.5); } .news .row input:focus { outline: 2px solid var(--cream); outline-offset: 2px; }
+  .news .row .btn { flex: none; min-height: 48px; }
   .news .ok { display: none; margin-top: 1.5rem; font-weight: 600; }
 
   /* footer */
