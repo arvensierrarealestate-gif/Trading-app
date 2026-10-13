@@ -90,6 +90,10 @@
   .page .status { display: none; margin-top: .25rem; border-radius: 12px; border: 1px dashed rgba(31,42,36,.3); background: rgba(239,230,216,.6); padding: 1rem 1.25rem; font-size: .9375rem; line-height: 1.6; } .page .status.show { display: block; } .page .status b { display: block; margin-bottom: .25rem; }
   .page .photo { aspect-ratio: 16 / 9; margin-top: 2rem; border-radius: var(--r-card); background-size: cover; background-position: center; }
   .page .back { margin-top: 2.5rem; }
+  .page .draft { margin-top: 1.25rem; border-radius: 12px; border: 1px dashed rgba(194,101,63,.6); background: rgba(194,101,63,.08); padding: .875rem 1.125rem; font-size: .9375rem; line-height: 1.6; color: var(--ink); } .page .draft b { color: var(--clay); }
+  .page .body h2 { font-family: var(--display); font-size: 1.375rem; font-weight: 600; margin-top: 1rem; }
+  .page .body ul { margin: 0; padding-left: 1.25rem; display: grid; gap: .375rem; }
+  .page .body .updated { font-size: .8125rem; color: var(--taupe); }
 
   /* hero */
   .hero > .container { display: grid; align-items: center; gap: 2.5rem; padding-block: 3rem; }
@@ -446,8 +450,8 @@
       <li><h3><button type="button" aria-expanded="true" aria-controls="faq-0" id="faq-btn-0">What is UrPick?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-0" role="region" aria-labelledby="faq-btn-0" class="a">A new pet-care brand making thoughtfully designed essentials for the routines you and your pets share. The first product is in development now.</div></li>
       <li><h3><button type="button" aria-expanded="false" aria-controls="faq-1" id="faq-btn-1">Is it for dogs or cats?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-1" role="region" aria-labelledby="faq-btn-1" class="a" hidden>Both. We design for each animal's habits rather than shrinking one idea to fit the other. We're also listening to households with other pets.</div></li>
       <li><h3><button type="button" aria-expanded="false" aria-controls="faq-2" id="faq-btn-2">When does the first product launch?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-2" role="region" aria-labelledby="faq-btn-2" class="a" hidden>We don't have a date to share yet. Join the list and you'll hear first, with nothing else in between.</div></li>
-      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-3" id="faq-btn-3">What is your shipping policy?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-3" role="region" aria-labelledby="faq-btn-3" class="a" hidden>PLACEHOLDER — shipping regions, cost and timeframe will be published at launch.</div></li>
-      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-4" id="faq-btn-4">What is your return policy?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-4" role="region" aria-labelledby="faq-btn-4" class="a" hidden>PLACEHOLDER — return window and conditions will be published at launch.</div></li>
+      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-3" id="faq-btn-3">What is your shipping policy?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-3" role="region" aria-labelledby="faq-btn-3" class="a" hidden>Shipping regions, cost and timeframe will be confirmed at launch. A draft of what we intend to offer is on our <a href="#shipping-returns">Shipping &amp; Returns</a> page.</div></li>
+      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-4" id="faq-btn-4">What is your return policy?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-4" role="region" aria-labelledby="faq-btn-4" class="a" hidden>The return window and conditions will be confirmed at launch. A draft is on our <a href="#shipping-returns">Shipping &amp; Returns</a> page.</div></li>
       <li><h3><button type="button" aria-expanded="false" aria-controls="faq-5" id="faq-btn-5">How do I get in touch?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-5" role="region" aria-labelledby="faq-btn-5" class="a" hidden>Email us at <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>. We read everything and reply as quickly as we can. Follow us on TikTok at <a href="https://www.tiktok.com/@yourpick2025" target="_blank" rel="noopener">@yourpick2025</a> or on <a href="https://www.facebook.com/profile.php?id=61585565952893" target="_blank" rel="noopener">Facebook</a>.</div></li>
     </ul>
   </div>
@@ -539,6 +543,114 @@
     </div>
   </section>
 
+  <section class="page" id="page-shipping" aria-labelledby="shippingTitle">
+    <div class="container">
+      <p class="eyebrow">Shipping &amp; Returns</p>
+      <h1 id="shippingTitle">Shipping &amp; Returns</h1>
+      <p class="lead">How orders ship and how returns work. We are not taking orders yet, so this page describes what we intend to offer at launch.</p>
+      <div class="draft"><b>Draft for review.</b> This page is a working draft. Items in [brackets] are not yet decided and nothing here is final until the brackets are gone and this notice is removed.</div>
+      <div class="body">
+        <p class="updated">Last updated: [date]</p>
+        <h2>Where we ship</h2>
+        <p>We plan to ship to [countries or regions]. If your address is outside those areas, email us at <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a> and we will tell you if we can help.</p>
+        <h2>Processing time</h2>
+        <p>Orders are processed within [1–2] business days (Monday to Friday, excluding public holidays). You will receive an email with a tracking number once your order has shipped.</p>
+        <h2>Delivery time and cost</h2>
+        <ul>
+          <li>Standard delivery: [X–Y] business days, [cost or "free over $X"].</li>
+          <li>Express delivery: [X–Y] business days, [cost], where available.</li>
+        </ul>
+        <p>Delivery times are estimates from the carrier and can be affected by weather, customs or carrier delays. Shipping costs and options are shown at checkout before you pay.</p>
+        <h2>Duties and taxes</h2>
+        <p>[For international orders: any import duties or taxes are the responsibility of the customer / are included in the price.]</p>
+        <h2>Returns</h2>
+        <p>If something is not right, you can return an item within [30] days of delivery, provided it is unused, in its original packaging and in resalable condition. To start a return, email <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a> with your order number and the reason for the return.</p>
+        <ul>
+          <li>Return shipping: [paid by the customer / prepaid label provided] unless the item arrived damaged or we sent the wrong item.</li>
+          <li>Refunds are issued to the original payment method within [5–10] business days of the return reaching us.</li>
+          <li>[Hygiene-sensitive items that have been used cannot be returned.]</li>
+        </ul>
+        <h2>Damaged or wrong items</h2>
+        <p>If an order arrives damaged or incorrect, email <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a> within [7] days of delivery with a photo and your order number. We will replace it or refund it, including any shipping you paid.</p>
+        <h2>Questions</h2>
+        <p>Email <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>. We read everything.</p>
+      </div>
+      <p class="back"><a href="#top" class="btn btn-secondary">Back to home</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-privacy" aria-labelledby="privacyTitle">
+    <div class="container">
+      <p class="eyebrow">Privacy Policy</p>
+      <h1 id="privacyTitle">Privacy Policy</h1>
+      <p class="lead">What we collect, why, and the choices you have. We keep this short and in plain words.</p>
+      <div class="draft"><b>Draft for review.</b> This page is a working draft. Items in [brackets] are not yet decided and nothing here is final until the brackets are gone and this notice is removed.</div>
+      <div class="body">
+        <p class="updated">Last updated: [date]</p>
+        <h2>Who we are</h2>
+        <p>UrPick ([legal entity name], [registered address]) operates this website. Contact us about privacy at <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>.</p>
+        <h2>What we collect</h2>
+        <ul>
+          <li><strong>What you give us.</strong> Your email address when you join the waitlist or newsletter, and your name, email and message when you use the contact form or email us. When ordering is live: your name, delivery address, email and phone number, and the details of your order.</li>
+          <li><strong>Payment details.</strong> We never see or store your card number. Payment is handled by [Shopify Payments / payment provider], whose own privacy policy applies.</li>
+          <li><strong>Automatically.</strong> Basic technical information when you visit, such as your device type, browser, pages viewed and approximate location, collected through [analytics tool, e.g. Vercel Analytics / Google Analytics]. [We do not use advertising cookies. / We use cookies for X.]</li>
+        </ul>
+        <h2>Why we use it</h2>
+        <ul>
+          <li>To send you the updates you asked for and to answer your messages.</li>
+          <li>To process and deliver orders, handle returns and provide support.</li>
+          <li>To understand how the site is used so we can improve it.</li>
+          <li>To meet legal obligations such as tax and accounting records.</li>
+        </ul>
+        <h2>Who we share it with</h2>
+        <p>Only the services needed to run the site and fulfil orders: [email service], [Shopify], [payment provider], [shipping carriers] and [analytics tool]. We do not sell your personal information.</p>
+        <h2>How long we keep it</h2>
+        <p>Waitlist and newsletter emails until you unsubscribe. Order records for [X years] as required by law. Contact messages for [X months] after we have resolved them.</p>
+        <h2>Your choices</h2>
+        <ul>
+          <li>Unsubscribe from any email using the link at the bottom of it, or by emailing us.</li>
+          <li>Ask us to see, correct or delete the personal information we hold about you by emailing <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>. [Residents of certain regions, such as the EU, UK or California, have additional rights under local law.]</li>
+        </ul>
+        <h2>Children</h2>
+        <p>This site is not directed at children under [13/16], and we do not knowingly collect their information.</p>
+        <h2>Changes</h2>
+        <p>If this policy changes, we will update the date at the top. Significant changes will be announced on the site or by email.</p>
+      </div>
+      <p class="back"><a href="#top" class="btn btn-secondary">Back to home</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-terms" aria-labelledby="termsTitle">
+    <div class="container">
+      <p class="eyebrow">Terms</p>
+      <h1 id="termsTitle">Terms of Service</h1>
+      <p class="lead">The plain-language rules for using this site and, once we open, for buying from us.</p>
+      <div class="draft"><b>Draft for review.</b> This page is a working draft. Items in [brackets] are not yet decided and nothing here is final until the brackets are gone and this notice is removed.</div>
+      <div class="body">
+        <p class="updated">Last updated: [date]</p>
+        <h2>About these terms</h2>
+        <p>These terms are between you and UrPick ([legal entity name], [registered address]). By using this site or placing an order, you agree to them. If you do not agree, please do not use the site.</p>
+        <h2>Using the site</h2>
+        <p>You may use the site for personal, non-commercial purposes. Do not misuse it, interfere with it, or copy its content, photos or video without permission. All content and branding belongs to UrPick or its licensors.</p>
+        <h2>Products and information</h2>
+        <p>We do our best to describe products accurately and to state only what we can stand behind. Colours may look different on different screens. Product details, prices and availability may change without notice before an order is accepted.</p>
+        <h2>Orders and payment</h2>
+        <p>[Applies once ordering is live.] An order is accepted when we send a shipping confirmation. We may cancel an order and refund you in full, for example if an item is unavailable or a price was shown incorrectly. Prices are in [currency] and [include / exclude] applicable taxes. Payment is processed by [Shopify / payment provider].</p>
+        <h2>Shipping and returns</h2>
+        <p>Delivery and returns are described in our <a href="#shipping-returns">Shipping &amp; Returns</a> page, which forms part of these terms.</p>
+        <h2>Safety</h2>
+        <p>Our products are designed for pets. Follow the instructions supplied with each product, supervise your pet during use, and stop using a product if it becomes damaged. [Any product-specific warnings to be added.]</p>
+        <h2>Liability</h2>
+        <p>Nothing in these terms limits any rights you have under consumer law that cannot be excluded. Otherwise, to the extent permitted by law, we are not liable for indirect or consequential losses, and our total liability for any order is limited to the amount you paid for it.</p>
+        <h2>Governing law</h2>
+        <p>These terms are governed by the laws of [state / country], and disputes will be handled by the courts there, unless consumer law in your location says otherwise.</p>
+        <h2>Contact</h2>
+        <p>Questions about these terms: <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>.</p>
+      </div>
+      <p class="back"><a href="#top" class="btn btn-secondary">Back to home</a></p>
+    </div>
+  </section>
+
   <section class="page" id="page-about" aria-labelledby="aboutTitle">
     <div class="container">
       <p class="eyebrow">About us</p>
@@ -573,7 +685,7 @@
     </nav>
     <nav aria-label="Company">
       <p>Company</p>
-      <ul><li><a href="#about">About</a></li><li><a href="#contact">Contact</a></li><li><a href="#track-order">Track Your Order</a></li><li><a href="#">Shipping &amp; Returns</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms</a></li><li><a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a></li></ul>
+      <ul><li><a href="#about">About</a></li><li><a href="#contact">Contact</a></li><li><a href="#track-order">Track Your Order</a></li><li><a href="#shipping-returns">Shipping &amp; Returns</a></li><li><a href="#privacy">Privacy Policy</a></li><li><a href="#terms">Terms</a></li><li><a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a></li></ul>
     </nav>
   </div>
   <div class="container legal">
@@ -637,7 +749,7 @@
   drawer.querySelectorAll("a[href]").forEach(function (a) { a.addEventListener("click", function () { closeDrawer(false); }); });
 
   // ── Hash router: home is <main>; #contact, #track-order, #about are pages ──
-  var ROUTES = { "contact": "page-contact", "track-order": "page-track", "about": "page-about", "checkout": "page-checkout" };
+  var ROUTES = { "contact": "page-contact", "track-order": "page-track", "about": "page-about", "checkout": "page-checkout", "shipping-returns": "page-shipping", "privacy": "page-privacy", "terms": "page-terms" };
   var homeMain = document.getElementById("main");
   var pageEls = Array.prototype.slice.call(document.querySelectorAll(".page"));
   var baseTitle = document.title;
@@ -649,7 +761,7 @@
     homeMain.hidden = !!pageId;
     var current = pageId ? hash : "home";
     document.querySelectorAll('.drawer-primary a[data-route]').forEach(function (a) { if (a.getAttribute("data-route") === current) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-    var names = { "contact": "Contact", "track-order": "Track your order", "about": "About us", "checkout": "Checkout" };
+    var names = { "contact": "Contact", "track-order": "Track your order", "about": "About us", "checkout": "Checkout", "shipping-returns": "Shipping & Returns", "privacy": "Privacy Policy", "terms": "Terms of Service" };
     document.title = pageId ? names[hash] + " · " + baseTitle : baseTitle;
     if (pageId === "page-checkout" && typeof renderCheckout === "function") renderCheckout();
     if (pageId) { window.scrollTo(0, 0); var h = document.getElementById(pageId).querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } }
