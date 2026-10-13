@@ -72,6 +72,12 @@
   .drawer-nav ul { list-style: none; margin: 0; padding: 0; }
   .drawer-primary a { display: flex; align-items: center; min-height: 52px; padding: .75rem 1.5rem; font-family: var(--display); font-size: 1.25rem; font-weight: 600; color: var(--ink); text-decoration: none; border-left: 3px solid transparent; }
   .drawer-primary a:hover { background: var(--sand); }
+  .drawer-toggle { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: .75rem; min-height: 52px; padding: .75rem 1.5rem; font-family: var(--display); font-size: 1.25rem; font-weight: 600; color: var(--ink); background: none; border: 0; border-left: 3px solid transparent; text-align: left; cursor: pointer; }
+  .drawer-toggle:hover { background: var(--sand); } .drawer-toggle .chev { width: 1.25rem; height: 1.25rem; transition: transform .2s; } .drawer-toggle[aria-expanded="true"] .chev { transform: rotate(180deg); }
+  .drawer-toggle[aria-current="page"] { border-left-color: var(--clay); background: rgba(239,230,216,.6); color: var(--sage-deep); }
+  .drawer-sub { list-style: none; margin: 0; padding: .25rem 0 .5rem; background: rgba(239,230,216,.35); } .drawer-sub[hidden] { display: none; }
+  .drawer-sub a { display: flex; align-items: center; min-height: 48px; padding: .5rem 1.5rem .5rem 2.75rem; font-family: var(--body); font-size: 1rem; font-weight: 500; color: var(--ink); text-decoration: none; border-left: 3px solid transparent; }
+  .drawer-sub a:hover { background: var(--sand); } .drawer-sub a[aria-current="page"] { border-left-color: var(--clay); color: var(--sage-deep); font-weight: 600; }
   .drawer-primary a[aria-current="page"] { border-left-color: var(--clay); background: rgba(239,230,216,.6); color: var(--sage-deep); }
   .drawer-label { padding: 1.25rem 1.5rem .25rem; font-size: .7rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--taupe); }
   .drawer-secondary a { display: flex; align-items: center; min-height: 44px; padding: .5rem 1.5rem; font-size: .9375rem; font-weight: 500; color: rgba(31,42,36,.8); text-decoration: none; } .drawer-secondary a:hover { background: var(--sand); color: var(--ink); }
@@ -151,6 +157,14 @@
   .reviews-note { margin-top: 2.5rem; border-radius: var(--r-card); border: 1px dashed rgba(250,246,239,.3); padding: 1.5rem; text-align: center; font-size: .875rem; color: rgba(250,246,239,.7); } .reviews-note b { color: var(--cream); }
 
   /* coming soon (replaces shop block) */
+  .shop .cats { grid-column: 1 / -1; } .shop .cats .eyebrow { text-align: center; }
+  .cat-tabs { margin-top: .75rem; display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; }
+  .cat-tabs button { min-height: 44px; padding: 0 1.25rem; border-radius: 999px; border: 1px solid rgba(31,42,36,.18); background: var(--white); color: var(--ink); font: inherit; font-size: .9375rem; font-weight: 500; cursor: pointer; transition: background .15s, border-color .15s, color .15s; }
+  .cat-tabs button:hover { background: var(--sand); } .cat-tabs button[aria-pressed="true"] { background: var(--sage-deep); border-color: var(--sage-deep); color: var(--cream); }
+  .cat-empty { margin: 1.5rem auto 0; max-width: 36rem; text-align: center; border-radius: var(--r-card); border: 1px dashed rgba(31,42,36,.25); background: rgba(239,230,216,.5); padding: 2rem 1.5rem; } .cat-empty[hidden] { display: none; }
+  .cat-empty h3 { font-family: var(--display); font-size: 1.5rem; font-weight: 600; } .cat-empty p { margin-top: .75rem; color: var(--taupe); line-height: 1.6; }
+  .cat-empty .cat-actions { margin-top: 1.25rem; display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; } .cat-empty .btn { min-height: 44px; }
+  .shop .media[hidden], .shop .panel[hidden] { display: none; }
   .shop .container { display: grid; gap: 2.5rem; } @media (min-width: 1024px) { .shop .container { grid-template-columns: repeat(12, 1fr); gap: 3.5rem; } .shop .media { grid-column: span 7; } .shop .panel { grid-column: span 5; position: sticky; top: 6rem; align-self: start; } }
   .shop .main.ph { aspect-ratio: 1; display: grid; place-items: center; background: linear-gradient(to bottom right, var(--sand), var(--sand-2)); }
   .ph.pmain::before { content: ""; position: absolute; inset: 0; opacity: .07; background-image: radial-gradient(circle at 1px 1px, #1F2A24 1px, transparent 0); background-size: 18px 18px; }
@@ -279,7 +293,14 @@
     </div>
     <nav aria-label="Main" class="drawer-nav">
       <ul class="drawer-primary">
-        <li><a href="#shop" data-route="home">Product</a></li>
+        <li class="drawer-group">
+          <button type="button" class="drawer-toggle" id="productsToggle" aria-expanded="false" aria-controls="productsMenu" data-route="home">Products<svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <ul class="drawer-sub" id="productsMenu" hidden>
+            <li><a href="#products-dogs" data-cat="dogs">Dogs</a></li>
+            <li><a href="#products-cats" data-cat="cats">Cats</a></li>
+            <li><a href="#products-other" data-cat="other">Other Pets</a></li>
+          </ul>
+        </li>
         <li><a href="#contact" data-route="contact">Contact</a></li>
         <li><a href="#track-order" data-route="track-order">Track Your Order</a></li>
         <li><a href="#about" data-route="about">About Us</a></li>
@@ -406,6 +427,20 @@
 <!-- SHOP (template's product block; placeholder product until Shopify is connected) -->
 <section class="sec shop" id="shop">
   <div class="container">
+    <div class="cats" id="shopCats">
+      <p class="eyebrow">Shop by pet</p>
+      <div class="cat-tabs" role="group" aria-label="Product categories">
+        <button type="button" data-cat="all" aria-pressed="true">All</button>
+        <button type="button" data-cat="dogs" aria-pressed="false">Dogs</button>
+        <button type="button" data-cat="cats" aria-pressed="false">Cats</button>
+        <button type="button" data-cat="other" aria-pressed="false">Other Pets</button>
+      </div>
+      <div class="cat-empty" id="catEmpty" hidden role="status">
+        <h3 id="catEmptyTitle"></h3>
+        <p>Nothing is listed in this category yet. Our first products are in development, and this is where they will appear.</p>
+        <p class="cat-actions"><a href="#newsletter" class="btn btn-primary">Join the list for launch news</a> <button type="button" class="btn btn-secondary" data-cat="all">View all</button></p>
+      </div>
+    </div>
     <div class="media">
       <div class="note"><b>SHOP</b> — Template's product block as supplied: 1:1 gallery with four thumbnails, title, description, price, colour options, quantity, Add to Cart, reassurance row. All product data is placeholder and comes from the PRODUCT object in the script; the live values arrive from Shopify once the product exists in the store.</div>
       <div class="ph main pmain" id="shopMain" role="img" aria-label="Product image placeholder"><div class="psil" id="shopSil"><span>[ PRODUCT ]</span></div><span class="cap always" id="shopMainCap"></span></div>
@@ -862,6 +897,10 @@
     }
   });
   drawer.querySelectorAll("a[href]").forEach(function (a) { a.addEventListener("click", function () { closeDrawer(false); }); });
+  var productsToggle = document.getElementById("productsToggle"), productsMenu = document.getElementById("productsMenu");
+  function setProductsOpen(open) { productsToggle.setAttribute("aria-expanded", open ? "true" : "false"); productsMenu.hidden = !open; }
+  productsToggle.addEventListener("click", function () { setProductsOpen(productsMenu.hidden); });
+  menuBtn.addEventListener("click", function () { if (!drawerRoot.hidden && /^#products-/.test(location.hash)) setProductsOpen(true); });
 
   // ── Hash router: home is <main>; #contact, #track-order, #about are pages ──
   var ROUTES = { "contact": "page-contact", "track-order": "page-track", "about": "page-about", "checkout": "page-checkout", "shipping-returns": "page-shipping", "privacy": "page-privacy", "terms": "page-terms" };
@@ -880,8 +919,32 @@
     document.title = pageId ? names[hash] + " · " + baseTitle : baseTitle;
     if (pageId === "page-checkout" && typeof renderCheckout === "function") renderCheckout();
     if (pageId) { window.scrollTo(0, 0); var h = document.getElementById(pageId).querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } }
-    else if (hash) { var target = document.getElementById(hash); if (target) target.scrollIntoView({ behavior: wasOnPage ? "auto" : "smooth", block: "start" }); }
+    else if (hash) {
+      var cat = /^products-(dogs|cats|other)$/.exec(hash);
+      if (cat) setCategory(cat[1]);
+      var target = document.getElementById(cat ? "shop" : hash); if (target) target.scrollIntoView({ behavior: wasOnPage ? "auto" : "smooth", block: "start" });
+    }
+    syncProductsMenu(current, activeCat);
   }
+
+  // ── Shop categories: Dogs / Cats / Other Pets. No products are listed yet; each category says so plainly. ──
+  var activeCat = "all";
+  var CAT_NAMES = { all: "All", dogs: "Dogs", cats: "Cats", other: "Other Pets" };
+  function setCategory(cat) {
+    activeCat = CAT_NAMES[cat] ? cat : "all";
+    document.querySelectorAll(".cat-tabs button").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-cat") === activeCat ? "true" : "false"); });
+    var empty = document.getElementById("catEmpty"), media = document.querySelector(".shop .media"), panel = document.querySelector(".shop .panel");
+    var showAll = activeCat === "all";
+    empty.hidden = showAll; media.hidden = !showAll; panel.hidden = !showAll;
+    if (!showAll) document.getElementById("catEmptyTitle").textContent = CAT_NAMES[activeCat] + ": coming soon";
+    syncProductsMenu(homeMain.hidden ? "" : "home", activeCat);
+  }
+  function syncProductsMenu(current, cat) {
+    var toggle = document.getElementById("productsToggle");
+    if (current === "home") toggle.setAttribute("aria-current", "page"); else toggle.removeAttribute("aria-current");
+    document.querySelectorAll(".drawer-sub a[data-cat]").forEach(function (a) { if (current === "home" && a.getAttribute("data-cat") === cat) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+  }
+  document.querySelectorAll("#shopCats [data-cat]").forEach(function (b) { b.addEventListener("click", function () { setCategory(b.getAttribute("data-cat")); if (/^#products-/.test(location.hash)) history.replaceState(null, "", "#shop"); }); });
   window.addEventListener("hashchange", route); // initial route() runs after the cart is initialised (below)
 
   // ── Page forms: validate, then say plainly that the backend isn't connected ──
