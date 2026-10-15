@@ -166,7 +166,16 @@
   /* gallery band */
   .gallery { background: var(--sage-deep); color: var(--cream); }
   .gallery .eyebrow { color: var(--sage-soft); } .gallery .h2 { color: var(--cream); } .gallery .sub { color: rgba(250,246,239,.7); }
-  .tiles { margin-top: 3rem; columns: 1; list-style: none; padding: 0; max-width: 30rem; margin-inline: auto; }
+  /* customer experiences: three placeholder review cards + share strip */
+  .revs { margin: 3rem 0 0; padding: 0; list-style: none; display: grid; gap: 1.25rem; } @media (min-width: 640px) { .revs { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; } }
+  .rev { border-radius: var(--r-card); background: var(--cream); color: var(--ink); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,.18); }
+  .rev-photo { aspect-ratio: 4 / 3; background: var(--sand); display: grid; place-items: center; border-bottom: 1px dashed rgba(31,42,36,.25); } .rev-photo span { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--taupe); }
+  .rev-body { padding: 1.25rem 1.25rem 1.375rem; display: flex; flex-direction: column; gap: .75rem; flex: 1; }
+  .rev-stars { font-size: 1.25rem; letter-spacing: .1em; color: var(--clay); line-height: 1; } .rev-quote { font-size: 1rem; line-height: 1.6; color: var(--taupe); flex: 1; }
+  .rev-meta { display: flex; align-items: center; gap: .625rem; font-size: .875rem; flex-wrap: wrap; } .rev-avatar { width: 2.25rem; height: 2.25rem; border-radius: 999px; background: var(--sand); border: 1px dashed rgba(31,42,36,.25); flex: none; } .rev-verified { color: var(--sage); font-weight: 500; } .rev-verified::before { content: "\2713"; margin-right: .3rem; }
+  .rev-share { margin-top: 2rem; display: grid; gap: 1.25rem; align-items: center; border-radius: var(--r-card); background: rgba(250,246,239,.08); border: 1px solid rgba(250,246,239,.2); padding: 1.5rem; } @media (min-width: 768px) { .rev-share { grid-template-columns: 1fr auto; padding: 2rem 2.25rem; } }
+  .rev-share .eyebrow { color: var(--sage-soft); } .rev-share h3 { margin-top: .5rem; font-size: 1.5rem; color: var(--cream); } .rev-share p:not(.eyebrow) { margin-top: .5rem; color: rgba(250,246,239,.78); line-height: 1.6; max-width: 36rem; } .rev-share p b { color: var(--cream); }
+  .rev-share-cta { margin: 0; } .rev-share-cta .btn { min-height: 48px; white-space: nowrap; }
   .tiles li { break-inside: avoid; margin-bottom: 1rem; overflow: hidden; border-radius: var(--r-card); box-shadow: 0 0 0 1px rgba(255,255,255,.1); } .tiles li:hover { box-shadow: 0 0 0 1px rgba(255,255,255,.3); }
   .tiles .ph { border-radius: 0; }
   .reviews-note { margin-top: 2.5rem; border-radius: var(--r-card); border: 1px dashed rgba(250,246,239,.3); padding: 1.5rem; text-align: center; font-size: .875rem; color: rgba(250,246,239,.7); } .reviews-note b { color: var(--cream); }
@@ -513,13 +522,44 @@
   <div class="container">
     <div class="head center">
       <p class="eyebrow">Real homes. Real pets.</p>
-      <h2 class="h2">See it in homes, not studios.</h2>
-      <p class="sub">This gallery will carry real customer photos, videos and tagged posts once we launch. Nothing here is fabricated.</p>
+      <h2 class="h2">See what made the cut in real life.</h2>
+      <p class="sub">Real customer photos and reviews from pet parents using UrPick at home.</p>
     </div>
-    <ul class="tiles">
-      <li><div class="ph photo-hero-family" style="aspect-ratio:1" role="img" aria-label="Dog and two cats"><span class="cap"><b>Photo · 1/1</b> — photo 1</span></div></li>
+    <ul class="revs" aria-label="Customer reviews (placeholders until launch)">
+      <li class="rev">
+        <div class="rev-photo" role="img" aria-label="Customer photo placeholder"><span>Customer photo</span></div>
+        <div class="rev-body">
+          <p class="rev-stars" aria-hidden="true"><span>☆☆☆☆☆</span></p>
+          <p class="rev-quote">“[A verified customer review appears here — in their words, once real orders exist.]”</p>
+          <p class="rev-meta"><span class="rev-avatar" aria-hidden="true"></span><b>[Customer name]</b><span class="rev-verified">Verified purchase</span></p>
+        </div>
+      </li>
+      <li class="rev">
+        <div class="rev-photo" role="img" aria-label="Customer photo placeholder"><span>Customer photo</span></div>
+        <div class="rev-body">
+          <p class="rev-stars" aria-hidden="true"><span>☆☆☆☆☆</span></p>
+          <p class="rev-quote">“[A verified customer review appears here — in their words, once real orders exist.]”</p>
+          <p class="rev-meta"><span class="rev-avatar" aria-hidden="true"></span><b>[Customer name]</b><span class="rev-verified">Verified purchase</span></p>
+        </div>
+      </li>
+      <li class="rev">
+        <div class="rev-photo" role="img" aria-label="Customer photo placeholder"><span>Customer photo</span></div>
+        <div class="rev-body">
+          <p class="rev-stars" aria-hidden="true"><span>☆☆☆☆☆</span></p>
+          <p class="rev-quote">“[A verified customer review appears here — in their words, once real orders exist.]”</p>
+          <p class="rev-meta"><span class="rev-avatar" aria-hidden="true"></span><b>[Customer name]</b><span class="rev-verified">Verified purchase</span></p>
+        </div>
+      </li>
     </ul>
-    <div class="reviews-note"><b>Reviews</b> — a verified review widget (Judge.me, Okendo or Shopify Reviews) mounts here once reviews exist. No ratings are shown until real data is available.</div>
+    <div class="rev-share">
+      <div>
+        <p class="eyebrow">Share your experience</p>
+        <h3>Bought something? Tell us how it went.</h3>
+        <p>Send a photo or a few words about your pet using a UrPick product and get <b>[X]% off</b> your next order. Every review is checked against a real order before it appears here.</p>
+      </div>
+      <p class="rev-share-cta"><a class="btn btn-primary" href="mailto:yourpick2025@gmail.com?subject=My%20UrPick%20experience">Share your experience</a></p>
+    </div>
+    <div class="reviews-note"><b>Reviews</b> — a verified review widget (Judge.me, Okendo or Shopify Reviews) replaces these placeholders once reviews exist. No ratings, counts or names are shown until real data is available.</div>
   </div>
 </section>
 
