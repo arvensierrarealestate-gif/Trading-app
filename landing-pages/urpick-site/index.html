@@ -160,15 +160,27 @@
   .reviews-note { margin-top: 2.5rem; border-radius: var(--r-card); border: 1px dashed rgba(250,246,239,.3); padding: 1.5rem; text-align: center; font-size: .875rem; color: rgba(250,246,239,.7); } .reviews-note b { color: var(--cream); }
 
   /* coming soon (replaces shop block) */
-  .shop .cats { grid-column: 1 / -1; } .cat-title { text-align: center; font-family: var(--display); font-size: 2.25rem; font-weight: 600; letter-spacing: -.01em; line-height: 1.1; color: var(--ink); } @media (min-width: 640px) { .cat-title { font-size: 3rem; } }
-  .cat-tabs { margin-top: 1.25rem; display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; }
-  .cat-tabs button { min-height: 44px; padding: 0 1.25rem; border-radius: 999px; border: 1px solid rgba(31,42,36,.18); background: var(--white); color: var(--ink); font: inherit; font-size: .9375rem; font-weight: 500; cursor: pointer; transition: background .15s, border-color .15s, color .15s; }
-  .cat-tabs button:hover { background: var(--sand); } .cat-tabs button[aria-pressed="true"] { background: var(--sage-deep); border-color: var(--sage-deep); color: var(--cream); }
-  .cat-empty { margin: 1.5rem auto 0; max-width: 36rem; text-align: center; border-radius: var(--r-card); border: 1px dashed rgba(31,42,36,.25); background: rgba(239,230,216,.5); padding: 2rem 1.5rem; } .cat-empty[hidden] { display: none; }
-  .cat-empty h3 { font-family: var(--display); font-size: 1.5rem; font-weight: 600; } .cat-empty p { margin-top: .75rem; color: var(--taupe); line-height: 1.6; }
-  .cat-empty .cat-actions { margin-top: 1.25rem; display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; } .cat-empty .btn { min-height: 44px; }
-  .shop .media[hidden], .shop .panel[hidden] { display: none; }
-  .shop .container { display: grid; gap: 2.5rem; } @media (min-width: 1024px) { .shop .container { grid-template-columns: repeat(12, 1fr); gap: 3.5rem; } .shop .media { grid-column: span 7; } .shop .panel { grid-column: span 5; position: sticky; top: 6rem; align-self: start; } }
+  .pdp-grid { display: grid; gap: 2.5rem; margin-top: 1.5rem; } @media (min-width: 1024px) { .pdp-grid { grid-template-columns: repeat(12, 1fr); gap: 3.5rem; } .pdp-grid .media { grid-column: span 7; } .pdp-grid .panel { grid-column: span 5; position: sticky; top: 6rem; align-self: start; } }
+  .pdp-crumb a { font-size: .875rem; font-weight: 600; color: var(--sage-deep); text-decoration: none; } .pdp-crumb a:hover { text-decoration: underline; } .pdp .panel h1 { font-size: 2rem; margin-top: .5rem; }
+  /* shop by pet: tabs + featured product cards */
+  .cat-tabs { margin-top: 1.5rem; display: flex; justify-content: center; gap: .25rem; border-bottom: 1px solid rgba(31,42,36,.12); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; } .cat-tabs::-webkit-scrollbar { display: none; }
+  .cat-tabs [role="tab"] { flex: none; min-height: 48px; padding: 0 1.25rem; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; font: inherit; font-size: .8125rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--taupe); cursor: pointer; transition: color .15s, border-color .15s; }
+  .cat-tabs [role="tab"]:hover { color: var(--ink); } .cat-tabs [role="tab"][aria-selected="true"] { color: var(--sage-deep); border-bottom-color: var(--sage-deep); } .cat-tabs [role="tab"]:focus-visible { outline: 2px solid var(--sage-deep); outline-offset: -2px; border-radius: 6px; }
+  .shop, #shopPanel, .pgrid { overflow-anchor: none; } /* re-rendering the cards must not nudge the scroll position */
+  .shop-ph { margin-top: 1.25rem; text-align: center; font-size: .8125rem; color: var(--taupe); }
+  .pgrid { margin: 1.5rem 0 0; padding: 0; list-style: none; display: grid; gap: 1.25rem; } @media (min-width: 640px) { .pgrid { grid-template-columns: repeat(2, 1fr); } } @media (min-width: 1024px) { .pgrid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; } }
+  .pcard { border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card), 0 0 0 1px rgba(31,42,36,.05); overflow: hidden; display: flex; flex-direction: column; transition: transform .2s; } @media (min-width: 1024px) { .pcard:hover { transform: translateY(-3px); } }
+  .pcard .pimg { position: relative; aspect-ratio: 1; background: var(--sand); display: grid; place-items: center; } .pcard .pimg::before { content: ""; position: absolute; inset: 0; opacity: .07; background-image: radial-gradient(circle at 1px 1px, #1F2A24 1px, transparent 0); background-size: 18px 18px; } .pcard .psil { width: 48%; }
+  .pcard .pbody { padding: 1.125rem 1.25rem 1.25rem; display: flex; flex-direction: column; gap: .375rem; flex: 1; }
+  .pcard h3 { font-size: 1.125rem; } .pcard .pprice { display: flex; align-items: baseline; gap: .5rem; font-weight: 600; font-variant-numeric: tabular-nums; } .pcard .pprice small { font-weight: 400; font-size: .6875rem; letter-spacing: .08em; text-transform: uppercase; color: var(--taupe); }
+  .pcard .pben { font-size: .875rem; color: var(--taupe); line-height: 1.55; } .pcard .pact { margin-top: auto; padding-top: .75rem; } .pcard .pact .btn { width: 100%; min-height: 44px; font-size: .875rem; }
+  /* cart drawer lines with image, variant, quantity controls */
+  .cart-line .thumb { width: 4.25rem; aspect-ratio: 1; flex: none; border-radius: .75rem; background: var(--sand); display: grid; place-items: center; overflow: hidden; } .cart-line .thumb .psil { width: 56%; } .cart-line .thumb .psil span { font-size: 0; }
+  .cart-line .info { flex: 1; min-width: 0; } .cart-line .ctl { margin-top: .5rem; display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+  .cart-line .qty button { height: 2.25rem; width: 2.25rem; } .cart-line .qty output { min-width: 2rem; font-size: .9375rem; }
+  .cart-line .unit { font-size: .8125rem; color: var(--taupe); }
+  .cart-view { width: 100%; margin-top: .625rem; } .cart-continue { display: block; width: 100%; margin-top: .75rem; min-height: 44px; background: none; border: 0; font: inherit; font-size: .875rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--sage-deep); cursor: pointer; } .cart-continue:hover { text-decoration: underline; }
+  .cartpage .cart-line { padding: 1.25rem 0; } .cartpage-totals { max-width: 24rem; margin-left: auto; } .cartpage-actions { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: .75rem; justify-content: flex-end; }
   .shop .main.ph { aspect-ratio: 1; display: grid; place-items: center; background: linear-gradient(to bottom right, var(--sand), var(--sand-2)); }
   .ph.pmain::before { content: ""; position: absolute; inset: 0; opacity: .07; background-image: radial-gradient(circle at 1px 1px, #1F2A24 1px, transparent 0); background-size: 18px 18px; }
   .psil { position: relative; width: 56%; aspect-ratio: 1; display: grid; place-items: end center; }
@@ -364,6 +376,8 @@
       <div class="cart-sub"><span class="taupe">Subtotal</span><span id="cartSubtotal">$0.00</span></div>
       <p class="taupe cart-fine">Shipping and taxes calculated at checkout.</p>
       <a href="#checkout" class="btn btn-primary cart-checkout" id="cartCheckout">Checkout</a>
+      <a href="#cart" class="btn btn-secondary cart-view" id="cartViewAll">View full cart</a>
+      <button type="button" class="cart-continue" id="cartContinue">Continue shopping</button>
     </footer>
   </aside>
 </div>
@@ -511,45 +525,17 @@
 <!-- SHOP (template's product block; placeholder product until Shopify is connected) -->
 <section class="sec shop" id="shop">
   <div class="container">
-    <div class="cats" id="shopCats">
-      <h2 class="cat-title">Shop by pet</h2>
-      <div class="cat-tabs" role="group" aria-label="Product categories">
-        <button type="button" data-cat="all" aria-pressed="true">All</button>
-        <button type="button" data-cat="dogs" aria-pressed="false">Dogs</button>
-        <button type="button" data-cat="cats" aria-pressed="false">Cats</button>
-        <button type="button" data-cat="other" aria-pressed="false">Other Pets</button>
-      </div>
-      <div class="cat-empty" id="catEmpty" hidden role="status">
-        <h3 id="catEmptyTitle"></h3>
-        <p>Nothing is listed in this category yet. Our first products are in development, and this is where they will appear.</p>
-        <p class="cat-actions"><a href="#newsletter" class="btn btn-primary">Join the list for launch news</a> <button type="button" class="btn btn-secondary" data-cat="all">View all</button></p>
-      </div>
+    <div class="note"><b>SHOP BY PET</b> — Three tabs (Dogs default), 3 featured placeholder cards per tab from CATALOG in the script, a "View all" link to the category's collection page. No products exist yet: names, prices and benefit lines are bracketed placeholders until the supplier list arrives.</div>
+    <h2 class="cat-title">Shop by pet</h2>
+    <div class="cat-tabs" role="tablist" aria-label="Shop by pet">
+      <button type="button" role="tab" id="tab-dogs" data-cat="dogs" aria-selected="true" aria-controls="shopPanel">Dogs</button>
+      <button type="button" role="tab" id="tab-cats" data-cat="cats" aria-selected="false" aria-controls="shopPanel" tabindex="-1">Cats</button>
+      <button type="button" role="tab" id="tab-other" data-cat="other" aria-selected="false" aria-controls="shopPanel" tabindex="-1">Other Pets</button>
     </div>
-    <div class="media">
-      <div class="note"><b>SHOP</b> — Template's product block as supplied: 1:1 gallery with four thumbnails, title, description, price, colour options, quantity, Add to Cart, reassurance row. All product data is placeholder and comes from the PRODUCT object in the script; the live values arrive from Shopify once the product exists in the store.</div>
-      <div class="ph main pmain" id="shopMain" role="img" aria-label="Product image placeholder"><div class="psil" id="shopSil"><span>[ PRODUCT ]</span></div><span class="cap always" id="shopMainCap"></span></div>
-      <ul class="thumbs" id="shopThumbs" aria-label="Product image thumbnails"></ul>
-    </div>
-    <div class="panel">
-      <p class="eyebrow">Shop</p>
-      <h2 id="shopName"></h2>
-      <p class="desc" id="shopDesc"></p>
-      <div class="pricebox"><b id="shopPrice"></b><span id="shopPriceNote">PLACEHOLDER — price set in Shopify</span></div>
-      <p class="ratings-note">★ Ratings appear here once verified reviews exist. None are shown until then.</p>
-      <fieldset class="colors">
-        <legend>Color: <span id="shopColorName"></span></legend>
-        <div class="swatches" id="shopSwatches"></div>
-      </fieldset>
-      <div class="buyrow">
-        <div class="qty" role="group" aria-label="Quantity">
-          <button type="button" id="qtyMinus" aria-label="Decrease quantity"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
-          <output id="qtyOut" aria-live="polite">1</output>
-          <button type="button" id="qtyPlus" aria-label="Increase quantity"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-        </div>
-        <button type="button" class="btn btn-primary addbtn" id="addToCart">Add to Cart</button>
-      </div>
-      <ul class="reassure" id="shopReassure"></ul>
-      <p class="connect-note">Shopify not connected yet — cart runs locally. Add <code>VITE_SHOPIFY_DOMAIN</code> and <code>VITE_SHOPIFY_STOREFRONT_TOKEN</code> to <code>.env</code> to enable live checkout.</p>
+    <div id="shopPanel" role="tabpanel" aria-labelledby="tab-dogs">
+      <p class="shop-ph">Placeholder products. Real names, photos and prices arrive with the supplier list.</p>
+      <ul class="pgrid" id="shopGrid"></ul>
+      <p class="steps-cta"><a href="#collection-dogs" class="textlink" id="shopViewAll">View all dog products <span aria-hidden="true">→</span></a></p>
     </div>
   </div>
 </section>
@@ -629,6 +615,64 @@
         <div class="status" id="trackStatus" role="status"><b>Order tracking isn't connected yet.</b>No lookup was performed. This page needs the Shopify order status integration (customer accounts or the order status page link) before it can show real tracking. There are no orders to track before launch. Questions about an order? Email <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>.</div>
       </form>
       <p class="back"><a href="#top" class="btn btn-secondary">Back to home</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-product" aria-labelledby="shopName">
+    <div class="container wide pdp">
+      <p class="pdp-crumb"><a href="#shop" id="pdpBack">← Back to <span id="pdpCatName">Dogs</span></a></p>
+      <div class="pdp-grid shop">
+    <div class="media">
+      <div class="note"><b>SHOP</b> — Template's product block as supplied: 1:1 gallery with four thumbnails, title, description, price, colour options, quantity, Add to Cart, reassurance row. All product data is placeholder and comes from the PRODUCT object in the script; the live values arrive from Shopify once the product exists in the store.</div>
+      <div class="ph main pmain" id="shopMain" role="img" aria-label="Product image placeholder"><div class="psil" id="shopSil"><span>[ PRODUCT ]</span></div><span class="cap always" id="shopMainCap"></span></div>
+      <ul class="thumbs" id="shopThumbs" aria-label="Product image thumbnails"></ul>
+    </div>
+    <div class="panel">
+      <p class="eyebrow" id="pdpEyebrow">Dogs</p>
+      <h1 id="shopName"></h1>
+      <p class="desc" id="shopDesc"></p>
+      <div class="pricebox"><b id="shopPrice"></b><span id="shopPriceNote">PLACEHOLDER — price set in Shopify</span></div>
+      <p class="ratings-note">★ Ratings appear here once verified reviews exist. None are shown until then.</p>
+      <fieldset class="colors">
+        <legend>Color: <span id="shopColorName"></span></legend>
+        <div class="swatches" id="shopSwatches"></div>
+      </fieldset>
+      <div class="buyrow">
+        <div class="qty" role="group" aria-label="Quantity">
+          <button type="button" id="qtyMinus" aria-label="Decrease quantity"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+          <output id="qtyOut" aria-live="polite">1</output>
+          <button type="button" id="qtyPlus" aria-label="Increase quantity"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+        </div>
+        <button type="button" class="btn btn-primary addbtn" id="addToCart">Add to Cart</button>
+      </div>
+      <ul class="reassure" id="shopReassure"></ul>
+      <p class="connect-note">Shopify not connected yet — cart runs locally. Add <code>VITE_SHOPIFY_DOMAIN</code> and <code>VITE_SHOPIFY_STOREFRONT_TOKEN</code> to <code>.env</code> to enable live checkout.</p>
+    </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-collection" aria-labelledby="collectionTitle">
+    <div class="container wide">
+      <p class="eyebrow">Shop by pet</p>
+      <h1 id="collectionTitle">Dog products</h1>
+      <p class="lead" id="collectionLead"></p>
+      <p class="shop-ph">Placeholder products. Real names, photos and prices arrive with the supplier list.</p>
+      <ul class="pgrid" id="collectionGrid"></ul>
+      <p class="back"><a href="#shop" class="btn btn-secondary">Back to Shop by pet</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-cart" aria-labelledby="cartPageTitle">
+    <div class="container">
+      <p class="eyebrow">Cart</p>
+      <h1 id="cartPageTitle">Your cart</h1>
+      <div class="cartpage" id="cartPageLines"></div>
+      <div class="co-totals cartpage-totals">
+        <div><span>Subtotal</span><span id="cartPageSubtotal">$0.00</span></div>
+        <div><span>Shipping</span><span class="taupe">Calculated at checkout</span></div>
+      </div>
+      <p class="cartpage-actions"><a href="#checkout" class="btn btn-primary">Checkout</a> <a href="#shop" class="btn btn-secondary">Continue shopping</a></p>
     </div>
   </section>
 
@@ -1000,13 +1044,18 @@
   function route() {
     var hash = (location.hash || "").replace(/^#/, "");
     var pageId = ROUTES[hash];
+    var mProd = /^product-(.+)$/.exec(hash), mColl = /^collection-(dogs|cats|other)$/.exec(hash);
+    if (mProd && typeof showProduct === "function" && showProduct(mProd[1])) pageId = "page-product";
+    if (mColl && typeof showCollection === "function") { showCollection(mColl[1]); pageId = "page-collection"; }
+    if (hash === "cart") { pageId = "page-cart"; if (typeof renderCartPage === "function") renderCartPage(); }
     pageEls.forEach(function (p) { p.classList.toggle("active", p.id === pageId); });
     var wasOnPage = homeMain.hidden;
     homeMain.hidden = !!pageId;
     var current = pageId ? hash : "home";
     document.querySelectorAll('.drawer-primary a[data-route]').forEach(function (a) { if (a.getAttribute("data-route") === current) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-    var names = { "contact": "Contact", "track-order": "Track your order", "about": "About us", "checkout": "Checkout", "shipping-returns": "Shipping & Returns", "privacy": "Privacy Policy", "terms": "Terms of Service" };
-    document.title = pageId ? names[hash] + " · " + baseTitle : baseTitle;
+    var names = { "contact": "Contact", "track-order": "Track your order", "about": "About us", "checkout": "Checkout", "shipping-returns": "Shipping & Returns", "privacy": "Privacy Policy", "terms": "Terms of Service", "cart": "Your cart" };
+    var pageName = names[hash] || (mProd ? PRODUCT.name : mColl ? CAT_NAMES[mColl[1]] + " products" : "");
+    document.title = pageId ? pageName + " · " + baseTitle : baseTitle;
     if (pageId === "page-checkout" && typeof renderCheckout === "function") renderCheckout();
     if (pageId) { window.scrollTo(0, 0); var h = document.getElementById(pageId).querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } }
     else if (hash) {
@@ -1017,24 +1066,63 @@
     syncProductsMenu(current, activeCat);
   }
 
-  // ── Shop categories: Dogs / Cats / Other Pets. No products are listed yet; each category says so plainly. ──
-  var activeCat = "all";
-  var CAT_NAMES = { all: "All", dogs: "Dogs", cats: "Cats", other: "Other Pets" };
+  // ── Shop by pet: three tabs over one panel. Dogs is the default. Switching tabs never changes the scroll position. ──
+  var activeCat = "dogs";
+  var CAT_NAMES = { dogs: "Dogs", cats: "Cats", other: "Other Pets" };
+  var CAT_SINGULAR = { dogs: "dog", cats: "cat", other: "other pet" };
+  // Placeholder catalog: names, prices and benefit lines are brackets until the supplier list exists. ids are stable for routing (#product-<id>).
+  var CATALOG = {
+    dogs:  [1,2,3,4].map(function (n) { return { id: "dog-" + n,   cat: "dogs",  name: "[Dog product " + n + "]",       price: 0, benefit: "[One short benefit line — what this makes easier]", sil: ["#7E9A86","#C98A6B","#D9CDB8","#4A4F4C"][n-1] }; }),
+    cats:  [1,2,3,4].map(function (n) { return { id: "cat-" + n,   cat: "cats",  name: "[Cat product " + n + "]",       price: 0, benefit: "[One short benefit line — what this makes easier]", sil: ["#C98A6B","#7E9A86","#4A4F4C","#D9CDB8"][n-1] }; }),
+    other: [1,2,3].map(function (n)   { return { id: "other-" + n, cat: "other", name: "[Other pet product " + n + "]", price: 0, benefit: "[One short benefit line — what this makes easier]", sil: ["#D9CDB8","#4A4F4C","#7E9A86"][n-1] }; })
+  };
+  function findProduct(id) { for (var c in CATALOG) { var hit = CATALOG[c].filter(function (x) { return x.id === id; })[0]; if (hit) return hit; } return null; }
+  function productCard(item) {
+    var li = document.createElement("li"); li.className = "pcard";
+    var img = document.createElement("div"); img.className = "pimg"; img.setAttribute("role", "img"); img.setAttribute("aria-label", "Product image placeholder");
+    var sil = document.createElement("div"); sil.className = "psil"; sil.style.setProperty("--sil", item.sil); var sp = document.createElement("span"); sp.textContent = "[ PRODUCT ]"; sil.appendChild(sp); img.appendChild(sil);
+    var body = document.createElement("div"); body.className = "pbody";
+    var h = document.createElement("h3"); h.textContent = item.name;
+    var pr = document.createElement("p"); pr.className = "pprice"; pr.innerHTML = "<span>" + money(item.price) + "</span><small>placeholder</small>";
+    var ben = document.createElement("p"); ben.className = "pben"; ben.textContent = item.benefit;
+    var act = document.createElement("p"); act.className = "pact"; var a = document.createElement("a"); a.className = "btn btn-secondary"; a.href = "#product-" + item.id; a.textContent = "View product"; act.appendChild(a);
+    body.appendChild(h); body.appendChild(pr); body.appendChild(ben); body.appendChild(act); li.appendChild(img); li.appendChild(body); return li;
+  }
+  function renderShopGrid() {
+    var grid = document.getElementById("shopGrid"); grid.innerHTML = "";
+    CATALOG[activeCat].slice(0, 3).forEach(function (item) { grid.appendChild(productCard(item)); });
+    var va = document.getElementById("shopViewAll"); va.href = "#collection-" + activeCat; va.innerHTML = "View all " + CAT_SINGULAR[activeCat] + " products <span aria-hidden=\"true\">→</span>";
+    document.getElementById("shopPanel").setAttribute("aria-labelledby", "tab-" + activeCat);
+  }
   function setCategory(cat) {
-    activeCat = CAT_NAMES[cat] ? cat : "all";
-    document.querySelectorAll(".cat-tabs button").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-cat") === activeCat ? "true" : "false"); });
-    var empty = document.getElementById("catEmpty"), media = document.querySelector(".shop .media"), panel = document.querySelector(".shop .panel");
-    var showAll = activeCat === "all";
-    empty.hidden = showAll; media.hidden = !showAll; panel.hidden = !showAll;
-    if (!showAll) document.getElementById("catEmptyTitle").textContent = CAT_NAMES[activeCat] + ": coming soon";
+    var y = window.scrollY;
+    activeCat = CAT_NAMES[cat] ? cat : "dogs";
+    document.querySelectorAll('.cat-tabs [role="tab"]').forEach(function (b) { var on = b.getAttribute("data-cat") === activeCat; b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1; });
+    renderShopGrid();
     syncProductsMenu(homeMain.hidden ? "" : "home", activeCat);
+    if (window.scrollY !== y) window.scrollTo(0, y);
   }
   function syncProductsMenu(current, cat) {
     var toggle = document.getElementById("productsToggle");
     if (current === "home") toggle.setAttribute("aria-current", "page"); else toggle.removeAttribute("aria-current");
     document.querySelectorAll(".drawer-sub a[data-cat]").forEach(function (a) { if (current === "home" && a.getAttribute("data-cat") === cat) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
   }
-  document.querySelectorAll("#shopCats [data-cat]").forEach(function (b) { b.addEventListener("click", function () { setCategory(b.getAttribute("data-cat")); if (/^#products-/.test(location.hash)) history.replaceState(null, "", "#shop"); }); });
+  (function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.cat-tabs [role="tab"]'));
+    tabs.forEach(function (b, i) {
+      b.addEventListener("click", function () { setCategory(b.getAttribute("data-cat")); if (/^#products-/.test(location.hash)) history.replaceState(null, "", "#shop"); });
+      b.addEventListener("keydown", function (ev) { var j = ev.key === "ArrowRight" ? i + 1 : ev.key === "ArrowLeft" ? i - 1 : -1; if (j < 0 || j >= tabs.length) return; ev.preventDefault(); tabs[j].focus(); tabs[j].click(); });
+    });
+  })();
+  function showProduct(id) {
+    var item = findProduct(id); if (!item) return false;
+    setProduct(item); return true;
+  }
+  function showCollection(cat) {
+    document.getElementById("collectionTitle").textContent = CAT_NAMES[cat] + " products";
+    document.getElementById("collectionLead").textContent = "Everything we will carry for " + (cat === "other" ? "other pets" : cat) + ". This list fills in as products are confirmed.";
+    var grid = document.getElementById("collectionGrid"); grid.innerHTML = ""; CATALOG[cat].forEach(function (item) { grid.appendChild(productCard(item)); });
+  }
   window.addEventListener("hashchange", route); // initial route() runs after the cart is initialised (below)
 
   // ── Page forms: validate, then say plainly that the backend isn't connected ──
@@ -1076,9 +1164,22 @@
     ]
   };
   var SHOPIFY_CONNECTED = false; // true once VITE_SHOPIFY_DOMAIN + VITE_SHOPIFY_STOREFRONT_TOKEN are wired
+  PRODUCT.id = "dog-1"; PRODUCT.cat = "dogs";
   function money(n) { return new Intl.NumberFormat("en-US", { style: "currency", currency: PRODUCT.currency }).format(n); }
   var colorIdx = 0, imgIdx = 0, qty = 1;
   var shopSil = document.getElementById("shopSil"), shopMainCap = document.getElementById("shopMainCap"), shopThumbs = document.getElementById("shopThumbs");
+  function setProduct(item) {
+    // Swap the detail page to a catalog item. Variant ids carry the product id so cart lines stay distinct per product.
+    PRODUCT.id = item.id; PRODUCT.cat = item.cat; PRODUCT.name = item.name; PRODUCT.price = item.price;
+    PRODUCT.colors.forEach(function (c, i) { c.variantId = "gid://shopify/ProductVariant/PLACEHOLDER_" + item.id + "_" + "ABCD".charAt(i); });
+    PRODUCT.colors[0].hex = item.sil; colorIdx = 0; imgIdx = 0; qty = 1;
+    document.getElementById("shopName").textContent = PRODUCT.name;
+    document.getElementById("shopDesc").textContent = PRODUCT.shortDescription;
+    document.getElementById("shopPrice").textContent = money(PRODUCT.price);
+    document.getElementById("pdpEyebrow").textContent = CAT_NAMES[item.cat];
+    document.getElementById("pdpCatName").textContent = CAT_NAMES[item.cat]; document.getElementById("pdpBack").href = "#collection-" + item.cat;
+    if (typeof renderGallery === "function") { renderGallery(); renderColors(); }
+  }
   document.getElementById("shopName").textContent = PRODUCT.name;
   document.getElementById("shopDesc").textContent = PRODUCT.shortDescription;
   document.getElementById("shopPrice").textContent = money(PRODUCT.price);
@@ -1102,6 +1203,7 @@
   document.getElementById("qtyMinus").addEventListener("click", function () { qty = Math.max(1, qty - 1); renderAddLabel(); });
   document.getElementById("qtyPlus").addEventListener("click", function () { qty = Math.min(10, qty + 1); renderAddLabel(); });
   renderGallery(); renderColors();
+  if (typeof CATALOG !== "undefined") setProduct(CATALOG.dogs[0]);
 
   // ── Cart (local; mirrors the template's CartProvider, key kept for continuity) ──
   var CART_KEY = "eb_cart_v1", cart = { lines: [] };
@@ -1110,11 +1212,40 @@
   function cartCount() { return cart.lines.reduce(function (n, l) { return n + l.qty; }, 0); }
   function cartSubtotal() { return cart.lines.reduce(function (n, l) { return n + l.qty * l.price; }, 0); }
   var cartRoot = document.getElementById("cartRoot"), cartDrawer = document.getElementById("cartDrawer"), cartBtn = document.getElementById("cartBtn"), cartClose = document.getElementById("cartClose"), cartOverlay = document.getElementById("cartOverlay"), cartLast = null, cartTimer = null;
+  function setLineQty(variantId, n) {
+    var l = cart.lines.filter(function (x) { return x.variantId === variantId; })[0]; if (!l) return;
+    l.qty = Math.max(0, Math.min(10, n)); if (!l.qty) cart.lines = cart.lines.filter(function (x) { return x !== l; });
+    saveCart(); renderCart(); renderCheckout(); renderCartPage();
+  }
+  function removeLine(variantId) { cart.lines = cart.lines.filter(function (x) { return x.variantId !== variantId; }); saveCart(); renderCart(); renderCheckout(); renderCartPage(); }
   function lineEl(l, removable) {
     var row = document.createElement("div"); row.className = "cart-line";
-    var left = document.createElement("div"); var t = document.createElement("p"); t.className = "t"; t.textContent = l.title; var m = document.createElement("p"); m.className = "m"; m.textContent = l.color + " · Qty " + l.qty; left.appendChild(t); left.appendChild(m);
-    if (removable) { var rm = document.createElement("button"); rm.type = "button"; rm.className = "rm"; rm.textContent = "Remove"; rm.addEventListener("click", function () { cart.lines = cart.lines.filter(function (x) { return x.variantId !== l.variantId; }); saveCart(); renderCart(); renderCheckout(); }); left.appendChild(rm); }
-    var right = document.createElement("p"); right.className = "r"; right.textContent = money(l.price * l.qty); row.appendChild(left); row.appendChild(right); return row;
+    var thumb = document.createElement("div"); thumb.className = "thumb"; thumb.setAttribute("aria-hidden", "true");
+    var sil = document.createElement("div"); sil.className = "psil"; sil.style.setProperty("--sil", l.hex || "#7E9A86"); sil.appendChild(document.createElement("span")); thumb.appendChild(sil);
+    var info = document.createElement("div"); info.className = "info";
+    var t = document.createElement("p"); t.className = "t"; t.textContent = l.title;
+    var m = document.createElement("p"); m.className = "m"; m.textContent = "Color: " + l.color;
+    var unit = document.createElement("p"); unit.className = "unit"; unit.textContent = money(l.price) + " each";
+    info.appendChild(t); info.appendChild(m); info.appendChild(unit);
+    if (removable) {
+      var ctl = document.createElement("div"); ctl.className = "ctl";
+      var q = document.createElement("div"); q.className = "qty"; q.setAttribute("role", "group"); q.setAttribute("aria-label", "Quantity for " + l.title);
+      var minus = document.createElement("button"); minus.type = "button"; minus.className = "qminus"; minus.setAttribute("aria-label", "Decrease quantity"); minus.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>';
+      var out = document.createElement("output"); out.textContent = l.qty; out.setAttribute("aria-live", "polite");
+      var plus = document.createElement("button"); plus.type = "button"; plus.className = "qplus"; plus.setAttribute("aria-label", "Increase quantity"); plus.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>';
+      minus.addEventListener("click", function () { setLineQty(l.variantId, l.qty - 1); }); plus.addEventListener("click", function () { setLineQty(l.variantId, l.qty + 1); });
+      q.appendChild(minus); q.appendChild(out); q.appendChild(plus);
+      var rm = document.createElement("button"); rm.type = "button"; rm.className = "rm"; rm.textContent = "Remove"; rm.addEventListener("click", function () { removeLine(l.variantId); });
+      ctl.appendChild(q); ctl.appendChild(rm); info.appendChild(ctl);
+    } else { var m2 = document.createElement("p"); m2.className = "m"; m2.textContent = "Qty " + l.qty; info.appendChild(m2); }
+    var right = document.createElement("p"); right.className = "r"; right.textContent = money(l.price * l.qty);
+    row.appendChild(thumb); row.appendChild(info); row.appendChild(right); return row;
+  }
+  function renderCartPage() {
+    var body = document.getElementById("cartPageLines"); if (!body) return; body.innerHTML = "";
+    if (!cart.lines.length) { var e = document.createElement("p"); e.className = "co-empty"; e.textContent = "Your cart is empty."; body.appendChild(e); }
+    cart.lines.forEach(function (l) { body.appendChild(lineEl(l, true)); });
+    document.getElementById("cartPageSubtotal").textContent = money(cartSubtotal());
   }
   function renderCart() {
     var body = document.getElementById("cartBody"); body.innerHTML = "";
@@ -1137,6 +1268,8 @@
   cartBtn.addEventListener("click", function () { if (typeof closeDrawer === "function") closeDrawer(false); cartRoot.hidden ? openCart() : closeCart(); });
   cartClose.addEventListener("click", function () { closeCart(); }); cartOverlay.addEventListener("click", function () { closeCart(); });
   document.getElementById("cartCheckout").addEventListener("click", function () { closeCart(false); });
+  document.getElementById("cartViewAll").addEventListener("click", function () { closeCart(false); });
+  document.getElementById("cartContinue").addEventListener("click", function () { closeCart(); });
   document.addEventListener("keydown", function (ev) {
     if (cartRoot.hidden) return;
     if (ev.key === "Escape") { ev.preventDefault(); closeCart(); return; }
@@ -1145,13 +1278,14 @@
   var addBtn = document.getElementById("addToCart");
   addBtn.addEventListener("click", function () {
     var c = PRODUCT.colors[colorIdx]; var existing = cart.lines.filter(function (l) { return l.variantId === c.variantId; })[0];
-    if (existing) existing.qty += qty; else cart.lines.push({ variantId: c.variantId, title: PRODUCT.name, color: c.name, price: PRODUCT.price, qty: qty });
-    saveCart(); renderCart(); renderCheckout();
+    if (existing) existing.qty = Math.min(10, existing.qty + qty); else cart.lines.push({ variantId: c.variantId, productId: PRODUCT.id, title: PRODUCT.name, color: c.name, hex: c.hex, price: PRODUCT.price, qty: qty });
+    saveCart(); renderCart(); renderCheckout(); renderCartPage();
     addBtn.textContent = "Added ✓"; setTimeout(renderAddLabel, 1800);
     if (window.dataLayer) window.dataLayer.push({ event: "add_to_cart", variant: c.variantId, qty: qty });
     openCart();
   });
-  renderCart(); renderCheckout();
+  renderCart(); renderCheckout(); renderCartPage();
+  setCategory("dogs");
   route();
 
   document.querySelectorAll("#faqList button").forEach(function (btn) {
@@ -1193,7 +1327,7 @@
     var lastFocus = null, hideTimer = null;
     function load() { try { return JSON.parse(localStorage.getItem(WELCOME_OFFER.storageKey) || "null"); } catch (e) { return null; } }
     function save(v) { try { localStorage.setItem(WELCOME_OFFER.storageKey, JSON.stringify(v)); } catch (e) {} }
-    function onHome() { return !/^#(contact|track-order|about|checkout|shipping-returns|privacy|terms)$/.test(location.hash || ""); }
+    function onHome() { return !/^#(contact|track-order|about|checkout|shipping-returns|privacy|terms|cart|product-.+|collection-.+)$/.test(location.hash || ""); }
     function shouldShow() {
       var st = load();
       if (st && st.status === "signed") return false;                                   // already signed up: never again
