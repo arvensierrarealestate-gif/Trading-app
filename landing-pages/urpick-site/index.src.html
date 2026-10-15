@@ -191,6 +191,32 @@
   .cart-badge { position: absolute; right: -2px; top: -2px; display: flex; height: 1.25rem; min-width: 1.25rem; align-items: center; justify-content: center; border-radius: 999px; background: var(--clay); color: #fff; padding: 0 .3rem; font-size: 11px; font-weight: 600; }
   .cartbtn { position: relative; }
   /* cart drawer */
+  /* welcome offer popup */
+  .offer-root { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 1rem; } .offer-root[hidden] { display: none; }
+  .offer-overlay { position: absolute; inset: 0; background: rgba(31,42,36,.45); backdrop-filter: blur(2px); opacity: 0; transition: opacity .25s ease; }
+  .offer { position: relative; width: min(100%, 56rem); max-height: calc(100dvh - 2rem); overflow: auto; border-radius: 24px; background: var(--cream); box-shadow: 0 24px 60px rgba(31,42,36,.3); display: grid; transform: translateY(12px); opacity: 0; transition: transform .3s ease, opacity .3s ease; }
+  .offer-root.open .offer-overlay { opacity: 1; } .offer-root.open .offer { transform: none; opacity: 1; }
+  @media (min-width: 768px) { .offer { grid-template-columns: 5fr 7fr; } }
+  .offer-side { background: var(--sage-deep); color: var(--cream); padding: 2rem 1.75rem; display: flex; flex-direction: column; justify-content: space-between; gap: 2rem; min-height: 9rem; } @media (min-width: 768px) { .offer-side { padding: 2.5rem; min-height: 100%; } }
+  .offer-side .brand { color: var(--cream); font-size: 1.75rem; } .offer-side .big { font-family: var(--display); font-size: 3rem; line-height: 1; font-weight: 600; letter-spacing: -.02em; } @media (min-width: 768px) { .offer-side .big { font-size: 4rem; } } .offer-side .big small { display: block; font-size: 1rem; letter-spacing: .14em; text-transform: uppercase; margin-top: .75rem; font-family: var(--body); font-weight: 600; color: rgba(250,246,239,.8); }
+  .offer-side p { color: rgba(250,246,239,.78); font-size: .9375rem; line-height: 1.6; max-width: 20rem; }
+  .offer-main { padding: 2.25rem 1.5rem 1.75rem; } @media (min-width: 768px) { .offer-main { padding: 3rem 2.75rem; } }
+  .offer-main .eyebrow { color: var(--sage-deep); } .offer-main h2 { margin-top: .75rem; font-size: 2rem; line-height: 1.1; } @media (min-width: 640px) { .offer-main h2 { font-size: 2.5rem; } }
+  .offer-main .sub { margin-top: 1rem; color: var(--taupe); line-height: 1.65; }
+  .offer-form { margin-top: 1.5rem; display: grid; gap: .75rem; }
+  .offer-form input { min-height: 52px; width: 100%; border-radius: var(--r-btn); border: 1px solid rgba(31,42,36,.22); background: var(--white); padding: 0 1.25rem; font: inherit; font-size: 1rem; color: var(--ink); } .offer-form input:focus { outline: 2px solid var(--sage-deep); outline-offset: 2px; } .offer-form input[aria-invalid="true"] { border-color: var(--clay); }
+  .offer-form .btn { width: 100%; min-height: 52px; letter-spacing: .12em; text-transform: uppercase; font-size: .8125rem; background: var(--sage-deep); box-shadow: none; } .offer-form .btn:hover { background: #253b2e; } .offer-form .btn[disabled] { opacity: .6; cursor: wait; transform: none; }
+  .offer-error { display: none; color: var(--clay); font-size: .875rem; } .offer-error.show { display: block; }
+  .offer-micro { margin-top: .875rem; font-size: .875rem; color: var(--taupe); }
+  .offer-consent { margin-top: 1rem; font-size: .75rem; line-height: 1.55; color: var(--taupe); } .offer-consent a { color: var(--sage-deep); }
+  .offer-close { position: absolute; top: .75rem; right: .75rem; z-index: 2; background: var(--cream); box-shadow: 0 1px 4px rgba(31,42,36,.15); } @media (min-width: 768px) { .offer-close { background: transparent; box-shadow: none; } }
+  .offer-done { display: none; } .offer-done.show { display: block; }
+  .offer-done .email { display: inline-block; margin-top: 1rem; padding: .5rem .875rem; border-radius: 999px; background: var(--sand); font-weight: 600; color: var(--sage-deep); word-break: break-all; }
+  .offer-done .notice { margin-top: 1rem; border-radius: 12px; border: 1px dashed rgba(31,42,36,.3); background: rgba(239,230,216,.6); padding: .875rem 1rem; font-size: .875rem; line-height: 1.6; color: var(--ink); } .offer-done .notice b { display: block; margin-bottom: .25rem; }
+  .offer-done .btn { margin-top: 1.5rem; min-height: 52px; letter-spacing: .12em; text-transform: uppercase; font-size: .8125rem; background: var(--sage-deep); box-shadow: none; } .offer-done .btn:hover { background: #253b2e; }
+  @media (max-width: 767px) { .offer-root { padding: 0; align-items: stretch; } .offer { width: 100%; max-height: 100dvh; border-radius: 0; } }
+  body.offer-open { overflow: hidden; }
+  .co-offer { margin-top: .75rem; font-size: .875rem; color: var(--taupe); line-height: 1.55; } .co-offer[hidden] { display: none; } .co-offer b { color: var(--sage-deep); }
   .cart-root { position: fixed; inset: 0; z-index: 65; }
   .cart-overlay { position: absolute; inset: 0; background: rgba(31,42,36,.4); backdrop-filter: blur(2px); opacity: 0; transition: opacity .25s ease; }
   .cart { position: absolute; right: 0; top: 0; height: 100%; width: min(92vw, 28rem); background: var(--cream); box-shadow: 0 10px 40px rgba(31,42,36,.25); display: flex; flex-direction: column; transform: translateX(24px); opacity: 0; transition: transform .25s ease-out, opacity .25s ease-out; outline: none; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -279,6 +305,42 @@
 
 
 <!-- Cart drawer (template's cart, local until Shopify is connected) -->
+<!-- WELCOME OFFER: first-visit popup. Email capture + discount eligibility go to WELCOME_OFFER.endpoint (see script); nothing is claimed until that endpoint confirms. -->
+<div class="offer-root" id="offerRoot" hidden>
+  <div class="offer-overlay" id="offerOverlay"></div>
+  <div class="offer" id="offerDialog" role="dialog" aria-modal="true" aria-labelledby="offerTitle" tabindex="-1">
+    <button type="button" class="iconbtn offer-close" id="offerClose" aria-label="Close and continue to the site"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <div class="offer-side" aria-hidden="true">
+      <p class="brand">UrPick</p>
+      <p class="big">15% off<small>Your first order</small></p>
+      <p>Everyday essentials for pets and the people who love them.</p>
+    </div>
+    <div class="offer-main">
+      <div class="offer-ask" id="offerAsk">
+        <p class="eyebrow">Welcome to UrPick</p>
+        <h2 id="offerTitle">A little something for your first pick.</h2>
+        <p class="sub">Enter your email and get 15% off your first order. Your discount will automatically apply at checkout when you use the same email.</p>
+        <form class="offer-form" id="offerForm" novalidate>
+          <label for="offerEmail" style="position:absolute;left:-9999px">Email address</label>
+          <input id="offerEmail" type="email" placeholder="Enter your email address" autocomplete="email" inputmode="email" required>
+          <p class="offer-error" id="offerError" role="alert"></p>
+          <button type="submit" class="btn btn-primary" id="offerSubmit">Unlock my 15% off</button>
+        </form>
+        <p class="offer-micro">No code to remember. Just shop and we’ll take care of the rest.</p>
+        <p class="offer-consent">By entering your email you agree to receive UrPick emails about launch news and offers. You can unsubscribe at any time. See our <a href="#privacy">Privacy Policy</a>.</p>
+      </div>
+      <div class="offer-done" id="offerDone" aria-live="polite">
+        <p class="eyebrow">Welcome to UrPick</p>
+        <h2 id="offerDoneTitle">You’re in!</h2>
+        <p class="sub" id="offerDoneBody">Your 15% first-order discount is ready. Shop normally and use this email at checkout. We’ll apply your discount automatically.</p>
+        <span class="email" id="offerDoneEmail"></span>
+        <div class="notice" id="offerDoneNotice" hidden></div>
+        <p><button type="button" class="btn btn-primary" id="offerStart">Start shopping</button></p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="cart-root" id="cartRoot" hidden>
   <div class="cart-overlay" id="cartOverlay"></div>
   <aside class="cart" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle" tabindex="-1">
@@ -564,6 +626,7 @@
         <div class="co-summary">
           <h2>Order summary</h2>
           <div id="checkoutLines"></div>
+          <p class="co-offer" id="checkoutOffer" hidden></p>
           <div class="co-totals">
             <div><span>Subtotal</span><span id="checkoutSubtotal">$0.00</span></div>
             <div><span>Shipping</span><span class="taupe">Calculated at checkout</span></div>
@@ -1053,6 +1116,7 @@
     cart.lines.forEach(function (l) { lines.appendChild(lineEl(l, true)); });
     document.getElementById("checkoutSubtotal").textContent = money(cartSubtotal()); document.getElementById("checkoutTotal").textContent = money(cartSubtotal());
     var go = document.getElementById("checkoutGo"); go.disabled = !(SHOPIFY_CONNECTED && cart.lines.length);
+    if (typeof renderCheckoutOffer === "function") renderCheckoutOffer();
   }
   function openCart() { if (!cartRoot.hidden) return; cartLast = document.activeElement; clearTimeout(cartTimer); cartRoot.hidden = false; document.body.classList.add("cart-open"); requestAnimationFrame(function () { cartRoot.classList.add("open"); cartClose.focus(); }); }
   function closeCart(restore) { if (cartRoot.hidden) return; cartRoot.classList.remove("open"); document.body.classList.remove("cart-open"); var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; cartTimer = setTimeout(function () { cartRoot.hidden = true; }, reduce ? 0 : 260); if (restore !== false && cartLast && cartLast.focus) cartLast.focus(); }
@@ -1094,4 +1158,108 @@
     });
   }
   wire("newsForm", "newsEmail", "newsOk");
+
+  // ── Welcome offer popup: 15% off the first order for a new visitor's email ──
+  // The discount itself lives in the store (Shopify customer tag + automatic discount, one use per customer).
+  // This popup only collects the email and asks WELCOME_OFFER.endpoint to register it. Until that endpoint
+  // exists it says so plainly and never claims the discount is applied.
+  var WELCOME_OFFER = {
+    enabled: true,
+    percent: 15,
+    endpoint: "",            // e.g. "/api/welcome-offer" — POST {email, consent, source} -> {eligible: true|false, reason?}
+    showAfterMs: 1200,       // delay before the popup appears on a first visit
+    dismissCooldownDays: 7,  // closed without signing up: wait this long before showing again
+    storageKey: "urpick_offer_v1"
+  };
+  (function () {
+    var root = document.getElementById("offerRoot"); if (!root || !WELCOME_OFFER.enabled) return;
+    var dialog = document.getElementById("offerDialog"), overlay = document.getElementById("offerOverlay"), closeBtn = document.getElementById("offerClose");
+    var form = document.getElementById("offerForm"), email = document.getElementById("offerEmail"), err = document.getElementById("offerError"), submit = document.getElementById("offerSubmit");
+    var ask = document.getElementById("offerAsk"), done = document.getElementById("offerDone"), startBtn = document.getElementById("offerStart");
+    var lastFocus = null, hideTimer = null;
+    function load() { try { return JSON.parse(localStorage.getItem(WELCOME_OFFER.storageKey) || "null"); } catch (e) { return null; } }
+    function save(v) { try { localStorage.setItem(WELCOME_OFFER.storageKey, JSON.stringify(v)); } catch (e) {} }
+    function onHome() { return !/^#(contact|track-order|about|checkout|shipping-returns|privacy|terms)$/.test(location.hash || ""); }
+    function shouldShow() {
+      var st = load();
+      if (st && st.status === "signed") return false;                                   // already signed up: never again
+      if (st && st.status === "dismissed" && Date.now() - st.at < WELCOME_OFFER.dismissCooldownDays * 864e5) return false; // cooldown
+      try { if (sessionStorage.getItem(WELCOME_OFFER.storageKey + ":seen")) return false; } catch (e) {} // once per browsing session
+      return onHome();
+    }
+    function focusables() { return Array.prototype.slice.call(dialog.querySelectorAll('a[href], button:not([disabled]), input:not([disabled])')).filter(function (el) { return el.offsetParent !== null; }); }
+    function open() {
+      if (!root.hidden) return; lastFocus = document.activeElement; clearTimeout(hideTimer);
+      try { sessionStorage.setItem(WELCOME_OFFER.storageKey + ":seen", "1"); } catch (e) {}
+      root.hidden = false; document.body.classList.add("offer-open");
+      requestAnimationFrame(function () { root.classList.add("open"); (root.querySelector(".offer-done.show") ? startBtn : email).focus({ preventScroll: true }); });
+      if (window.dataLayer) window.dataLayer.push({ event: "welcome_offer_view" });
+    }
+    function close(reason) {
+      if (root.hidden) return;
+      root.classList.remove("open"); document.body.classList.remove("offer-open");
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      hideTimer = setTimeout(function () { root.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true }); }, reduce ? 0 : 260);
+      if (reason === "dismiss") { var st = load(); if (!st || st.status !== "signed") save({ status: "dismissed", at: Date.now() }); }
+    }
+    function showError(msg) { err.textContent = msg; err.classList.add("show"); email.setAttribute("aria-invalid", "true"); email.focus(); }
+    function clearError() { err.textContent = ""; err.classList.remove("show"); email.removeAttribute("aria-invalid"); }
+    function showDone(addr, confirmed, reason) {
+      ask.style.display = "none"; done.classList.add("show");
+      document.getElementById("offerDoneEmail").textContent = addr;
+      var body = document.getElementById("offerDoneBody"), notice = document.getElementById("offerDoneNotice");
+      if (confirmed) {
+        body.textContent = "Your " + WELCOME_OFFER.percent + "% first-order discount is ready. Shop normally and use this email at checkout. We’ll apply your discount automatically.";
+        notice.hidden = true;
+      } else {
+        body.textContent = "Thanks — we’ve saved this email for the " + WELCOME_OFFER.percent + "% first-order offer.";
+        notice.innerHTML = "<b>Not confirmed yet.</b>" + (reason || "The discount is set up in the store, which isn’t connected to this page yet. Once it is, checking out with this email applies the offer automatically. Nothing is applied until then.");
+        notice.hidden = false;
+      }
+      startBtn.focus({ preventScroll: true });
+    }
+    function register(addr) {
+      // Backend contract: POST endpoint, JSON {email, consent:true, source:"welcome-popup"} -> 2xx {eligible:boolean, reason?:string}.
+      // The backend tags the customer / creates the one-use discount; this page never decides eligibility itself.
+      if (!WELCOME_OFFER.endpoint) return Promise.resolve({ ok: false, offline: true });
+      return fetch(WELCOME_OFFER.endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: addr, consent: true, source: "welcome-popup", percent: WELCOME_OFFER.percent }) })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok && !!j.eligible, reason: j.reason, status: r.status }; }); })
+        .catch(function () { return { ok: false, network: true }; });
+    }
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault(); clearError();
+      var addr = (email.value || "").trim().toLowerCase();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(addr)) { showError("Please enter a valid email address, like name@example.com."); return; }
+      submit.disabled = true; submit.textContent = "One moment…";
+      register(addr).then(function (res) {
+        submit.disabled = false; submit.textContent = "Unlock my 15% off";
+        if (res.network) { showError("We couldn’t reach the server. Please check your connection and try again."); return; }
+        if (!res.ok && !res.offline && res.reason) { showError(res.reason); return; }       // e.g. "This email has already used the first-order offer."
+        save({ status: "signed", email: addr, consent: true, confirmed: !!res.ok, at: Date.now() });
+        showDone(addr, !!res.ok, res.offline ? null : res.reason);
+        if (window.dataLayer) window.dataLayer.push({ event: "welcome_offer_signup", confirmed: !!res.ok });
+      });
+    });
+    closeBtn.addEventListener("click", function () { close("dismiss"); });
+    overlay.addEventListener("click", function () { close("dismiss"); });
+    startBtn.addEventListener("click", function () { close("done"); if (location.hash && !onHome()) location.hash = "#top"; });
+    dialog.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape") { ev.preventDefault(); close("dismiss"); return; }
+      if (ev.key !== "Tab") return; var f = focusables(); if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+    });
+    if (shouldShow()) setTimeout(open, WELCOME_OFFER.showAfterMs);
+    window.urpickOffer = { open: open, close: close, state: load }; // for tests and the checkout page
+  })();
+  function renderCheckoutOffer() {
+    var el = document.getElementById("checkoutOffer"); if (!el) return;
+    var st = null; try { st = JSON.parse(localStorage.getItem(WELCOME_OFFER.storageKey) || "null"); } catch (e) {}
+    if (!st || st.status !== "signed") { el.hidden = true; return; }
+    el.hidden = false;
+    el.innerHTML = st.confirmed
+      ? "<b>Welcome offer:</b> " + WELCOME_OFFER.percent + "% off your first order is applied automatically when you check out with " + st.email + "."
+      : "<b>Welcome offer:</b> " + st.email + " is saved for the " + WELCOME_OFFER.percent + "% first-order offer. The store applies it at checkout once connected; it is not applied yet.";
+  }
 </script>

@@ -39,3 +39,11 @@ Tests: `tools/test_nav.py` now covers the shop block, cart, and checkout as well
 3. Set the production branch to `claude/relaxed-brown-bm2ob8` (or merge it to the default branch). Every push that changes `site/` redeploys.
 
 Before launch: connect the waitlist/newsletter form to an email service, publish Privacy and Terms, fill the shipping and returns placeholders (contact email yourpick2025@gmail.com is published in the FAQ, Contact page, Track page and footer), and connect Shopify (see "Cart and checkout").
+
+## Welcome offer popup (added 15 Oct 2026)
+
+First-visit overlay offering 15% off the first order in exchange for an email. Copy, states and rules as briefed: delayed 1.2 s on the homepage only; once per browsing session; never again after a signup; a 7-day cooldown after a dismissal (X, backdrop or Escape); email validated before submit; consent disclosure under the field with a Privacy Policy link; focus trap and scroll lock; near-full-screen on phones. Settings live in the `WELCOME_OFFER` object at the end of the script. State is kept in `localStorage` under `urpick_offer_v1` (`{status: "signed"|"dismissed", email, consent, confirmed, at}`).
+
+**The discount is not faked.** Eligibility is decided by the store, not by this page. `WELCOME_OFFER.endpoint` is empty until a backend exists, so after a valid email the popup shows "You're in!" with the saved email and a plain "Not confirmed yet" notice, and the checkout page shows the same email with "not applied yet". When the endpoint is set, the popup `POST`s `{email, consent: true, source: "welcome-popup", percent: 15}` and expects `2xx {eligible: true|false, reason?}`; only `eligible: true` switches the success copy to "Your 15% first-order discount is ready" and the checkout line to "applied automatically".
+
+Backend plan (Shopify): the endpoint (a Vercel serverless function or a Shopify app proxy) creates or finds the customer by email, records marketing consent (`emailMarketingConsent`), refuses with a reason if the customer already has an order or the `welcome15` tag, otherwise adds the `welcome15` tag. An automatic discount "Welcome 15%" (15% off, customer segment = tag `welcome15`, one use per customer) applies itself at checkout when that email is used; a Shopify Flow removes the tag after the first paid order. No code is shown to the customer at any point.
