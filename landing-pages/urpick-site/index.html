@@ -58,6 +58,7 @@
   .hdr-cta { display: none; } @media (min-width: 640px) { .hdr-cta { display: inline-flex; min-height: 40px; padding: .5rem 1.1rem; font-size: .8rem; } }
   /* header: hamburger left, logo centre, actions right */
   header.site .container.hdr { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 4rem; }
+  .hdr-nav { display: none; } @media (min-width: 1024px) { header.site .container.hdr { grid-template-columns: auto 1fr auto; gap: 2rem; } header.site .hdr .menubtn { display: none; } header.site .hdr .brand { justify-self: start; } .hdr-nav { display: flex; justify-content: center; gap: .25rem; } .hdr-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .875rem; border-radius: 999px; font-size: .8125rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); text-decoration: none; } .hdr-nav a:hover { background: var(--sand); } .hdr-nav a[aria-current="page"] { color: var(--sage-deep); box-shadow: inset 0 -2px 0 var(--sage-deep); border-radius: 0; } }
   header.site .hdr .menubtn { justify-self: start; margin-left: -.5rem; }
   header.site .hdr .brand { justify-self: center; font-size: 1.75rem; line-height: 1; } @media (min-width: 640px) { header.site .hdr .brand { font-size: 2.125rem; } }
   header.site .hdr .hdr-actions { justify-self: end; }
@@ -106,7 +107,7 @@
   .hero > .container { display: grid; align-items: center; gap: 2.5rem; padding-block: 3rem; }
   .hero h1 { font-size: 2.6rem; line-height: 1.02; margin-top: 1rem; } @media (min-width: 640px) { .hero h1 { font-size: 3.75rem; } } @media (min-width: 1024px) { .hero h1 { font-size: 4.25rem; } }
   .hero .sub { margin-top: 1.5rem; max-width: 36rem; font-size: 1.125rem; color: var(--taupe); line-height: 1.7; }
-  .hero .ctas { margin-top: 2rem; display: flex; flex-direction: column; gap: .75rem; } @media (min-width: 640px) { .hero .ctas { flex-direction: row; } }
+  .hero .ctas { margin-top: 2rem; display: flex; flex-direction: column; gap: .75rem; align-items: flex-start; } @media (min-width: 640px) { .hero .ctas { flex-direction: row; align-items: center; gap: 1.25rem; } }
   .hero .ph { aspect-ratio: 4 / 5; box-shadow: var(--shadow-card); }
   @media (min-width: 1024px) { .hero > .container { grid-template-columns: repeat(12, 1fr); gap: 3rem; padding-block: 5rem; } .hero .copy { grid-column: span 6; } .hero .visual { grid-column: span 6; } }
 
@@ -238,6 +239,41 @@
   @media (max-width: 767px) { .offer-root { padding: 0; align-items: stretch; } .offer { width: 100%; max-height: 100dvh; border-radius: 0; } }
   body.offer-open { overflow: hidden; }
   .co-offer { margin-top: .75rem; font-size: .875rem; color: var(--taupe); line-height: 1.55; } .co-offer[hidden] { display: none; } .co-offer b { color: var(--sage-deep); }
+  /* needs, collections, help, guide, filters, search, product details, buy bar */
+  .needgrid { margin: 2.5rem 0 0; padding: 0; list-style: none; display: grid; gap: 1rem; } @media (min-width: 640px) { .needgrid { grid-template-columns: repeat(2, 1fr); } } @media (min-width: 1024px) { .needgrid { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+  .needgrid a { display: flex; gap: 1rem; align-items: flex-start; min-height: 7rem; padding: 1.25rem 1.375rem; border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card), 0 0 0 1px rgba(31,42,36,.05); text-decoration: none; color: var(--ink); transition: transform .2s, box-shadow .2s; } .needgrid a:hover { transform: translateY(-2px); box-shadow: var(--shadow-card), 0 0 0 1px rgba(79,107,87,.4); }
+  .needgrid .ni { flex: none; width: 2.75rem; height: 2.75rem; border-radius: 999px; background: var(--sand); color: var(--sage-deep); display: grid; place-items: center; } .needgrid .ni .icon { width: 1.25rem; height: 1.25rem; }
+  .needgrid h3 { font-size: 1.25rem; } .needgrid p { margin-top: .25rem; font-size: .875rem; color: var(--taupe); line-height: 1.55; } .needgrid .go { margin-top: .5rem; font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--sage-deep); }
+  .need-paths { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: .5rem; } .need-paths button { min-height: 44px; padding: 0 1.125rem; border-radius: 999px; border: 1px solid rgba(31,42,36,.18); background: var(--white); font: inherit; font-size: .9375rem; font-weight: 500; color: var(--ink); cursor: pointer; } .need-paths button:hover { background: var(--sand); } .need-paths button[aria-pressed="true"] { background: var(--sage-deep); border-color: var(--sage-deep); color: var(--cream); } .need-paths button:focus-visible { outline: 2px solid var(--sage-deep); outline-offset: 2px; }
+  .need-pathdesc { margin-top: .75rem; color: var(--taupe); line-height: 1.6; }
+  .need-block { margin-top: 3rem; } .need-block h2 { font-size: 1.5rem; } .need-block .pgrid { margin-top: 1rem; } .need-empty { margin-top: 1rem; color: var(--taupe); }
+  .need-list { margin: 1rem 0 0; padding: 0; list-style: none; display: grid; gap: .75rem; } .need-list li { padding: 1rem 1.25rem; border-radius: 12px; background: var(--white); box-shadow: 0 0 0 1px rgba(31,42,36,.06); line-height: 1.6; } .need-list li b { display: block; margin-bottom: .125rem; } .need-list li p { color: var(--taupe); font-size: .9375rem; } .need-list a { color: var(--sage-deep); }
+  .guide-list { margin: 2rem 0 0; padding: 0; list-style: none; display: grid; gap: .75rem; } .guide-list li { display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: 1rem 1.25rem; border-radius: 12px; background: var(--white); box-shadow: 0 0 0 1px rgba(31,42,36,.06); } .guide-list b { font-weight: 600; } .guide-list small { display: block; margin-top: .125rem; color: var(--taupe); } .guide-list .tag { flex: none; font-size: .6875rem; letter-spacing: .1em; text-transform: uppercase; color: var(--taupe); border: 1px dashed rgba(31,42,36,.3); border-radius: 999px; padding: .25rem .625rem; }
+  .helpgrid { margin: 2rem 0 0; padding: 0; list-style: none; display: grid; gap: 1rem; } @media (min-width: 640px) { .helpgrid { grid-template-columns: repeat(2, 1fr); } } @media (min-width: 1024px) { .helpgrid { grid-template-columns: repeat(3, 1fr); } }
+  .helpgrid a { display: block; height: 100%; padding: 1.375rem; border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card), 0 0 0 1px rgba(31,42,36,.05); text-decoration: none; color: var(--ink); } .helpgrid a:hover { box-shadow: var(--shadow-card), 0 0 0 1px rgba(79,107,87,.4); } .helpgrid h2 { font-size: 1.25rem; } .helpgrid p { margin-top: .375rem; font-size: .875rem; color: var(--taupe); line-height: 1.55; } .nowrap { white-space: nowrap; }
+  .coll-tabs { justify-content: flex-start; margin-top: 1.5rem; } .coll-tabs[hidden] { display: none; } .coll-tabs a { display: inline-flex; align-items: center; text-decoration: none; }
+  .toolbar { margin-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; border-top: 1px solid rgba(31,42,36,.12); border-bottom: 1px solid rgba(31,42,36,.12); padding: .625rem 0; }
+  .tbtn { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: 0 1rem; border-radius: 999px; border: 1px solid rgba(31,42,36,.18); background: var(--white); font: inherit; font-size: .8125rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ink); cursor: pointer; } .tbtn:hover { background: var(--sand); } .tbtn .icon { width: 1.125rem; height: 1.125rem; } .tbtn:focus-visible { outline: 2px solid var(--sage-deep); outline-offset: 2px; }
+  .tsort { display: inline-flex; align-items: center; gap: .5rem; font-size: .8125rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; } .tsort select { min-height: 44px; border-radius: 999px; border: 1px solid rgba(31,42,36,.18); background: var(--white); padding: 0 2rem 0 1rem; font: inherit; font-size: .875rem; color: var(--ink); letter-spacing: 0; text-transform: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231F2A24' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right .75rem center; background-size: .875rem; }
+  .tcount { margin-left: auto; font-size: .875rem; color: var(--taupe); }
+  .coll-empty { margin-top: 2rem; text-align: center; padding: 2.5rem 1.5rem; border-radius: var(--r-card); border: 1px dashed rgba(31,42,36,.25); } .coll-empty p { color: var(--taupe); margin-bottom: 1rem; } .coll-empty[hidden] { display: none; }
+  .filter-root, .search-root { position: fixed; inset: 0; z-index: 66; } .filter-root[hidden], .search-root[hidden] { display: none; }
+  .filter-overlay { position: absolute; inset: 0; background: rgba(31,42,36,.4); backdrop-filter: blur(2px); opacity: 0; transition: opacity .25s ease; } .filter-root.open .filter-overlay, .search-root.open .filter-overlay { opacity: 1; }
+  .filter { position: absolute; right: 0; top: 0; height: 100%; width: min(92vw, 24rem); background: var(--cream); box-shadow: 0 10px 40px rgba(31,42,36,.25); display: flex; flex-direction: column; transform: translateX(24px); opacity: 0; transition: transform .3s ease, opacity .3s ease; } .filter-root.open .filter { transform: none; opacity: 1; }
+  @media (max-width: 639px) { .filter { top: auto; bottom: 0; height: auto; max-height: 86dvh; width: 100%; border-radius: 20px 20px 0 0; transform: translateY(24px); } }
+  .filter-body { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; display: grid; gap: 1.25rem; align-content: start; } .filter-body fieldset { border: 0; margin: 0; padding: 0; } .filter-body legend { font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--taupe); padding: 0; margin-bottom: .5rem; }
+  .filter-body label { display: flex; align-items: center; gap: .625rem; min-height: 40px; font-size: .9375rem; cursor: pointer; } .filter-body input[type="checkbox"] { width: 1.125rem; height: 1.125rem; accent-color: var(--sage-deep); } .filter-body label span.n { margin-left: auto; color: var(--taupe); font-size: .8125rem; } .fnote { font-size: .875rem; }
+  .filter-foot { display: flex; gap: .75rem; } .filter-foot .btn { flex: 1; min-height: 48px; }
+  #filterCount:not(:empty) { margin-left: .125rem; } #filterCount:not(:empty)::before { content: "("; } #filterCount:not(:empty)::after { content: ")"; }
+  .search { position: absolute; left: 50%; top: 5rem; transform: translate(-50%, -8px); width: min(94vw, 40rem); background: var(--cream); border-radius: 20px; box-shadow: 0 24px 60px rgba(31,42,36,.3); opacity: 0; transition: transform .25s ease, opacity .25s ease; overflow: hidden; } .search-root.open .search { transform: translate(-50%, 0); opacity: 1; } @media (max-width: 639px) { .search { top: 1rem; } }
+  .search-row { display: flex; align-items: center; gap: .5rem; padding: .75rem .75rem .75rem 1.25rem; border-bottom: 1px solid rgba(31,42,36,.1); } .search-row input { flex: 1; min-height: 44px; border: 0; background: none; font: inherit; font-size: 1.0625rem; color: var(--ink); } .search-row input:focus { outline: none; }
+  .search-results { margin: 0; padding: .5rem; list-style: none; max-height: 60dvh; overflow-y: auto; } .search-results li a { display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1rem; border-radius: 12px; text-decoration: none; color: var(--ink); min-height: 44px; } .search-results li a:hover, .search-results li a:focus-visible { background: var(--sand); outline: none; } .search-results small { color: var(--taupe); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; flex: none; } .search-results .none { padding: 1rem; color: var(--taupe); }
+  .sr-only { position: absolute; left: -9999px; }
+  .pdp-details { margin-top: 2rem; border-top: 1px solid rgba(31,42,36,.1); } .pdp-details details { border-bottom: 1px solid rgba(31,42,36,.1); } .pdp-details summary { display: flex; justify-content: space-between; align-items: center; min-height: 52px; padding: .75rem 0; font-weight: 600; cursor: pointer; list-style: none; } .pdp-details summary::-webkit-details-marker { display: none; } .pdp-details summary::after { content: "+"; font-size: 1.25rem; color: var(--sage-deep); } .pdp-details details[open] summary::after { content: "\2013"; } .pdp-details .dbody { padding: 0 0 1rem; color: var(--taupe); line-height: 1.65; font-size: .9375rem; } .pdp-details .dbody a { color: var(--sage-deep); } .pdp-details summary:focus-visible { outline: 2px solid var(--sage-deep); outline-offset: 2px; }
+  #searchInput::-webkit-search-cancel-button, #searchInput::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
+  .buybar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; display: flex; align-items: center; gap: 1rem; padding: .75rem 1rem calc(.75rem + env(safe-area-inset-bottom)); background: rgba(250,246,239,.96); backdrop-filter: blur(8px); box-shadow: 0 -8px 24px rgba(31,42,36,.12); transform: translateY(100%); transition: transform .25s ease; } .buybar.show { transform: none; } .buybar[hidden] { display: none; } @media (min-width: 1024px) { .buybar { display: none !important; } }
+  .bb-info { flex: 1; min-width: 0; display: grid; } .bb-info b { font-size: .9375rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .bb-info span { font-size: .875rem; color: var(--taupe); } .buybar .btn { flex: none; min-height: 48px; }
+  body.buybar-on { padding-bottom: 5rem; }
   .cart-root { position: fixed; inset: 0; z-index: 65; }
   .cart-overlay { position: absolute; inset: 0; background: rgba(31,42,36,.4); backdrop-filter: blur(2px); opacity: 0; transition: opacity .25s ease; }
   .cart { position: absolute; right: 0; top: 0; height: 100%; width: min(92vw, 28rem); background: var(--cream); box-shadow: 0 10px 40px rgba(31,42,36,.25); display: flex; flex-direction: column; transform: translateX(24px); opacity: 0; transition: transform .25s ease-out, opacity .25s ease-out; outline: none; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -257,6 +293,8 @@
   .about-photo { aspect-ratio: 4 / 5; border-radius: var(--r-card); background-color: var(--sand); background-size: cover; background-position: 60% center; background-repeat: no-repeat; } @media (max-width: 1023px) { .about-photo { aspect-ratio: 4 / 3; } }
   .about-photo.placeholder { display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border: 1px dashed rgba(31,42,36,.3); background: var(--sand); color: var(--taupe); font-size: .9375rem; line-height: 1.6; } .about-photo.placeholder b { display: block; margin-bottom: .375rem; font-family: var(--display); font-size: 1.25rem; font-weight: 600; color: var(--ink); }
   .about-copy h1 { margin-top: .75rem; } .about-copy .body { margin-top: 1.5rem; }
+  .about-aisle { margin-top: 2rem; padding: 1.5rem; border-radius: var(--r-card); background: var(--sand); } .about-aisle h2 { font-size: 1.5rem; line-height: 1.25; } .about-aisle p { margin-top: .75rem; color: var(--taupe); line-height: 1.65; }
+  .about-copy .back { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; }
   .about-closing { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(31,42,36,.12); font-family: var(--display); font-size: 1.375rem; line-height: 1.35; color: var(--sage-deep); display: grid; gap: .5rem; } @media (min-width: 640px) { .about-closing { font-size: 1.625rem; } }
   .co-grid { margin-top: 2rem; display: grid; gap: 2rem; } @media (min-width: 1024px) { .co-grid { grid-template-columns: 1.1fr .9fr; gap: 3rem; align-items: start; } }
   .co-summary, .co-pay { border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card), 0 0 0 1px rgba(31,42,36,.05); padding: 1.5rem; } .co-grid h2 { font-size: 1.5rem; }
@@ -296,7 +334,7 @@
 
   /* footer */
   footer.site { border-top: 1px solid rgba(31,42,36,.1); padding-block: 3.5rem; }
-  footer.site .grid { display: grid; gap: 2.5rem; } @media (min-width: 768px) { footer.site .grid { grid-template-columns: repeat(12, 1fr); } footer.site .about { grid-column: span 5; } footer.site nav { grid-column: span 3; } }
+  footer.site .grid { display: grid; gap: 2.5rem; } @media (min-width: 768px) { footer.site .grid { grid-template-columns: repeat(12, 1fr); } footer.site .about { grid-column: span 3; } footer.site nav { grid-column: span 3; } }
   footer.site .about p.name { font-family: var(--display); font-size: 1.5rem; font-weight: 600; } footer.site .about p.tag { margin-top: .5rem; max-width: 20rem; font-size: .875rem; color: var(--taupe); }
   .social { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; padding: 0; } .social a { display: inline-flex; min-height: 40px; align-items: center; border-radius: 999px; border: 1px solid rgba(31,42,36,.15); padding: 0 1rem; font-size: .75rem; font-weight: 600; text-decoration: none; } .social a:hover { background: var(--ink); color: var(--cream); }
   footer.site nav p { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .15em; color: var(--taupe); } footer.site nav ul { margin: 1rem 0 0; padding: 0; list-style: none; display: grid; gap: .625rem; } footer.site nav a { font-size: .875rem; text-decoration: none; } footer.site nav a:hover { color: var(--sage-deep); }
@@ -330,9 +368,15 @@
   <div class="container hdr">
     <button type="button" class="iconbtn menubtn" id="menuBtn" aria-expanded="false" aria-controls="navDrawer" aria-haspopup="dialog" aria-label="Open menu"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     <a href="#top" class="brand" aria-label="UrPick home">UrPick</a>
+    <nav class="hdr-nav" aria-label="Primary">
+      <a href="#collection-all" data-nav="shop">Shop</a>
+      <a href="#collection-dogs" data-nav="pet">Shop by pet</a>
+      <a href="#shop-by-need" data-nav="need">Shop by need</a>
+      <a href="#about" data-nav="about">About</a>
+      <a href="#help" data-nav="help">Help</a>
+    </nav>
     <div class="hdr-actions">
-      <a href="#shop" class="btn btn-primary hdr-cta">Shop Now</a>
-      <a href="#" class="iconbtn" aria-label="Account (placeholder: link to Shopify customer account)"><svg class="icon" viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0"/></svg></a>
+      <button type="button" class="iconbtn" id="searchBtn" aria-label="Search" aria-haspopup="dialog" aria-controls="searchDialog"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg></button>
       <button type="button" class="iconbtn cartbtn" id="cartBtn" aria-label="Cart, 0 items" aria-haspopup="dialog" aria-controls="cartDrawer"><svg class="icon" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.5L21 8H6.2M9 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/></svg><span class="cart-badge" id="cartCount" hidden>0</span></button>
     </div>
   </div>
@@ -376,6 +420,32 @@
   </div>
 </div>
 
+<!-- Collection filter drawer: right-side on desktop, bottom sheet on phones -->
+<div class="filter-root" id="filterRoot" hidden>
+  <div class="filter-overlay" id="filterOverlay"></div>
+  <aside class="filter" id="filterDrawer" role="dialog" aria-modal="true" aria-labelledby="filterTitle" tabindex="-1">
+    <header class="cart-head"><h2 id="filterTitle">Filter</h2><button type="button" class="iconbtn" id="filterClose" aria-label="Close filters"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+    <form class="filter-body" id="filterForm">
+      <fieldset><legend>Pet</legend><div id="fPet"></div></fieldset>
+      <fieldset><legend>Need</legend><div id="fNeed"></div></fieldset>
+      <fieldset><legend>Product type</legend><div id="fType"></div></fieldset>
+      <fieldset><legend>Price</legend><p class="taupe fnote">Prices are set at launch. This filter switches on then.</p></fieldset>
+      <fieldset><legend>Availability</legend><div id="fAvail"></div></fieldset>
+    </form>
+    <footer class="cart-foot filter-foot"><button type="button" class="btn btn-secondary" id="filterClearAll">Clear all</button><button type="button" class="btn btn-primary" id="filterApply">Show results</button></footer>
+  </aside>
+</div>
+
+<!-- Search -->
+<div class="search-root" id="searchRoot" hidden>
+  <div class="filter-overlay" id="searchOverlay"></div>
+  <div class="search" id="searchDialog" role="dialog" aria-modal="true" aria-labelledby="searchTitle" tabindex="-1">
+    <h2 id="searchTitle" class="sr-only">Search</h2>
+    <form class="search-row" id="searchForm" role="search"><label for="searchInput" class="sr-only">Search products and pages</label><input id="searchInput" type="search" placeholder="Search products, needs, help…" autocomplete="off"><button type="button" class="iconbtn" id="searchClose" aria-label="Close search"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></form>
+    <ul class="search-results" id="searchResults" aria-live="polite"></ul>
+  </div>
+</div>
+
 <div class="cart-root" id="cartRoot" hidden>
   <div class="cart-overlay" id="cartOverlay"></div>
   <aside class="cart" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle" tabindex="-1">
@@ -401,28 +471,41 @@
     </div>
     <nav aria-label="Main" class="drawer-nav">
       <ul class="drawer-primary">
+        <li><a href="#collection-all" data-route="shop">Shop</a></li>
         <li class="drawer-group">
-          <button type="button" class="drawer-toggle" id="productsToggle" aria-expanded="false" aria-controls="productsMenu" data-route="home">Products<svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <button type="button" class="drawer-toggle" id="productsToggle" aria-expanded="false" aria-controls="productsMenu" data-route="home">Shop by pet<svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
           <ul class="drawer-sub" id="productsMenu" hidden>
-            <li><a href="#products-dogs" data-cat="dogs">Dogs</a></li>
-            <li><a href="#products-cats" data-cat="cats">Cats</a></li>
-            <li><a href="#products-other" data-cat="other">Other Pets</a></li>
+            <li><a href="#collection-dogs" data-cat="dogs">Dogs</a></li>
+            <li><a href="#collection-cats" data-cat="cats">Cats</a></li>
+            <li><a href="#collection-other" data-cat="other">Other Pets</a></li>
           </ul>
         </li>
-        <li><a href="#contact" data-route="contact">Contact</a></li>
-        <li><a href="#track-order" data-route="track-order">Track Your Order</a></li>
-        <li><a href="#about" data-route="about">About Us</a></li>
-      </ul>
-      <p class="drawer-label">On this page</p>
-      <ul class="drawer-secondary">
-        <li><a href="#moments">Everyday Moments</a></li>
-        <li><a href="#how-we-work">How We Work</a></li>
-        <li><a href="#why-urpick">Why UrPick</a></li>
-        <li><a href="#gallery">Gallery</a></li>
-        <li><a href="#faq">FAQ</a></li>
+        <li class="drawer-group">
+          <button type="button" class="drawer-toggle" id="needsToggle" aria-expanded="false" aria-controls="needsMenu">Shop by need<svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <ul class="drawer-sub" id="needsMenu" hidden>
+            <li><a href="#need-clean-home">Clean Home</a></li>
+            <li><a href="#need-better-walks">Better Walks</a></li>
+            <li><a href="#need-everyday-care">Everyday Care</a></li>
+            <li><a href="#need-grooming">Grooming</a></li>
+            <li><a href="#need-comfort-play">Comfort &amp; Play</a></li>
+            <li><a href="#need-travel">Travel</a></li>
+          </ul>
+        </li>
+        <li><a href="#about" data-route="about">About</a></li>
+        <li class="drawer-group">
+          <button type="button" class="drawer-toggle" id="helpToggle" aria-expanded="false" aria-controls="helpMenu">Help<svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <ul class="drawer-sub" id="helpMenu" hidden>
+            <li><a href="#help" data-route="help">Help centre</a></li>
+            <li><a href="#contact" data-route="contact">Contact</a></li>
+            <li><a href="#track-order" data-route="track-order">Track Your Order</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#shipping-returns" data-route="shipping-returns">Shipping &amp; Returns</a></li>
+          </ul>
+        </li>
+        <li><a href="#guide" data-route="guide">Pet Parent Guide</a></li>
       </ul>
     </nav>
-    <div class="drawer-foot"><a href="#shop" class="btn btn-primary">Shop Now</a></div>
+    <div class="drawer-foot"><a href="#collection-all" class="btn btn-primary">Shop what made the cut</a></div>
   </aside>
 </div>
 
@@ -437,8 +520,8 @@
       <h1>Everyday Pet Life, Made a Little Easier</h1>
       <p class="sub">We're building thoughtfully designed essentials for the routines you and your pets share: bath time, grooming, treat time, and the quiet afternoons in between.</p>
       <div class="ctas">
-        <a href="#shop" class="btn btn-primary">Shop Now</a>
-        <a href="#how-we-work" class="btn btn-secondary">See How We Work</a>
+        <a href="#collection-all" class="btn btn-primary">Shop what made the cut</a>
+        <a href="#how-we-work" class="textlink">How we choose <span aria-hidden="true">↓</span></a>
       </div>
     </div>
     <div class="visual">
@@ -456,113 +539,7 @@
 </section>
 
 <!-- USE CASES -->
-<section class="sec" id="moments">
-  <div class="container">
-    <div class="note"><b>USE CASES</b> — Template: "One product. So many moments." Reframed to the household since there is no product. Three cards: bath-grooming, treat-time, quiet-afternoon (the lone-cat card was removed as decorative).</div>
-    <div class="head center">
-      <p class="eyebrow">Made for everyday moments</p>
-      <h2 class="h2">One home. So many moments.</h2>
-    </div>
-    <ul class="cases">
-      <li class="card"><div class="ph photo-bath-grooming" role="img" aria-label="An owner towelling a wet golden retriever beside the bath while a tabby cat watches"><span class="cap"><b>Photo · 4/5</b> — bath time, grooming (photo 8)</span></div><div class="body"><div><h3>Bath time &amp; grooming</h3><p>The routines that take four hands and a lot of patience. Where we started looking.</p></div><span class="arrow"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></li>
-      <li class="card"><div class="ph photo-treat-time" role="img" aria-label="A golden retriever and a tabby cat eating treats from slow feeders on a rug"><span class="cap"><b>Photo · 4/5</b> — treat time (photo 9)</span></div><div class="body"><div><h3>Treat time</h3><p>Fast, messy, over in seconds. We think it can be slower and more fun.</p></div><span class="arrow"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></li>
-      <li class="card"><div class="ph photo-quiet-afternoon" role="img" aria-label="A golden retriever and a tabby cat asleep together on a sofa in the sun"><span class="cap"><b>Photo · 4/5</b> — quiet afternoons (photo 10)</span></div><div class="body"><div><h3>Quiet afternoons</h3><p>Home alone, or just bored. Small things that give them something to do.</p></div><span class="arrow"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></li>
-    </ul>
-  </div>
-</section>
 
-<!-- HOW WE WORK -->
-<section class="sec how" id="how-we-work">
-  <div class="container">
-    <div class="note"><b>HOW WE CHOOSE</b> — Four numbered stages of how products are selected. Photos reuse the lifestyle set: 1 bath-grooming (everyday moment), 2 bowls-in-use (bowls in the daily routine; only used here), 3 cat-tabby (stand-in until a product-in-use photo exists), 4 quiet-afternoon (the calm outcome). Swap tile 3 for a real product photo when one exists.</div>
-    <div class="head center">
-      <p class="eyebrow">How we choose</p>
-      <h2 class="h2">Only products that make pet life easier make the cut.</h2>
-    </div>
-    <ol class="steps">
-      <li class="step"><div class="vis"><div class="ph photo-bath-grooming pos-left" role="img" aria-label="A pet parent towelling off a golden retriever after a bath"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">1</span></div><div class="txt"><h3>Start with the real problem</h3><p>We start with the everyday frustrations pet parents actually deal with and look for where things could simply work better.</p></div></li>
-      <li class="step"><div class="vis"><div class="ph photo-bowls-in-use" role="img" aria-label="A golden retriever drinking from a water bowl while a tabby cat walks up to a food bowl on a woven rug"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">2</span></div><div class="txt"><h3>Find the smarter solution</h3><p>We look for products that solve the problem simply, practically, and without adding unnecessary steps to the routine.</p></div></li>
-      <li class="step"><div class="vis"><div class="ph photo-cat-tabby" role="img" aria-label="A tabby cat looking closely at the camera in a bright living room"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">3</span></div><div class="txt"><h3>Look closer</h3><p>We look at how the product works, how it is used, what it claims to do, and whether the solution actually makes sense for pet parents.</p></div></li>
-      <li class="step"><div class="vis"><div class="ph photo-quiet-afternoon" role="img" aria-label="A golden retriever and a tabby cat asleep together on a soft blanket"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">4</span></div><div class="txt"><h3>Only the good stuff makes the cut</h3><p>If we can’t clearly explain what it does, why it helps, and who it’s for, it doesn’t belong in our store.</p></div></li>
-    </ol>
-    <p class="steps-cta"><a href="#shop" class="textlink">Shop what made the cut <span aria-hidden="true">→</span></a></p>
-  </div>
-</section>
-
-<!-- WHY URPICK -->
-<section class="sec why" id="why-urpick">
-  <div class="container">
-    <div>
-      <div class="note"><b>WHY IT'S DIFFERENT</b> — Template: differentiator with four checked features and a 1:1 callout image. Filled with brand principles; callouts become product features later.</div>
-      <p class="eyebrow">Why UrPick</p>
-      <h2 class="h2">Simple things, done properly.</h2>
-      <p class="sub">Most pet products are made for a category. Ours are made for a moment: the bath, the brush, the nail trim, the long afternoon. That changes what we leave out.</p>
-      <ul class="feats">
-        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Routine first</h3><p>Designed around what happens every week, not what sells on a shelf.</p></div></li>
-        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Dogs and cats</h3><p>Different animals, different habits. One idea is not shrunk to fit the other.</p></div></li>
-        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Nothing unnecessary</h3><p>Fewer parts, simpler care, less to go wrong.</p></div></li>
-        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Honest claims</h3><p>If we haven't tested it, we won't say it.</p></div></li>
-      </ul>
-    </div>
-    <div>
-      <div class="callout-box photo-hero-family" role="img" aria-label="A golden retriever and two cats resting together on a rug in a bright living room">
-        <span class="callout" style="left:6%;top:14%"><i></i>Dogs &amp; cats</span>
-        <span class="callout" style="right:5%;top:26%"><i></i>Fewer parts</span>
-        <span class="callout" style="left:8%;bottom:22%"><i></i>Tested at home</span>
-        <span class="callout" style="right:8%;bottom:10%"><i></i>Plain words</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- GALLERY -->
-<section class="sec gallery" id="gallery">
-  <div class="container">
-    <div class="note"><b>CUSTOMER EXPERIENCES</b> — Three review cards (photo, rating, quote, name, verified badge) are placeholders until verified reviews exist: no names, quotes, stars or counts are invented. The share-your-experience strip offers a next-order discount; the percentage is a bracket until decided.</div>
-    <div class="head center">
-      <p class="eyebrow">Real homes. Real pets.</p>
-      <h2 class="h2">See what made the cut in real life.</h2>
-      <p class="sub">Real customer photos and reviews from pet parents using UrPick at home.</p>
-    </div>
-    <ul class="revs" aria-label="Customer reviews (placeholders until launch)">
-      <li class="rev">
-        <div class="rev-photo" role="img" aria-label="Customer photo placeholder"><span>Customer photo</span></div>
-        <div class="rev-body">
-          <p class="rev-stars" aria-hidden="true"><span>☆☆☆☆☆</span></p>
-          <p class="rev-quote">“[A verified customer review appears here — in their words, once real orders exist.]”</p>
-          <p class="rev-meta"><span class="rev-avatar" aria-hidden="true"></span><b>[Customer name]</b><span class="rev-verified">Verified purchase</span></p>
-        </div>
-      </li>
-      <li class="rev">
-        <div class="rev-photo" role="img" aria-label="Customer photo placeholder"><span>Customer photo</span></div>
-        <div class="rev-body">
-          <p class="rev-stars" aria-hidden="true"><span>☆☆☆☆☆</span></p>
-          <p class="rev-quote">“[A verified customer review appears here — in their words, once real orders exist.]”</p>
-          <p class="rev-meta"><span class="rev-avatar" aria-hidden="true"></span><b>[Customer name]</b><span class="rev-verified">Verified purchase</span></p>
-        </div>
-      </li>
-      <li class="rev">
-        <div class="rev-photo" role="img" aria-label="Customer photo placeholder"><span>Customer photo</span></div>
-        <div class="rev-body">
-          <p class="rev-stars" aria-hidden="true"><span>☆☆☆☆☆</span></p>
-          <p class="rev-quote">“[A verified customer review appears here — in their words, once real orders exist.]”</p>
-          <p class="rev-meta"><span class="rev-avatar" aria-hidden="true"></span><b>[Customer name]</b><span class="rev-verified">Verified purchase</span></p>
-        </div>
-      </li>
-    </ul>
-    <div class="rev-share">
-      <div>
-        <p class="eyebrow">Share your experience</p>
-        <h3>Bought something? Tell us how it went.</h3>
-        <p>Send a photo or a few words about your pet using a UrPick product and get <b>[X]% off</b> your next order. Every review is checked against a real order before it appears here.</p>
-      </div>
-      <p class="rev-share-cta"><a class="btn btn-primary" href="mailto:yourpick2025@gmail.com?subject=My%20UrPick%20experience">Share your experience</a></p>
-    </div>
-    <div class="reviews-note"><b>Reviews</b> — a verified review widget (Judge.me, Okendo or Shopify Reviews) replaces these placeholders once reviews exist. No ratings, counts or names are shown until real data is available.</div>
-  </div>
-</section>
-
-<!-- SHOP (template's product block; placeholder product until Shopify is connected) -->
 <section class="sec shop" id="shop">
   <div class="container">
     <div class="note"><b>SHOP BY PET</b> — Three tabs (Dogs default), 3 featured placeholder cards per tab from CATALOG in the script, a "View all" link to the category's collection page. No products exist yet: names, prices and benefit lines are bracketed placeholders until the supplier list arrives.</div>
@@ -579,6 +556,98 @@
     </div>
   </div>
 </section>
+<section class="sec needs" id="shop-by-need-home">
+  <div class="container">
+    <div class="note"><b>SHOP BY NEED</b> — Second discovery path: the problem the customer wants solved. Six tiles from the NEEDS object; each opens a need landing page. No photos by design.</div>
+    <div class="head center">
+      <p class="eyebrow">Shop by need</p>
+      <h2 class="h2">What are you trying to solve?</h2>
+    </div>
+    <ul class="needgrid" id="needGridHome"></ul>
+  </div>
+</section>
+<!-- HOW WE WORK -->
+<section class="sec how" id="how-we-work">
+  <div class="container">
+    <div class="note"><b>HOW WE CHOOSE</b> — Four numbered stages of how products are selected. Photos reuse the lifestyle set: 1 bath-grooming (everyday moment), 2 bowls-in-use (bowls in the daily routine; only used here), 3 cat-tabby (stand-in until a product-in-use photo exists), 4 quiet-afternoon (the calm outcome). Swap tile 3 for a real product photo when one exists.</div>
+    <div class="head center">
+      <p class="eyebrow">How we choose</p>
+      <h2 class="h2">Only products that make pet life easier make the cut.</h2>
+    </div>
+    <ol class="steps">
+      <li class="step"><div class="vis"><div class="ph photo-bath-grooming pos-left" role="img" aria-label="A pet parent towelling off a golden retriever after a bath"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">1</span></div><div class="txt"><h3>Start with the real problem</h3><p>We start with the everyday frustrations pet parents actually deal with and look for where things could simply work better.</p></div></li>
+      <li class="step"><div class="vis"><div class="ph photo-bowls-in-use" role="img" aria-label="A golden retriever drinking from a water bowl while a tabby cat walks up to a food bowl on a woven rug"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">2</span></div><div class="txt"><h3>Find the smarter solution</h3><p>We look for products that solve the problem simply, practically, and without adding unnecessary steps to the routine.</p></div></li>
+      <li class="step"><div class="vis"><div class="ph photo-cat-tabby" role="img" aria-label="A tabby cat looking closely at the camera in a bright living room"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">3</span></div><div class="txt"><h3>Look closer</h3><p>We look at how the product works, how it is used, what it claims to do, and whether the solution actually makes sense for pet parents.</p></div></li>
+      <li class="step"><div class="vis"><div class="ph photo-quiet-afternoon" role="img" aria-label="A golden retriever and a tabby cat asleep together on a soft blanket"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">4</span></div><div class="txt"><h3>Only the good stuff makes the cut</h3><p>If we can’t clearly explain what it does, why it helps, and who it’s for, it doesn’t belong in our store.</p></div></li>
+    </ol>
+    <p class="steps-cta"><a href="#collection-all" class="textlink">See what made the cut <span aria-hidden="true">→</span></a></p>
+  </div>
+</section>
+
+<section class="sec" id="moments">
+  <div class="container">
+    <div class="note"><b>USE CASES</b> — Template: "One product. So many moments." Reframed to the household since there is no product. Three cards: bath-grooming, treat-time, quiet-afternoon (the lone-cat card was removed as decorative).</div>
+    <div class="head center">
+      <p class="eyebrow">Made for everyday moments</p>
+      <h2 class="h2">One home. So many moments.</h2>
+    </div>
+    <ul class="cases">
+      <li class="card"><div class="ph photo-bath-grooming" role="img" aria-label="An owner towelling a wet golden retriever beside the bath while a tabby cat watches"><span class="cap"><b>Photo · 4/5</b> — bath time, grooming (photo 8)</span></div><div class="body"><div><h3>Bath time &amp; grooming</h3><p>The routines that take four hands and a lot of patience. Where we started looking.</p></div><span class="arrow"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></li>
+      <li class="card"><div class="ph photo-treat-time" role="img" aria-label="A golden retriever and a tabby cat eating treats from slow feeders on a rug"><span class="cap"><b>Photo · 4/5</b> — treat time (photo 9)</span></div><div class="body"><div><h3>Treat time</h3><p>Fast, messy, over in seconds. We think it can be slower and more fun.</p></div><span class="arrow"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></li>
+      <li class="card"><div class="ph photo-quiet-afternoon" role="img" aria-label="A golden retriever and a tabby cat asleep together on a sofa in the sun"><span class="cap"><b>Photo · 4/5</b> — quiet afternoons (photo 10)</span></div><div class="body"><div><h3>Quiet afternoons</h3><p>Home alone, or just bored. Small things that give them something to do.</p></div><span class="arrow"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></li>
+    </ul>
+  </div>
+</section>
+<!-- WHY URPICK -->
+<section class="sec why" id="why-urpick">
+  <div class="container">
+    <div>
+      <div class="note"><b>WHY IT'S DIFFERENT</b> — Template: differentiator with four checked features and a 1:1 callout image. Filled with brand principles; callouts become product features later.</div>
+      <p class="eyebrow">Why UrPick</p>
+      <h2 class="h2">Simple things, done properly.</h2>
+      <p class="sub">Most pet products are made for a category. Ours are made for a moment: the bath, the brush, the nail trim, the long afternoon. That changes what we leave out.</p>
+      <ul class="feats">
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Routine first</h3><p>Designed around what happens every week, not what sells on a shelf.</p></div></li>
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Dogs and cats</h3><p>Different animals, different habits. One idea is not shrunk to fit the other.</p></div></li>
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Nothing unnecessary</h3><p>Fewer parts, simpler care, less to go wrong.</p></div></li>
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Honest claims</h3><p>If we can't explain it clearly, we don't sell it.</p></div></li>
+      </ul>
+    </div>
+    <div>
+      <div class="callout-box photo-hero-family" role="img" aria-label="A golden retriever and two cats resting together on a rug in a bright living room">
+        <span class="callout" style="left:6%;top:14%"><i></i>Dogs &amp; cats</span>
+        <span class="callout" style="right:5%;top:26%"><i></i>Fewer parts</span>
+        <span class="callout" style="left:8%;bottom:22%"><i></i>Looked at closely</span>
+        <span class="callout" style="right:8%;bottom:10%"><i></i>Plain words</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="sec gallery" id="gallery">
+  <div class="container">
+    <div class="note"><b>CUSTOMER EXPERIENCES</b> — Three review cards (photo, rating, quote, name, verified badge) are placeholders until verified reviews exist: no names, quotes, stars or counts are invented. The share-your-experience strip offers a next-order discount; the percentage is a bracket until decided.</div>
+    <div class="head center">
+      <p class="eyebrow">Real homes. Real pets.</p>
+      <h2 class="h2">See what made the cut in real life.</h2>
+      <p class="sub">Real customer photos and reviews from pet parents using UrPick at home, once the first orders are out in the world.</p>
+    </div>
+    <!-- Review cards are rendered here by the review widget once verified reviews exist. Nothing is shown until then. -->
+    <ul class="revs" id="revList" hidden aria-label="Customer reviews"></ul>
+    <div class="rev-share">
+      <div>
+        <p class="eyebrow">Share your experience</p>
+        <h3>Bought something? Tell us how it went.</h3>
+        <p>Send a photo or a few words about your pet using a UrPick product and get <b>[X]% off</b> your next order. Every review is checked against a real order before it appears here.</p>
+      </div>
+      <p class="rev-share-cta"><a class="btn btn-primary" href="mailto:yourpick2025@gmail.com?subject=My%20UrPick%20experience">Share your experience</a></p>
+    </div>
+    <div class="reviews-note"><b>Reviews</b> — a verified review widget (Judge.me, Okendo or Shopify Reviews) replaces these placeholders once reviews exist. No ratings, counts or names are shown until real data is available.</div>
+  </div>
+</section>
+
+<!-- SHOP (template's product block; placeholder product until Shopify is connected) -->
 
 <!-- FAQ -->
 <section class="sec faq" id="faq">
@@ -671,8 +740,8 @@
       <p class="eyebrow" id="pdpEyebrow">Dogs</p>
       <h1 id="shopName"></h1>
       <p class="desc" id="shopDesc"></p>
+      <p class="ratings-note" id="shopReviews">No reviews yet. Ratings appear here only from real, verified reviews.</p>
       <div class="pricebox"><b id="shopPrice"></b><span id="shopPriceNote">PLACEHOLDER — price set in Shopify</span></div>
-      <p class="ratings-note">★ Ratings appear here once verified reviews exist. None are shown until then.</p>
       <fieldset class="colors">
         <legend>Color: <span id="shopColorName"></span></legend>
         <div class="swatches" id="shopSwatches"></div>
@@ -686,20 +755,33 @@
         <button type="button" class="btn btn-primary addbtn" id="addToCart">Add to Cart</button>
       </div>
       <ul class="reassure" id="shopReassure"></ul>
+      <div class="pdp-details" id="pdpDetails"></div>
       <p class="connect-note">Shopify not connected yet — cart runs locally. Add <code>VITE_SHOPIFY_DOMAIN</code> and <code>VITE_SHOPIFY_STOREFRONT_TOKEN</code> to <code>.env</code> to enable live checkout.</p>
     </div>
       </div>
     </div>
   </section>
 
+  <div class="buybar" id="buyBar" hidden><div class="bb-info"><b id="buyBarName"></b><span id="buyBarPrice"></span></div><button type="button" class="btn btn-primary" id="buyBarAdd">Add to cart</button></div>
+
   <section class="page" id="page-collection" aria-labelledby="collectionTitle">
     <div class="container wide">
-      <p class="eyebrow">Shop by pet</p>
-      <h1 id="collectionTitle">Dog products</h1>
+      <p class="eyebrow" id="collectionEyebrow">Shop</p>
+      <h1 id="collectionTitle">What made the cut</h1>
       <p class="lead" id="collectionLead"></p>
+      <div class="cat-tabs coll-tabs" role="tablist" aria-label="Shop by pet" id="collectionTabs" hidden>
+        <a role="tab" href="#collection-dogs" data-cat="dogs">Dogs</a>
+        <a role="tab" href="#collection-cats" data-cat="cats">Cats</a>
+        <a role="tab" href="#collection-other" data-cat="other">Other Pets</a>
+      </div>
+      <div class="toolbar">
+        <button type="button" class="tbtn" id="filterBtn" aria-haspopup="dialog" aria-controls="filterDrawer" aria-expanded="false"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10m-7 6h4"/></svg>Filter<span id="filterCount"></span></button>
+        <label class="tsort">Sort<select id="sortSel" aria-label="Sort products"><option value="featured">Featured</option><option value="name">Name A–Z</option><option value="price-asc">Price, low to high</option><option value="price-desc">Price, high to low</option></select></label>
+        <p class="tcount" id="collectionCount" aria-live="polite"></p>
+      </div>
       <p class="shop-ph">Placeholder products. Real names, photos and prices arrive with the supplier list.</p>
       <ul class="pgrid" id="collectionGrid"></ul>
-      <p class="back"><a href="#shop" class="btn btn-secondary">Back to Shop by pet</a></p>
+      <div class="coll-empty" id="collectionEmpty" hidden><p>No products match these filters.</p><button type="button" class="btn btn-secondary" id="collectionClear">Clear all</button></div>
     </div>
   </section>
 
@@ -713,6 +795,71 @@
         <div><span>Shipping</span><span class="taupe">Calculated at checkout</span></div>
       </div>
       <p class="cartpage-actions"><a href="#checkout" class="btn btn-primary">Checkout</a> <a href="#shop" class="btn btn-secondary">Continue shopping</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-needs" aria-labelledby="needsTitle">
+    <div class="container wide">
+      <p class="eyebrow">Shop by need</p>
+      <h1 id="needsTitle">What are you trying to solve?</h1>
+      <p class="lead">Pick the problem, not the aisle. Each need has a few clear ways to solve it, and only the products that make the cut.</p>
+      <ul class="needgrid" id="needGridPage"></ul>
+    </div>
+  </section>
+
+  <section class="page" id="page-need" aria-labelledby="needTitle">
+    <div class="container wide">
+      <p class="eyebrow" id="needEyebrow">Shop by need</p>
+      <h1 id="needTitle"></h1>
+      <p class="lead" id="needLead"></p>
+      <div class="need-paths" role="group" aria-label="Ways to solve it" id="needPaths"></div>
+      <section class="need-block" aria-labelledby="needFeaturedTitle">
+        <h2 id="needFeaturedTitle">Featured products</h2>
+        <p class="shop-ph">Placeholder products. Real names, photos and prices arrive with the supplier list.</p>
+        <ul class="pgrid" id="needGrid"></ul>
+        <p class="need-empty" id="needEmpty" hidden>Nothing listed for this path yet. It fills in as products are confirmed.</p>
+      </section>
+      <section class="need-block" aria-labelledby="needChooseTitle">
+        <h2 id="needChooseTitle">How to choose</h2>
+        <ul class="need-list" id="needChoose"></ul>
+      </section>
+      <section class="need-block" id="needProof" hidden aria-labelledby="needProofTitle">
+        <h2 id="needProofTitle">Real homes. Real pets.</h2>
+        <p class="taupe">Verified customer results appear here once the first orders are out in the world.</p>
+      </section>
+      <section class="need-block" aria-labelledby="needFaqTitle">
+        <h2 id="needFaqTitle">Questions</h2>
+        <ul class="need-list" id="needFaq"></ul>
+      </section>
+      <p class="back"><a href="#collection-all" class="btn btn-primary" id="needShopAll">Shop all</a> <a href="#guide" class="textlink" id="needLearn">Read the guide <span aria-hidden="true">→</span></a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-guide" aria-labelledby="guideTitle">
+    <div class="container">
+      <p class="eyebrow">Pet Parent Guide</p>
+      <h1 id="guideTitle">Plain answers to everyday pet questions.</h1>
+      <p class="lead">Short, practical guides on the routines behind our products. We publish each one only when it is written and checked, so this list shows what is coming rather than filler.</p>
+      <div class="draft"><b>In progress.</b> No guides are published yet. The topics below are planned; each will link to the products it relates to once it is live.</div>
+      <ul class="guide-list" id="guideList"></ul>
+      <p class="back"><a href="#shop-by-need" class="btn btn-primary">Shop by need</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-help" aria-labelledby="helpTitle">
+    <div class="container wide">
+      <p class="eyebrow">Help</p>
+      <h1 id="helpTitle">How can we help?</h1>
+      <p class="lead">Orders, shipping, returns and getting in touch, in one place.</p>
+      <ul class="helpgrid">
+        <li><a href="#contact"><h2>Contact us</h2><p>Questions, ideas or a routine you wish were easier. Email <span class="nowrap">yourpick2025@gmail.com</span> or use the form.</p></a></li>
+        <li><a href="#track-order"><h2>Track your order</h2><p>Where your order is, once ordering is live.</p></a></li>
+        <li><a href="#faq"><h2>FAQ</h2><p>What UrPick is, who it is for, and when we launch.</p></a></li>
+        <li><a href="#shipping-returns"><h2>Shipping &amp; Returns</h2><p>Where we ship, how long it takes, and how returns work.</p></a></li>
+        <li><a href="#privacy"><h2>Privacy Policy</h2><p>What we collect and why.</p></a></li>
+        <li><a href="#terms"><h2>Terms of Service</h2><p>The plain-language rules for the site and for buying from us.</p></a></li>
+      </ul>
+      <p class="back"><a href="mailto:yourpick2025@gmail.com" class="btn btn-primary">Email us</a></p>
     </div>
   </section>
 
@@ -983,11 +1130,15 @@
           <p>UrPick was created around a simple idea: the everyday parts of living with pets should be easier.</p>
           <p>We look for practical products that solve real problems pet parents deal with, whether that means making a routine simpler, keeping the home cleaner, making walks more comfortable, or helping everyday care feel a little less complicated.</p>
         </div>
+        <div class="about-aisle">
+          <h2>The pet aisle is full. Your home does not need all of it.</h2>
+          <p>Pet parents are surrounded by products that look useful online and turn into clutter, extra steps or a small disappointment once they arrive. We would rather carry fewer things and be clear about what each one is for.</p>
+        </div>
         <div class="about-closing">
           <p>We are not trying to fill a store with everything made for pets.</p>
-          <p>We want to find the things that are actually worth bringing into your home.</p>
+          <p>Only the useful stuff should make the cut.</p>
         </div>
-        <p class="back"><a href="#shop" class="btn btn-primary">Shop Now</a> <a href="#top" class="btn btn-secondary">Back to home</a></p>
+        <p class="back"><a href="#collection-dogs" class="btn btn-primary">Shop by pet</a> <a href="#shop-by-need" class="textlink">Shop by need <span aria-hidden="true">→</span></a></p>
       </div>
     </div>
   </section>
@@ -1003,13 +1154,17 @@
         <li><a href="https://www.facebook.com/profile.php?id=61585565952893" target="_blank" rel="noopener">Facebook</a></li>
       </ul>
     </div>
-    <nav aria-label="Explore">
-      <p>Explore</p>
-      <ul><li><a href="#moments">Everyday Moments</a></li><li><a href="#how-we-work">How We Work</a></li><li><a href="#why-urpick">Why UrPick</a></li><li><a href="#faq">FAQ</a></li></ul>
+    <nav aria-label="Shop">
+      <p>Shop</p>
+      <ul><li><a href="#collection-all">What made the cut</a></li><li><a href="#collection-dogs">Dogs</a></li><li><a href="#collection-cats">Cats</a></li><li><a href="#collection-other">Other Pets</a></li><li><a href="#shop-by-need">Shop by need</a></li></ul>
     </nav>
     <nav aria-label="Company">
       <p>Company</p>
-      <ul><li><a href="#about">About</a></li><li><a href="#contact">Contact</a></li><li><a href="#track-order">Track Your Order</a></li><li><a href="#shipping-returns">Shipping &amp; Returns</a></li><li><a href="#privacy">Privacy Policy</a></li><li><a href="#terms">Terms</a></li><li><a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a></li></ul>
+      <ul><li><a href="#about">About</a></li><li><a href="#how-we-work">How we choose</a></li><li><a href="#guide">Pet Parent Guide</a></li><li><a href="#gallery">Real homes. Real pets.</a></li></ul>
+    </nav>
+    <nav aria-label="Help">
+      <p>Help</p>
+      <ul><li><a href="#help">Help centre</a></li><li><a href="#contact">Contact</a></li><li><a href="#track-order">Track Your Order</a></li><li><a href="#faq">FAQ</a></li><li><a href="#shipping-returns">Shipping &amp; Returns</a></li><li><a href="#privacy">Privacy Policy</a></li><li><a href="#terms">Terms</a></li><li><a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a></li></ul>
     </nav>
   </div>
   <div class="container legal">
@@ -1074,7 +1229,9 @@
   var productsToggle = document.getElementById("productsToggle"), productsMenu = document.getElementById("productsMenu");
   function setProductsOpen(open) { productsToggle.setAttribute("aria-expanded", open ? "true" : "false"); productsMenu.hidden = !open; }
   productsToggle.addEventListener("click", function () { setProductsOpen(productsMenu.hidden); });
-  menuBtn.addEventListener("click", function () { if (!drawerRoot.hidden && /^#products-/.test(location.hash)) setProductsOpen(true); });
+  [["needsToggle","needsMenu"],["helpToggle","helpMenu"]].forEach(function (pair) { var t = document.getElementById(pair[0]), m = document.getElementById(pair[1]); t.addEventListener("click", function () { var open = m.hidden; t.setAttribute("aria-expanded", open ? "true" : "false"); m.hidden = !open; }); });
+  function setGroupOpen(toggleId, menuId, open) { var t = document.getElementById(toggleId), m = document.getElementById(menuId); t.setAttribute("aria-expanded", open ? "true" : "false"); m.hidden = !open; }
+  menuBtn.addEventListener("click", function () { if (drawerRoot.hidden) return; var h = location.hash || ""; if (/^#(products-|collection-(dogs|cats|other))/.test(h)) setProductsOpen(true); if (/^#(need-|shop-by-need|collection-(clean-home|better-walks|everyday-care|grooming|comfort-play|travel))/.test(h)) setGroupOpen("needsToggle", "needsMenu", true); if (/^#(help|contact|track-order|faq|shipping-returns|privacy|terms)$/.test(h)) setGroupOpen("helpToggle", "helpMenu", true); });
 
   // ── Hash router: home is <main>; #contact, #track-order, #about are pages ──
   var ROUTES = { "contact": "page-contact", "track-order": "page-track", "about": "page-about", "checkout": "page-checkout", "shipping-returns": "page-shipping", "privacy": "page-privacy", "terms": "page-terms" };
@@ -1084,17 +1241,25 @@
   function route() {
     var hash = (location.hash || "").replace(/^#/, "");
     var pageId = ROUTES[hash];
-    var mProd = /^product-(.+)$/.exec(hash), mColl = /^collection-(dogs|cats|other)$/.exec(hash);
+    var mProd = /^product-(.+)$/.exec(hash), mColl = /^collection-([a-z-]+)$/.exec(hash), mNeed = /^need-([a-z-]+)$/.exec(hash);
     if (mProd && typeof showProduct === "function" && showProduct(mProd[1])) pageId = "page-product";
-    if (mColl && typeof showCollection === "function") { showCollection(mColl[1]); pageId = "page-collection"; }
+    if (mColl && typeof showCollection === "function" && showCollection(mColl[1])) pageId = "page-collection";
+    if (mNeed && typeof showNeed === "function" && showNeed(mNeed[1])) pageId = "page-need";
     if (hash === "cart") { pageId = "page-cart"; if (typeof renderCartPage === "function") renderCartPage(); }
+    if (hash === "shop-by-need") pageId = "page-needs";
+    if (hash === "guide") pageId = "page-guide";
+    if (hash === "help") pageId = "page-help";
+    if (typeof setBuyBar === "function") setBuyBar(pageId === "page-product");
+    // header nav: mark the section of the site we are in
+    var navKey = mColl ? (/^(dogs|cats|other)$/.test(mColl[1]) ? "pet" : mColl[1] === "all" ? "shop" : "need") : mNeed || hash === "shop-by-need" ? "need" : mProd ? "shop" : hash === "about" ? "about" : /^(help|contact|track-order|shipping-returns|privacy|terms)$/.test(hash) ? "help" : "";
+    document.querySelectorAll(".hdr-nav a[data-nav]").forEach(function (a) { if (a.getAttribute("data-nav") === navKey) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     pageEls.forEach(function (p) { p.classList.toggle("active", p.id === pageId); });
     var wasOnPage = homeMain.hidden;
     homeMain.hidden = !!pageId;
     var current = pageId ? hash : "home";
     document.querySelectorAll('.drawer-primary a[data-route]').forEach(function (a) { if (a.getAttribute("data-route") === current) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     var names = { "contact": "Contact", "track-order": "Track your order", "about": "About us", "checkout": "Checkout", "shipping-returns": "Shipping & Returns", "privacy": "Privacy Policy", "terms": "Terms of Service", "cart": "Your cart" };
-    var pageName = names[hash] || (mProd ? PRODUCT.name : mColl ? CAT_NAMES[mColl[1]] + " products" : "");
+    var pageName = names[hash] || (mProd ? PRODUCT.name : mColl ? collectionTitle(mColl[1]) : mNeed ? NEEDS[mNeed[1]].name : hash === "shop-by-need" ? "Shop by need" : hash === "guide" ? "Pet Parent Guide" : hash === "help" ? "Help" : "");
     document.title = pageId ? pageName + " · " + baseTitle : baseTitle;
     if (pageId === "page-checkout" && typeof renderCheckout === "function") renderCheckout();
     if (pageId) { window.scrollTo(0, 0); var h = document.getElementById(pageId).querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } }
@@ -1111,11 +1276,153 @@
   var CAT_NAMES = { dogs: "Dogs", cats: "Cats", other: "Other Pets" };
   var CAT_SINGULAR = { dogs: "dog", cats: "cat", other: "other pet" };
   // Placeholder catalog: names, prices and benefit lines are brackets until the supplier list exists. ids are stable for routing (#product-<id>).
+  // Each placeholder carries the need and the path within that need it will belong to, so Shop by need, filters and need pages work before real products exist.
   var CATALOG = {
-    dogs:  [1,2,3,4].map(function (n) { return { id: "dog-" + n,   cat: "dogs",  name: "[Dog product " + n + "]",       price: 0, benefit: "[One short benefit line — what this makes easier]", sil: ["#7E9A86","#C98A6B","#D9CDB8","#4A4F4C"][n-1] }; }),
-    cats:  [1,2,3,4].map(function (n) { return { id: "cat-" + n,   cat: "cats",  name: "[Cat product " + n + "]",       price: 0, benefit: "[One short benefit line — what this makes easier]", sil: ["#C98A6B","#7E9A86","#4A4F4C","#D9CDB8"][n-1] }; }),
-    other: [1,2,3].map(function (n)   { return { id: "other-" + n, cat: "other", name: "[Other pet product " + n + "]", price: 0, benefit: "[One short benefit line — what this makes easier]", sil: ["#D9CDB8","#4A4F4C","#7E9A86"][n-1] }; })
+    dogs:  [["clean-home","laundry"],["better-walks","harness"],["everyday-care","feeding"],["grooming","brushing"]].map(function (m, i) { var n = i + 1; return { id: "dog-" + n,   cat: "dogs",  need: m[0], path: m[1], name: "[Dog product " + n + "]",       price: 0, available: false, benefit: "[One short benefit line — what this makes easier]", sil: ["#7E9A86","#C98A6B","#D9CDB8","#4A4F4C"][i] }; }),
+    cats:  [["clean-home","surfaces"],["grooming","brushing"],["comfort-play","play"],["everyday-care","toileting"]].map(function (m, i) { var n = i + 1; return { id: "cat-" + n,   cat: "cats",  need: m[0], path: m[1], name: "[Cat product " + n + "]",       price: 0, available: false, benefit: "[One short benefit line — what this makes easier]", sil: ["#C98A6B","#7E9A86","#4A4F4C","#D9CDB8"][i] }; }),
+    other: [["everyday-care","feeding"],["comfort-play","rest"],["travel","carriers"]].map(function (m, i)              { var n = i + 1; return { id: "other-" + n, cat: "other", need: m[0], path: m[1], name: "[Other pet product " + n + "]", price: 0, available: false, benefit: "[One short benefit line — what this makes easier]", sil: ["#D9CDB8","#4A4F4C","#7E9A86"][i] }; })
   };
+  function allProducts() { return CATALOG.dogs.concat(CATALOG.cats, CATALOG.other); }
+  // Shop by need: the problem first, then a few clear ways to solve it. Copy describes the problem area, never a product claim.
+  var NEEDS = {
+    "clean-home":    { name: "Clean Home",      icon: "M4 20h16M6 20V9l6-5 6 5v11M9 20v-6h6v6", lead: "Hair on the blankets, paw prints on the floor, the odd accident. Pets make a home, and a home needs looking after.",
+      paths: [["laundry","Laundry","Bedding, blankets, washable fabrics and the pet-hair problem."],["surfaces","Surfaces","Furniture, floors, upholstery and quick clean-ups."],["petcare","Pet care","Grooming and routines that reduce the source of the mess."],["learn","Learn","How pet hair behaves in the wash, and what actually helps."]],
+      choose: [["Start with where the mess lands.","Blankets and bedding need a different fix from floors and sofas."],["Fewer steps wins.","If a product adds a chore to remove a chore, it is not a solution."],["Think about the source.","A brushing routine often does more for a clean home than another cleaner."]],
+      faq: [["Will these products work for both dogs and cats?","Each product page says who it is for. Many are shared; a few are not."],["Do you carry cleaning chemicals?","We list what we carry on each product page, with what it does and what is in it."]] },
+    "better-walks":  { name: "Better Walks",    icon: "M5 19l4-10 4 6 3-4 3 8M8 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3", lead: "A walk should be the easy part of the day, not a tug of war with gear that gets in the way.",
+      paths: [["harness","Harnesses & leads","Fit, control and comfort for the dog on the other end."],["onwalk","On the walk","Water, waste bags and the small things worth carrying."],["petcare","Pet care","Paws and coats after the walk."],["learn","Learn","Front-clip versus back-clip, and how a harness should fit."]],
+      choose: [["Fit comes before features.","A harness that sits right matters more than any extra."],["Match the walk you actually take.","A short city loop and a long trail ask for different things."],["Keep the kit small.","Carry what you use every time, and nothing else."]],
+      faq: [["How do I know which size to choose?","Each product page carries its own size guide once sizing is confirmed."],["Can I return a harness that does not fit?","Yes, within the window on our Shipping & Returns page, unused and in its packaging."]] },
+    "everyday-care": { name: "Everyday Care",   icon: "M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10Z", lead: "Feeding, water, toileting and the small daily jobs. Done every day, so they should be simple.",
+      paths: [["feeding","Feeding & water","Bowls, feeders and keeping meals tidy."],["toileting","Toileting","Pads, litter and the clean-up that follows."],["basics","Health basics","Everyday upkeep: ears, teeth, nails and paws."],["learn","Learn","How often pads should be changed, and other routine questions."]],
+      choose: [["Pick for the routine, not the moment.","Something you use twice a day should be quick to clean and hard to knock over."],["Match your pet, not the picture.","Size, age and habits change what works."],["Simple beats clever.","Fewer parts means fewer things to lose, wash or replace."]],
+      faq: [["Are these suitable for puppies and kittens?","Each product page states the age or size it suits."],["Do you sell food or medication?","No. We carry everyday care products, not food or medicines."]] },
+    "grooming":      { name: "Grooming",        icon: "M4 4l8 8m0 0 8 8M4 20l8-8m0 0 8-8", lead: "Brushing, bathing and trimming, without the wrestling match.",
+      paths: [["brushing","Brushing","Coats, shedding and the brush your pet will tolerate."],["bath","Bath time","Washing, drying and keeping the bathroom in one piece."],["nails","Nails & paws","Trims and paw care at home."],["learn","Learn","How often to brush, bathe or trim for your pet's coat."]],
+      choose: [["Start with the coat.","Short, long, double or curly coats each want a different tool."],["Comfort for the pet first.","If a tool scares them, it will not get used."],["One good tool over three okay ones.","A single brush that suits the coat beats a drawer of extras."]],
+      faq: [["Which brush is right for my pet?","Each brush page says which coat types it suits and which it does not."],["Can grooming products be returned?","Unused and unopened, yes. Opened hygiene items generally cannot be, as explained on our Shipping & Returns page."]] },
+    "comfort-play":  { name: "Comfort & Play",  icon: "M8 10a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm10 2a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM4 20c0-3 3-5 8-5s8 2 8 5", lead: "Somewhere to settle, and something to do. Especially on the long afternoons.",
+      paths: [["rest","Beds & rest","Places to sleep that survive washing."],["play","Enrichment & play","Toys and feeders that keep a mind busy."],["calm","Calm & quiet","For home-alone hours and busy households."],["learn","Learn","Why enrichment matters, and how much is enough."]],
+      choose: [["Watch how your pet already rests.","Curled, stretched or tucked away points to the right bed."],["Choose play they can win.","Enrichment should be a challenge, not a frustration."],["Washable or it will not last.","Anything soft needs to go through the machine."]],
+      faq: [["Are the toys safe to leave out unsupervised?","Each product page says whether it is for supervised play only."],["Do beds come in more than one size?","Sizes are listed on each product page once confirmed."]] },
+    "travel":        { name: "Travel",          icon: "M3 13l2-5h14l2 5M5 13v5h14v-5M7 18v2m10-2v2M8 9V6h8v3", lead: "Car rides, trips and days out, with less to carry and less to worry about.",
+      paths: [["car","In the car","Keeping pets safe and seats clean on the road."],["carriers","Carriers","Carrying small pets comfortably and securely."],["onthego","On the go","Water, waste and the essentials for a day out."],["learn","Learn","How to get a pet used to a carrier or the car."]],
+      choose: [["Safety before convenience.","Restraint and ventilation come first."],["Size it to the pet, not the car.","Room to turn around, no more."],["Pack once.","A small kit that stays in the car saves the scramble."]],
+      faq: [["Do carriers meet airline rules?","Where a carrier is airline-approved, its product page says so and names the airlines."],["Can I return a carrier?","Yes, unused and in its packaging, within the window on our Shipping & Returns page."]] }
+  };
+  var NEED_ORDER = ["clean-home","better-walks","everyday-care","grooming","comfort-play","travel"];
+  // Pet Parent Guide: planned topics only. Nothing is published until it is written and checked.
+  var GUIDE_TOPICS = [
+    ["Why does pet hair stay on blankets after washing?", "clean-home"], ["How do you reduce pet hair in the washing machine?", "clean-home"],
+    ["Front-clip vs back-clip harnesses: which suits your dog?", "better-walks"], ["How should a harness fit?", "better-walks"],
+    ["How often should dog ears be cleaned?", "everyday-care"], ["How often should puppy pads be changed?", "everyday-care"],
+    ["How often should you brush a cat?", "grooming"], ["Getting a pet used to a carrier", "travel"], ["What counts as enrichment, and how much is enough?", "comfort-play"]
+  ];
+  function needIcon(d) { return '<span class="ni" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="' + d + '"/></svg></span>'; }
+  function renderNeedGrid(id) {
+    var ul = document.getElementById(id); if (!ul) return; ul.innerHTML = "";
+    NEED_ORDER.forEach(function (k) { var n = NEEDS[k], li = document.createElement("li"), a = document.createElement("a"); a.href = "#need-" + k;
+      a.innerHTML = needIcon(n.icon) + '<div><h3>' + n.name + '</h3><p>' + n.lead.split(". ")[0].replace(/\.$/, "") + '.</p><p class="go">Shop ' + n.name.toLowerCase() + ' \u2192</p></div>'; li.appendChild(a); ul.appendChild(li); });
+  }
+  var activeNeed = null, activeNeedPath = null;
+  function showNeed(key) {
+    var n = NEEDS[key]; if (!n) return false;
+    if (activeNeed !== key) activeNeedPath = null; activeNeed = key;
+    document.getElementById("needTitle").textContent = n.name; document.getElementById("needLead").textContent = n.lead;
+    var paths = document.getElementById("needPaths"); paths.innerHTML = "";
+    n.paths.forEach(function (pth) { var b = document.createElement("button"); b.type = "button"; b.textContent = pth[1]; b.setAttribute("aria-pressed", String(activeNeedPath === pth[0])); b.setAttribute("data-path", pth[0]);
+      b.addEventListener("click", function () { if (pth[0] === "learn") { location.hash = "#guide"; return; } activeNeedPath = activeNeedPath === pth[0] ? null : pth[0]; showNeed(key); }); paths.appendChild(b); });
+    var desc = document.createElement("p"); desc.className = "need-pathdesc"; var cur = n.paths.filter(function (x) { return x[0] === activeNeedPath; })[0];
+    desc.textContent = cur ? cur[2] : "Pick a path to narrow the products, or browse everything for this need below."; paths.appendChild(desc);
+    var items = allProducts().filter(function (x) { return x.need === key && (!activeNeedPath || x.path === activeNeedPath); });
+    var grid = document.getElementById("needGrid"); grid.innerHTML = ""; items.slice(0, 4).forEach(function (it) { grid.appendChild(productCard(it)); });
+    document.getElementById("needEmpty").hidden = items.length > 0;
+    var ch = document.getElementById("needChoose"); ch.innerHTML = ""; n.choose.forEach(function (c) { var li = document.createElement("li"); li.innerHTML = "<b>" + c[0] + "</b><p>" + c[1] + "</p>"; ch.appendChild(li); });
+    var fq = document.getElementById("needFaq"); fq.innerHTML = ""; n.faq.forEach(function (f) { var li = document.createElement("li"); li.innerHTML = "<b>" + f[0] + "</b><p>" + f[1].replace("Shipping & Returns page", '<a href="#shipping-returns">Shipping &amp; Returns page</a>') + "</p>"; fq.appendChild(li); });
+    var shopAll = document.getElementById("needShopAll"); shopAll.href = "#collection-" + key; shopAll.textContent = "Shop " + n.name.toLowerCase();
+    return true;
+  }
+  function renderGuide() {
+    var ul = document.getElementById("guideList"); if (!ul) return; ul.innerHTML = "";
+    GUIDE_TOPICS.forEach(function (t) { var li = document.createElement("li"); li.innerHTML = "<div><b>" + t[0] + "</b><small>Related: <a href=\"#need-" + t[1] + "\">" + NEEDS[t[1]].name + "</a></small></div><span class=\"tag\">Planned</span>"; ul.appendChild(li); });
+  }
+  // ── Collections: title + one sentence, FILTER | SORT, grid. Key = all | dogs | cats | other | <need> ──
+  var collKey = "all", filters = { pet: [], need: [], type: [], avail: [] }, sortKey = "featured";
+  var TYPE_LABELS = { laundry: "Laundry", surfaces: "Surfaces", petcare: "Pet care", harness: "Harnesses & leads", onwalk: "On the walk", feeding: "Feeding & water", toileting: "Toileting", basics: "Health basics", brushing: "Brushing", bath: "Bath time", nails: "Nails & paws", rest: "Beds & rest", play: "Enrichment & play", calm: "Calm & quiet", car: "In the car", carriers: "Carriers", onthego: "On the go" };
+  function collectionTitle(key) { return key === "all" ? "What made the cut" : CAT_NAMES[key] ? CAT_NAMES[key] + " products" : NEEDS[key] ? NEEDS[key].name : "Shop"; }
+  function collectionBase(key) { var all = allProducts(); if (key === "all") return all; if (CAT_NAMES[key]) return all.filter(function (x) { return x.cat === key; }); if (NEEDS[key]) return all.filter(function (x) { return x.need === key; }); return []; }
+  function applyFilters(items) {
+    return items.filter(function (x) { return (!filters.pet.length || filters.pet.indexOf(x.cat) > -1) && (!filters.need.length || filters.need.indexOf(x.need) > -1) && (!filters.type.length || filters.type.indexOf(x.path) > -1) && (!filters.avail.length || filters.avail.indexOf(x.available ? "in" : "soon") > -1); })
+      .sort(function (a, b) { if (sortKey === "name") return a.name.localeCompare(b.name); if (sortKey === "price-asc") return a.price - b.price; if (sortKey === "price-desc") return b.price - a.price; return 0; });
+  }
+  function filterCount() { return filters.pet.length + filters.need.length + filters.type.length + filters.avail.length; }
+  function showCollection(key) {
+    if (!(key === "all" || CAT_NAMES[key] || NEEDS[key])) return false;
+    if (key !== collKey) { filters = { pet: [], need: [], type: [], avail: [] }; } collKey = key;
+    document.getElementById("collectionTitle").textContent = collectionTitle(key);
+    document.getElementById("collectionEyebrow").textContent = CAT_NAMES[key] ? "Shop by pet" : NEEDS[key] ? "Shop by need" : "Shop";
+    document.getElementById("collectionLead").textContent = key === "all" ? "Everything we carry, chosen for the everyday problems it solves." : CAT_NAMES[key] ? "Everything we will carry for " + (key === "other" ? "other pets" : key) + ". This list fills in as products are confirmed." : NEEDS[key].lead;
+    var tabs = document.getElementById("collectionTabs"); tabs.hidden = !CAT_NAMES[key];
+    tabs.querySelectorAll("a").forEach(function (a) { a.setAttribute("aria-selected", String(a.getAttribute("data-cat") === key)); });
+    renderCollection(); return true;
+  }
+  function renderCollection() {
+    var items = applyFilters(collectionBase(collKey)), grid = document.getElementById("collectionGrid"); grid.innerHTML = "";
+    items.forEach(function (it) { grid.appendChild(productCard(it)); });
+    document.getElementById("collectionEmpty").hidden = items.length > 0;
+    document.getElementById("collectionCount").textContent = items.length + (items.length === 1 ? " product" : " products");
+    var n = filterCount(); document.getElementById("filterCount").textContent = n ? String(n) : "";
+    document.getElementById("sortSel").value = sortKey;
+  }
+  function buildFilterForm() {
+    var base = collectionBase(collKey);
+    function group(id, name, opts) { var box = document.getElementById(id); box.innerHTML = ""; opts.forEach(function (o) { var cnt = base.filter(o[2]).length; if (!cnt && name !== "avail") return; var l = document.createElement("label"); var c = document.createElement("input"); c.type = "checkbox"; c.name = name; c.value = o[0]; c.checked = filters[name].indexOf(o[0]) > -1; l.appendChild(c); l.appendChild(document.createTextNode(" " + o[1])); var sp = document.createElement("span"); sp.className = "n"; sp.textContent = cnt; l.appendChild(sp); box.appendChild(l); }); box.closest("fieldset").hidden = !box.children.length; }
+    group("fPet", "pet", [["dogs","Dogs",function (x) { return x.cat === "dogs"; }],["cats","Cats",function (x) { return x.cat === "cats"; }],["other","Other pets",function (x) { return x.cat === "other"; }]]);
+    group("fNeed", "need", NEED_ORDER.map(function (k) { return [k, NEEDS[k].name, function (x) { return x.need === k; }]; }));
+    group("fType", "type", Object.keys(TYPE_LABELS).map(function (k) { return [k, TYPE_LABELS[k], function (x) { return x.path === k; }]; }));
+    group("fAvail", "avail", [["in","In stock",function (x) { return x.available; }],["soon","Coming soon",function (x) { return !x.available; }]]);
+  }
+  (function () {
+    var root = document.getElementById("filterRoot"), drawer = document.getElementById("filterDrawer"), btn = document.getElementById("filterBtn"), last = null, timer = null;
+    function openF() { buildFilterForm(); clearTimeout(timer); last = document.activeElement; root.hidden = false; btn.setAttribute("aria-expanded", "true"); document.body.classList.add("cart-open"); requestAnimationFrame(function () { root.classList.add("open"); document.getElementById("filterClose").focus({ preventScroll: true }); }); }
+    function closeF() { if (root.hidden) return; root.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); document.body.classList.remove("cart-open"); var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; timer = setTimeout(function () { root.hidden = true; if (last && last.focus) last.focus({ preventScroll: true }); }, reduce ? 0 : 260); }
+    function readForm() { ["pet","need","type","avail"].forEach(function (n) { filters[n] = Array.prototype.slice.call(document.querySelectorAll('#filterForm input[name="' + n + '"]:checked')).map(function (c) { return c.value; }); }); renderCollection(); }
+    btn.addEventListener("click", openF); document.getElementById("filterClose").addEventListener("click", closeF); document.getElementById("filterOverlay").addEventListener("click", closeF);
+    document.getElementById("filterForm").addEventListener("change", readForm);
+    document.getElementById("filterApply").addEventListener("click", function () { readForm(); closeF(); });
+    document.getElementById("filterClearAll").addEventListener("click", function () { filters = { pet: [], need: [], type: [], avail: [] }; buildFilterForm(); renderCollection(); });
+    document.getElementById("collectionClear").addEventListener("click", function () { filters = { pet: [], need: [], type: [], avail: [] }; renderCollection(); });
+    document.getElementById("sortSel").addEventListener("change", function (ev) { sortKey = ev.target.value; renderCollection(); });
+    drawer.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape") { ev.preventDefault(); closeF(); return; }
+      if (ev.key !== "Tab") return; var f = Array.prototype.slice.call(drawer.querySelectorAll('button:not([disabled]), input:not([disabled])')).filter(function (el) { return el.offsetParent !== null; }); if (!f.length) return;
+      var first = f[0], lastEl = f[f.length - 1]; if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); lastEl.focus(); } else if (!ev.shiftKey && document.activeElement === lastEl) { ev.preventDefault(); first.focus(); }
+    });
+  })();
+  // ── Search: products, needs and pages. Opens as a dialog; Enter follows the first result. ──
+  (function () {
+    var root = document.getElementById("searchRoot"), dlg = document.getElementById("searchDialog"), input = document.getElementById("searchInput"), results = document.getElementById("searchResults"), btn = document.getElementById("searchBtn"), last = null, timer = null;
+    var PAGES = [["Shop by pet","#collection-dogs","Shop"],["Shop by need","#shop-by-need","Shop"],["What made the cut","#collection-all","Shop"],["How we choose","#how-we-work","About"],["About UrPick","#about","About"],["Pet Parent Guide","#guide","Guide"],["Help centre","#help","Help"],["Contact","#contact","Help"],["Track your order","#track-order","Help"],["Shipping & Returns","#shipping-returns","Help"],["FAQ","#faq","Help"],["Privacy Policy","#privacy","Help"],["Terms of Service","#terms","Help"]];
+    function open() { clearTimeout(timer); last = document.activeElement; root.hidden = false; document.body.classList.add("cart-open"); requestAnimationFrame(function () { root.classList.add("open"); input.focus(); }); render(""); }
+    function close() { if (root.hidden) return; root.classList.remove("open"); document.body.classList.remove("cart-open"); var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; timer = setTimeout(function () { root.hidden = true; input.value = ""; if (last && last.focus) last.focus({ preventScroll: true }); }, reduce ? 0 : 220); }
+    function render(q) {
+      q = q.trim().toLowerCase(); results.innerHTML = "";
+      var hits = [];
+      if (q) {
+        allProducts().forEach(function (x) { if ((x.name + " " + CAT_NAMES[x.cat] + " " + NEEDS[x.need].name).toLowerCase().indexOf(q) > -1) hits.push([x.name, "#product-" + x.id, CAT_NAMES[x.cat]]); });
+        NEED_ORDER.forEach(function (k) { if ((NEEDS[k].name + " " + NEEDS[k].lead).toLowerCase().indexOf(q) > -1) hits.push([NEEDS[k].name, "#need-" + k, "Shop by need"]); });
+        PAGES.forEach(function (pg) { if (pg[0].toLowerCase().indexOf(q) > -1) hits.push(pg); });
+      } else { hits = [["Shop by pet","#collection-dogs","Shop"],["Shop by need","#shop-by-need","Shop"],["Shipping & Returns","#shipping-returns","Help"],["Contact","#contact","Help"]]; }
+      if (!hits.length) { var li = document.createElement("li"); li.className = "none"; li.textContent = "Nothing found for \u201c" + q + "\u201d. Try a pet, a need, or a page name."; results.appendChild(li); return; }
+      hits.slice(0, 8).forEach(function (h) { var li = document.createElement("li"), a = document.createElement("a"); a.href = h[1]; a.innerHTML = "<span>" + h[0] + "</span><small>" + h[2] + "</small>"; a.addEventListener("click", function () { close(); }); li.appendChild(a); results.appendChild(li); });
+    }
+    btn.addEventListener("click", open); document.getElementById("searchClose").addEventListener("click", close); document.getElementById("searchOverlay").addEventListener("click", close);
+    input.addEventListener("input", function () { render(input.value); });
+    document.getElementById("searchForm").addEventListener("submit", function (ev) { ev.preventDefault(); var first = results.querySelector("a"); if (first) { location.hash = first.getAttribute("href"); close(); } });
+    dlg.addEventListener("keydown", function (ev) { if (ev.key === "Escape") { ev.preventDefault(); close(); } });
+    document.addEventListener("keydown", function (ev) { if (ev.key === "/" && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) && root.hidden) { ev.preventDefault(); open(); } });
+  })();
+  renderNeedGrid("needGridHome"); renderNeedGrid("needGridPage"); renderGuide();
   function findProduct(id) { for (var c in CATALOG) { var hit = CATALOG[c].filter(function (x) { return x.id === id; })[0]; if (hit) return hit; } return null; }
   function productCard(item) {
     var li = document.createElement("li"); li.className = "pcard";
@@ -1145,7 +1452,8 @@
   function syncProductsMenu(current, cat) {
     var toggle = document.getElementById("productsToggle");
     if (current === "home") toggle.setAttribute("aria-current", "page"); else toggle.removeAttribute("aria-current");
-    document.querySelectorAll(".drawer-sub a[data-cat]").forEach(function (a) { if (current === "home" && a.getAttribute("data-cat") === cat) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    var onPetColl = /^#collection-(dogs|cats|other)$/.exec(location.hash || "");
+    document.querySelectorAll(".drawer-sub a[data-cat]").forEach(function (a) { var k = a.getAttribute("data-cat"); if ((onPetColl && onPetColl[1] === k) || (current === "home" && k === cat && !onPetColl)) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
   }
   (function () {
     var tabs = Array.prototype.slice.call(document.querySelectorAll('.cat-tabs [role="tab"]'));
@@ -1157,11 +1465,6 @@
   function showProduct(id) {
     var item = findProduct(id); if (!item) return false;
     setProduct(item); return true;
-  }
-  function showCollection(cat) {
-    document.getElementById("collectionTitle").textContent = CAT_NAMES[cat] + " products";
-    document.getElementById("collectionLead").textContent = "Everything we will carry for " + (cat === "other" ? "other pets" : cat) + ". This list fills in as products are confirmed.";
-    var grid = document.getElementById("collectionGrid"); grid.innerHTML = ""; CATALOG[cat].forEach(function (item) { grid.appendChild(productCard(item)); });
   }
   window.addEventListener("hashchange", route); // initial route() runs after the cart is initialised (below)
 
@@ -1216,10 +1519,34 @@
     document.getElementById("shopName").textContent = PRODUCT.name;
     document.getElementById("shopDesc").textContent = PRODUCT.shortDescription;
     document.getElementById("shopPrice").textContent = money(PRODUCT.price);
-    document.getElementById("pdpEyebrow").textContent = CAT_NAMES[item.cat];
+    document.getElementById("pdpEyebrow").textContent = CAT_NAMES[item.cat] + " \u00b7 " + NEEDS[item.need].name;
+    document.getElementById("shopDesc").textContent = item.benefit;
+    renderPdpDetails(item);
+    document.getElementById("buyBarName").textContent = item.name; document.getElementById("buyBarPrice").textContent = money(item.price);
     document.getElementById("pdpCatName").textContent = CAT_NAMES[item.cat]; document.getElementById("pdpBack").href = "#collection-" + item.cat;
     if (typeof renderGallery === "function") { renderGallery(); renderColors(); }
   }
+  function renderPdpDetails(item) {
+    // Purchase information sits above; these blocks support the decision. Product-specific text is a bracket until the supplier spec exists.
+    var box = document.getElementById("pdpDetails"); if (!box) return; box.innerHTML = "";
+    var need = NEEDS[item.need], tbd = "[To be written from the supplier specification.]";
+    [["What it solves", "Part of <a href=\"#need-" + item.need + "\">" + need.name + "</a>: " + need.lead + " " + tbd],
+     ["How it works", tbd], ["How to use it", tbd], ["What to expect", tbd], ["Who it\u2019s for", "[Pet type, size and age this suits, and who it does not.] " + tbd], ["What\u2019s included", tbd],
+     ["Real customer results", "No customer results yet. Photos and reviews from real customers appear here once they exist; nothing is shown before then."],
+     ["Questions", need.faq.map(function (f) { return "<b>" + f[0] + "</b> " + f[1]; }).join("<br><br>")],
+     ["Shipping & Returns", "Standard shipping, 30-day returns on unused items, and how damaged or incorrect items are handled: see <a href=\"#shipping-returns\">Shipping &amp; Returns</a>."]]
+    .forEach(function (d, i) { var det = document.createElement("details"); if (i === 0) det.open = true; det.innerHTML = "<summary>" + d[0] + "</summary><div class=\"dbody\">" + d[1].replace("Shipping & Returns page", '<a href="#shipping-returns">Shipping &amp; Returns page</a>') + "</div>"; box.appendChild(det); });
+  }
+  var buyBarOn = false;
+  function setBuyBar(on) { buyBarOn = on; var bar = document.getElementById("buyBar"); if (!on) { bar.classList.remove("show"); bar.hidden = true; document.body.classList.remove("buybar-on"); } else { bar.hidden = false; bar.classList.remove("show"); } }
+  (function () {
+    var buyrow = document.querySelector(".buyrow"), bar = document.getElementById("buyBar"); if (!buyrow) return;
+    var queued = false;
+    function update() { queued = false; var r = buyrow.getBoundingClientRect(); var show = buyBarOn && r.bottom < 0 && window.innerWidth < 1024; bar.classList.toggle("show", show); document.body.classList.toggle("buybar-on", show); }
+    function schedule() { if (!queued) { queued = true; requestAnimationFrame(update); } }
+    window.addEventListener("scroll", schedule, { passive: true }); window.addEventListener("resize", schedule); window.addEventListener("hashchange", function () { setTimeout(update, 0); });
+    document.getElementById("buyBarAdd").addEventListener("click", function () { document.getElementById("addToCart").click(); });
+  })();
   document.getElementById("shopName").textContent = PRODUCT.name;
   document.getElementById("shopDesc").textContent = PRODUCT.shortDescription;
   document.getElementById("shopPrice").textContent = money(PRODUCT.price);
@@ -1367,7 +1694,7 @@
     var lastFocus = null, hideTimer = null;
     function load() { try { return JSON.parse(localStorage.getItem(WELCOME_OFFER.storageKey) || "null"); } catch (e) { return null; } }
     function save(v) { try { localStorage.setItem(WELCOME_OFFER.storageKey, JSON.stringify(v)); } catch (e) {} }
-    function onHome() { return !/^#(contact|track-order|about|checkout|shipping-returns|privacy|terms|cart|product-.+|collection-.+)$/.test(location.hash || ""); }
+    function onHome() { return !/^#(contact|track-order|about|checkout|shipping-returns|privacy|terms|cart|help|guide|shop-by-need|product-.+|collection-.+|need-.+)$/.test(location.hash || ""); }
     function shouldShow() {
       var st = load();
       if (st && st.status === "signed") return false;                                   // already signed up: never again

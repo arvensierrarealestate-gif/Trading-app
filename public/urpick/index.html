@@ -1,0 +1,1780 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UrPick</title>
+<meta name="description" content="UrPick — everyday essentials for pets and the people who love them. Coming soon.">
+<meta property="og:title" content="UrPick">
+<meta property="og:description" content="Everyday essentials for pets and the people who love them.">
+<meta property="og:image" content="assets/photos/hero-family.jpg">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" as="video" href="assets/video/hero-loop.mp4" type="video/mp4">
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap">
+<style>
+  /* Tokens lifted from the UrPick template build (tailwind theme) */
+  :root {
+    --cream: #FAF6EF; --sand: #EFE6D8; --sand-2: #E3D6C2; --white: #FFFFFF;
+    --ink: #1F2A24; --taupe: #7A6F66;
+    --sage: #4F6B57; --sage-deep: #2F4A3A; --sage-soft: #C9D6CB;
+    --clay: #C2653F;
+    --display: "Fraunces", Georgia, serif; --body: "Inter", system-ui, sans-serif;
+    --r-card: 16px; --r-btn: 28px;
+    --shadow-card: 0 8px 30px -12px rgba(31,42,36,.18);
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; color-scheme: light; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } }
+  body { margin: 0; background: var(--cream); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  h1, h2, h3 { margin: 0; font-family: var(--display); font-weight: 600; letter-spacing: -.025em; color: var(--ink); text-wrap: balance; }
+  p { margin: 0; }
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid var(--sage); outline-offset: 3px; }
+  .container { width: 100%; max-width: 1280px; margin-inline: auto; padding-inline: 1rem; }
+  @media (min-width: 640px) { .container { padding-inline: 1.5rem; } } @media (min-width: 1024px) { .container { padding-inline: 2rem; } }
+  .sec { padding-block: 5rem; } @media (min-width: 1024px) { .sec { padding-block: 7rem; } }
+  .eyebrow { font-size: .75rem; line-height: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: .18em; color: var(--sage); }
+  .h2 { font-size: 1.875rem; line-height: 1.08; } @media (min-width: 640px) { .h2 { font-size: 2.25rem; } } @media (min-width: 1024px) { .h2 { font-size: 3rem; } }
+  .head { max-width: 42rem; } .head.center { margin-inline: auto; text-align: center; }
+  .head .h2 { margin-top: .75rem; } .head .sub { margin-top: 1rem; font-size: 1rem; color: var(--taupe); line-height: 1.7; } @media (min-width: 640px) { .head .sub { font-size: 1.125rem; } }
+  .taupe { color: var(--taupe); }
+  .btn { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: .5rem; border-radius: var(--r-btn); padding: .875rem 1.5rem; font-size: .875rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: all .2s cubic-bezier(.4,0,.2,1); border: 1px solid transparent; font-family: var(--body); }
+  .btn-primary { background: var(--clay); color: #fff; box-shadow: 0 6px 18px -6px rgba(194,101,63,.6); } .btn-primary:hover { background: #AD5736; transform: translateY(-1px); }
+  .btn-secondary { background: transparent; color: var(--ink); border-color: rgba(31,42,36,.2); } .btn-secondary:hover { background: var(--sand); }
+  .card { border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card); }
+  .ph { position: relative; overflow: hidden; border-radius: var(--r-card); background: linear-gradient(to bottom right, var(--sand), var(--sand-2)); background-size: cover; background-position: center; }
+  .ph .cap { position: absolute; left: .75rem; right: .75rem; bottom: .75rem; border-radius: .5rem; background: rgba(255,255,255,.72); padding: .5rem .75rem; font-size: 11px; line-height: 1.4; color: var(--taupe); backdrop-filter: blur(6px); }
+  .ph .cap b { color: var(--ink); font-weight: 600; }
+  body:not(.notes) .ph .cap { display: none; }
+  .ph.vid video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .icon { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* internal bar */
+  .mockbar { background: #FFF4D6; color: #7A4E00; border-bottom: 1px solid #E9C86F; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+  .mockbar .container { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; min-height: 40px; padding-block: 6px; }
+  .mockbar label { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+  .note { display: none; font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; line-height: 1.45; background: #FFF4D6; color: #7A4E00; border: 1px dashed #E9C86F; border-radius: 8px; padding: 10px 12px; margin-bottom: 1rem; }
+  body.notes .note { display: block; }
+
+  /* announcement + header */
+  .announce { background: var(--sage-deep); color: var(--cream); text-align: center; font-size: .8rem; font-weight: 500; letter-spacing: .02em; padding: .65rem 1rem; } @media (min-width: 640px) { .announce { font-size: .875rem; } }
+  header.site { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 40; background: rgba(250,246,239,.9); backdrop-filter: blur(8px); }
+  header.site.scrolled { box-shadow: 0 1px 0 rgba(31,42,36,.08); }
+  header.site .container { display: flex; height: 4rem; align-items: center; justify-content: space-between; gap: 1rem; }
+  .brand { font-family: var(--display); font-size: 1.25rem; font-weight: 600; letter-spacing: -.02em; text-decoration: none; margin: 0; }
+  .hdr-actions { display: flex; align-items: center; gap: .25rem; }
+  .iconbtn { display: inline-flex; height: 2.75rem; width: 2.75rem; align-items: center; justify-content: center; border-radius: 999px; background: transparent; border: 0; color: var(--ink); cursor: pointer; } .iconbtn:hover { background: var(--sand); }
+  .hdr-cta { display: none; } @media (min-width: 640px) { .hdr-cta { display: inline-flex; min-height: 40px; padding: .5rem 1.1rem; font-size: .8rem; } }
+  /* header: hamburger left, logo centre, actions right */
+  header.site .container.hdr { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 4rem; }
+  .hdr-nav { display: none; } @media (min-width: 1024px) { header.site .container.hdr { grid-template-columns: auto 1fr auto; gap: 2rem; } header.site .hdr .menubtn { display: none; } header.site .hdr .brand { justify-self: start; } .hdr-nav { display: flex; justify-content: center; gap: .25rem; } .hdr-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 .875rem; border-radius: 999px; font-size: .8125rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); text-decoration: none; } .hdr-nav a:hover { background: var(--sand); } .hdr-nav a[aria-current="page"] { color: var(--sage-deep); box-shadow: inset 0 -2px 0 var(--sage-deep); border-radius: 0; } }
+  header.site .hdr .menubtn { justify-self: start; margin-left: -.5rem; }
+  header.site .hdr .brand { justify-self: center; font-size: 1.75rem; line-height: 1; } @media (min-width: 640px) { header.site .hdr .brand { font-size: 2.125rem; } }
+  header.site .hdr .hdr-actions { justify-self: end; }
+  @media (max-width: 639px) { header.site .container.hdr { height: 3.5rem; } }
+  /* drawer */
+  .drawer-root { position: fixed; inset: 0; z-index: 60; }
+  .drawer-overlay { position: absolute; inset: 0; background: rgba(31,42,36,.4); backdrop-filter: blur(2px); opacity: 0; transition: opacity .25s ease; }
+  .drawer { position: absolute; left: 0; top: 0; height: 100%; width: min(88vw, 22rem); background: var(--cream); box-shadow: 0 10px 40px rgba(31,42,36,.25); display: flex; flex-direction: column; transform: translateX(-100%); transition: transform .25s ease-out; outline: none; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); overflow-y: auto; }
+  .drawer-root.open .drawer-overlay { opacity: 1; } .drawer-root.open .drawer { transform: none; }
+  .drawer-head { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1rem .75rem 1.5rem; border-bottom: 1px solid rgba(31,42,36,.1); min-height: 4rem; }
+  .drawer-nav { padding: .75rem 0; flex: 1; }
+  .drawer-nav ul { list-style: none; margin: 0; padding: 0; }
+  .drawer-primary a { display: flex; align-items: center; min-height: 52px; padding: .75rem 1.5rem; font-family: var(--display); font-size: 1.25rem; font-weight: 600; color: var(--ink); text-decoration: none; border-left: 3px solid transparent; }
+  .drawer-primary a:hover { background: var(--sand); }
+  .drawer-toggle { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: .75rem; min-height: 52px; padding: .75rem 1.5rem; font-family: var(--display); font-size: 1.25rem; font-weight: 600; color: var(--ink); background: none; border: 0; border-left: 3px solid transparent; text-align: left; cursor: pointer; }
+  .drawer-toggle:hover { background: var(--sand); } .drawer-toggle .chev { width: 1.25rem; height: 1.25rem; transition: transform .2s; } .drawer-toggle[aria-expanded="true"] .chev { transform: rotate(180deg); }
+  .drawer-toggle[aria-current="page"] { border-left-color: var(--clay); background: rgba(239,230,216,.6); color: var(--sage-deep); }
+  .drawer-sub { list-style: none; margin: 0; padding: .25rem 0 .5rem; background: rgba(239,230,216,.35); } .drawer-sub[hidden] { display: none; }
+  .drawer-sub a { display: flex; align-items: center; min-height: 48px; padding: .5rem 1.5rem .5rem 2.75rem; font-family: var(--body); font-size: 1rem; font-weight: 500; color: var(--ink); text-decoration: none; border-left: 3px solid transparent; }
+  .drawer-sub a:hover { background: var(--sand); } .drawer-sub a[aria-current="page"] { border-left-color: var(--clay); color: var(--sage-deep); font-weight: 600; }
+  .drawer-primary a[aria-current="page"] { border-left-color: var(--clay); background: rgba(239,230,216,.6); color: var(--sage-deep); }
+  .drawer-label { padding: 1.25rem 1.5rem .25rem; font-size: .7rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--taupe); }
+  .drawer-secondary a { display: flex; align-items: center; min-height: 44px; padding: .5rem 1.5rem; font-size: .9375rem; font-weight: 500; color: rgba(31,42,36,.8); text-decoration: none; } .drawer-secondary a:hover { background: var(--sand); color: var(--ink); }
+  .drawer-foot { padding: 1rem 1.5rem 1.5rem; border-top: 1px solid rgba(31,42,36,.1); } .drawer-foot .btn { width: 100%; }
+  body.drawer-open { overflow: hidden; }
+  /* routed pages */
+  .page { display: none; } .page.active { display: block; }
+  .page .container { max-width: 48rem; padding-block: 3rem; } @media (min-width: 1024px) { .page .container { padding-block: 5rem; } }
+  .page h1 { font-size: 2.25rem; margin-top: .75rem; } .page h1:focus { outline: none; } @media (min-width: 640px) { .page h1 { font-size: 3rem; } }
+  .page .lead { margin-top: 1rem; font-size: 1.125rem; color: var(--taupe); line-height: 1.7; }
+  .page .body { margin-top: 1.5rem; display: grid; gap: 1rem; color: var(--ink); line-height: 1.7; }
+  .page form { margin-top: 2rem; display: grid; gap: 1rem; }
+  .page label { display: grid; gap: .375rem; font-size: .875rem; font-weight: 600; }
+  .page input, .page textarea { min-height: 48px; border-radius: 12px; border: 1px solid rgba(31,42,36,.2); background: var(--white); padding: .75rem 1rem; font: inherit; font-size: 1rem; color: var(--ink); width: 100%; }
+  .page textarea { min-height: 8rem; resize: vertical; }
+  .page .status { display: none; margin-top: .25rem; border-radius: 12px; border: 1px dashed rgba(31,42,36,.3); background: rgba(239,230,216,.6); padding: 1rem 1.25rem; font-size: .9375rem; line-height: 1.6; } .page .status.show { display: block; } .page .status b { display: block; margin-bottom: .25rem; }
+  .page .photo { aspect-ratio: 16 / 9; margin-top: 2rem; border-radius: var(--r-card); background-size: cover; background-position: center; }
+  .page .back { margin-top: 2.5rem; }
+  .page .draft { margin-top: 1.25rem; border-radius: 12px; border: 1px dashed rgba(194,101,63,.6); background: rgba(194,101,63,.08); padding: .875rem 1.125rem; font-size: .9375rem; line-height: 1.6; color: var(--ink); } .page .draft b { color: var(--clay); }
+  .page .body h2 { font-family: var(--display); font-size: 1.375rem; font-weight: 600; margin-top: 1.25rem; }
+  .page .body strong { font-weight: 600; color: var(--sage-deep); }
+  .page .body ul { margin: 0; padding-left: 1.25rem; display: grid; gap: .375rem; }
+  .page .body .updated { font-size: .8125rem; color: var(--taupe); }
+
+  /* hero */
+  .hero > .container { display: grid; align-items: center; gap: 2.5rem; padding-block: 3rem; }
+  .hero h1 { font-size: 2.6rem; line-height: 1.02; margin-top: 1rem; } @media (min-width: 640px) { .hero h1 { font-size: 3.75rem; } } @media (min-width: 1024px) { .hero h1 { font-size: 4.25rem; } }
+  .hero .sub { margin-top: 1.5rem; max-width: 36rem; font-size: 1.125rem; color: var(--taupe); line-height: 1.7; }
+  .hero .ctas { margin-top: 2rem; display: flex; flex-direction: column; gap: .75rem; align-items: flex-start; } @media (min-width: 640px) { .hero .ctas { flex-direction: row; align-items: center; gap: 1.25rem; } }
+  .hero .ph { aspect-ratio: 4 / 5; box-shadow: var(--shadow-card); }
+  @media (min-width: 1024px) { .hero > .container { grid-template-columns: repeat(12, 1fr); gap: 3rem; padding-block: 5rem; } .hero .copy { grid-column: span 6; } .hero .visual { grid-column: span 6; } }
+
+  /* benefit strip */
+  .strip { border-block: 1px solid rgba(31,42,36,.05); background: rgba(239,230,216,.6); }
+  .strip ul { list-style: none; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 0; padding-block: 1.25rem; } @media (min-width: 640px) { .strip ul { grid-template-columns: repeat(4, 1fr); } }
+  .strip li { display: flex; align-items: center; justify-content: center; gap: .625rem; font-size: .875rem; font-weight: 500; }
+  .strip li span { display: flex; height: 2.25rem; width: 2.25rem; align-items: center; justify-content: center; border-radius: 999px; background: var(--white); color: var(--sage); box-shadow: 0 0 0 1px rgba(31,42,36,.05); }
+  .strip .icon { width: 1.1rem; height: 1.1rem; }
+
+  /* use cases */
+  .cases { margin-top: 3rem; display: flex; gap: 1.25rem; overflow-x: auto; padding-bottom: 1rem; scroll-snap-type: x mandatory; list-style: none; padding-left: 0; margin-inline: 0; -webkit-overflow-scrolling: touch; }
+  .cases li { min-width: 78%; scroll-snap-align: start; overflow: hidden; transition: transform .2s; } @media (min-width: 640px) { .cases li { min-width: 46%; } }
+  @media (min-width: 1024px) { .cases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; overflow: visible; padding-bottom: 0; max-width: 64rem; margin-inline: auto; } .cases li { min-width: 0; } .cases li:hover { transform: translateY(-4px); } }
+  .cases .ph { aspect-ratio: 4 / 5; border-radius: 0; }
+  .cases .body { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; padding: 1.25rem; }
+  .cases h3 { font-size: 1.25rem; } .cases p { margin-top: .375rem; font-size: .875rem; color: var(--taupe); line-height: 1.6; }
+  .cases .arrow { margin-top: .25rem; display: flex; height: 2rem; width: 2rem; flex: none; align-items: center; justify-content: center; border-radius: 999px; background: var(--sand); color: var(--sage); } .cases li:hover .arrow { background: var(--clay); color: #fff; }
+  .cases .arrow .icon { width: 1rem; height: 1rem; }
+
+  /* how it works */
+  .how { background: rgba(239,230,216,.6); }
+  .steps { margin-top: 3.5rem; display: grid; gap: 2.5rem; list-style: none; padding: 0; counter-reset: s; } @media (min-width: 1024px) { .steps { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; } }
+  .step { position: relative; display: block; }
+  .step .vis { position: relative; width: 100%; }
+  .step .ph { aspect-ratio: 4 / 3; } @media (min-width: 1024px) { .step .ph { aspect-ratio: 1; } }
+  .step .ph.pos-left { background-position: 30% center; } .step .ph.pos-bottom { background-position: center 70%; }
+  .step .n { position: absolute; left: -.5rem; top: -.5rem; display: flex; height: 2.5rem; width: 2.5rem; align-items: center; justify-content: center; border-radius: 999px; background: var(--sage-deep); color: var(--cream); font-family: var(--display); font-size: 1.125rem; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  .step .next { display: none !important; } @media (min-width: 1024px) { .step .next { display: flex; position: absolute; right: -1.25rem; top: 50%; height: 2rem; width: 2rem; transform: translate(50%, -50%); align-items: center; justify-content: center; border-radius: 999px; background: var(--white); color: var(--sage); box-shadow: 0 0 0 1px rgba(31,42,36,.1); z-index: 2; } .step .next .icon { width: 1rem; height: 1rem; } }
+  .step .txt { margin-top: 1.125rem; } .step .txt h3 { font-size: 1.375rem; line-height: 1.2; text-transform: uppercase; letter-spacing: .04em; } @media (min-width: 1024px) { .step .txt { margin-top: 1.25rem; } .step .txt h3 { font-size: 1.25rem; } }
+  .steps-cta { margin-top: 3rem; text-align: center; }
+  .textlink { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: .25rem .25rem; font-size: .875rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--sage-deep); text-decoration: none; border-bottom: 1.5px solid transparent; transition: border-color .15s, gap .15s; } .textlink:hover { border-bottom-color: var(--sage-deep); gap: .75rem; } .textlink:focus-visible { outline: 2px solid var(--sage-deep); outline-offset: 4px; }
+  .step .txt p { margin-top: .375rem; font-size: .875rem; color: var(--taupe); line-height: 1.6; }
+
+  /* why different */
+  .why .container { display: grid; align-items: center; gap: 3rem; } @media (min-width: 1024px) { .why .container { grid-template-columns: 1fr 1fr; gap: 4rem; } }
+  .why .sub { margin-top: 1.25rem; font-size: 1.125rem; color: var(--taupe); line-height: 1.7; }
+  .feats { margin-top: 2.5rem; display: grid; gap: 1.5rem; list-style: none; padding: 0; } @media (min-width: 640px) { .feats { grid-template-columns: 1fr 1fr; } }
+  .feats li { display: flex; gap: 1rem; } .feats li > span { margin-top: .125rem; display: flex; height: 2rem; width: 2rem; flex: none; align-items: center; justify-content: center; border-radius: 999px; background: var(--sage-soft); color: var(--sage-deep); } .feats .icon { width: 1rem; height: 1rem; }
+  .feats h3 { font-family: var(--body); font-size: 1rem; font-weight: 600; } .feats p { margin-top: .25rem; font-size: .875rem; color: var(--taupe); line-height: 1.6; }
+  .callout-box { position: relative; aspect-ratio: 1; border-radius: 32px; overflow: hidden; box-shadow: 0 0 0 1px rgba(31,42,36,.05); background-size: cover; background-position: center; }
+  .callout { position: absolute; display: flex; align-items: center; gap: .5rem; border-radius: 999px; background: rgba(255,255,255,.9); padding: .375rem .75rem; font-size: .75rem; font-weight: 600; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.15), 0 0 0 1px rgba(31,42,36,.05); backdrop-filter: blur(6px); }
+  .callout i { height: .5rem; width: .5rem; border-radius: 999px; background: var(--clay); }
+
+  /* gallery band */
+  .gallery { background: var(--sage-deep); color: var(--cream); }
+  .gallery .eyebrow { color: var(--sage-soft); } .gallery .h2 { color: var(--cream); } .gallery .sub { color: rgba(250,246,239,.7); }
+  /* customer experiences: three placeholder review cards + share strip */
+  .revs { margin: 3rem 0 0; padding: 0; list-style: none; display: grid; gap: 1.25rem; } @media (min-width: 640px) { .revs { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; } }
+  .rev { border-radius: var(--r-card); background: var(--cream); color: var(--ink); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,.18); }
+  .rev-photo { aspect-ratio: 4 / 3; background: var(--sand); display: grid; place-items: center; border-bottom: 1px dashed rgba(31,42,36,.25); } .rev-photo span { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--taupe); }
+  .rev-body { padding: 1.25rem 1.25rem 1.375rem; display: flex; flex-direction: column; gap: .75rem; flex: 1; }
+  .rev-stars { font-size: 1.25rem; letter-spacing: .1em; color: var(--clay); line-height: 1; } .rev-quote { font-size: 1rem; line-height: 1.6; color: var(--taupe); flex: 1; }
+  .rev-meta { display: flex; align-items: center; gap: .625rem; font-size: .875rem; flex-wrap: wrap; } .rev-avatar { width: 2.25rem; height: 2.25rem; border-radius: 999px; background: var(--sand); border: 1px dashed rgba(31,42,36,.25); flex: none; } .rev-verified { color: var(--sage); font-weight: 500; } .rev-verified::before { content: "\2713"; margin-right: .3rem; }
+  .rev-share { margin-top: 2rem; display: grid; gap: 1.25rem; align-items: center; border-radius: var(--r-card); background: rgba(250,246,239,.08); border: 1px solid rgba(250,246,239,.2); padding: 1.5rem; } @media (min-width: 768px) { .rev-share { grid-template-columns: 1fr auto; padding: 2rem 2.25rem; } }
+  .rev-share .eyebrow { color: var(--sage-soft); } .rev-share h3 { margin-top: .5rem; font-size: 1.5rem; color: var(--cream); } .rev-share p:not(.eyebrow) { margin-top: .5rem; color: rgba(250,246,239,.78); line-height: 1.6; max-width: 36rem; } .rev-share p b { color: var(--cream); }
+  .rev-share-cta { margin: 0; } .rev-share-cta .btn { min-height: 48px; white-space: nowrap; }
+  .tiles li { break-inside: avoid; margin-bottom: 1rem; overflow: hidden; border-radius: var(--r-card); box-shadow: 0 0 0 1px rgba(255,255,255,.1); } .tiles li:hover { box-shadow: 0 0 0 1px rgba(255,255,255,.3); }
+  .tiles .ph { border-radius: 0; }
+  .reviews-note { margin-top: 2.5rem; border-radius: var(--r-card); border: 1px dashed rgba(250,246,239,.3); padding: 1.5rem; text-align: center; font-size: .875rem; color: rgba(250,246,239,.7); } .reviews-note b { color: var(--cream); }
+
+  /* coming soon (replaces shop block) */
+  .pdp-grid { display: grid; gap: 2.5rem; margin-top: 1.5rem; } @media (min-width: 1024px) { .pdp-grid { grid-template-columns: repeat(12, 1fr); gap: 3.5rem; } .pdp-grid .media { grid-column: span 7; } .pdp-grid .panel { grid-column: span 5; position: sticky; top: 6rem; align-self: start; } }
+  .pdp-crumb a { font-size: .875rem; font-weight: 600; color: var(--sage-deep); text-decoration: none; } .pdp-crumb a:hover { text-decoration: underline; } .pdp .panel h1 { font-size: 2rem; margin-top: .5rem; }
+  /* shop by pet: tabs + featured product cards */
+  .cat-tabs { margin-top: 1.5rem; display: flex; justify-content: center; gap: .25rem; border-bottom: 1px solid rgba(31,42,36,.12); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; } .cat-tabs::-webkit-scrollbar { display: none; }
+  .cat-tabs [role="tab"] { flex: none; min-height: 48px; padding: 0 1.25rem; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; font: inherit; font-size: .8125rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--taupe); cursor: pointer; transition: color .15s, border-color .15s; }
+  .cat-tabs [role="tab"]:hover { color: var(--ink); } .cat-tabs [role="tab"][aria-selected="true"] { color: var(--sage-deep); border-bottom-color: var(--sage-deep); } .cat-tabs [role="tab"]:focus-visible { outline: 2px solid var(--sage-deep); outline-offset: -2px; border-radius: 6px; }
+  .shop, #shopPanel, .pgrid { overflow-anchor: none; } /* re-rendering the cards must not nudge the scroll position */
+  .shop-ph { margin-top: 1.25rem; text-align: center; font-size: .8125rem; color: var(--taupe); }
+  .pgrid { margin: 1.5rem 0 0; padding: 0; list-style: none; display: grid; gap: 1.25rem; } @media (min-width: 640px) { .pgrid { grid-template-columns: repeat(2, 1fr); } } @media (min-width: 1024px) { .pgrid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; } }
+  .pcard { border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card), 0 0 0 1px rgba(31,42,36,.05); overflow: hidden; display: flex; flex-direction: column; transition: transform .2s; } @media (min-width: 1024px) { .pcard:hover { transform: translateY(-3px); } }
+  .pcard .pimg { position: relative; aspect-ratio: 1; background: var(--sand); display: grid; place-items: center; } .pcard .pimg::before { content: ""; position: absolute; inset: 0; opacity: .07; background-image: radial-gradient(circle at 1px 1px, #1F2A24 1px, transparent 0); background-size: 18px 18px; } .pcard .psil { width: 48%; }
+  .pcard .pbody { padding: 1.125rem 1.25rem 1.25rem; display: flex; flex-direction: column; gap: .375rem; flex: 1; }
+  .pcard h3 { font-size: 1.125rem; } .pcard .pprice { display: flex; align-items: baseline; gap: .5rem; font-weight: 600; font-variant-numeric: tabular-nums; } .pcard .pprice small { font-weight: 400; font-size: .6875rem; letter-spacing: .08em; text-transform: uppercase; color: var(--taupe); }
+  .pcard .pben { font-size: .875rem; color: var(--taupe); line-height: 1.55; } .pcard .pact { margin-top: auto; padding-top: .75rem; } .pcard .pact .btn { width: 100%; min-height: 44px; font-size: .875rem; }
+  /* cart drawer lines with image, variant, quantity controls */
+  .cart-line .thumb { width: 4.25rem; aspect-ratio: 1; flex: none; border-radius: .75rem; background: var(--sand); display: grid; place-items: center; overflow: hidden; } .cart-line .thumb .psil { width: 56%; } .cart-line .thumb .psil span { font-size: 0; }
+  .cart-line .info { flex: 1; min-width: 0; } .cart-line .ctl { margin-top: .5rem; display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+  .cart-line .qty button { height: 2.25rem; width: 2.25rem; } .cart-line .qty output { min-width: 2rem; font-size: .9375rem; }
+  .cart-line .unit { font-size: .8125rem; color: var(--taupe); }
+  .cart-view { width: 100%; margin-top: .625rem; } .cart-continue { display: block; width: 100%; margin-top: .75rem; min-height: 44px; background: none; border: 0; font: inherit; font-size: .875rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--sage-deep); cursor: pointer; } .cart-continue:hover { text-decoration: underline; }
+  .cartpage .cart-line { padding: 1.25rem 0; } .cartpage-totals { max-width: 24rem; margin-left: auto; } .cartpage-actions { margin-top: 2rem; display: flex; flex-wrap: wrap; gap: .75rem; justify-content: flex-end; }
+  .shop .main.ph { aspect-ratio: 1; display: grid; place-items: center; background: linear-gradient(to bottom right, var(--sand), var(--sand-2)); }
+  .ph.pmain::before { content: ""; position: absolute; inset: 0; opacity: .07; background-image: radial-gradient(circle at 1px 1px, #1F2A24 1px, transparent 0); background-size: 18px 18px; }
+  .psil { position: relative; width: 56%; aspect-ratio: 1; display: grid; place-items: end center; }
+  .psil::before { content: ""; position: absolute; left: 50%; bottom: -4%; width: 70%; height: 9%; transform: translateX(-50%); border-radius: 50%; background: rgba(31,42,36,.1); }
+  .psil span { position: relative; width: 100%; aspect-ratio: 1 / 1.05; border-radius: 18%; background: var(--sil, #7E9A86); display: grid; place-items: center; color: rgba(255,255,255,.88); font-weight: 600; font-size: clamp(.8rem, 2vw, 1.4rem); letter-spacing: .04em; box-shadow: inset 0 0 0 999px rgba(255,255,255,.12); transition: background .3s; }
+  .psil span::before { content: ""; position: absolute; top: 14%; left: 14%; right: 14%; height: 44%; border-radius: 14%; background: rgba(31,42,36,.12); }
+  .ph .cap.always { display: block; }
+  .thumbs { margin-top: 1rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; list-style: none; padding: 0; }
+  .thumbs button { display: block; width: 100%; padding: 0; border: 0; background: none; border-radius: .75rem; overflow: hidden; cursor: pointer; box-shadow: 0 0 0 2px transparent; transition: box-shadow .15s; } .thumbs button[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--clay); } .thumbs button:hover { box-shadow: 0 0 0 2px rgba(31,42,36,.2); }
+  .thumbs .t { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; padding: .5rem; text-align: center; font-size: 10px; line-height: 1.3; color: var(--taupe); background: linear-gradient(to bottom right, var(--sand), var(--sand-2)); }
+  .shop h2 { margin-top: .75rem; font-size: 2.25rem; line-height: 1.1; } .shop .desc { margin-top: .75rem; color: var(--taupe); line-height: 1.7; }
+  .shop .pricebox { margin-top: 1.25rem; display: flex; align-items: baseline; gap: .75rem; } .shop .pricebox b { font-family: var(--display); font-size: 1.875rem; font-weight: 600; font-variant-numeric: tabular-nums; } .shop .pricebox span { font-size: .75rem; color: var(--taupe); }
+  .colors { border: 0; margin: 1.75rem 0 0; padding: 0; } .colors legend { font-size: .875rem; font-weight: 600; padding: 0; } .colors legend span { font-weight: 400; color: var(--taupe); }
+  .swatches { margin-top: .75rem; display: flex; flex-wrap: wrap; gap: .75rem; }
+  .swatches button { height: 2.75rem; width: 2.75rem; border-radius: 999px; border: 0; cursor: pointer; box-shadow: 0 0 0 2px var(--cream), 0 0 0 4px transparent; transition: box-shadow .15s, transform .15s; } .swatches button[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--cream), 0 0 0 4px var(--ink); transform: scale(1.05); } .swatches button:hover { box-shadow: 0 0 0 2px var(--cream), 0 0 0 4px rgba(31,42,36,.3); }
+  .buyrow { margin-top: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+  .qty { display: inline-flex; align-items: center; border-radius: var(--r-btn); border: 1px solid rgba(31,42,36,.15); } .qty button { height: 3rem; width: 3rem; display: inline-flex; align-items: center; justify-content: center; border: 0; background: none; cursor: pointer; color: var(--ink); border-radius: var(--r-btn); } .qty button:hover { background: var(--sand); } .qty output { width: 2.5rem; text-align: center; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .addbtn { flex: 1; min-height: 56px; font-size: 1rem; } .addbtn:disabled { opacity: .6; cursor: not-allowed; }
+  .connect-note { margin-top: 1rem; border-radius: .375rem; border: 1px dashed rgba(31,42,36,.2); padding: .5rem .75rem; font-size: 11px; color: var(--taupe); } .connect-note code { font-family: ui-monospace, Menlo, monospace; font-size: 10px; }
+  .cart-badge { position: absolute; right: -2px; top: -2px; display: flex; height: 1.25rem; min-width: 1.25rem; align-items: center; justify-content: center; border-radius: 999px; background: var(--clay); color: #fff; padding: 0 .3rem; font-size: 11px; font-weight: 600; }
+  .cartbtn { position: relative; }
+  /* cart drawer */
+  /* welcome offer popup */
+  .offer-root { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 1rem; } .offer-root[hidden] { display: none; }
+  .offer-overlay { position: absolute; inset: 0; background: rgba(31,42,36,.45); backdrop-filter: blur(2px); opacity: 0; transition: opacity .25s ease; }
+  .offer { position: relative; width: min(100%, 56rem); max-height: calc(100dvh - 2rem); overflow: auto; border-radius: 24px; background: var(--cream); box-shadow: 0 24px 60px rgba(31,42,36,.3); display: grid; transform: translateY(12px); opacity: 0; transition: transform .3s ease, opacity .3s ease; }
+  .offer-root.open .offer-overlay { opacity: 1; } .offer-root.open .offer { transform: none; opacity: 1; }
+  @media (min-width: 768px) { .offer { grid-template-columns: 5fr 7fr; } }
+  .offer-side { background: var(--sage-deep); color: var(--cream); padding: 2rem 1.75rem; display: flex; flex-direction: column; justify-content: space-between; gap: 2rem; min-height: 9rem; } @media (min-width: 768px) { .offer-side { padding: 2.5rem; min-height: 100%; } }
+  .offer-side .brand { color: var(--cream); font-size: 1.75rem; } .offer-side .big { font-family: var(--display); font-size: 3rem; line-height: 1; font-weight: 600; letter-spacing: -.02em; } @media (min-width: 768px) { .offer-side .big { font-size: 4rem; } } .offer-side .big small { display: block; font-size: 1rem; letter-spacing: .14em; text-transform: uppercase; margin-top: .75rem; font-family: var(--body); font-weight: 600; color: rgba(250,246,239,.8); }
+  .offer-side p { color: rgba(250,246,239,.78); font-size: .9375rem; line-height: 1.6; max-width: 20rem; }
+  .offer-main { padding: 2.25rem 1.5rem 1.75rem; } @media (min-width: 768px) { .offer-main { padding: 3rem 2.75rem; } }
+  .offer-main .eyebrow { color: var(--sage-deep); } .offer-main h2 { margin-top: .75rem; font-size: 2rem; line-height: 1.1; } @media (min-width: 640px) { .offer-main h2 { font-size: 2.5rem; } }
+  .offer-main .sub { margin-top: 1rem; color: var(--taupe); line-height: 1.65; }
+  .offer-form { margin-top: 1.5rem; display: grid; gap: .75rem; }
+  .offer-form input { min-height: 52px; width: 100%; border-radius: var(--r-btn); border: 1px solid rgba(31,42,36,.22); background: var(--white); padding: 0 1.25rem; font: inherit; font-size: 1rem; color: var(--ink); } .offer-form input:focus { outline: 2px solid var(--sage-deep); outline-offset: 2px; } .offer-form input[aria-invalid="true"] { border-color: var(--clay); }
+  .offer-form .btn { width: 100%; min-height: 52px; letter-spacing: .12em; text-transform: uppercase; font-size: .8125rem; background: var(--sage-deep); box-shadow: none; } .offer-form .btn:hover { background: #253b2e; } .offer-form .btn[disabled] { opacity: .6; cursor: wait; transform: none; }
+  .offer-error { display: none; color: var(--clay); font-size: .875rem; } .offer-error.show { display: block; }
+  .offer-micro { margin-top: .875rem; font-size: .875rem; color: var(--taupe); }
+  .offer-consent { margin-top: 1rem; font-size: .75rem; line-height: 1.55; color: var(--taupe); } .offer-consent a { color: var(--sage-deep); }
+  .offer-close { position: absolute; top: .75rem; right: .75rem; z-index: 2; background: var(--cream); box-shadow: 0 1px 4px rgba(31,42,36,.15); } @media (min-width: 768px) { .offer-close { background: transparent; box-shadow: none; } }
+  .offer-done { display: none; } .offer-done.show { display: block; }
+  .offer-done .email { display: inline-block; margin-top: 1rem; padding: .5rem .875rem; border-radius: 999px; background: var(--sand); font-weight: 600; color: var(--sage-deep); word-break: break-all; }
+  .offer-done .notice { margin-top: 1rem; border-radius: 12px; border: 1px dashed rgba(31,42,36,.3); background: rgba(239,230,216,.6); padding: .875rem 1rem; font-size: .875rem; line-height: 1.6; color: var(--ink); } .offer-done .notice b { display: block; margin-bottom: .25rem; }
+  .offer-done .btn { margin-top: 1.5rem; min-height: 52px; letter-spacing: .12em; text-transform: uppercase; font-size: .8125rem; background: var(--sage-deep); box-shadow: none; } .offer-done .btn:hover { background: #253b2e; }
+  @media (max-width: 767px) { .offer-root { padding: 0; align-items: stretch; } .offer { width: 100%; max-height: 100dvh; border-radius: 0; } }
+  body.offer-open { overflow: hidden; }
+  .co-offer { margin-top: .75rem; font-size: .875rem; color: var(--taupe); line-height: 1.55; } .co-offer[hidden] { display: none; } .co-offer b { color: var(--sage-deep); }
+  /* needs, collections, help, guide, filters, search, product details, buy bar */
+  .needgrid { margin: 2.5rem 0 0; padding: 0; list-style: none; display: grid; gap: 1rem; } @media (min-width: 640px) { .needgrid { grid-template-columns: repeat(2, 1fr); } } @media (min-width: 1024px) { .needgrid { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; } }
+  .needgrid a { display: flex; gap: 1rem; align-items: flex-start; min-height: 7rem; padding: 1.25rem 1.375rem; border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card), 0 0 0 1px rgba(31,42,36,.05); text-decoration: none; color: var(--ink); transition: transform .2s, box-shadow .2s; } .needgrid a:hover { transform: translateY(-2px); box-shadow: var(--shadow-card), 0 0 0 1px rgba(79,107,87,.4); }
+  .needgrid .ni { flex: none; width: 2.75rem; height: 2.75rem; border-radius: 999px; background: var(--sand); color: var(--sage-deep); display: grid; place-items: center; } .needgrid .ni .icon { width: 1.25rem; height: 1.25rem; }
+  .needgrid h3 { font-size: 1.25rem; } .needgrid p { margin-top: .25rem; font-size: .875rem; color: var(--taupe); line-height: 1.55; } .needgrid .go { margin-top: .5rem; font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--sage-deep); }
+  .need-paths { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: .5rem; } .need-paths button { min-height: 44px; padding: 0 1.125rem; border-radius: 999px; border: 1px solid rgba(31,42,36,.18); background: var(--white); font: inherit; font-size: .9375rem; font-weight: 500; color: var(--ink); cursor: pointer; } .need-paths button:hover { background: var(--sand); } .need-paths button[aria-pressed="true"] { background: var(--sage-deep); border-color: var(--sage-deep); color: var(--cream); } .need-paths button:focus-visible { outline: 2px solid var(--sage-deep); outline-offset: 2px; }
+  .need-pathdesc { margin-top: .75rem; color: var(--taupe); line-height: 1.6; }
+  .need-block { margin-top: 3rem; } .need-block h2 { font-size: 1.5rem; } .need-block .pgrid { margin-top: 1rem; } .need-empty { margin-top: 1rem; color: var(--taupe); }
+  .need-list { margin: 1rem 0 0; padding: 0; list-style: none; display: grid; gap: .75rem; } .need-list li { padding: 1rem 1.25rem; border-radius: 12px; background: var(--white); box-shadow: 0 0 0 1px rgba(31,42,36,.06); line-height: 1.6; } .need-list li b { display: block; margin-bottom: .125rem; } .need-list li p { color: var(--taupe); font-size: .9375rem; } .need-list a { color: var(--sage-deep); }
+  .guide-list { margin: 2rem 0 0; padding: 0; list-style: none; display: grid; gap: .75rem; } .guide-list li { display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: 1rem 1.25rem; border-radius: 12px; background: var(--white); box-shadow: 0 0 0 1px rgba(31,42,36,.06); } .guide-list b { font-weight: 600; } .guide-list small { display: block; margin-top: .125rem; color: var(--taupe); } .guide-list .tag { flex: none; font-size: .6875rem; letter-spacing: .1em; text-transform: uppercase; color: var(--taupe); border: 1px dashed rgba(31,42,36,.3); border-radius: 999px; padding: .25rem .625rem; }
+  .helpgrid { margin: 2rem 0 0; padding: 0; list-style: none; display: grid; gap: 1rem; } @media (min-width: 640px) { .helpgrid { grid-template-columns: repeat(2, 1fr); } } @media (min-width: 1024px) { .helpgrid { grid-template-columns: repeat(3, 1fr); } }
+  .helpgrid a { display: block; height: 100%; padding: 1.375rem; border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card), 0 0 0 1px rgba(31,42,36,.05); text-decoration: none; color: var(--ink); } .helpgrid a:hover { box-shadow: var(--shadow-card), 0 0 0 1px rgba(79,107,87,.4); } .helpgrid h2 { font-size: 1.25rem; } .helpgrid p { margin-top: .375rem; font-size: .875rem; color: var(--taupe); line-height: 1.55; } .nowrap { white-space: nowrap; }
+  .coll-tabs { justify-content: flex-start; margin-top: 1.5rem; } .coll-tabs[hidden] { display: none; } .coll-tabs a { display: inline-flex; align-items: center; text-decoration: none; }
+  .toolbar { margin-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; border-top: 1px solid rgba(31,42,36,.12); border-bottom: 1px solid rgba(31,42,36,.12); padding: .625rem 0; }
+  .tbtn { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: 0 1rem; border-radius: 999px; border: 1px solid rgba(31,42,36,.18); background: var(--white); font: inherit; font-size: .8125rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ink); cursor: pointer; } .tbtn:hover { background: var(--sand); } .tbtn .icon { width: 1.125rem; height: 1.125rem; } .tbtn:focus-visible { outline: 2px solid var(--sage-deep); outline-offset: 2px; }
+  .tsort { display: inline-flex; align-items: center; gap: .5rem; font-size: .8125rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; } .tsort select { min-height: 44px; border-radius: 999px; border: 1px solid rgba(31,42,36,.18); background: var(--white); padding: 0 2rem 0 1rem; font: inherit; font-size: .875rem; color: var(--ink); letter-spacing: 0; text-transform: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231F2A24' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right .75rem center; background-size: .875rem; }
+  .tcount { margin-left: auto; font-size: .875rem; color: var(--taupe); }
+  .coll-empty { margin-top: 2rem; text-align: center; padding: 2.5rem 1.5rem; border-radius: var(--r-card); border: 1px dashed rgba(31,42,36,.25); } .coll-empty p { color: var(--taupe); margin-bottom: 1rem; } .coll-empty[hidden] { display: none; }
+  .filter-root, .search-root { position: fixed; inset: 0; z-index: 66; } .filter-root[hidden], .search-root[hidden] { display: none; }
+  .filter-overlay { position: absolute; inset: 0; background: rgba(31,42,36,.4); backdrop-filter: blur(2px); opacity: 0; transition: opacity .25s ease; } .filter-root.open .filter-overlay, .search-root.open .filter-overlay { opacity: 1; }
+  .filter { position: absolute; right: 0; top: 0; height: 100%; width: min(92vw, 24rem); background: var(--cream); box-shadow: 0 10px 40px rgba(31,42,36,.25); display: flex; flex-direction: column; transform: translateX(24px); opacity: 0; transition: transform .3s ease, opacity .3s ease; } .filter-root.open .filter { transform: none; opacity: 1; }
+  @media (max-width: 639px) { .filter { top: auto; bottom: 0; height: auto; max-height: 86dvh; width: 100%; border-radius: 20px 20px 0 0; transform: translateY(24px); } }
+  .filter-body { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; display: grid; gap: 1.25rem; align-content: start; } .filter-body fieldset { border: 0; margin: 0; padding: 0; } .filter-body legend { font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--taupe); padding: 0; margin-bottom: .5rem; }
+  .filter-body label { display: flex; align-items: center; gap: .625rem; min-height: 40px; font-size: .9375rem; cursor: pointer; } .filter-body input[type="checkbox"] { width: 1.125rem; height: 1.125rem; accent-color: var(--sage-deep); } .filter-body label span.n { margin-left: auto; color: var(--taupe); font-size: .8125rem; } .fnote { font-size: .875rem; }
+  .filter-foot { display: flex; gap: .75rem; } .filter-foot .btn { flex: 1; min-height: 48px; }
+  #filterCount:not(:empty) { margin-left: .125rem; } #filterCount:not(:empty)::before { content: "("; } #filterCount:not(:empty)::after { content: ")"; }
+  .search { position: absolute; left: 50%; top: 5rem; transform: translate(-50%, -8px); width: min(94vw, 40rem); background: var(--cream); border-radius: 20px; box-shadow: 0 24px 60px rgba(31,42,36,.3); opacity: 0; transition: transform .25s ease, opacity .25s ease; overflow: hidden; } .search-root.open .search { transform: translate(-50%, 0); opacity: 1; } @media (max-width: 639px) { .search { top: 1rem; } }
+  .search-row { display: flex; align-items: center; gap: .5rem; padding: .75rem .75rem .75rem 1.25rem; border-bottom: 1px solid rgba(31,42,36,.1); } .search-row input { flex: 1; min-height: 44px; border: 0; background: none; font: inherit; font-size: 1.0625rem; color: var(--ink); } .search-row input:focus { outline: none; }
+  .search-results { margin: 0; padding: .5rem; list-style: none; max-height: 60dvh; overflow-y: auto; } .search-results li a { display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: .75rem 1rem; border-radius: 12px; text-decoration: none; color: var(--ink); min-height: 44px; } .search-results li a:hover, .search-results li a:focus-visible { background: var(--sand); outline: none; } .search-results small { color: var(--taupe); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; flex: none; } .search-results .none { padding: 1rem; color: var(--taupe); }
+  .sr-only { position: absolute; left: -9999px; }
+  .pdp-details { margin-top: 2rem; border-top: 1px solid rgba(31,42,36,.1); } .pdp-details details { border-bottom: 1px solid rgba(31,42,36,.1); } .pdp-details summary { display: flex; justify-content: space-between; align-items: center; min-height: 52px; padding: .75rem 0; font-weight: 600; cursor: pointer; list-style: none; } .pdp-details summary::-webkit-details-marker { display: none; } .pdp-details summary::after { content: "+"; font-size: 1.25rem; color: var(--sage-deep); } .pdp-details details[open] summary::after { content: "\2013"; } .pdp-details .dbody { padding: 0 0 1rem; color: var(--taupe); line-height: 1.65; font-size: .9375rem; } .pdp-details .dbody a { color: var(--sage-deep); } .pdp-details summary:focus-visible { outline: 2px solid var(--sage-deep); outline-offset: 2px; }
+  #searchInput::-webkit-search-cancel-button, #searchInput::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
+  .buybar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; display: flex; align-items: center; gap: 1rem; padding: .75rem 1rem calc(.75rem + env(safe-area-inset-bottom)); background: rgba(250,246,239,.96); backdrop-filter: blur(8px); box-shadow: 0 -8px 24px rgba(31,42,36,.12); transform: translateY(100%); transition: transform .25s ease; } .buybar.show { transform: none; } .buybar[hidden] { display: none; } @media (min-width: 1024px) { .buybar { display: none !important; } }
+  .bb-info { flex: 1; min-width: 0; display: grid; } .bb-info b { font-size: .9375rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .bb-info span { font-size: .875rem; color: var(--taupe); } .buybar .btn { flex: none; min-height: 48px; }
+  body.buybar-on { padding-bottom: 5rem; }
+  .cart-root { position: fixed; inset: 0; z-index: 65; }
+  .cart-overlay { position: absolute; inset: 0; background: rgba(31,42,36,.4); backdrop-filter: blur(2px); opacity: 0; transition: opacity .25s ease; }
+  .cart { position: absolute; right: 0; top: 0; height: 100%; width: min(92vw, 28rem); background: var(--cream); box-shadow: 0 10px 40px rgba(31,42,36,.25); display: flex; flex-direction: column; transform: translateX(24px); opacity: 0; transition: transform .25s ease-out, opacity .25s ease-out; outline: none; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .cart-root.open .cart-overlay { opacity: 1; } .cart-root.open .cart { transform: none; opacity: 1; }
+  .cart-head { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(31,42,36,.1); padding: 1.25rem 1.5rem; } .cart-head h2 { font-size: 1.5rem; }
+  .cart-body { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
+  .cart-line { display: flex; justify-content: space-between; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid rgba(31,42,36,.1); } .cart-line:last-child { border-bottom: 0; }
+  .cart-line p { margin: 0; } .cart-line .t { font-weight: 600; } .cart-line .m { font-size: .875rem; color: var(--taupe); } .cart-line .r { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .cart-line .rm { margin-top: .25rem; background: none; border: 0; padding: 0; font: inherit; font-size: .8rem; color: var(--taupe); text-decoration: underline; cursor: pointer; min-height: 32px; } .cart-line .rm:hover { color: var(--clay); }
+  .cart-foot { border-top: 1px solid rgba(31,42,36,.1); padding: 1.25rem 1.5rem; } .cart-sub { display: flex; justify-content: space-between; font-size: 1rem; } .cart-sub span:last-child { font-weight: 600; font-variant-numeric: tabular-nums; } .cart-fine { margin-top: .25rem; font-size: .75rem; }
+  .cart-checkout { margin-top: 1rem; width: 100%; } .cart-checkout[aria-disabled="true"] { opacity: .6; pointer-events: none; }
+  body.cart-open { overflow: hidden; }
+  /* checkout page */
+  .page .container.wide { max-width: 72rem; }
+  /* About us: one lifestyle image beside the copy */
+  .about-grid { display: grid; gap: 2rem; } @media (min-width: 1024px) { .about-grid { grid-template-columns: 5fr 7fr; gap: 4rem; align-items: center; } }
+  .about-photo { aspect-ratio: 4 / 5; border-radius: var(--r-card); background-color: var(--sand); background-size: cover; background-position: 60% center; background-repeat: no-repeat; } @media (max-width: 1023px) { .about-photo { aspect-ratio: 4 / 3; } }
+  .about-photo.placeholder { display: flex; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; border: 1px dashed rgba(31,42,36,.3); background: var(--sand); color: var(--taupe); font-size: .9375rem; line-height: 1.6; } .about-photo.placeholder b { display: block; margin-bottom: .375rem; font-family: var(--display); font-size: 1.25rem; font-weight: 600; color: var(--ink); }
+  .about-copy h1 { margin-top: .75rem; } .about-copy .body { margin-top: 1.5rem; }
+  .about-aisle { margin-top: 2rem; padding: 1.5rem; border-radius: var(--r-card); background: var(--sand); } .about-aisle h2 { font-size: 1.5rem; line-height: 1.25; } .about-aisle p { margin-top: .75rem; color: var(--taupe); line-height: 1.65; }
+  .about-copy .back { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; }
+  .about-closing { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(31,42,36,.12); font-family: var(--display); font-size: 1.375rem; line-height: 1.35; color: var(--sage-deep); display: grid; gap: .5rem; } @media (min-width: 640px) { .about-closing { font-size: 1.625rem; } }
+  .co-grid { margin-top: 2rem; display: grid; gap: 2rem; } @media (min-width: 1024px) { .co-grid { grid-template-columns: 1.1fr .9fr; gap: 3rem; align-items: start; } }
+  .co-summary, .co-pay { border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card), 0 0 0 1px rgba(31,42,36,.05); padding: 1.5rem; } .co-grid h2 { font-size: 1.5rem; }
+  .co-pay { display: grid; gap: 1rem; } .co-pay .status { margin-top: 0; } .co-pay .back { margin-top: .5rem; } .co-pay .btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+  .co-totals { margin-top: 1rem; border-top: 1px solid rgba(31,42,36,.1); padding-top: 1rem; display: grid; gap: .5rem; font-size: .9375rem; } .co-totals > div { display: flex; justify-content: space-between; } .co-totals .co-total { margin-top: .5rem; border-top: 1px solid rgba(31,42,36,.1); padding-top: .75rem; font-weight: 600; font-size: 1.125rem; }
+  .co-empty { color: var(--taupe); }
+  .co-reassure { margin-top: .5rem; }
+  /* newsletter: pet chips (pill toggles) above the email row */
+  .news .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; }
+  .news .chip { position: relative; display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: 0 1.125rem; border-radius: 999px; border: 1px solid rgba(250,246,239,.3); background: rgba(255,255,255,.08); color: var(--cream); font-size: .9375rem; font-weight: 500; cursor: pointer; user-select: none; transition: background .15s, border-color .15s; }
+  .news .chip:hover { background: rgba(255,255,255,.14); }
+  .news .chip input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+  .news .chip::before { content: ""; width: 1rem; height: 1rem; border-radius: 999px; border: 1.5px solid rgba(250,246,239,.6); background: transparent; flex: none; transition: background .15s, border-color .15s; }
+  .news .chip:has(input:checked) { background: var(--cream); border-color: var(--cream); color: var(--sage-deep); }
+  .news .chip:has(input:checked)::before { border-color: var(--clay); background: var(--clay) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-6' fill='none' stroke='%23FAF6EF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100% no-repeat; }
+  .news .chip:has(input:focus-visible) { outline: 2px solid var(--cream); outline-offset: 2px; }
+  .news .row { display: flex; flex-direction: column; gap: .75rem; } @media (min-width: 640px) { .news .row { flex-direction: row; align-items: center; } }
+  .reassure { margin-top: 1.75rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; border-top: 1px solid rgba(31,42,36,.1); padding-top: 1.5rem; list-style: none; padding-left: 0; }
+  .reassure li { text-align: center; } .reassure b { display: block; font-size: .75rem; font-weight: 600; } .reassure span { display: block; margin-top: .25rem; font-size: 11px; line-height: 1.4; color: var(--taupe); }
+
+  /* faq */
+  .faq { background: rgba(239,230,216,.6); } .faq .container { max-width: 48rem; }
+  .faq ul { margin-top: 3rem; list-style: none; padding: 0 1.5rem; border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card), 0 0 0 1px rgba(31,42,36,.05); }
+  .faq li + li { border-top: 1px solid rgba(31,42,36,.1); }
+  .faq h3 { font-family: var(--body); font-size: 1rem; }
+  .faq button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 1rem; min-height: 56px; padding: 1.25rem 0; text-align: left; font: inherit; font-weight: 600; color: var(--ink); background: none; border: 0; cursor: pointer; } .faq button:hover { color: var(--sage-deep); }
+  .faq button .icon { flex: none; color: var(--taupe); transition: transform .2s; } .faq button[aria-expanded="true"] .icon { transform: rotate(180deg); }
+  .faq .a { padding-bottom: 1.25rem; margin-top: -.25rem; color: var(--taupe); line-height: 1.7; }
+
+  /* newsletter */
+  .news { padding-block: 5rem; } .news .box { margin-inline: auto; max-width: 42rem; border-radius: 28px; background: var(--sage-deep); padding: 3rem 1.5rem; text-align: center; color: var(--cream); } @media (min-width: 640px) { .news .box { padding-inline: 3rem; } }
+  .news h2 { font-size: 1.875rem; color: var(--cream); } @media (min-width: 640px) { .news h2 { font-size: 2.25rem; } } .news p { margin-top: .75rem; color: rgba(250,246,239,.75); }
+  .news form { margin-top: 1.75rem; display: flex; flex-direction: column; gap: 1rem; }
+  .news .row input { min-height: 48px; max-height: 48px; flex: 1; min-width: 0; border-radius: var(--r-btn); border: 1px solid rgba(250,246,239,.2); background: rgba(255,255,255,.1); padding: 0 1.25rem; color: var(--cream); font: inherit; } .news .row input::placeholder { color: rgba(250,246,239,.5); } .news .row input:focus { outline: 2px solid var(--cream); outline-offset: 2px; }
+  .news .row .btn { flex: none; min-height: 48px; }
+  .news .ok { display: none; margin-top: 1.5rem; font-weight: 600; }
+
+  /* footer */
+  footer.site { border-top: 1px solid rgba(31,42,36,.1); padding-block: 3.5rem; }
+  footer.site .grid { display: grid; gap: 2.5rem; } @media (min-width: 768px) { footer.site .grid { grid-template-columns: repeat(12, 1fr); } footer.site .about { grid-column: span 3; } footer.site nav { grid-column: span 3; } }
+  footer.site .about p.name { font-family: var(--display); font-size: 1.5rem; font-weight: 600; } footer.site .about p.tag { margin-top: .5rem; max-width: 20rem; font-size: .875rem; color: var(--taupe); }
+  .social { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; padding: 0; } .social a { display: inline-flex; min-height: 40px; align-items: center; border-radius: 999px; border: 1px solid rgba(31,42,36,.15); padding: 0 1rem; font-size: .75rem; font-weight: 600; text-decoration: none; } .social a:hover { background: var(--ink); color: var(--cream); }
+  footer.site nav p { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .15em; color: var(--taupe); } footer.site nav ul { margin: 1rem 0 0; padding: 0; list-style: none; display: grid; gap: .625rem; } footer.site nav a { font-size: .875rem; text-decoration: none; } footer.site nav a:hover { color: var(--sage-deep); }
+  .legal { margin-top: 3rem; display: flex; flex-direction: column; gap: .5rem; border-top: 1px solid rgba(31,42,36,.1); padding-top: 1.5rem; font-size: .75rem; color: var(--taupe); } @media (min-width: 640px) { .legal { flex-direction: row; justify-content: space-between; } }
+</style>
+<style>
+.photo-about-home{background-image:url('assets/photos/about-home.jpg')}
+.photo-bath-grooming{background-image:url('assets/photos/bath-grooming.jpg')}
+.photo-bowls-in-use{background-image:url('assets/photos/bowls-in-use.jpg')}
+.photo-cat-fluffy{background-image:url('assets/photos/cat-fluffy.jpg')}
+.photo-cat-tabby{background-image:url('assets/photos/cat-tabby.jpg')}
+.photo-dog-and-cat{background-image:url('assets/photos/dog-and-cat.jpg')}
+.photo-dog-cockapoo{background-image:url('assets/photos/dog-cockapoo.jpg')}
+.photo-family-all{background-image:url('assets/photos/family-all.jpg')}
+.photo-garden-three{background-image:url('assets/photos/garden-three.jpg')}
+.photo-hero-family{background-image:url('assets/photos/hero-family.jpg')}
+.photo-quiet-afternoon{background-image:url('assets/photos/quiet-afternoon.jpg')}
+.photo-treat-time{background-image:url('assets/photos/treat-time.jpg')}
+</style>
+
+
+<div class="announce">Coming soon: thoughtfully designed essentials for everyday pet life</div>
+
+<header class="site" id="siteHeader">
+  <div class="container hdr">
+    <button type="button" class="iconbtn menubtn" id="menuBtn" aria-expanded="false" aria-controls="navDrawer" aria-haspopup="dialog" aria-label="Open menu"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <a href="#top" class="brand" aria-label="UrPick home">UrPick</a>
+    <nav class="hdr-nav" aria-label="Primary">
+      <a href="#collection-all" data-nav="shop">Shop</a>
+      <a href="#collection-dogs" data-nav="pet">Shop by pet</a>
+      <a href="#shop-by-need" data-nav="need">Shop by need</a>
+      <a href="#about" data-nav="about">About</a>
+      <a href="#help" data-nav="help">Help</a>
+    </nav>
+    <div class="hdr-actions">
+      <button type="button" class="iconbtn" id="searchBtn" aria-label="Search" aria-haspopup="dialog" aria-controls="searchDialog"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></svg></button>
+      <button type="button" class="iconbtn cartbtn" id="cartBtn" aria-label="Cart, 0 items" aria-haspopup="dialog" aria-controls="cartDrawer"><svg class="icon" viewBox="0 0 24 24"><path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.5L21 8H6.2M9 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/></svg><span class="cart-badge" id="cartCount" hidden>0</span></button>
+    </div>
+  </div>
+</header>
+
+
+<!-- Cart drawer (template's cart, local until Shopify is connected) -->
+<!-- WELCOME OFFER: first-visit popup. Email capture + discount eligibility go to WELCOME_OFFER.endpoint (see script); nothing is claimed until that endpoint confirms. -->
+<div class="offer-root" id="offerRoot" hidden>
+  <div class="offer-overlay" id="offerOverlay"></div>
+  <div class="offer" id="offerDialog" role="dialog" aria-modal="true" aria-labelledby="offerTitle" tabindex="-1">
+    <button type="button" class="iconbtn offer-close" id="offerClose" aria-label="Close and continue to the site"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <div class="offer-side" aria-hidden="true">
+      <p class="brand">UrPick</p>
+      <p class="big">15% off<small>Your first order</small></p>
+      <p>Everyday essentials for pets and the people who love them.</p>
+    </div>
+    <div class="offer-main">
+      <div class="offer-ask" id="offerAsk">
+        <p class="eyebrow">Welcome to UrPick</p>
+        <h2 id="offerTitle">A little something for your first pick.</h2>
+        <p class="sub">Enter your email and get 15% off your first order. Your discount will automatically apply at checkout when you use the same email.</p>
+        <form class="offer-form" id="offerForm" novalidate>
+          <label for="offerEmail" style="position:absolute;left:-9999px">Email address</label>
+          <input id="offerEmail" type="email" placeholder="Enter your email address" autocomplete="email" inputmode="email" required>
+          <p class="offer-error" id="offerError" role="alert"></p>
+          <button type="submit" class="btn btn-primary" id="offerSubmit">Unlock my 15% off</button>
+        </form>
+        <p class="offer-micro">No code to remember. Just shop and we’ll take care of the rest.</p>
+        <p class="offer-consent">By entering your email you agree to receive UrPick emails about launch news and offers. You can unsubscribe at any time. See our <a href="#privacy">Privacy Policy</a>.</p>
+      </div>
+      <div class="offer-done" id="offerDone" aria-live="polite">
+        <p class="eyebrow">Welcome to UrPick</p>
+        <h2 id="offerDoneTitle">You’re in!</h2>
+        <p class="sub" id="offerDoneBody">Your 15% first-order discount is ready. Shop normally and use this email at checkout. We’ll apply your discount automatically.</p>
+        <span class="email" id="offerDoneEmail"></span>
+        <div class="notice" id="offerDoneNotice" hidden></div>
+        <p><button type="button" class="btn btn-primary" id="offerStart">Start shopping</button></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Collection filter drawer: right-side on desktop, bottom sheet on phones -->
+<div class="filter-root" id="filterRoot" hidden>
+  <div class="filter-overlay" id="filterOverlay"></div>
+  <aside class="filter" id="filterDrawer" role="dialog" aria-modal="true" aria-labelledby="filterTitle" tabindex="-1">
+    <header class="cart-head"><h2 id="filterTitle">Filter</h2><button type="button" class="iconbtn" id="filterClose" aria-label="Close filters"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+    <form class="filter-body" id="filterForm">
+      <fieldset><legend>Pet</legend><div id="fPet"></div></fieldset>
+      <fieldset><legend>Need</legend><div id="fNeed"></div></fieldset>
+      <fieldset><legend>Product type</legend><div id="fType"></div></fieldset>
+      <fieldset><legend>Price</legend><p class="taupe fnote">Prices are set at launch. This filter switches on then.</p></fieldset>
+      <fieldset><legend>Availability</legend><div id="fAvail"></div></fieldset>
+    </form>
+    <footer class="cart-foot filter-foot"><button type="button" class="btn btn-secondary" id="filterClearAll">Clear all</button><button type="button" class="btn btn-primary" id="filterApply">Show results</button></footer>
+  </aside>
+</div>
+
+<!-- Search -->
+<div class="search-root" id="searchRoot" hidden>
+  <div class="filter-overlay" id="searchOverlay"></div>
+  <div class="search" id="searchDialog" role="dialog" aria-modal="true" aria-labelledby="searchTitle" tabindex="-1">
+    <h2 id="searchTitle" class="sr-only">Search</h2>
+    <form class="search-row" id="searchForm" role="search"><label for="searchInput" class="sr-only">Search products and pages</label><input id="searchInput" type="search" placeholder="Search products, needs, help…" autocomplete="off"><button type="button" class="iconbtn" id="searchClose" aria-label="Close search"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></form>
+    <ul class="search-results" id="searchResults" aria-live="polite"></ul>
+  </div>
+</div>
+
+<div class="cart-root" id="cartRoot" hidden>
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart" id="cartDrawer" role="dialog" aria-modal="true" aria-labelledby="cartTitle" tabindex="-1">
+    <header class="cart-head"><h2 id="cartTitle">Your cart</h2><button type="button" class="iconbtn" id="cartClose" aria-label="Close"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></header>
+    <div class="cart-body" id="cartBody"></div>
+    <footer class="cart-foot">
+      <div class="cart-sub"><span class="taupe">Subtotal</span><span id="cartSubtotal">$0.00</span></div>
+      <p class="taupe cart-fine">Shipping and taxes calculated at checkout.</p>
+      <a href="#checkout" class="btn btn-primary cart-checkout" id="cartCheckout">Checkout</a>
+      <a href="#cart" class="btn btn-secondary cart-view" id="cartViewAll">View full cart</a>
+      <button type="button" class="cart-continue" id="cartContinue">Continue shopping</button>
+    </footer>
+  </aside>
+</div>
+
+<!-- Navigation drawer -->
+<div class="drawer-root" id="drawerRoot" hidden>
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <aside class="drawer" id="navDrawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1">
+    <div class="drawer-head">
+      <p id="drawerTitle" class="brand">UrPick</p>
+      <button type="button" class="iconbtn" id="drawerClose" aria-label="Close menu"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <nav aria-label="Main" class="drawer-nav">
+      <ul class="drawer-primary">
+        <li><a href="#collection-all" data-route="shop">Shop</a></li>
+        <li class="drawer-group">
+          <button type="button" class="drawer-toggle" id="productsToggle" aria-expanded="false" aria-controls="productsMenu" data-route="home">Shop by pet<svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <ul class="drawer-sub" id="productsMenu" hidden>
+            <li><a href="#collection-dogs" data-cat="dogs">Dogs</a></li>
+            <li><a href="#collection-cats" data-cat="cats">Cats</a></li>
+            <li><a href="#collection-other" data-cat="other">Other Pets</a></li>
+          </ul>
+        </li>
+        <li class="drawer-group">
+          <button type="button" class="drawer-toggle" id="needsToggle" aria-expanded="false" aria-controls="needsMenu">Shop by need<svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <ul class="drawer-sub" id="needsMenu" hidden>
+            <li><a href="#need-clean-home">Clean Home</a></li>
+            <li><a href="#need-better-walks">Better Walks</a></li>
+            <li><a href="#need-everyday-care">Everyday Care</a></li>
+            <li><a href="#need-grooming">Grooming</a></li>
+            <li><a href="#need-comfort-play">Comfort &amp; Play</a></li>
+            <li><a href="#need-travel">Travel</a></li>
+          </ul>
+        </li>
+        <li><a href="#about" data-route="about">About</a></li>
+        <li class="drawer-group">
+          <button type="button" class="drawer-toggle" id="helpToggle" aria-expanded="false" aria-controls="helpMenu">Help<svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <ul class="drawer-sub" id="helpMenu" hidden>
+            <li><a href="#help" data-route="help">Help centre</a></li>
+            <li><a href="#contact" data-route="contact">Contact</a></li>
+            <li><a href="#track-order" data-route="track-order">Track Your Order</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#shipping-returns" data-route="shipping-returns">Shipping &amp; Returns</a></li>
+          </ul>
+        </li>
+        <li><a href="#guide" data-route="guide">Pet Parent Guide</a></li>
+      </ul>
+    </nav>
+    <div class="drawer-foot"><a href="#collection-all" class="btn btn-primary">Shop what made the cut</a></div>
+  </aside>
+</div>
+
+<main id="main">
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="container">
+    <div class="copy">
+      <p class="eyebrow">UrPick · Pet essentials</p>
+      <h1>Everyday Pet Life, Made a Little Easier</h1>
+      <p class="sub">We're building thoughtfully designed essentials for the routines you and your pets share: bath time, grooming, treat time, and the quiet afternoons in between.</p>
+      <div class="ctas">
+        <a href="#collection-all" class="btn btn-primary">Shop what made the cut</a>
+        <a href="#how-we-work" class="textlink">How we choose <span aria-hidden="true">↓</span></a>
+      </div>
+    </div>
+    <div class="visual">
+      <div class="ph vid photo-family-all"><video data-video="hero-loop" muted loop playsinline preload="metadata" aria-label="Household pets playing together in a bright living room"></video><span class="cap"><b>Video · 4/5</b> — hero loop, household pets (uploaded 9 Oct). Poster: photo 6. Replace with the dog-using-product clip once a product exists.</span></div>
+    </div>
+  </div>
+  <div class="strip">
+    <ul class="container">
+      <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 21c0-9 4-15 14-16-1 10-7 14-14 16Zm0 0c3-5 6-8 10-10"/></svg></span>Built for routines</li>
+      <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M12 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 4v14m-7-7a7 7 0 0 0 14 0M3 14h2m14 0h2"/></svg></span>Dogs and cats, both</li>
+      <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z"/></svg></span>Simple to care for</li>
+      <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M12 3v4m0 10v4M3 12h4m10 0h4m-3.5-7.5-2.8 2.8M8.3 15.7l-2.8 2.8m0-13 2.8 2.8m7.4 7.4 2.8 2.8"/></svg></span>Honest by design</li>
+    </ul>
+  </div>
+</section>
+
+<!-- USE CASES -->
+
+<section class="sec shop" id="shop">
+  <div class="container">
+    <h2 class="cat-title">Shop by pet</h2>
+    <div class="cat-tabs" role="tablist" aria-label="Shop by pet">
+      <button type="button" role="tab" id="tab-dogs" data-cat="dogs" aria-selected="true" aria-controls="shopPanel">Dogs</button>
+      <button type="button" role="tab" id="tab-cats" data-cat="cats" aria-selected="false" aria-controls="shopPanel" tabindex="-1">Cats</button>
+      <button type="button" role="tab" id="tab-other" data-cat="other" aria-selected="false" aria-controls="shopPanel" tabindex="-1">Other Pets</button>
+    </div>
+    <div id="shopPanel" role="tabpanel" aria-labelledby="tab-dogs">
+      <p class="shop-ph">Placeholder products. Real names, photos and prices arrive with the supplier list.</p>
+      <ul class="pgrid" id="shopGrid"></ul>
+      <p class="steps-cta"><a href="#collection-dogs" class="textlink" id="shopViewAll">View all dog products <span aria-hidden="true">→</span></a></p>
+    </div>
+  </div>
+</section>
+<section class="sec needs" id="shop-by-need-home">
+  <div class="container">
+    <div class="head center">
+      <p class="eyebrow">Shop by need</p>
+      <h2 class="h2">What are you trying to solve?</h2>
+    </div>
+    <ul class="needgrid" id="needGridHome"></ul>
+  </div>
+</section>
+<!-- HOW WE WORK -->
+<section class="sec how" id="how-we-work">
+  <div class="container">
+    <div class="head center">
+      <p class="eyebrow">How we choose</p>
+      <h2 class="h2">Only products that make pet life easier make the cut.</h2>
+    </div>
+    <ol class="steps">
+      <li class="step"><div class="vis"><div class="ph photo-bath-grooming pos-left" role="img" aria-label="A pet parent towelling off a golden retriever after a bath"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">1</span></div><div class="txt"><h3>Start with the real problem</h3><p>We start with the everyday frustrations pet parents actually deal with and look for where things could simply work better.</p></div></li>
+      <li class="step"><div class="vis"><div class="ph photo-bowls-in-use" role="img" aria-label="A golden retriever drinking from a water bowl while a tabby cat walks up to a food bowl on a woven rug"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">2</span></div><div class="txt"><h3>Find the smarter solution</h3><p>We look for products that solve the problem simply, practically, and without adding unnecessary steps to the routine.</p></div></li>
+      <li class="step"><div class="vis"><div class="ph photo-cat-tabby" role="img" aria-label="A tabby cat looking closely at the camera in a bright living room"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">3</span></div><div class="txt"><h3>Look closer</h3><p>We look at how the product works, how it is used, what it claims to do, and whether the solution actually makes sense for pet parents.</p></div></li>
+      <li class="step"><div class="vis"><div class="ph photo-quiet-afternoon" role="img" aria-label="A golden retriever and a tabby cat asleep together on a soft blanket"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">4</span></div><div class="txt"><h3>Only the good stuff makes the cut</h3><p>If we can’t clearly explain what it does, why it helps, and who it’s for, it doesn’t belong in our store.</p></div></li>
+    </ol>
+    <p class="steps-cta"><a href="#collection-all" class="textlink">See what made the cut <span aria-hidden="true">→</span></a></p>
+  </div>
+</section>
+
+<section class="sec" id="moments">
+  <div class="container">
+    <div class="head center">
+      <p class="eyebrow">Made for everyday moments</p>
+      <h2 class="h2">One home. So many moments.</h2>
+    </div>
+    <ul class="cases">
+      <li class="card"><div class="ph photo-bath-grooming" role="img" aria-label="An owner towelling a wet golden retriever beside the bath while a tabby cat watches"><span class="cap"><b>Photo · 4/5</b> — bath time, grooming (photo 8)</span></div><div class="body"><div><h3>Bath time &amp; grooming</h3><p>The routines that take four hands and a lot of patience. Where we started looking.</p></div><span class="arrow"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></li>
+      <li class="card"><div class="ph photo-treat-time" role="img" aria-label="A golden retriever and a tabby cat eating treats from slow feeders on a rug"><span class="cap"><b>Photo · 4/5</b> — treat time (photo 9)</span></div><div class="body"><div><h3>Treat time</h3><p>Fast, messy, over in seconds. We think it can be slower and more fun.</p></div><span class="arrow"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></li>
+      <li class="card"><div class="ph photo-quiet-afternoon" role="img" aria-label="A golden retriever and a tabby cat asleep together on a sofa in the sun"><span class="cap"><b>Photo · 4/5</b> — quiet afternoons (photo 10)</span></div><div class="body"><div><h3>Quiet afternoons</h3><p>Home alone, or just bored. Small things that give them something to do.</p></div><span class="arrow"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span></div></li>
+    </ul>
+  </div>
+</section>
+<!-- WHY URPICK -->
+<section class="sec why" id="why-urpick">
+  <div class="container">
+    <div>
+      <p class="eyebrow">Why UrPick</p>
+      <h2 class="h2">Simple things, done properly.</h2>
+      <p class="sub">Most pet products are made for a category. Ours are made for a moment: the bath, the brush, the nail trim, the long afternoon. That changes what we leave out.</p>
+      <ul class="feats">
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Routine first</h3><p>Designed around what happens every week, not what sells on a shelf.</p></div></li>
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Dogs and cats</h3><p>Different animals, different habits. One idea is not shrunk to fit the other.</p></div></li>
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Nothing unnecessary</h3><p>Fewer parts, simpler care, less to go wrong.</p></div></li>
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Honest claims</h3><p>If we can't explain it clearly, we don't sell it.</p></div></li>
+      </ul>
+    </div>
+    <div>
+      <div class="callout-box photo-hero-family" role="img" aria-label="A golden retriever and two cats resting together on a rug in a bright living room">
+        <span class="callout" style="left:6%;top:14%"><i></i>Dogs &amp; cats</span>
+        <span class="callout" style="right:5%;top:26%"><i></i>Fewer parts</span>
+        <span class="callout" style="left:8%;bottom:22%"><i></i>Looked at closely</span>
+        <span class="callout" style="right:8%;bottom:10%"><i></i>Plain words</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="sec gallery" id="gallery">
+  <div class="container">
+    <div class="head center">
+      <p class="eyebrow">Real homes. Real pets.</p>
+      <h2 class="h2">See what made the cut in real life.</h2>
+      <p class="sub">Real customer photos and reviews from pet parents using UrPick at home, once the first orders are out in the world.</p>
+    </div>
+    <!-- Review cards are rendered here by the review widget once verified reviews exist. Nothing is shown until then. -->
+    <ul class="revs" id="revList" hidden aria-label="Customer reviews"></ul>
+    <div class="rev-share">
+      <div>
+        <p class="eyebrow">Share your experience</p>
+        <h3>Bought something? Tell us how it went.</h3>
+        <p>Send a photo or a few words about your pet using a UrPick product and get <b>[X]% off</b> your next order. Every review is checked against a real order before it appears here.</p>
+      </div>
+      <p class="rev-share-cta"><a class="btn btn-primary" href="mailto:yourpick2025@gmail.com?subject=My%20UrPick%20experience">Share your experience</a></p>
+    </div>
+    <div class="reviews-note"><b>Reviews</b> — a verified review widget (Judge.me, Okendo or Shopify Reviews) replaces these placeholders once reviews exist. No ratings, counts or names are shown until real data is available.</div>
+  </div>
+</section>
+
+<!-- SHOP (template's product block; placeholder product until Shopify is connected) -->
+
+<!-- FAQ -->
+<section class="sec faq" id="faq">
+  <div class="container">
+    <div class="head center">
+      <p class="eyebrow">Questions</p>
+      <h2 class="h2">Anything you'd like to know?</h2>
+    </div>
+    <ul id="faqList">
+      <li><h3><button type="button" aria-expanded="true" aria-controls="faq-0" id="faq-btn-0">What is UrPick?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-0" role="region" aria-labelledby="faq-btn-0" class="a">A new pet-care brand making thoughtfully designed essentials for the routines you and your pets share. The first product is in development now.</div></li>
+      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-1" id="faq-btn-1">Is it for dogs or cats?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-1" role="region" aria-labelledby="faq-btn-1" class="a" hidden>Both. We design for each animal's habits rather than shrinking one idea to fit the other. We're also listening to households with other pets.</div></li>
+      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-2" id="faq-btn-2">When does the first product launch?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-2" role="region" aria-labelledby="faq-btn-2" class="a" hidden>We don't have a date to share yet. Join the list and you'll hear first, with nothing else in between.</div></li>
+      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-3" id="faq-btn-3">What is your shipping policy?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-3" role="region" aria-labelledby="faq-btn-3" class="a" hidden>Shipping regions, cost and timeframe will be confirmed at launch. A draft of what we intend to offer is on our <a href="#shipping-returns">Shipping &amp; Returns</a> page.</div></li>
+      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-4" id="faq-btn-4">What is your return policy?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-4" role="region" aria-labelledby="faq-btn-4" class="a" hidden>The return window and conditions will be confirmed at launch. A draft is on our <a href="#shipping-returns">Shipping &amp; Returns</a> page.</div></li>
+      <li><h3><button type="button" aria-expanded="false" aria-controls="faq-5" id="faq-btn-5">How do I get in touch?<svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button></h3><div id="faq-5" role="region" aria-labelledby="faq-btn-5" class="a" hidden>Email us at <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>. We read everything and reply as quickly as we can. Follow us on TikTok at <a href="https://www.tiktok.com/@yourpick2025" target="_blank" rel="noopener">@yourpick2025</a> or on <a href="https://www.facebook.com/profile.php?id=61585565952893" target="_blank" rel="noopener">Facebook</a>.</div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="news" id="newsletter">
+  <div class="container">
+    <div class="box">
+      <h2>Join the UrPick pack.</h2>
+      <p>Launch news, tips and early access. No spam.</p>
+      <form id="newsForm" novalidate>
+        <div class="chips" aria-label="Who's at home?">
+          <label class="chip"><input type="checkbox" name="pet" value="dog" id="petDog"> I have a dog</label>
+          <label class="chip"><input type="checkbox" name="pet" value="cat" id="petCat"> I have a cat</label>
+          <label class="chip"><input type="checkbox" name="pet" value="other" id="petOther"> I have another pet</label>
+        </div>
+        <div class="row">
+          <label for="newsEmail" style="position:absolute;left:-9999px">Email address</label>
+          <input id="newsEmail" type="email" required placeholder="you@example.com" autocomplete="email">
+          <button type="submit" class="btn btn-primary">Subscribe</button>
+        </div>
+      </form>
+      <p class="ok" id="newsOk" role="status">Thanks, you're on the list.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Routed pages (hash routes: #contact, #track-order, #about). Home is everything inside <main id="main">. -->
+<div id="pages">
+  <section class="page" id="page-contact" aria-labelledby="contactTitle">
+    <div class="container">
+      <p class="eyebrow">Contact</p>
+      <h1 id="contactTitle">Get in touch</h1>
+      <p class="lead">Questions, ideas, or a routine you wish were easier. We read everything.</p>
+      <p class="lead">Email us directly at <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>, or use the form below.</p>
+      <form id="contactForm" novalidate>
+        <label>Name<input type="text" id="contactName" name="name" autocomplete="name" required></label>
+        <label>Email<input type="email" id="contactEmail" name="email" autocomplete="email" required></label>
+        <label>Message<textarea id="contactMessage" name="message" required></textarea></label>
+        <div><button type="submit" class="btn btn-primary">Send message</button></div>
+        <div class="status" id="contactStatus" role="status"><b>Not connected yet.</b>Nothing was sent. Delivering this form needs an email or form service (for example the Shopify contact form, Klaviyo, or Formspree) wired to the submit action. In the meantime, email us directly at <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>.</div>
+      </form>
+      <p class="back"><a href="#top" class="btn btn-secondary">Back to home</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-track" aria-labelledby="trackTitle">
+    <div class="container">
+      <p class="eyebrow">Track your order</p>
+      <h1 id="trackTitle">Where's my order?</h1>
+      <p class="lead">Enter the order number from your confirmation email and the email address you ordered with.</p>
+      <form id="trackForm" novalidate>
+        <label>Order number<input type="text" id="trackOrder" name="order" inputmode="numeric" autocomplete="off" placeholder="e.g. 1001" required></label>
+        <label>Email<input type="email" id="trackEmail" name="email" autocomplete="email" required></label>
+        <div><button type="submit" class="btn btn-primary">Track order</button></div>
+        <div class="status" id="trackStatus" role="status"><b>Order tracking isn't connected yet.</b>No lookup was performed. This page needs the Shopify order status integration (customer accounts or the order status page link) before it can show real tracking. There are no orders to track before launch. Questions about an order? Email <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>.</div>
+      </form>
+      <p class="back"><a href="#top" class="btn btn-secondary">Back to home</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-product" aria-labelledby="shopName">
+    <div class="container wide pdp">
+      <p class="pdp-crumb"><a href="#shop" id="pdpBack">← Back to <span id="pdpCatName">Dogs</span></a></p>
+      <div class="pdp-grid shop">
+    <div class="media">
+      <div class="ph main pmain" id="shopMain" role="img" aria-label="Product image placeholder"><div class="psil" id="shopSil"><span>[ PRODUCT ]</span></div><span class="cap always" id="shopMainCap"></span></div>
+      <ul class="thumbs" id="shopThumbs" aria-label="Product image thumbnails"></ul>
+    </div>
+    <div class="panel">
+      <p class="eyebrow" id="pdpEyebrow">Dogs</p>
+      <h1 id="shopName"></h1>
+      <p class="desc" id="shopDesc"></p>
+      <p class="ratings-note" id="shopReviews">No reviews yet. Ratings appear here only from real, verified reviews.</p>
+      <div class="pricebox"><b id="shopPrice"></b><span id="shopPriceNote">PLACEHOLDER — price set in Shopify</span></div>
+      <fieldset class="colors">
+        <legend>Color: <span id="shopColorName"></span></legend>
+        <div class="swatches" id="shopSwatches"></div>
+      </fieldset>
+      <div class="buyrow">
+        <div class="qty" role="group" aria-label="Quantity">
+          <button type="button" id="qtyMinus" aria-label="Decrease quantity"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+          <output id="qtyOut" aria-live="polite">1</output>
+          <button type="button" id="qtyPlus" aria-label="Increase quantity"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+        </div>
+        <button type="button" class="btn btn-primary addbtn" id="addToCart">Add to Cart</button>
+      </div>
+      <ul class="reassure" id="shopReassure"></ul>
+      <div class="pdp-details" id="pdpDetails"></div>
+      <p class="connect-note">Shopify not connected yet — cart runs locally. Add <code>VITE_SHOPIFY_DOMAIN</code> and <code>VITE_SHOPIFY_STOREFRONT_TOKEN</code> to <code>.env</code> to enable live checkout.</p>
+    </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="buybar" id="buyBar" hidden><div class="bb-info"><b id="buyBarName"></b><span id="buyBarPrice"></span></div><button type="button" class="btn btn-primary" id="buyBarAdd">Add to cart</button></div>
+
+  <section class="page" id="page-collection" aria-labelledby="collectionTitle">
+    <div class="container wide">
+      <p class="eyebrow" id="collectionEyebrow">Shop</p>
+      <h1 id="collectionTitle">What made the cut</h1>
+      <p class="lead" id="collectionLead"></p>
+      <div class="cat-tabs coll-tabs" role="tablist" aria-label="Shop by pet" id="collectionTabs" hidden>
+        <a role="tab" href="#collection-dogs" data-cat="dogs">Dogs</a>
+        <a role="tab" href="#collection-cats" data-cat="cats">Cats</a>
+        <a role="tab" href="#collection-other" data-cat="other">Other Pets</a>
+      </div>
+      <div class="toolbar">
+        <button type="button" class="tbtn" id="filterBtn" aria-haspopup="dialog" aria-controls="filterDrawer" aria-expanded="false"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10m-7 6h4"/></svg>Filter<span id="filterCount"></span></button>
+        <label class="tsort">Sort<select id="sortSel" aria-label="Sort products"><option value="featured">Featured</option><option value="name">Name A–Z</option><option value="price-asc">Price, low to high</option><option value="price-desc">Price, high to low</option></select></label>
+        <p class="tcount" id="collectionCount" aria-live="polite"></p>
+      </div>
+      <p class="shop-ph">Placeholder products. Real names, photos and prices arrive with the supplier list.</p>
+      <ul class="pgrid" id="collectionGrid"></ul>
+      <div class="coll-empty" id="collectionEmpty" hidden><p>No products match these filters.</p><button type="button" class="btn btn-secondary" id="collectionClear">Clear all</button></div>
+    </div>
+  </section>
+
+  <section class="page" id="page-cart" aria-labelledby="cartPageTitle">
+    <div class="container">
+      <p class="eyebrow">Cart</p>
+      <h1 id="cartPageTitle">Your cart</h1>
+      <div class="cartpage" id="cartPageLines"></div>
+      <div class="co-totals cartpage-totals">
+        <div><span>Subtotal</span><span id="cartPageSubtotal">$0.00</span></div>
+        <div><span>Shipping</span><span class="taupe">Calculated at checkout</span></div>
+      </div>
+      <p class="cartpage-actions"><a href="#checkout" class="btn btn-primary">Checkout</a> <a href="#shop" class="btn btn-secondary">Continue shopping</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-needs" aria-labelledby="needsTitle">
+    <div class="container wide">
+      <p class="eyebrow">Shop by need</p>
+      <h1 id="needsTitle">What are you trying to solve?</h1>
+      <p class="lead">Pick the problem, not the aisle. Each need has a few clear ways to solve it, and only the products that make the cut.</p>
+      <ul class="needgrid" id="needGridPage"></ul>
+    </div>
+  </section>
+
+  <section class="page" id="page-need" aria-labelledby="needTitle">
+    <div class="container wide">
+      <p class="eyebrow" id="needEyebrow">Shop by need</p>
+      <h1 id="needTitle"></h1>
+      <p class="lead" id="needLead"></p>
+      <div class="need-paths" role="group" aria-label="Ways to solve it" id="needPaths"></div>
+      <section class="need-block" aria-labelledby="needFeaturedTitle">
+        <h2 id="needFeaturedTitle">Featured products</h2>
+        <p class="shop-ph">Placeholder products. Real names, photos and prices arrive with the supplier list.</p>
+        <ul class="pgrid" id="needGrid"></ul>
+        <p class="need-empty" id="needEmpty" hidden>Nothing listed for this path yet. It fills in as products are confirmed.</p>
+      </section>
+      <section class="need-block" aria-labelledby="needChooseTitle">
+        <h2 id="needChooseTitle">How to choose</h2>
+        <ul class="need-list" id="needChoose"></ul>
+      </section>
+      <section class="need-block" id="needProof" hidden aria-labelledby="needProofTitle">
+        <h2 id="needProofTitle">Real homes. Real pets.</h2>
+        <p class="taupe">Verified customer results appear here once the first orders are out in the world.</p>
+      </section>
+      <section class="need-block" aria-labelledby="needFaqTitle">
+        <h2 id="needFaqTitle">Questions</h2>
+        <ul class="need-list" id="needFaq"></ul>
+      </section>
+      <p class="back"><a href="#collection-all" class="btn btn-primary" id="needShopAll">Shop all</a> <a href="#guide" class="textlink" id="needLearn">Read the guide <span aria-hidden="true">→</span></a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-guide" aria-labelledby="guideTitle">
+    <div class="container">
+      <p class="eyebrow">Pet Parent Guide</p>
+      <h1 id="guideTitle">Plain answers to everyday pet questions.</h1>
+      <p class="lead">Short, practical guides on the routines behind our products. We publish each one only when it is written and checked, so this list shows what is coming rather than filler.</p>
+      <div class="draft"><b>In progress.</b> No guides are published yet. The topics below are planned; each will link to the products it relates to once it is live.</div>
+      <ul class="guide-list" id="guideList"></ul>
+      <p class="back"><a href="#shop-by-need" class="btn btn-primary">Shop by need</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-help" aria-labelledby="helpTitle">
+    <div class="container wide">
+      <p class="eyebrow">Help</p>
+      <h1 id="helpTitle">How can we help?</h1>
+      <p class="lead">Orders, shipping, returns and getting in touch, in one place.</p>
+      <ul class="helpgrid">
+        <li><a href="#contact"><h2>Contact us</h2><p>Questions, ideas or a routine you wish were easier. Email <span class="nowrap">yourpick2025@gmail.com</span> or use the form.</p></a></li>
+        <li><a href="#track-order"><h2>Track your order</h2><p>Where your order is, once ordering is live.</p></a></li>
+        <li><a href="#faq"><h2>FAQ</h2><p>What UrPick is, who it is for, and when we launch.</p></a></li>
+        <li><a href="#shipping-returns"><h2>Shipping &amp; Returns</h2><p>Where we ship, how long it takes, and how returns work.</p></a></li>
+        <li><a href="#privacy"><h2>Privacy Policy</h2><p>What we collect and why.</p></a></li>
+        <li><a href="#terms"><h2>Terms of Service</h2><p>The plain-language rules for the site and for buying from us.</p></a></li>
+      </ul>
+      <p class="back"><a href="mailto:yourpick2025@gmail.com" class="btn btn-primary">Email us</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-checkout" aria-labelledby="checkoutTitle">
+    <div class="container wide">
+      <p class="eyebrow">Checkout</p>
+      <h1 id="checkoutTitle">Review your order</h1>
+      <div class="co-grid">
+        <div class="co-summary">
+          <h2>Order summary</h2>
+          <div id="checkoutLines"></div>
+          <p class="co-offer" id="checkoutOffer" hidden></p>
+          <div class="co-totals">
+            <div><span>Subtotal</span><span id="checkoutSubtotal">$0.00</span></div>
+            <div><span>Shipping</span><span class="taupe">Calculated at checkout</span></div>
+            <div><span>Taxes</span><span class="taupe">Calculated at checkout</span></div>
+            <div class="co-total"><span>Total</span><span id="checkoutTotal">$0.00</span></div>
+          </div>
+        </div>
+        <div class="co-pay">
+          <h2>Secure checkout</h2>
+          <p class="taupe">Payment, shipping address and delivery options are handled by Shopify's secure checkout.</p>
+          <button type="button" class="btn btn-primary" id="checkoutGo" disabled title="Connect Shopify to enable checkout">Continue to Shopify checkout</button>
+          <div class="status show"><b>Checkout isn't connected yet.</b>This button sends the cart to Shopify's hosted checkout once the store is connected (Storefront API domain and token). No payment is taken on this page and no order is created before then.</div>
+          <ul class="reassure co-reassure" id="checkoutReassure"></ul>
+          <p class="back"><a href="#shop" class="btn btn-secondary">Back to shop</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="page-shipping" aria-labelledby="shippingTitle">
+    <div class="container">
+      <p class="eyebrow">Shipping &amp; Returns</p>
+      <h1 id="shippingTitle">Shipping &amp; Returns</h1>
+      <p class="lead">How orders ship and how returns work.</p>
+      <p class="lead">We are not taking orders yet, so this page describes the shipping and return experience we intend to offer when UrPick launches.</p>
+      <div class="draft"><b>Draft for review.</b> This policy is still being finalized and may change before launch.</div>
+      <div class="body">
+        <p class="updated">Last updated: October 13, 2026</p>
+
+        <h2>Where We Ship</h2>
+        <p>At launch, we plan to ship throughout the <strong>United States</strong>, including Washington, D.C.</p>
+        <p>Shipping availability and rates for Alaska, Hawaii, U.S. territories, APO/FPO addresses, and P.O. boxes may vary depending on carrier availability and will be shown at checkout when available.</p>
+        <p>We do not plan to offer international shipping at launch.</p>
+        <p>If you live outside the United States and are interested in ordering from us, contact us at <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>. International shipping may be added in the future.</p>
+
+        <h2>Processing Time</h2>
+        <p>Orders are expected to be processed within <strong>1–2 business days</strong>, Monday through Friday, excluding U.S. federal holidays.</p>
+        <p>During holidays, product launches, promotional periods, or unusually high order volume, processing may take slightly longer.</p>
+        <p>Once your order ships, you will receive a shipping confirmation email with tracking information.</p>
+        <p>Please allow up to <strong>24–48 hours</strong> for tracking information to begin updating after a shipping label is created.</p>
+
+        <h2>Delivery Time &amp; Shipping Cost</h2>
+        <p>Our intended launch shipping structure is:</p>
+        <ul>
+          <li><strong>Standard Shipping:</strong> approximately <strong>3–7 business days</strong></li>
+          <li><strong>Orders of $55 or more:</strong> Free standard shipping</li>
+          <li><strong>Orders under $55:</strong> <strong>$4.99</strong> standard shipping</li>
+        </ul>
+        <p>Available shipping options, estimated delivery times, and costs will always be displayed before checkout is completed.</p>
+        <p>Delivery estimates begin after an order has been processed and handed to the carrier.</p>
+        <p>Delivery dates are estimates and cannot be guaranteed. Weather, carrier disruptions, incorrect addresses, holiday volume, and other circumstances outside our control may cause delays.</p>
+
+        <h2>Free Shipping</h2>
+        <p>Free standard shipping is planned for qualifying U.S. orders of <strong>$55 or more</strong> after discounts and before applicable taxes.</p>
+        <p>Orders below the free-shipping threshold will be charged the standard shipping rate shown at checkout.</p>
+
+        <h2>Address Changes</h2>
+        <p>Please review your shipping address carefully before placing an order.</p>
+        <p>If you discover an error, contact us at <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a> as soon as possible with your order number and the correct address.</p>
+        <p>We will make every reasonable effort to update an address before the order ships, but changes cannot be guaranteed once an order has entered fulfillment or has been transferred to the carrier.</p>
+
+        <h2>Tracking Your Order</h2>
+        <p>Once your order ships, you will receive an email containing your tracking information.</p>
+        <p>Carrier tracking may take <strong>24–48 hours</strong> to update after shipment.</p>
+        <p>If your tracking has not updated for an extended period or your package appears delayed, contact us at <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a> and we will help review the shipment.</p>
+
+        <h2>Lost or Missing Packages</h2>
+        <p>If tracking shows that your order was delivered but you cannot locate it, please first:</p>
+        <ul>
+          <li>Check around your delivery location</li>
+          <li>Ask household members</li>
+          <li>Check with neighbors, building staff, or your front desk</li>
+          <li>Review any delivery photo or carrier notification</li>
+          <li>Contact the shipping carrier</li>
+        </ul>
+        <p>If the package still cannot be located, email <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a> with your order number and tracking information.</p>
+        <p>Lost-package situations will be reviewed individually based on the available carrier information.</p>
+
+        <h2>Duties &amp; Taxes</h2>
+        <p>Because we plan to ship only within the United States at launch, international customs duties should not apply.</p>
+        <p>Applicable sales tax will be calculated at checkout where required.</p>
+        <p>If international shipping is introduced in the future, applicable customs duties, import taxes, VAT, or other local charges will be explained as part of the international shipping policy.</p>
+
+        <h2>Returns &amp; Refunds</h2>
+        <p>We want you to feel confident ordering from UrPick.</p>
+        <p>Eligible items may be returned within <strong>30 days</strong> of delivery.</p>
+        <p>For a standard return, the item must generally be:</p>
+        <ul>
+          <li>Unused</li>
+          <li>Unopened</li>
+          <li>In its original packaging</li>
+          <li>In resalable condition</li>
+        </ul>
+        <p>To request a return, email <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a> with:</p>
+        <ul>
+          <li>Your name</li>
+          <li>Order number</li>
+          <li>Item you would like to return</li>
+          <li>Reason for the return</li>
+        </ul>
+        <p>Please contact us before sending anything back so we can provide the correct return instructions.</p>
+
+        <h2>Return Shipping</h2>
+        <p>For standard returns involving a change of mind, preference, sizing, color selection, or similar reasons, the customer is responsible for return shipping.</p>
+        <p>If we sent the wrong item, or your product arrived damaged or defective, you will not be responsible for the cost of correcting the issue.</p>
+        <p>Depending on the situation, we may provide:</p>
+        <ul>
+          <li>A replacement</li>
+          <li>A prepaid return label</li>
+          <li>A full refund</li>
+          <li>Another appropriate resolution</li>
+        </ul>
+
+        <h2>Damaged, Defective or Incorrect Items</h2>
+        <p>If your order arrives damaged, defective, or incorrect, contact us within <strong>7 days</strong> of delivery at <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>.</p>
+        <p>Please include:</p>
+        <ul>
+          <li>Your order number</li>
+          <li>A brief description of the issue</li>
+          <li>Clear photos or video showing the problem when possible</li>
+        </ul>
+        <p>Once reviewed, we will arrange an appropriate replacement or refund at no additional cost to you.</p>
+
+        <h2>Consumable &amp; Hygiene-Sensitive Products</h2>
+        <p>For health, sanitation, and safety reasons, opened or used consumable or hygiene-sensitive products generally cannot be returned for resale.</p>
+        <p>This may include products such as:</p>
+        <ul>
+          <li>Dog diapers</li>
+          <li>Pee pads</li>
+          <li>Disposable pet-care products</li>
+          <li>Grooming or cleaning products</li>
+          <li>Other products that cannot safely be resold once opened or used</li>
+        </ul>
+        <p>This restriction does not prevent us from helping if an item arrives damaged, defective, incorrect, or there is another legitimate product-quality issue.</p>
+
+        <h2>Refunds</h2>
+        <p>Once an approved return has been received and inspected, we will notify you regarding the status of your refund.</p>
+        <p>Approved refunds will be issued to the original payment method within approximately <strong>5–10 business days</strong> after the return is received and approved.</p>
+        <p>Your bank or card issuer may require additional processing time before the refund appears in your account.</p>
+        <p>Original shipping charges are generally non-refundable unless the return resulted from an error on our part or the item arrived damaged or defective.</p>
+
+        <h2>Order Cancellations</h2>
+        <p>You may request cancellation before your order has shipped.</p>
+        <p>Because orders can move into fulfillment quickly, cancellation cannot be guaranteed after processing has begun.</p>
+        <p>Once an order has shipped, it cannot be canceled and must follow the applicable return process.</p>
+
+        <h2>Personalized Products</h2>
+        <p>If UrPick introduces customized or personalized products, those items may not qualify for standard returns because they cannot normally be resold.</p>
+        <p>If we make an error in the personalization, or the item arrives damaged or defective, we will replace or refund it as appropriate.</p>
+
+        <h2>Final Sale Items</h2>
+        <p>Certain clearance, promotional, customized, or specially marked products may be designated Final Sale.</p>
+        <p>If an item is Final Sale, that designation will be clearly disclosed before purchase.</p>
+        <p>Final Sale restrictions will not prevent us from addressing products that arrive damaged, defective, or incorrect.</p>
+
+        <h2>Exchanges</h2>
+        <p>At launch, we do not plan to offer direct exchanges.</p>
+        <p>If an eligible item needs to be replaced because of size, color, or preference, the customer may return the original item according to this policy and place a new order for the preferred item.</p>
+        <p>This helps us process inventory, refunds, and replacement orders more accurately.</p>
+
+        <h2>Fair Use</h2>
+        <p>Our return policy is designed to protect genuine customers while allowing us to operate responsibly.</p>
+        <p>We reserve the right to review or decline return or refund requests involving suspected fraud, abuse, repeated misuse of the return policy, or products returned in a condition inconsistent with the stated reason for return.</p>
+        <p>This provision does not affect legitimate claims involving damaged, defective, or incorrect products.</p>
+
+        <h2>Questions?</h2>
+        <p>For questions about shipping, tracking, returns, damaged products, or refunds, contact us at <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>.</p>
+        <p>Please include your order number whenever possible so we can assist you more quickly.</p>
+      </div>
+      <p class="back"><a href="#top" class="btn btn-secondary">Back to home</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-privacy" aria-labelledby="privacyTitle">
+    <div class="container">
+      <p class="eyebrow">Privacy Policy</p>
+      <h1 id="privacyTitle">Privacy Policy</h1>
+      <p class="lead">What we collect, why, and the choices you have. We keep this short and in plain words.</p>
+      <div class="draft"><b>Draft for review.</b> This page is a working draft. Items in [brackets] are not yet decided and nothing here is final until the brackets are gone and this notice is removed.</div>
+      <div class="body">
+        <p class="updated">Last updated: [date]</p>
+        <h2>Who we are</h2>
+        <p>UrPick ([legal entity name], [registered address]) operates this website. Contact us about privacy at <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>.</p>
+        <h2>What we collect</h2>
+        <ul>
+          <li><strong>What you give us.</strong> Your email address when you join the waitlist or newsletter, and your name, email and message when you use the contact form or email us. When ordering is live: your name, delivery address, email and phone number, and the details of your order.</li>
+          <li><strong>Payment details.</strong> We never see or store your card number. Payment is handled by [Shopify Payments / payment provider], whose own privacy policy applies.</li>
+          <li><strong>Automatically.</strong> Basic technical information when you visit, such as your device type, browser, pages viewed and approximate location, collected through [analytics tool, e.g. Vercel Analytics / Google Analytics]. [We do not use advertising cookies. / We use cookies for X.]</li>
+        </ul>
+        <h2>Why we use it</h2>
+        <ul>
+          <li>To send you the updates you asked for and to answer your messages.</li>
+          <li>To process and deliver orders, handle returns and provide support.</li>
+          <li>To understand how the site is used so we can improve it.</li>
+          <li>To meet legal obligations such as tax and accounting records.</li>
+        </ul>
+        <h2>Who we share it with</h2>
+        <p>Only the services needed to run the site and fulfil orders: [email service], [Shopify], [payment provider], [shipping carriers] and [analytics tool]. We do not sell your personal information.</p>
+        <h2>How long we keep it</h2>
+        <p>Waitlist and newsletter emails until you unsubscribe. Order records for [X years] as required by law. Contact messages for [X months] after we have resolved them.</p>
+        <h2>Your choices</h2>
+        <ul>
+          <li>Unsubscribe from any email using the link at the bottom of it, or by emailing us.</li>
+          <li>Ask us to see, correct or delete the personal information we hold about you by emailing <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>. [Residents of certain regions, such as the EU, UK or California, have additional rights under local law.]</li>
+        </ul>
+        <h2>Children</h2>
+        <p>This site is not directed at children under [13/16], and we do not knowingly collect their information.</p>
+        <h2>Changes</h2>
+        <p>If this policy changes, we will update the date at the top. Significant changes will be announced on the site or by email.</p>
+      </div>
+      <p class="back"><a href="#top" class="btn btn-secondary">Back to home</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-terms" aria-labelledby="termsTitle">
+    <div class="container">
+      <p class="eyebrow">Terms</p>
+      <h1 id="termsTitle">Terms of Service</h1>
+      <p class="lead">The plain-language rules for using this site and, once we open, for buying from us.</p>
+      <div class="draft"><b>Draft for review.</b> This page is a working draft. Items in [brackets] are not yet decided and nothing here is final until the brackets are gone and this notice is removed.</div>
+      <div class="body">
+        <p class="updated">Last updated: [date]</p>
+        <h2>About these terms</h2>
+        <p>These terms are between you and UrPick ([legal entity name], [registered address]). By using this site or placing an order, you agree to them. If you do not agree, please do not use the site.</p>
+        <h2>Using the site</h2>
+        <p>You may use the site for personal, non-commercial purposes. Do not misuse it, interfere with it, or copy its content, photos or video without permission. All content and branding belongs to UrPick or its licensors.</p>
+        <h2>Products and information</h2>
+        <p>We do our best to describe products accurately and to state only what we can stand behind. Colours may look different on different screens. Product details, prices and availability may change without notice before an order is accepted.</p>
+        <h2>Orders and payment</h2>
+        <p>[Applies once ordering is live.] An order is accepted when we send a shipping confirmation. We may cancel an order and refund you in full, for example if an item is unavailable or a price was shown incorrectly. Prices are in [currency] and [include / exclude] applicable taxes. Payment is processed by [Shopify / payment provider].</p>
+        <h2>Shipping and returns</h2>
+        <p>Delivery and returns are described in our <a href="#shipping-returns">Shipping &amp; Returns</a> page, which forms part of these terms.</p>
+        <h2>Safety</h2>
+        <p>Our products are designed for pets. Follow the instructions supplied with each product, supervise your pet during use, and stop using a product if it becomes damaged. [Any product-specific warnings to be added.]</p>
+        <h2>Liability</h2>
+        <p>Nothing in these terms limits any rights you have under consumer law that cannot be excluded. Otherwise, to the extent permitted by law, we are not liable for indirect or consequential losses, and our total liability for any order is limited to the amount you paid for it.</p>
+        <h2>Governing law</h2>
+        <p>These terms are governed by the laws of [state / country], and disputes will be handled by the courts there, unless consumer law in your location says otherwise.</p>
+        <h2>Contact</h2>
+        <p>Questions about these terms: <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>.</p>
+      </div>
+      <p class="back"><a href="#top" class="btn btn-secondary">Back to home</a></p>
+    </div>
+  </section>
+
+  <section class="page" id="page-about" aria-labelledby="aboutTitle">
+    <div class="container wide about-grid">
+      <div class="about-media">
+        <div class="about-photo photo-about-home" role="img" aria-label="A woman sitting on the living-room floor scratching the chin of a golden retriever who is looking up at her"></div>
+      </div>
+      <div class="about-copy">
+        <p class="eyebrow">About us</p>
+        <h1 id="aboutTitle">Made for real life with the pets who are already family.</h1>
+        <div class="body">
+          <p>Pets bring a lot into our lives: companionship, personality, comfort, laughter, and occasionally a mess we definitely did not plan for.</p>
+          <p>UrPick was created around a simple idea: the everyday parts of living with pets should be easier.</p>
+          <p>We look for practical products that solve real problems pet parents deal with, whether that means making a routine simpler, keeping the home cleaner, making walks more comfortable, or helping everyday care feel a little less complicated.</p>
+        </div>
+        <div class="about-aisle">
+          <h2>The pet aisle is full. Your home does not need all of it.</h2>
+          <p>Pet parents are surrounded by products that look useful online and turn into clutter, extra steps or a small disappointment once they arrive. We would rather carry fewer things and be clear about what each one is for.</p>
+        </div>
+        <div class="about-closing">
+          <p>We are not trying to fill a store with everything made for pets.</p>
+          <p>Only the useful stuff should make the cut.</p>
+        </div>
+        <p class="back"><a href="#collection-dogs" class="btn btn-primary">Shop by pet</a> <a href="#shop-by-need" class="textlink">Shop by need <span aria-hidden="true">→</span></a></p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer class="site">
+  <div class="container grid">
+    <div class="about">
+      <p class="name">UrPick</p>
+      <p class="tag">Everyday essentials for pets and the people who love them.</p>
+      <ul class="social" aria-label="Social links">
+        <li><a href="https://www.tiktok.com/@yourpick2025" target="_blank" rel="noopener">TikTok</a></li>
+        <li><a href="https://www.facebook.com/profile.php?id=61585565952893" target="_blank" rel="noopener">Facebook</a></li>
+      </ul>
+    </div>
+    <nav aria-label="Shop">
+      <p>Shop</p>
+      <ul><li><a href="#collection-all">What made the cut</a></li><li><a href="#collection-dogs">Dogs</a></li><li><a href="#collection-cats">Cats</a></li><li><a href="#collection-other">Other Pets</a></li><li><a href="#shop-by-need">Shop by need</a></li></ul>
+    </nav>
+    <nav aria-label="Company">
+      <p>Company</p>
+      <ul><li><a href="#about">About</a></li><li><a href="#how-we-work">How we choose</a></li><li><a href="#guide">Pet Parent Guide</a></li><li><a href="#gallery">Real homes. Real pets.</a></li></ul>
+    </nav>
+    <nav aria-label="Help">
+      <p>Help</p>
+      <ul><li><a href="#help">Help centre</a></li><li><a href="#contact">Contact</a></li><li><a href="#track-order">Track Your Order</a></li><li><a href="#faq">FAQ</a></li><li><a href="#shipping-returns">Shipping &amp; Returns</a></li><li><a href="#privacy">Privacy Policy</a></li><li><a href="#terms">Terms</a></li><li><a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a></li></ul>
+    </nav>
+  </div>
+  <div class="container legal">
+    <p>© <span id="year">2026</span> UrPick. All rights reserved.</p>
+    <p>Checkout powered by Shopify.</p>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+  var VIDEO_SRC = "assets/video/hero-loop.mp4";
+  var players = Array.prototype.slice.call(document.querySelectorAll('video[data-video="hero-loop"]'));
+  players.forEach(function (v) { v.src = VIDEO_SRC; });
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!reduce && "IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) { entries.forEach(function (e) { var v = e.target; if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } else { v.pause(); } }); }, { threshold: 0.25 });
+    players.forEach(function (v) { io.observe(v); });
+  } else if (!reduce) { players.forEach(function (v) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }); }
+  var toggle = document.getElementById("notesToggle");
+  function applyNotes() { document.body.classList.toggle("notes", !!(toggle && toggle.checked)); }
+  if (toggle) { toggle.addEventListener("change", applyNotes); } applyNotes();
+
+  var hdr = document.getElementById("siteHeader");
+  function onScroll() { hdr.classList.toggle("scrolled", window.scrollY > 8); }
+  window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+  // ── Navigation drawer ──
+  var menuBtn = document.getElementById("menuBtn"), drawerRoot = document.getElementById("drawerRoot"), drawer = document.getElementById("navDrawer"), drawerClose = document.getElementById("drawerClose"), overlay = document.getElementById("drawerOverlay");
+  var lastFocus = null, drawerTimer = null;
+  function focusables() { return Array.prototype.slice.call(drawer.querySelectorAll('a[href], button:not([disabled])')).filter(function (el) { return el.offsetParent !== null; }); }
+  function openDrawer() {
+    if (!drawerRoot.hidden) return;
+    lastFocus = document.activeElement;
+    clearTimeout(drawerTimer);
+    drawerRoot.hidden = false;
+    document.body.classList.add("drawer-open");
+    menuBtn.setAttribute("aria-expanded", "true"); menuBtn.setAttribute("aria-label", "Close menu");
+    requestAnimationFrame(function () { drawerRoot.classList.add("open"); drawerClose.focus(); });
+  }
+  function closeDrawer(restore) {
+    if (drawerRoot.hidden) return;
+    drawerRoot.classList.remove("open");
+    document.body.classList.remove("drawer-open");
+    menuBtn.setAttribute("aria-expanded", "false"); menuBtn.setAttribute("aria-label", "Open menu");
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    drawerTimer = setTimeout(function () { drawerRoot.hidden = true; }, reduce ? 0 : 260);
+    if (restore !== false && lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  menuBtn.addEventListener("click", function () { drawerRoot.hidden ? openDrawer() : closeDrawer(); });
+  drawerClose.addEventListener("click", function () { closeDrawer(); });
+  overlay.addEventListener("click", function () { closeDrawer(); });
+  document.addEventListener("keydown", function (ev) {
+    if (drawerRoot.hidden) return;
+    if (ev.key === "Escape") { ev.preventDefault(); closeDrawer(); return; }
+    if (ev.key === "Tab") {
+      var f = focusables(); if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (ev.shiftKey && (document.activeElement === first || document.activeElement === drawer)) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+    }
+  });
+  drawer.querySelectorAll("a[href]").forEach(function (a) { a.addEventListener("click", function () { closeDrawer(false); }); });
+  var productsToggle = document.getElementById("productsToggle"), productsMenu = document.getElementById("productsMenu");
+  function setProductsOpen(open) { productsToggle.setAttribute("aria-expanded", open ? "true" : "false"); productsMenu.hidden = !open; }
+  productsToggle.addEventListener("click", function () { setProductsOpen(productsMenu.hidden); });
+  [["needsToggle","needsMenu"],["helpToggle","helpMenu"]].forEach(function (pair) { var t = document.getElementById(pair[0]), m = document.getElementById(pair[1]); t.addEventListener("click", function () { var open = m.hidden; t.setAttribute("aria-expanded", open ? "true" : "false"); m.hidden = !open; }); });
+  function setGroupOpen(toggleId, menuId, open) { var t = document.getElementById(toggleId), m = document.getElementById(menuId); t.setAttribute("aria-expanded", open ? "true" : "false"); m.hidden = !open; }
+  menuBtn.addEventListener("click", function () { if (drawerRoot.hidden) return; var h = location.hash || ""; if (/^#(products-|collection-(dogs|cats|other))/.test(h)) setProductsOpen(true); if (/^#(need-|shop-by-need|collection-(clean-home|better-walks|everyday-care|grooming|comfort-play|travel))/.test(h)) setGroupOpen("needsToggle", "needsMenu", true); if (/^#(help|contact|track-order|faq|shipping-returns|privacy|terms)$/.test(h)) setGroupOpen("helpToggle", "helpMenu", true); });
+
+  // ── Hash router: home is <main>; #contact, #track-order, #about are pages ──
+  var ROUTES = { "contact": "page-contact", "track-order": "page-track", "about": "page-about", "checkout": "page-checkout", "shipping-returns": "page-shipping", "privacy": "page-privacy", "terms": "page-terms" };
+  var homeMain = document.getElementById("main");
+  var pageEls = Array.prototype.slice.call(document.querySelectorAll(".page"));
+  var baseTitle = document.title;
+  function route() {
+    var hash = (location.hash || "").replace(/^#/, "");
+    var pageId = ROUTES[hash];
+    var mProd = /^product-(.+)$/.exec(hash), mColl = /^collection-([a-z-]+)$/.exec(hash), mNeed = /^need-([a-z-]+)$/.exec(hash);
+    if (mProd && typeof showProduct === "function" && showProduct(mProd[1])) pageId = "page-product";
+    if (mColl && typeof showCollection === "function" && showCollection(mColl[1])) pageId = "page-collection";
+    if (mNeed && typeof showNeed === "function" && showNeed(mNeed[1])) pageId = "page-need";
+    if (hash === "cart") { pageId = "page-cart"; if (typeof renderCartPage === "function") renderCartPage(); }
+    if (hash === "shop-by-need") pageId = "page-needs";
+    if (hash === "guide") pageId = "page-guide";
+    if (hash === "help") pageId = "page-help";
+    if (typeof setBuyBar === "function") setBuyBar(pageId === "page-product");
+    // header nav: mark the section of the site we are in
+    var navKey = mColl ? (/^(dogs|cats|other)$/.test(mColl[1]) ? "pet" : mColl[1] === "all" ? "shop" : "need") : mNeed || hash === "shop-by-need" ? "need" : mProd ? "shop" : hash === "about" ? "about" : /^(help|contact|track-order|shipping-returns|privacy|terms)$/.test(hash) ? "help" : "";
+    document.querySelectorAll(".hdr-nav a[data-nav]").forEach(function (a) { if (a.getAttribute("data-nav") === navKey) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    pageEls.forEach(function (p) { p.classList.toggle("active", p.id === pageId); });
+    var wasOnPage = homeMain.hidden;
+    homeMain.hidden = !!pageId;
+    var current = pageId ? hash : "home";
+    document.querySelectorAll('.drawer-primary a[data-route]').forEach(function (a) { if (a.getAttribute("data-route") === current) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+    var names = { "contact": "Contact", "track-order": "Track your order", "about": "About us", "checkout": "Checkout", "shipping-returns": "Shipping & Returns", "privacy": "Privacy Policy", "terms": "Terms of Service", "cart": "Your cart" };
+    var pageName = names[hash] || (mProd ? PRODUCT.name : mColl ? collectionTitle(mColl[1]) : mNeed ? NEEDS[mNeed[1]].name : hash === "shop-by-need" ? "Shop by need" : hash === "guide" ? "Pet Parent Guide" : hash === "help" ? "Help" : "");
+    document.title = pageId ? pageName + " · " + baseTitle : baseTitle;
+    if (pageId === "page-checkout" && typeof renderCheckout === "function") renderCheckout();
+    if (pageId) { window.scrollTo(0, 0); var h = document.getElementById(pageId).querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } }
+    else if (hash) {
+      var cat = /^products-(dogs|cats|other)$/.exec(hash);
+      if (cat) setCategory(cat[1]);
+      var target = document.getElementById(cat ? "shop" : hash); if (target) target.scrollIntoView({ behavior: wasOnPage ? "auto" : "smooth", block: "start" });
+    }
+    syncProductsMenu(current, activeCat);
+  }
+
+  // ── Shop by pet: three tabs over one panel. Dogs is the default. Switching tabs never changes the scroll position. ──
+  var activeCat = "dogs";
+  var CAT_NAMES = { dogs: "Dogs", cats: "Cats", other: "Other Pets" };
+  var CAT_SINGULAR = { dogs: "dog", cats: "cat", other: "other pet" };
+  // Placeholder catalog: names, prices and benefit lines are brackets until the supplier list exists. ids are stable for routing (#product-<id>).
+  // Each placeholder carries the need and the path within that need it will belong to, so Shop by need, filters and need pages work before real products exist.
+  var CATALOG = {
+    dogs:  [["clean-home","laundry"],["better-walks","harness"],["everyday-care","feeding"],["grooming","brushing"]].map(function (m, i) { var n = i + 1; return { id: "dog-" + n,   cat: "dogs",  need: m[0], path: m[1], name: "[Dog product " + n + "]",       price: 0, available: false, benefit: "[One short benefit line — what this makes easier]", sil: ["#7E9A86","#C98A6B","#D9CDB8","#4A4F4C"][i] }; }),
+    cats:  [["clean-home","surfaces"],["grooming","brushing"],["comfort-play","play"],["everyday-care","toileting"]].map(function (m, i) { var n = i + 1; return { id: "cat-" + n,   cat: "cats",  need: m[0], path: m[1], name: "[Cat product " + n + "]",       price: 0, available: false, benefit: "[One short benefit line — what this makes easier]", sil: ["#C98A6B","#7E9A86","#4A4F4C","#D9CDB8"][i] }; }),
+    other: [["everyday-care","feeding"],["comfort-play","rest"],["travel","carriers"]].map(function (m, i)              { var n = i + 1; return { id: "other-" + n, cat: "other", need: m[0], path: m[1], name: "[Other pet product " + n + "]", price: 0, available: false, benefit: "[One short benefit line — what this makes easier]", sil: ["#D9CDB8","#4A4F4C","#7E9A86"][i] }; })
+  };
+  function allProducts() { return CATALOG.dogs.concat(CATALOG.cats, CATALOG.other); }
+  // Shop by need: the problem first, then a few clear ways to solve it. Copy describes the problem area, never a product claim.
+  var NEEDS = {
+    "clean-home":    { name: "Clean Home",      icon: "M4 20h16M6 20V9l6-5 6 5v11M9 20v-6h6v6", lead: "Hair on the blankets, paw prints on the floor, the odd accident. Pets make a home, and a home needs looking after.",
+      paths: [["laundry","Laundry","Bedding, blankets, washable fabrics and the pet-hair problem."],["surfaces","Surfaces","Furniture, floors, upholstery and quick clean-ups."],["petcare","Pet care","Grooming and routines that reduce the source of the mess."],["learn","Learn","How pet hair behaves in the wash, and what actually helps."]],
+      choose: [["Start with where the mess lands.","Blankets and bedding need a different fix from floors and sofas."],["Fewer steps wins.","If a product adds a chore to remove a chore, it is not a solution."],["Think about the source.","A brushing routine often does more for a clean home than another cleaner."]],
+      faq: [["Will these products work for both dogs and cats?","Each product page says who it is for. Many are shared; a few are not."],["Do you carry cleaning chemicals?","We list what we carry on each product page, with what it does and what is in it."]] },
+    "better-walks":  { name: "Better Walks",    icon: "M5 19l4-10 4 6 3-4 3 8M8 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3", lead: "A walk should be the easy part of the day, not a tug of war with gear that gets in the way.",
+      paths: [["harness","Harnesses & leads","Fit, control and comfort for the dog on the other end."],["onwalk","On the walk","Water, waste bags and the small things worth carrying."],["petcare","Pet care","Paws and coats after the walk."],["learn","Learn","Front-clip versus back-clip, and how a harness should fit."]],
+      choose: [["Fit comes before features.","A harness that sits right matters more than any extra."],["Match the walk you actually take.","A short city loop and a long trail ask for different things."],["Keep the kit small.","Carry what you use every time, and nothing else."]],
+      faq: [["How do I know which size to choose?","Each product page carries its own size guide once sizing is confirmed."],["Can I return a harness that does not fit?","Yes, within the window on our Shipping & Returns page, unused and in its packaging."]] },
+    "everyday-care": { name: "Everyday Care",   icon: "M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10Z", lead: "Feeding, water, toileting and the small daily jobs. Done every day, so they should be simple.",
+      paths: [["feeding","Feeding & water","Bowls, feeders and keeping meals tidy."],["toileting","Toileting","Pads, litter and the clean-up that follows."],["basics","Health basics","Everyday upkeep: ears, teeth, nails and paws."],["learn","Learn","How often pads should be changed, and other routine questions."]],
+      choose: [["Pick for the routine, not the moment.","Something you use twice a day should be quick to clean and hard to knock over."],["Match your pet, not the picture.","Size, age and habits change what works."],["Simple beats clever.","Fewer parts means fewer things to lose, wash or replace."]],
+      faq: [["Are these suitable for puppies and kittens?","Each product page states the age or size it suits."],["Do you sell food or medication?","No. We carry everyday care products, not food or medicines."]] },
+    "grooming":      { name: "Grooming",        icon: "M4 4l8 8m0 0 8 8M4 20l8-8m0 0 8-8", lead: "Brushing, bathing and trimming, without the wrestling match.",
+      paths: [["brushing","Brushing","Coats, shedding and the brush your pet will tolerate."],["bath","Bath time","Washing, drying and keeping the bathroom in one piece."],["nails","Nails & paws","Trims and paw care at home."],["learn","Learn","How often to brush, bathe or trim for your pet's coat."]],
+      choose: [["Start with the coat.","Short, long, double or curly coats each want a different tool."],["Comfort for the pet first.","If a tool scares them, it will not get used."],["One good tool over three okay ones.","A single brush that suits the coat beats a drawer of extras."]],
+      faq: [["Which brush is right for my pet?","Each brush page says which coat types it suits and which it does not."],["Can grooming products be returned?","Unused and unopened, yes. Opened hygiene items generally cannot be, as explained on our Shipping & Returns page."]] },
+    "comfort-play":  { name: "Comfort & Play",  icon: "M8 10a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm10 2a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM4 20c0-3 3-5 8-5s8 2 8 5", lead: "Somewhere to settle, and something to do. Especially on the long afternoons.",
+      paths: [["rest","Beds & rest","Places to sleep that survive washing."],["play","Enrichment & play","Toys and feeders that keep a mind busy."],["calm","Calm & quiet","For home-alone hours and busy households."],["learn","Learn","Why enrichment matters, and how much is enough."]],
+      choose: [["Watch how your pet already rests.","Curled, stretched or tucked away points to the right bed."],["Choose play they can win.","Enrichment should be a challenge, not a frustration."],["Washable or it will not last.","Anything soft needs to go through the machine."]],
+      faq: [["Are the toys safe to leave out unsupervised?","Each product page says whether it is for supervised play only."],["Do beds come in more than one size?","Sizes are listed on each product page once confirmed."]] },
+    "travel":        { name: "Travel",          icon: "M3 13l2-5h14l2 5M5 13v5h14v-5M7 18v2m10-2v2M8 9V6h8v3", lead: "Car rides, trips and days out, with less to carry and less to worry about.",
+      paths: [["car","In the car","Keeping pets safe and seats clean on the road."],["carriers","Carriers","Carrying small pets comfortably and securely."],["onthego","On the go","Water, waste and the essentials for a day out."],["learn","Learn","How to get a pet used to a carrier or the car."]],
+      choose: [["Safety before convenience.","Restraint and ventilation come first."],["Size it to the pet, not the car.","Room to turn around, no more."],["Pack once.","A small kit that stays in the car saves the scramble."]],
+      faq: [["Do carriers meet airline rules?","Where a carrier is airline-approved, its product page says so and names the airlines."],["Can I return a carrier?","Yes, unused and in its packaging, within the window on our Shipping & Returns page."]] }
+  };
+  var NEED_ORDER = ["clean-home","better-walks","everyday-care","grooming","comfort-play","travel"];
+  // Pet Parent Guide: planned topics only. Nothing is published until it is written and checked.
+  var GUIDE_TOPICS = [
+    ["Why does pet hair stay on blankets after washing?", "clean-home"], ["How do you reduce pet hair in the washing machine?", "clean-home"],
+    ["Front-clip vs back-clip harnesses: which suits your dog?", "better-walks"], ["How should a harness fit?", "better-walks"],
+    ["How often should dog ears be cleaned?", "everyday-care"], ["How often should puppy pads be changed?", "everyday-care"],
+    ["How often should you brush a cat?", "grooming"], ["Getting a pet used to a carrier", "travel"], ["What counts as enrichment, and how much is enough?", "comfort-play"]
+  ];
+  function needIcon(d) { return '<span class="ni" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="' + d + '"/></svg></span>'; }
+  function renderNeedGrid(id) {
+    var ul = document.getElementById(id); if (!ul) return; ul.innerHTML = "";
+    NEED_ORDER.forEach(function (k) { var n = NEEDS[k], li = document.createElement("li"), a = document.createElement("a"); a.href = "#need-" + k;
+      a.innerHTML = needIcon(n.icon) + '<div><h3>' + n.name + '</h3><p>' + n.lead.split(". ")[0].replace(/\.$/, "") + '.</p><p class="go">Shop ' + n.name.toLowerCase() + ' \u2192</p></div>'; li.appendChild(a); ul.appendChild(li); });
+  }
+  var activeNeed = null, activeNeedPath = null;
+  function showNeed(key) {
+    var n = NEEDS[key]; if (!n) return false;
+    if (activeNeed !== key) activeNeedPath = null; activeNeed = key;
+    document.getElementById("needTitle").textContent = n.name; document.getElementById("needLead").textContent = n.lead;
+    var paths = document.getElementById("needPaths"); paths.innerHTML = "";
+    n.paths.forEach(function (pth) { var b = document.createElement("button"); b.type = "button"; b.textContent = pth[1]; b.setAttribute("aria-pressed", String(activeNeedPath === pth[0])); b.setAttribute("data-path", pth[0]);
+      b.addEventListener("click", function () { if (pth[0] === "learn") { location.hash = "#guide"; return; } activeNeedPath = activeNeedPath === pth[0] ? null : pth[0]; showNeed(key); }); paths.appendChild(b); });
+    var desc = document.createElement("p"); desc.className = "need-pathdesc"; var cur = n.paths.filter(function (x) { return x[0] === activeNeedPath; })[0];
+    desc.textContent = cur ? cur[2] : "Pick a path to narrow the products, or browse everything for this need below."; paths.appendChild(desc);
+    var items = allProducts().filter(function (x) { return x.need === key && (!activeNeedPath || x.path === activeNeedPath); });
+    var grid = document.getElementById("needGrid"); grid.innerHTML = ""; items.slice(0, 4).forEach(function (it) { grid.appendChild(productCard(it)); });
+    document.getElementById("needEmpty").hidden = items.length > 0;
+    var ch = document.getElementById("needChoose"); ch.innerHTML = ""; n.choose.forEach(function (c) { var li = document.createElement("li"); li.innerHTML = "<b>" + c[0] + "</b><p>" + c[1] + "</p>"; ch.appendChild(li); });
+    var fq = document.getElementById("needFaq"); fq.innerHTML = ""; n.faq.forEach(function (f) { var li = document.createElement("li"); li.innerHTML = "<b>" + f[0] + "</b><p>" + f[1].replace("Shipping & Returns page", '<a href="#shipping-returns">Shipping &amp; Returns page</a>') + "</p>"; fq.appendChild(li); });
+    var shopAll = document.getElementById("needShopAll"); shopAll.href = "#collection-" + key; shopAll.textContent = "Shop " + n.name.toLowerCase();
+    return true;
+  }
+  function renderGuide() {
+    var ul = document.getElementById("guideList"); if (!ul) return; ul.innerHTML = "";
+    GUIDE_TOPICS.forEach(function (t) { var li = document.createElement("li"); li.innerHTML = "<div><b>" + t[0] + "</b><small>Related: <a href=\"#need-" + t[1] + "\">" + NEEDS[t[1]].name + "</a></small></div><span class=\"tag\">Planned</span>"; ul.appendChild(li); });
+  }
+  // ── Collections: title + one sentence, FILTER | SORT, grid. Key = all | dogs | cats | other | <need> ──
+  var collKey = "all", filters = { pet: [], need: [], type: [], avail: [] }, sortKey = "featured";
+  var TYPE_LABELS = { laundry: "Laundry", surfaces: "Surfaces", petcare: "Pet care", harness: "Harnesses & leads", onwalk: "On the walk", feeding: "Feeding & water", toileting: "Toileting", basics: "Health basics", brushing: "Brushing", bath: "Bath time", nails: "Nails & paws", rest: "Beds & rest", play: "Enrichment & play", calm: "Calm & quiet", car: "In the car", carriers: "Carriers", onthego: "On the go" };
+  function collectionTitle(key) { return key === "all" ? "What made the cut" : CAT_NAMES[key] ? CAT_NAMES[key] + " products" : NEEDS[key] ? NEEDS[key].name : "Shop"; }
+  function collectionBase(key) { var all = allProducts(); if (key === "all") return all; if (CAT_NAMES[key]) return all.filter(function (x) { return x.cat === key; }); if (NEEDS[key]) return all.filter(function (x) { return x.need === key; }); return []; }
+  function applyFilters(items) {
+    return items.filter(function (x) { return (!filters.pet.length || filters.pet.indexOf(x.cat) > -1) && (!filters.need.length || filters.need.indexOf(x.need) > -1) && (!filters.type.length || filters.type.indexOf(x.path) > -1) && (!filters.avail.length || filters.avail.indexOf(x.available ? "in" : "soon") > -1); })
+      .sort(function (a, b) { if (sortKey === "name") return a.name.localeCompare(b.name); if (sortKey === "price-asc") return a.price - b.price; if (sortKey === "price-desc") return b.price - a.price; return 0; });
+  }
+  function filterCount() { return filters.pet.length + filters.need.length + filters.type.length + filters.avail.length; }
+  function showCollection(key) {
+    if (!(key === "all" || CAT_NAMES[key] || NEEDS[key])) return false;
+    if (key !== collKey) { filters = { pet: [], need: [], type: [], avail: [] }; } collKey = key;
+    document.getElementById("collectionTitle").textContent = collectionTitle(key);
+    document.getElementById("collectionEyebrow").textContent = CAT_NAMES[key] ? "Shop by pet" : NEEDS[key] ? "Shop by need" : "Shop";
+    document.getElementById("collectionLead").textContent = key === "all" ? "Everything we carry, chosen for the everyday problems it solves." : CAT_NAMES[key] ? "Everything we will carry for " + (key === "other" ? "other pets" : key) + ". This list fills in as products are confirmed." : NEEDS[key].lead;
+    var tabs = document.getElementById("collectionTabs"); tabs.hidden = !CAT_NAMES[key];
+    tabs.querySelectorAll("a").forEach(function (a) { a.setAttribute("aria-selected", String(a.getAttribute("data-cat") === key)); });
+    renderCollection(); return true;
+  }
+  function renderCollection() {
+    var items = applyFilters(collectionBase(collKey)), grid = document.getElementById("collectionGrid"); grid.innerHTML = "";
+    items.forEach(function (it) { grid.appendChild(productCard(it)); });
+    document.getElementById("collectionEmpty").hidden = items.length > 0;
+    document.getElementById("collectionCount").textContent = items.length + (items.length === 1 ? " product" : " products");
+    var n = filterCount(); document.getElementById("filterCount").textContent = n ? String(n) : "";
+    document.getElementById("sortSel").value = sortKey;
+  }
+  function buildFilterForm() {
+    var base = collectionBase(collKey);
+    function group(id, name, opts) { var box = document.getElementById(id); box.innerHTML = ""; opts.forEach(function (o) { var cnt = base.filter(o[2]).length; if (!cnt && name !== "avail") return; var l = document.createElement("label"); var c = document.createElement("input"); c.type = "checkbox"; c.name = name; c.value = o[0]; c.checked = filters[name].indexOf(o[0]) > -1; l.appendChild(c); l.appendChild(document.createTextNode(" " + o[1])); var sp = document.createElement("span"); sp.className = "n"; sp.textContent = cnt; l.appendChild(sp); box.appendChild(l); }); box.closest("fieldset").hidden = !box.children.length; }
+    group("fPet", "pet", [["dogs","Dogs",function (x) { return x.cat === "dogs"; }],["cats","Cats",function (x) { return x.cat === "cats"; }],["other","Other pets",function (x) { return x.cat === "other"; }]]);
+    group("fNeed", "need", NEED_ORDER.map(function (k) { return [k, NEEDS[k].name, function (x) { return x.need === k; }]; }));
+    group("fType", "type", Object.keys(TYPE_LABELS).map(function (k) { return [k, TYPE_LABELS[k], function (x) { return x.path === k; }]; }));
+    group("fAvail", "avail", [["in","In stock",function (x) { return x.available; }],["soon","Coming soon",function (x) { return !x.available; }]]);
+  }
+  (function () {
+    var root = document.getElementById("filterRoot"), drawer = document.getElementById("filterDrawer"), btn = document.getElementById("filterBtn"), last = null, timer = null;
+    function openF() { buildFilterForm(); clearTimeout(timer); last = document.activeElement; root.hidden = false; btn.setAttribute("aria-expanded", "true"); document.body.classList.add("cart-open"); requestAnimationFrame(function () { root.classList.add("open"); document.getElementById("filterClose").focus({ preventScroll: true }); }); }
+    function closeF() { if (root.hidden) return; root.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); document.body.classList.remove("cart-open"); var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; timer = setTimeout(function () { root.hidden = true; if (last && last.focus) last.focus({ preventScroll: true }); }, reduce ? 0 : 260); }
+    function readForm() { ["pet","need","type","avail"].forEach(function (n) { filters[n] = Array.prototype.slice.call(document.querySelectorAll('#filterForm input[name="' + n + '"]:checked')).map(function (c) { return c.value; }); }); renderCollection(); }
+    btn.addEventListener("click", openF); document.getElementById("filterClose").addEventListener("click", closeF); document.getElementById("filterOverlay").addEventListener("click", closeF);
+    document.getElementById("filterForm").addEventListener("change", readForm);
+    document.getElementById("filterApply").addEventListener("click", function () { readForm(); closeF(); });
+    document.getElementById("filterClearAll").addEventListener("click", function () { filters = { pet: [], need: [], type: [], avail: [] }; buildFilterForm(); renderCollection(); });
+    document.getElementById("collectionClear").addEventListener("click", function () { filters = { pet: [], need: [], type: [], avail: [] }; renderCollection(); });
+    document.getElementById("sortSel").addEventListener("change", function (ev) { sortKey = ev.target.value; renderCollection(); });
+    drawer.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape") { ev.preventDefault(); closeF(); return; }
+      if (ev.key !== "Tab") return; var f = Array.prototype.slice.call(drawer.querySelectorAll('button:not([disabled]), input:not([disabled])')).filter(function (el) { return el.offsetParent !== null; }); if (!f.length) return;
+      var first = f[0], lastEl = f[f.length - 1]; if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); lastEl.focus(); } else if (!ev.shiftKey && document.activeElement === lastEl) { ev.preventDefault(); first.focus(); }
+    });
+  })();
+  // ── Search: products, needs and pages. Opens as a dialog; Enter follows the first result. ──
+  (function () {
+    var root = document.getElementById("searchRoot"), dlg = document.getElementById("searchDialog"), input = document.getElementById("searchInput"), results = document.getElementById("searchResults"), btn = document.getElementById("searchBtn"), last = null, timer = null;
+    var PAGES = [["Shop by pet","#collection-dogs","Shop"],["Shop by need","#shop-by-need","Shop"],["What made the cut","#collection-all","Shop"],["How we choose","#how-we-work","About"],["About UrPick","#about","About"],["Pet Parent Guide","#guide","Guide"],["Help centre","#help","Help"],["Contact","#contact","Help"],["Track your order","#track-order","Help"],["Shipping & Returns","#shipping-returns","Help"],["FAQ","#faq","Help"],["Privacy Policy","#privacy","Help"],["Terms of Service","#terms","Help"]];
+    function open() { clearTimeout(timer); last = document.activeElement; root.hidden = false; document.body.classList.add("cart-open"); requestAnimationFrame(function () { root.classList.add("open"); input.focus(); }); render(""); }
+    function close() { if (root.hidden) return; root.classList.remove("open"); document.body.classList.remove("cart-open"); var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; timer = setTimeout(function () { root.hidden = true; input.value = ""; if (last && last.focus) last.focus({ preventScroll: true }); }, reduce ? 0 : 220); }
+    function render(q) {
+      q = q.trim().toLowerCase(); results.innerHTML = "";
+      var hits = [];
+      if (q) {
+        allProducts().forEach(function (x) { if ((x.name + " " + CAT_NAMES[x.cat] + " " + NEEDS[x.need].name).toLowerCase().indexOf(q) > -1) hits.push([x.name, "#product-" + x.id, CAT_NAMES[x.cat]]); });
+        NEED_ORDER.forEach(function (k) { if ((NEEDS[k].name + " " + NEEDS[k].lead).toLowerCase().indexOf(q) > -1) hits.push([NEEDS[k].name, "#need-" + k, "Shop by need"]); });
+        PAGES.forEach(function (pg) { if (pg[0].toLowerCase().indexOf(q) > -1) hits.push(pg); });
+      } else { hits = [["Shop by pet","#collection-dogs","Shop"],["Shop by need","#shop-by-need","Shop"],["Shipping & Returns","#shipping-returns","Help"],["Contact","#contact","Help"]]; }
+      if (!hits.length) { var li = document.createElement("li"); li.className = "none"; li.textContent = "Nothing found for \u201c" + q + "\u201d. Try a pet, a need, or a page name."; results.appendChild(li); return; }
+      hits.slice(0, 8).forEach(function (h) { var li = document.createElement("li"), a = document.createElement("a"); a.href = h[1]; a.innerHTML = "<span>" + h[0] + "</span><small>" + h[2] + "</small>"; a.addEventListener("click", function () { close(); }); li.appendChild(a); results.appendChild(li); });
+    }
+    btn.addEventListener("click", open); document.getElementById("searchClose").addEventListener("click", close); document.getElementById("searchOverlay").addEventListener("click", close);
+    input.addEventListener("input", function () { render(input.value); });
+    document.getElementById("searchForm").addEventListener("submit", function (ev) { ev.preventDefault(); var first = results.querySelector("a"); if (first) { location.hash = first.getAttribute("href"); close(); } });
+    dlg.addEventListener("keydown", function (ev) { if (ev.key === "Escape") { ev.preventDefault(); close(); } });
+    document.addEventListener("keydown", function (ev) { if (ev.key === "/" && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) && root.hidden) { ev.preventDefault(); open(); } });
+  })();
+  renderNeedGrid("needGridHome"); renderNeedGrid("needGridPage"); renderGuide();
+  function findProduct(id) { for (var c in CATALOG) { var hit = CATALOG[c].filter(function (x) { return x.id === id; })[0]; if (hit) return hit; } return null; }
+  function productCard(item) {
+    var li = document.createElement("li"); li.className = "pcard";
+    var img = document.createElement("div"); img.className = "pimg"; img.setAttribute("role", "img"); img.setAttribute("aria-label", "Product image placeholder");
+    var sil = document.createElement("div"); sil.className = "psil"; sil.style.setProperty("--sil", item.sil); var sp = document.createElement("span"); sp.textContent = "[ PRODUCT ]"; sil.appendChild(sp); img.appendChild(sil);
+    var body = document.createElement("div"); body.className = "pbody";
+    var h = document.createElement("h3"); h.textContent = item.name;
+    var pr = document.createElement("p"); pr.className = "pprice"; pr.innerHTML = "<span>" + money(item.price) + "</span><small>placeholder</small>";
+    var ben = document.createElement("p"); ben.className = "pben"; ben.textContent = item.benefit;
+    var act = document.createElement("p"); act.className = "pact"; var a = document.createElement("a"); a.className = "btn btn-secondary"; a.href = "#product-" + item.id; a.textContent = "View product"; act.appendChild(a);
+    body.appendChild(h); body.appendChild(pr); body.appendChild(ben); body.appendChild(act); li.appendChild(img); li.appendChild(body); return li;
+  }
+  function renderShopGrid() {
+    var grid = document.getElementById("shopGrid"); grid.innerHTML = "";
+    CATALOG[activeCat].slice(0, 3).forEach(function (item) { grid.appendChild(productCard(item)); });
+    var va = document.getElementById("shopViewAll"); va.href = "#collection-" + activeCat; va.innerHTML = "View all " + CAT_SINGULAR[activeCat] + " products <span aria-hidden=\"true\">→</span>";
+    document.getElementById("shopPanel").setAttribute("aria-labelledby", "tab-" + activeCat);
+  }
+  function setCategory(cat) {
+    var y = window.scrollY;
+    activeCat = CAT_NAMES[cat] ? cat : "dogs";
+    document.querySelectorAll('.cat-tabs [role="tab"]').forEach(function (b) { var on = b.getAttribute("data-cat") === activeCat; b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1; });
+    renderShopGrid();
+    syncProductsMenu(homeMain.hidden ? "" : "home", activeCat);
+    if (window.scrollY !== y) window.scrollTo(0, y);
+  }
+  function syncProductsMenu(current, cat) {
+    var toggle = document.getElementById("productsToggle");
+    if (current === "home") toggle.setAttribute("aria-current", "page"); else toggle.removeAttribute("aria-current");
+    var onPetColl = /^#collection-(dogs|cats|other)$/.exec(location.hash || "");
+    document.querySelectorAll(".drawer-sub a[data-cat]").forEach(function (a) { var k = a.getAttribute("data-cat"); if ((onPetColl && onPetColl[1] === k) || (current === "home" && k === cat && !onPetColl)) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+  }
+  (function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.cat-tabs [role="tab"]'));
+    tabs.forEach(function (b, i) {
+      b.addEventListener("click", function () { setCategory(b.getAttribute("data-cat")); if (/^#products-/.test(location.hash)) history.replaceState(null, "", "#shop"); });
+      b.addEventListener("keydown", function (ev) { var j = ev.key === "ArrowRight" ? i + 1 : ev.key === "ArrowLeft" ? i - 1 : -1; if (j < 0 || j >= tabs.length) return; ev.preventDefault(); tabs[j].focus(); tabs[j].click(); });
+    });
+  })();
+  function showProduct(id) {
+    var item = findProduct(id); if (!item) return false;
+    setProduct(item); return true;
+  }
+  window.addEventListener("hashchange", route); // initial route() runs after the cart is initialised (below)
+
+  // ── Page forms: validate, then say plainly that the backend isn't connected ──
+  function wirePlaceholderForm(formId, statusId) {
+    var form = document.getElementById(formId), status = document.getElementById(statusId);
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      var bad = Array.prototype.slice.call(form.querySelectorAll("[required]")).filter(function (el) { return !el.value.trim() || (el.type === "email" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(el.value)); });
+      form.querySelectorAll("[required]").forEach(function (el) { el.removeAttribute("aria-invalid"); });
+      if (bad.length) { bad[0].setAttribute("aria-invalid", "true"); bad[0].focus(); status.classList.remove("show"); return; }
+      status.classList.add("show");
+      if (window.dataLayer) window.dataLayer.push({ event: formId + "_submit_unconnected" });
+    });
+  }
+  wirePlaceholderForm("contactForm", "contactStatus"); wirePlaceholderForm("trackForm", "trackStatus");
+
+
+  // ── Product (placeholder data mirrors the template's config; Shopify replaces it) ──
+  var PRODUCT = {
+    name: "[Product Name]",
+    shortDescription: "[Short product description — two sentences, benefit first. Pulled live from Shopify once the product exists in the store.]",
+    price: 0, currency: "USD",
+    colors: [
+      { name: "Option A", hex: "#7E9A86", variantId: "gid://shopify/ProductVariant/PLACEHOLDER_A" },
+      { name: "Option B", hex: "#C98A6B", variantId: "gid://shopify/ProductVariant/PLACEHOLDER_B" },
+      { name: "Option C", hex: "#D9CDB8", variantId: "gid://shopify/ProductVariant/PLACEHOLDER_C" },
+      { name: "Option D", hex: "#4A4F4C", variantId: "gid://shopify/ProductVariant/PLACEHOLDER_D" }
+    ],
+    gallery: [
+      { note: "Main product shot — 3/4 angle, cream background" },
+      { note: "Alternate angle / detail" },
+      { note: "Underside or mechanism detail" },
+      { note: "In use — dog with product" }
+    ],
+    reassurance: [
+      { label: "Shipping", value: "PLACEHOLDER — e.g. \"Ships in 1–2 business days\"" },
+      { label: "Returns", value: "PLACEHOLDER — e.g. \"30-day returns\"" },
+      { label: "Secure Checkout", value: "Powered by Shopify" }
+    ]
+  };
+  var SHOPIFY_CONNECTED = false; // true once VITE_SHOPIFY_DOMAIN + VITE_SHOPIFY_STOREFRONT_TOKEN are wired
+  PRODUCT.id = "dog-1"; PRODUCT.cat = "dogs";
+  function money(n) { return new Intl.NumberFormat("en-US", { style: "currency", currency: PRODUCT.currency }).format(n); }
+  var colorIdx = 0, imgIdx = 0, qty = 1;
+  var shopSil = document.getElementById("shopSil"), shopMainCap = document.getElementById("shopMainCap"), shopThumbs = document.getElementById("shopThumbs");
+  function setProduct(item) {
+    // Swap the detail page to a catalog item. Variant ids carry the product id so cart lines stay distinct per product.
+    PRODUCT.id = item.id; PRODUCT.cat = item.cat; PRODUCT.name = item.name; PRODUCT.price = item.price;
+    PRODUCT.colors.forEach(function (c, i) { c.variantId = "gid://shopify/ProductVariant/PLACEHOLDER_" + item.id + "_" + "ABCD".charAt(i); });
+    PRODUCT.colors[0].hex = item.sil; colorIdx = 0; imgIdx = 0; qty = 1;
+    document.getElementById("shopName").textContent = PRODUCT.name;
+    document.getElementById("shopDesc").textContent = PRODUCT.shortDescription;
+    document.getElementById("shopPrice").textContent = money(PRODUCT.price);
+    document.getElementById("pdpEyebrow").textContent = CAT_NAMES[item.cat] + " \u00b7 " + NEEDS[item.need].name;
+    document.getElementById("shopDesc").textContent = item.benefit;
+    renderPdpDetails(item);
+    document.getElementById("buyBarName").textContent = item.name; document.getElementById("buyBarPrice").textContent = money(item.price);
+    document.getElementById("pdpCatName").textContent = CAT_NAMES[item.cat]; document.getElementById("pdpBack").href = "#collection-" + item.cat;
+    if (typeof renderGallery === "function") { renderGallery(); renderColors(); }
+  }
+  function renderPdpDetails(item) {
+    // Purchase information sits above; these blocks support the decision. Product-specific text is a bracket until the supplier spec exists.
+    var box = document.getElementById("pdpDetails"); if (!box) return; box.innerHTML = "";
+    var need = NEEDS[item.need], tbd = "[To be written from the supplier specification.]";
+    [["What it solves", "Part of <a href=\"#need-" + item.need + "\">" + need.name + "</a>: " + need.lead + " " + tbd],
+     ["How it works", tbd], ["How to use it", tbd], ["What to expect", tbd], ["Who it\u2019s for", "[Pet type, size and age this suits, and who it does not.] " + tbd], ["What\u2019s included", tbd],
+     ["Real customer results", "No customer results yet. Photos and reviews from real customers appear here once they exist; nothing is shown before then."],
+     ["Questions", need.faq.map(function (f) { return "<b>" + f[0] + "</b> " + f[1]; }).join("<br><br>")],
+     ["Shipping & Returns", "Standard shipping, 30-day returns on unused items, and how damaged or incorrect items are handled: see <a href=\"#shipping-returns\">Shipping &amp; Returns</a>."]]
+    .forEach(function (d, i) { var det = document.createElement("details"); if (i === 0) det.open = true; det.innerHTML = "<summary>" + d[0] + "</summary><div class=\"dbody\">" + d[1].replace("Shipping & Returns page", '<a href="#shipping-returns">Shipping &amp; Returns page</a>') + "</div>"; box.appendChild(det); });
+  }
+  var buyBarOn = false;
+  function setBuyBar(on) { buyBarOn = on; var bar = document.getElementById("buyBar"); if (!on) { bar.classList.remove("show"); bar.hidden = true; document.body.classList.remove("buybar-on"); } else { bar.hidden = false; bar.classList.remove("show"); } }
+  (function () {
+    var buyrow = document.querySelector(".buyrow"), bar = document.getElementById("buyBar"); if (!buyrow) return;
+    var queued = false;
+    function update() { queued = false; var r = buyrow.getBoundingClientRect(); var show = buyBarOn && r.bottom < 0 && window.innerWidth < 1024; bar.classList.toggle("show", show); document.body.classList.toggle("buybar-on", show); }
+    function schedule() { if (!queued) { queued = true; requestAnimationFrame(update); } }
+    window.addEventListener("scroll", schedule, { passive: true }); window.addEventListener("resize", schedule); window.addEventListener("hashchange", function () { setTimeout(update, 0); });
+    document.getElementById("buyBarAdd").addEventListener("click", function () { document.getElementById("addToCart").click(); });
+  })();
+  document.getElementById("shopName").textContent = PRODUCT.name;
+  document.getElementById("shopDesc").textContent = PRODUCT.shortDescription;
+  document.getElementById("shopPrice").textContent = money(PRODUCT.price);
+  function fillReassure(ul) { ul.innerHTML = ""; PRODUCT.reassurance.forEach(function (r) { var li = document.createElement("li"); var b = document.createElement("b"); b.textContent = r.label; var sp = document.createElement("span"); sp.textContent = r.value; li.appendChild(b); li.appendChild(sp); ul.appendChild(li); }); }
+  fillReassure(document.getElementById("shopReassure")); fillReassure(document.getElementById("checkoutReassure"));
+  function renderGallery() {
+    shopMainCap.innerHTML = "<b>Photo · 1/1</b> — " + PRODUCT.gallery[imgIdx].note;
+    shopThumbs.innerHTML = "";
+    PRODUCT.gallery.forEach(function (g, i) {
+      var li = document.createElement("li"), b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", "Show image " + (i + 1)); b.setAttribute("aria-pressed", String(i === imgIdx));
+      var d = document.createElement("div"); d.className = "t"; d.textContent = g.note; b.appendChild(d); b.addEventListener("click", function () { imgIdx = i; renderGallery(); }); li.appendChild(b); shopThumbs.appendChild(li);
+    });
+  }
+  function renderColors() {
+    var c = PRODUCT.colors[colorIdx]; document.getElementById("shopColorName").textContent = c.name; shopSil.style.setProperty("--sil", c.hex);
+    var wrap = document.getElementById("shopSwatches"); wrap.innerHTML = "";
+    PRODUCT.colors.forEach(function (col, i) { var b = document.createElement("button"); b.type = "button"; b.style.backgroundColor = col.hex; b.setAttribute("aria-label", col.name); b.setAttribute("aria-pressed", String(i === colorIdx)); b.addEventListener("click", function () { colorIdx = i; renderColors(); }); wrap.appendChild(b); });
+    renderAddLabel();
+  }
+  function renderAddLabel() { document.getElementById("addToCart").textContent = "Add to Cart — " + money(PRODUCT.price * qty); document.getElementById("qtyOut").textContent = qty; }
+  document.getElementById("qtyMinus").addEventListener("click", function () { qty = Math.max(1, qty - 1); renderAddLabel(); });
+  document.getElementById("qtyPlus").addEventListener("click", function () { qty = Math.min(10, qty + 1); renderAddLabel(); });
+  renderGallery(); renderColors();
+  if (typeof CATALOG !== "undefined") setProduct(CATALOG.dogs[0]);
+
+  // ── Cart (local; mirrors the template's CartProvider, key kept for continuity) ──
+  var CART_KEY = "eb_cart_v1", cart = { lines: [] };
+  try { var saved = localStorage.getItem(CART_KEY); if (saved) { var parsed = JSON.parse(saved); cart.lines = (parsed && parsed.lines) || []; } } catch (e) {}
+  function saveCart() { try { localStorage.setItem(CART_KEY, JSON.stringify({ lines: cart.lines })); } catch (e) {} }
+  function cartCount() { return cart.lines.reduce(function (n, l) { return n + l.qty; }, 0); }
+  function cartSubtotal() { return cart.lines.reduce(function (n, l) { return n + l.qty * l.price; }, 0); }
+  var cartRoot = document.getElementById("cartRoot"), cartDrawer = document.getElementById("cartDrawer"), cartBtn = document.getElementById("cartBtn"), cartClose = document.getElementById("cartClose"), cartOverlay = document.getElementById("cartOverlay"), cartLast = null, cartTimer = null;
+  function setLineQty(variantId, n) {
+    var l = cart.lines.filter(function (x) { return x.variantId === variantId; })[0]; if (!l) return;
+    l.qty = Math.max(0, Math.min(10, n)); if (!l.qty) cart.lines = cart.lines.filter(function (x) { return x !== l; });
+    saveCart(); renderCart(); renderCheckout(); renderCartPage();
+  }
+  function removeLine(variantId) { cart.lines = cart.lines.filter(function (x) { return x.variantId !== variantId; }); saveCart(); renderCart(); renderCheckout(); renderCartPage(); }
+  function lineEl(l, removable) {
+    var row = document.createElement("div"); row.className = "cart-line";
+    var thumb = document.createElement("div"); thumb.className = "thumb"; thumb.setAttribute("aria-hidden", "true");
+    var sil = document.createElement("div"); sil.className = "psil"; sil.style.setProperty("--sil", l.hex || "#7E9A86"); sil.appendChild(document.createElement("span")); thumb.appendChild(sil);
+    var info = document.createElement("div"); info.className = "info";
+    var t = document.createElement("p"); t.className = "t"; t.textContent = l.title;
+    var m = document.createElement("p"); m.className = "m"; m.textContent = "Color: " + l.color;
+    var unit = document.createElement("p"); unit.className = "unit"; unit.textContent = money(l.price) + " each";
+    info.appendChild(t); info.appendChild(m); info.appendChild(unit);
+    if (removable) {
+      var ctl = document.createElement("div"); ctl.className = "ctl";
+      var q = document.createElement("div"); q.className = "qty"; q.setAttribute("role", "group"); q.setAttribute("aria-label", "Quantity for " + l.title);
+      var minus = document.createElement("button"); minus.type = "button"; minus.className = "qminus"; minus.setAttribute("aria-label", "Decrease quantity"); minus.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/></svg>';
+      var out = document.createElement("output"); out.textContent = l.qty; out.setAttribute("aria-live", "polite");
+      var plus = document.createElement("button"); plus.type = "button"; plus.className = "qplus"; plus.setAttribute("aria-label", "Increase quantity"); plus.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>';
+      minus.addEventListener("click", function () { setLineQty(l.variantId, l.qty - 1); }); plus.addEventListener("click", function () { setLineQty(l.variantId, l.qty + 1); });
+      q.appendChild(minus); q.appendChild(out); q.appendChild(plus);
+      var rm = document.createElement("button"); rm.type = "button"; rm.className = "rm"; rm.textContent = "Remove"; rm.addEventListener("click", function () { removeLine(l.variantId); });
+      ctl.appendChild(q); ctl.appendChild(rm); info.appendChild(ctl);
+    } else { var m2 = document.createElement("p"); m2.className = "m"; m2.textContent = "Qty " + l.qty; info.appendChild(m2); }
+    var right = document.createElement("p"); right.className = "r"; right.textContent = money(l.price * l.qty);
+    row.appendChild(thumb); row.appendChild(info); row.appendChild(right); return row;
+  }
+  function renderCartPage() {
+    var body = document.getElementById("cartPageLines"); if (!body) return; body.innerHTML = "";
+    if (!cart.lines.length) { var e = document.createElement("p"); e.className = "co-empty"; e.textContent = "Your cart is empty."; body.appendChild(e); }
+    cart.lines.forEach(function (l) { body.appendChild(lineEl(l, true)); });
+    document.getElementById("cartPageSubtotal").textContent = money(cartSubtotal());
+  }
+  function renderCart() {
+    var body = document.getElementById("cartBody"); body.innerHTML = "";
+    if (!cart.lines.length) { var e = document.createElement("p"); e.className = "taupe"; e.textContent = "Your cart is empty."; body.appendChild(e); }
+    cart.lines.forEach(function (l) { body.appendChild(lineEl(l, true)); });
+    document.getElementById("cartSubtotal").textContent = money(cartSubtotal());
+    var n = cartCount(), badge = document.getElementById("cartCount"); badge.textContent = n; badge.hidden = n === 0; cartBtn.setAttribute("aria-label", "Cart, " + n + " item" + (n === 1 ? "" : "s"));
+    var co = document.getElementById("cartCheckout"); co.setAttribute("aria-disabled", String(!cart.lines.length)); co.textContent = cart.lines.length ? "Checkout" : "Checkout";
+  }
+  function renderCheckout() {
+    var lines = document.getElementById("checkoutLines"); if (!lines) return; lines.innerHTML = "";
+    if (!cart.lines.length) { var e = document.createElement("p"); e.className = "co-empty"; e.textContent = "Your cart is empty. Add the product to review an order here."; lines.appendChild(e); }
+    cart.lines.forEach(function (l) { lines.appendChild(lineEl(l, true)); });
+    document.getElementById("checkoutSubtotal").textContent = money(cartSubtotal()); document.getElementById("checkoutTotal").textContent = money(cartSubtotal());
+    var go = document.getElementById("checkoutGo"); go.disabled = !(SHOPIFY_CONNECTED && cart.lines.length);
+    if (typeof renderCheckoutOffer === "function") renderCheckoutOffer();
+  }
+  function openCart() { if (!cartRoot.hidden) return; cartLast = document.activeElement; clearTimeout(cartTimer); cartRoot.hidden = false; document.body.classList.add("cart-open"); requestAnimationFrame(function () { cartRoot.classList.add("open"); cartClose.focus(); }); }
+  function closeCart(restore) { if (cartRoot.hidden) return; cartRoot.classList.remove("open"); document.body.classList.remove("cart-open"); var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; cartTimer = setTimeout(function () { cartRoot.hidden = true; }, reduce ? 0 : 260); if (restore !== false && cartLast && cartLast.focus) cartLast.focus(); }
+  cartBtn.addEventListener("click", function () { if (typeof closeDrawer === "function") closeDrawer(false); cartRoot.hidden ? openCart() : closeCart(); });
+  cartClose.addEventListener("click", function () { closeCart(); }); cartOverlay.addEventListener("click", function () { closeCart(); });
+  document.getElementById("cartCheckout").addEventListener("click", function () { closeCart(false); });
+  document.getElementById("cartViewAll").addEventListener("click", function () { closeCart(false); });
+  document.getElementById("cartContinue").addEventListener("click", function () { closeCart(); });
+  document.addEventListener("keydown", function (ev) {
+    if (cartRoot.hidden) return;
+    if (ev.key === "Escape") { ev.preventDefault(); closeCart(); return; }
+    if (ev.key === "Tab") { var f = Array.prototype.slice.call(cartDrawer.querySelectorAll('a[href], button:not([disabled])')).filter(function (el) { return el.offsetParent !== null; }); if (!f.length) return; var first = f[0], last = f[f.length - 1]; if (ev.shiftKey && (document.activeElement === first || document.activeElement === cartDrawer)) { ev.preventDefault(); last.focus(); } else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); } }
+  });
+  var addBtn = document.getElementById("addToCart");
+  addBtn.addEventListener("click", function () {
+    var c = PRODUCT.colors[colorIdx]; var existing = cart.lines.filter(function (l) { return l.variantId === c.variantId; })[0];
+    if (existing) existing.qty = Math.min(10, existing.qty + qty); else cart.lines.push({ variantId: c.variantId, productId: PRODUCT.id, title: PRODUCT.name, color: c.name, hex: c.hex, price: PRODUCT.price, qty: qty });
+    saveCart(); renderCart(); renderCheckout(); renderCartPage();
+    addBtn.textContent = "Added ✓"; setTimeout(renderAddLabel, 1800);
+    if (window.dataLayer) window.dataLayer.push({ event: "add_to_cart", variant: c.variantId, qty: qty });
+    openCart();
+  });
+  renderCart(); renderCheckout(); renderCartPage();
+  setCategory("dogs");
+  route();
+
+  document.querySelectorAll("#faqList button").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var open = btn.getAttribute("aria-expanded") === "true";
+      document.querySelectorAll("#faqList button").forEach(function (o) { o.setAttribute("aria-expanded", "false"); document.getElementById(o.getAttribute("aria-controls")).hidden = true; });
+      if (!open) { btn.setAttribute("aria-expanded", "true"); document.getElementById(btn.getAttribute("aria-controls")).hidden = false; }
+    });
+  });
+
+  function wire(formId, emailId, okId) {
+    var form = document.getElementById(formId), email = document.getElementById(emailId), ok = document.getElementById(okId);
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      if (!email.value || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value)) { email.focus(); email.setAttribute("aria-invalid", "true"); return; }
+      email.removeAttribute("aria-invalid"); ok.style.display = "block";
+      if (window.dataLayer) window.dataLayer.push({ event: "waitlist_submit", form: formId });
+    });
+  }
+  wire("newsForm", "newsEmail", "newsOk");
+
+  // ── Welcome offer popup: 15% off the first order for a new visitor's email ──
+  // The discount itself lives in the store (Shopify customer tag + automatic discount, one use per customer).
+  // This popup only collects the email and asks WELCOME_OFFER.endpoint to register it. Until that endpoint
+  // exists it says so plainly and never claims the discount is applied.
+  var WELCOME_OFFER = {
+    enabled: true,
+    percent: 15,
+    endpoint: "",            // e.g. "/api/welcome-offer" — POST {email, consent, source} -> {eligible: true|false, reason?}
+    showAfterMs: 1200,       // delay before the popup appears on a first visit
+    dismissCooldownDays: 7,  // closed without signing up: wait this long before showing again
+    storageKey: "urpick_offer_v1"
+  };
+  (function () {
+    var root = document.getElementById("offerRoot"); if (!root || !WELCOME_OFFER.enabled) return;
+    var dialog = document.getElementById("offerDialog"), overlay = document.getElementById("offerOverlay"), closeBtn = document.getElementById("offerClose");
+    var form = document.getElementById("offerForm"), email = document.getElementById("offerEmail"), err = document.getElementById("offerError"), submit = document.getElementById("offerSubmit");
+    var ask = document.getElementById("offerAsk"), done = document.getElementById("offerDone"), startBtn = document.getElementById("offerStart");
+    var lastFocus = null, hideTimer = null;
+    function load() { try { return JSON.parse(localStorage.getItem(WELCOME_OFFER.storageKey) || "null"); } catch (e) { return null; } }
+    function save(v) { try { localStorage.setItem(WELCOME_OFFER.storageKey, JSON.stringify(v)); } catch (e) {} }
+    function onHome() { return !/^#(contact|track-order|about|checkout|shipping-returns|privacy|terms|cart|help|guide|shop-by-need|product-.+|collection-.+|need-.+)$/.test(location.hash || ""); }
+    function shouldShow() {
+      var st = load();
+      if (st && st.status === "signed") return false;                                   // already signed up: never again
+      if (st && st.status === "dismissed" && Date.now() - st.at < WELCOME_OFFER.dismissCooldownDays * 864e5) return false; // cooldown
+      try { if (sessionStorage.getItem(WELCOME_OFFER.storageKey + ":seen")) return false; } catch (e) {} // once per browsing session
+      return onHome();
+    }
+    function focusables() { return Array.prototype.slice.call(dialog.querySelectorAll('a[href], button:not([disabled]), input:not([disabled])')).filter(function (el) { return el.offsetParent !== null; }); }
+    function open() {
+      if (!root.hidden) return; lastFocus = document.activeElement; clearTimeout(hideTimer);
+      try { sessionStorage.setItem(WELCOME_OFFER.storageKey + ":seen", "1"); } catch (e) {}
+      root.hidden = false; document.body.classList.add("offer-open");
+      requestAnimationFrame(function () { root.classList.add("open"); (root.querySelector(".offer-done.show") ? startBtn : email).focus({ preventScroll: true }); });
+      if (window.dataLayer) window.dataLayer.push({ event: "welcome_offer_view" });
+    }
+    function close(reason) {
+      if (root.hidden) return;
+      root.classList.remove("open"); document.body.classList.remove("offer-open");
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      hideTimer = setTimeout(function () { root.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true }); }, reduce ? 0 : 260);
+      if (reason === "dismiss") { var st = load(); if (!st || st.status !== "signed") save({ status: "dismissed", at: Date.now() }); }
+    }
+    function showError(msg) { err.textContent = msg; err.classList.add("show"); email.setAttribute("aria-invalid", "true"); email.focus(); }
+    function clearError() { err.textContent = ""; err.classList.remove("show"); email.removeAttribute("aria-invalid"); }
+    function showDone(addr, confirmed, reason) {
+      ask.style.display = "none"; done.classList.add("show");
+      document.getElementById("offerDoneEmail").textContent = addr;
+      var body = document.getElementById("offerDoneBody"), notice = document.getElementById("offerDoneNotice");
+      if (confirmed) {
+        body.textContent = "Your " + WELCOME_OFFER.percent + "% first-order discount is ready. Shop normally and use this email at checkout. We’ll apply your discount automatically.";
+        notice.hidden = true;
+      } else {
+        body.textContent = "Thanks — we’ve saved this email for the " + WELCOME_OFFER.percent + "% first-order offer.";
+        notice.innerHTML = "<b>Not confirmed yet.</b>" + (reason || "The discount is set up in the store, which isn’t connected to this page yet. Once it is, checking out with this email applies the offer automatically. Nothing is applied until then.");
+        notice.hidden = false;
+      }
+      startBtn.focus({ preventScroll: true });
+    }
+    function register(addr) {
+      // Backend contract: POST endpoint, JSON {email, consent:true, source:"welcome-popup"} -> 2xx {eligible:boolean, reason?:string}.
+      // The backend tags the customer / creates the one-use discount; this page never decides eligibility itself.
+      if (!WELCOME_OFFER.endpoint) return Promise.resolve({ ok: false, offline: true });
+      return fetch(WELCOME_OFFER.endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: addr, consent: true, source: "welcome-popup", percent: WELCOME_OFFER.percent }) })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok && !!j.eligible, reason: j.reason, status: r.status }; }); })
+        .catch(function () { return { ok: false, network: true }; });
+    }
+    form.addEventListener("submit", function (ev) {
+      ev.preventDefault(); clearError();
+      var addr = (email.value || "").trim().toLowerCase();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(addr)) { showError("Please enter a valid email address, like name@example.com."); return; }
+      submit.disabled = true; submit.textContent = "One moment…";
+      register(addr).then(function (res) {
+        submit.disabled = false; submit.textContent = "Unlock my 15% off";
+        if (res.network) { showError("We couldn’t reach the server. Please check your connection and try again."); return; }
+        if (!res.ok && !res.offline && res.reason) { showError(res.reason); return; }       // e.g. "This email has already used the first-order offer."
+        save({ status: "signed", email: addr, consent: true, confirmed: !!res.ok, at: Date.now() });
+        showDone(addr, !!res.ok, res.offline ? null : res.reason);
+        if (window.dataLayer) window.dataLayer.push({ event: "welcome_offer_signup", confirmed: !!res.ok });
+      });
+    });
+    closeBtn.addEventListener("click", function () { close("dismiss"); });
+    overlay.addEventListener("click", function () { close("dismiss"); });
+    startBtn.addEventListener("click", function () { close("done"); if (location.hash && !onHome()) location.hash = "#top"; });
+    dialog.addEventListener("keydown", function (ev) {
+      if (ev.key === "Escape") { ev.preventDefault(); close("dismiss"); return; }
+      if (ev.key !== "Tab") return; var f = focusables(); if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+    });
+    if (shouldShow()) setTimeout(open, WELCOME_OFFER.showAfterMs);
+    window.urpickOffer = { open: open, close: close, state: load }; // for tests and the checkout page
+  })();
+  function renderCheckoutOffer() {
+    var el = document.getElementById("checkoutOffer"); if (!el) return;
+    var st = null; try { st = JSON.parse(localStorage.getItem(WELCOME_OFFER.storageKey) || "null"); } catch (e) {}
+    if (!st || st.status !== "signed") { el.hidden = true; return; }
+    el.hidden = false;
+    el.innerHTML = st.confirmed
+      ? "<b>Welcome offer:</b> " + WELCOME_OFFER.percent + "% off your first order is applied automatically when you check out with " + st.email + "."
+      : "<b>Welcome offer:</b> " + st.email + " is saved for the " + WELCOME_OFFER.percent + "% first-order offer. The store applies it at checkout once connected; it is not applied yet.";
+  }
+</script>
+
+</body>
+</html>
