@@ -125,20 +125,35 @@
 
   /* how it works */
   .how { background: rgba(239,230,216,.6); }
-  .steps { margin-top: 3.5rem; display: grid; gap: 2.5rem; list-style: none; padding: 0; counter-reset: s; } @media (min-width: 1024px) { .steps { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; } }
+  /* ── How we choose: editorial composition. Mobile/tablet = vertical guided timeline; desktop = asymmetric four-step story. ── */
+  .steps-ed { position: relative; margin-top: 3.5rem; list-style: none; padding: 0 0 0 2.75rem; display: grid; gap: 3.5rem; }
+  .steps-ed::before { content: ""; position: absolute; left: 1.125rem; top: 1.25rem; bottom: 1.25rem; width: 1px; background: rgba(47,74,58,.28); }
   .step { position: relative; display: block; }
-  .step .vis { position: relative; width: 100%; }
-  .step .ph { aspect-ratio: 4 / 3; } @media (min-width: 1024px) { .step .ph { aspect-ratio: 1; } }
-  .step .ph.pos-left { background-position: 30% center; } .step .ph.pos-bottom { background-position: center 70%; }
-  .step .n { position: absolute; left: -.5rem; top: -.5rem; display: flex; height: 2.5rem; width: 2.5rem; align-items: center; justify-content: center; border-radius: 999px; background: var(--sage-deep); color: var(--cream); font-family: var(--display); font-size: 1.125rem; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
-  .step .next { display: none !important; } @media (min-width: 1024px) { .step .next { display: flex; position: absolute; right: -1.25rem; top: 50%; height: 2rem; width: 2rem; transform: translate(50%, -50%); align-items: center; justify-content: center; border-radius: 999px; background: var(--white); color: var(--sage); box-shadow: 0 0 0 1px rgba(31,42,36,.1); z-index: 2; } .step .next .icon { width: 1rem; height: 1rem; } }
-  .step .txt { margin-top: 1.125rem; } .step .txt h3 { font-size: 1.375rem; line-height: 1.2; text-transform: uppercase; letter-spacing: .04em; } @media (min-width: 1024px) { .step .txt { margin-top: 1.25rem; } .step .txt h3 { font-size: 1.25rem; } }
-  .cut-tile { display: grid; place-items: center; background: linear-gradient(135deg, var(--sand), var(--sand-2)); color: var(--sage-deep); text-align: center; }
-  .cut-tile .stamp { display: grid; justify-items: center; gap: .5rem; padding: 1.25rem 1.5rem; border: 2px solid var(--sage-deep); border-radius: 14px; transform: rotate(-6deg); font-family: var(--display); font-size: 1.125rem; font-weight: 600; line-height: 1.1; letter-spacing: .12em; text-transform: uppercase; box-shadow: 0 10px 24px -14px rgba(31,42,36,.45); }
-  .cut-tile .stamp .icon { width: 44px; height: 44px; }
-  .steps-cta { margin-top: 3rem; text-align: center; }
+  .step .vis { position: relative; }
+  .step .ph { border-radius: var(--r-card); } .s1 .ph { aspect-ratio: 4 / 5; max-height: 30rem; } .s2 .ph { aspect-ratio: 16 / 10; } .s3 .ph { aspect-ratio: 3 / 4; max-height: 28rem; }
+  .step .ph.pos-left { background-position: 30% center; }
+  .step .n { position: absolute; left: -2.75rem; top: 0; transform: translateX(-50%) translateX(1.125rem); display: flex; height: 2.5rem; min-width: 2.5rem; padding: 0 .5rem; align-items: center; justify-content: center; border-radius: 999px; background: var(--sage-deep); color: var(--cream); font-family: var(--display); font-size: 1rem; font-weight: 600; letter-spacing: .04em; box-shadow: 0 0 0 4px var(--cream); z-index: 2; }
+  .step .txt { margin-top: 1.125rem; max-width: 34rem; } .step .micro { font-size: .6875rem; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--sage); margin-bottom: .375rem; }
+  .step .txt h3 { font-size: 1.375rem; line-height: 1.2; text-transform: uppercase; letter-spacing: .04em; } .step .txt p:not(.micro):not(.steps-cta) { margin-top: .5rem; font-size: .9375rem; color: var(--taupe); line-height: 1.65; }
+  .s4 .seal { display: grid; place-items: center; min-height: 14rem; }
+  .s4 .stamp { display: grid; justify-items: center; gap: .625rem; padding: 1.75rem 2rem; border: 2px solid var(--sage-deep); border-radius: 18px; transform: rotate(-6deg); color: var(--sage-deep); font-family: var(--display); font-size: 1.375rem; font-weight: 600; line-height: 1.05; letter-spacing: .14em; text-transform: uppercase; text-align: center; background: var(--cream); }
+  .s4 .stamp .icon { width: 56px; height: 56px; }
+  .steps-cta { margin-top: 1.25rem; } .steps-path { display: none; }
+  @media (min-width: 1024px) {
+    .steps-ed { margin-top: 4.5rem; padding: 0; display: grid; grid-template-columns: repeat(12, 1fr); column-gap: 2rem; row-gap: 3.5rem; align-items: start; }
+    .steps-ed::before { display: none; }
+    .steps-path { display: block; position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 1; } .steps-path path { fill: none; stroke: var(--sage-deep); stroke-width: 1; stroke-opacity: .35; stroke-dasharray: 3 6; stroke-linecap: round; }
+    .step { z-index: 2; }
+    .step .n { left: -.75rem; top: -.75rem; transform: none; height: 2.75rem; min-width: 2.75rem; font-size: 1.0625rem; box-shadow: 0 2px 6px rgba(31,42,36,.18); }
+    .s1 { grid-column: 1 / 6; grid-row: 1 / 3; } .s1 .ph { aspect-ratio: 4 / 5; max-height: none; } .s1 .txt { max-width: 26rem; } .s1 .txt h3 { font-size: 1.5rem; }
+    .s2 { grid-column: 7 / 13; grid-row: 1; padding-top: 4.5rem; } .s2 .ph { aspect-ratio: 16 / 9; } .s2 .txt { max-width: 26rem; }
+    .s3 { grid-column: 7 / 10; grid-row: 2; margin-top: -1rem; } .s3 .ph { aspect-ratio: 3 / 4; max-height: none; } .s3 .txt h3 { font-size: 1.25rem; }
+    .s4 { grid-column: 10 / 13; grid-row: 2; align-self: end; padding-bottom: .5rem; } .s4 .seal { min-height: 15rem; justify-items: center; } .s4 .vis .n { left: 50%; transform: translateX(-50%); top: -.25rem; }
+    .s4 .txt { margin-top: .5rem; } .s4 .txt h3 { font-size: 1.25rem; }
+    .steps-cta { margin-top: 1.5rem; }
+  }
   .textlink { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: .25rem .25rem; font-size: .875rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--sage-deep); text-decoration: none; border-bottom: 1.5px solid transparent; transition: border-color .15s, gap .15s; } .textlink:hover { border-bottom-color: var(--sage-deep); gap: .75rem; } .textlink:focus-visible { outline: 2px solid var(--sage-deep); outline-offset: 4px; }
-  .step .txt p { margin-top: .375rem; font-size: .875rem; color: var(--taupe); line-height: 1.6; }
+  @media (min-width: 1280px) { .s1 .txt h3 { font-size: 1.625rem; } .s4 .stamp { font-size: 1.5rem; padding: 2rem 2.25rem; } .s4 .stamp .icon { width: 64px; height: 64px; } }
 
   /* why different */
   .why .container { display: grid; align-items: center; gap: 3rem; } @media (min-width: 1024px) { .why .container { grid-template-columns: 1fr 1fr; gap: 4rem; } }
@@ -574,18 +589,18 @@
 <!-- HOW WE WORK -->
 <section class="sec how" id="how-we-work">
   <div class="container">
-    <div class="note"><b>HOW WE CHOOSE</b> — Four numbered stages of how products are selected. Step 4 is a branded 'Made the cut' tile (no photo; its former quiet-afternoon photo also appears in Moments). Photos reuse the lifestyle set: 1 bath-grooming (everyday moment), 2 bowls-in-use (bowls in the daily routine; only used here), 3 cat-tabby (stand-in until a product-in-use photo exists), 4 quiet-afternoon (the calm outcome). Swap tile 3 for a real product photo when one exists.</div>
+    <div class="note"><b>HOW WE CHOOSE</b> — Four numbered stages as an editorial composition (01 anchor left, 02 wide + offset, 03 tall, 04 seal payoff with the CTA); mobile is a vertical timeline. Step 4 is a branded 'Made the cut' tile (no photo; its former quiet-afternoon photo also appears in Moments). Photos reuse the lifestyle set: 1 bath-grooming (everyday moment), 2 bowls-in-use (bowls in the daily routine; only used here), 3 cat-tabby (stand-in until a product-in-use photo exists), 4 quiet-afternoon (the calm outcome). Swap tile 3 for a real product photo when one exists.</div>
     <div class="head center">
       <p class="eyebrow">How we choose</p>
       <h2 class="h2">Only products that make pet life easier make the cut.</h2>
     </div>
-    <ol class="steps">
-      <li class="step"><div class="vis"><div class="ph photo-bath-grooming pos-left" role="img" aria-label="A pet parent towelling off a golden retriever after a bath"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">1</span></div><div class="txt"><h3>Start with the real problem</h3><p>We start with the everyday frustrations pet parents actually deal with and look for where things could simply work better.</p></div></li>
-      <li class="step"><div class="vis"><div class="ph photo-bowls-in-use" role="img" aria-label="A golden retriever drinking from a water bowl while a tabby cat walks up to a food bowl on a woven rug"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">2</span></div><div class="txt"><h3>Find the smarter solution</h3><p>We look for products that solve the problem simply, practically, and without adding unnecessary steps to the routine.</p></div></li>
-      <li class="step"><div class="vis"><div class="ph photo-cat-tabby" role="img" aria-label="A tabby cat looking closely at the camera in a bright living room"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">3</span></div><div class="txt"><h3>Look closer</h3><p>We look at how the product works, how it is used, what it claims to do, and whether the solution actually makes sense for pet parents.</p></div></li>
-      <li class="step"><div class="vis"><div class="ph cut-tile" role="img" aria-label="A stamp reading Made the cut"><span class="stamp"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg>Made<br>the cut</span></div><span class="n">4</span></div><div class="txt"><h3>Only the good stuff makes the cut</h3><p>If we can’t clearly explain what it does, why it helps, and who it’s for, it doesn’t belong in our store.</p></div></li>
+    <ol class="steps steps-ed" id="howSteps">
+      <svg class="steps-path" id="stepsPath" aria-hidden="true" focusable="false"><path d=""/></svg>
+      <li class="step s1"><div class="vis"><div class="ph photo-bath-grooming pos-left" role="img" aria-label="A pet parent towelling off a golden retriever after a bath"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">01</span></div><div class="txt"><p class="micro">Notice</p><h3>Start with the real problem</h3><p>We start with the everyday frustrations pet parents actually deal with and look for where things could simply work better.</p></div></li>
+      <li class="step s2"><div class="vis"><div class="ph photo-bowls-in-use" role="img" aria-label="A golden retriever drinking from a water bowl while a tabby cat walks up to a food bowl on a woven rug"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">02</span></div><div class="txt"><p class="micro">Solve</p><h3>Find the smarter solution</h3><p>We look for products that solve the problem simply, practically, and without adding unnecessary steps to the routine.</p></div></li>
+      <li class="step s3"><div class="vis"><div class="ph photo-cat-tabby" role="img" aria-label="A tabby cat looking closely at the camera in a bright living room"><span class="cap"><b>Photo · 1/1</b></span></div><span class="n">03</span></div><div class="txt"><p class="micro">Assess</p><h3>Look closer</h3><p>We look at how the product works, how it is used, what it claims to do, and whether the solution actually makes sense for pet parents.</p></div></li>
+      <li class="step s4"><div class="vis"><div class="seal" role="img" aria-label="A stamp reading Made the cut"><span class="stamp"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg>Made<br>the cut</span></div><span class="n">04</span></div><div class="txt"><p class="micro">Select</p><h3>Only the good stuff makes the cut</h3><p>If we can’t clearly explain what it does, why it helps, and who it’s for, it doesn’t belong in our store.</p><p class="steps-cta"><a href="#collection-all" class="textlink">See what made the cut <span aria-hidden="true">→</span></a></p></div></li>
     </ol>
-    <p class="steps-cta"><a href="#collection-all" class="textlink">See what made the cut <span aria-hidden="true">→</span></a></p>
   </div>
 </section>
 
@@ -1882,5 +1897,22 @@
     window.addEventListener("hashchange", function () { if (!panel.hidden && /^#(checkout|cart)$/.test(location.hash)) close(); });
     setTimeout(maybeTeaser, ASSISTANT.teaserAfterMs);
     window.urpickAssistant = { open: open, close: close };
+  })();
+
+  // ── How we choose: thin dotted path linking 01 → 02 → 03 → 04 on desktop. Recomputed on resize; hidden below 1024px by CSS. ──
+  (function () {
+    var ol = document.getElementById("howSteps"), svg = document.getElementById("stepsPath"); if (!ol || !svg) return;
+    var path = svg.querySelector("path");
+    function draw() {
+      if (window.innerWidth < 1024) { path.setAttribute("d", ""); return; }
+      var box = ol.getBoundingClientRect(), pts = Array.prototype.map.call(ol.querySelectorAll(".step .n"), function (n) { var r = n.getBoundingClientRect(); return [r.left - box.left + r.width / 2, r.top - box.top + r.height / 2]; });
+      if (pts.length < 4) return;
+      svg.setAttribute("viewBox", "0 0 " + box.width + " " + box.height);
+      var d = "M" + pts[0][0] + " " + pts[0][1];
+      for (var i = 1; i < pts.length; i++) { var a = pts[i - 1], b = pts[i]; var dx = (b[0] - a[0]) * .5; d += " C" + (a[0] + dx) + " " + a[1] + " " + (b[0] - dx) + " " + b[1] + " " + b[0] + " " + b[1]; }
+      path.setAttribute("d", d);
+    }
+    draw(); window.addEventListener("resize", draw); window.addEventListener("load", draw);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
   })();
 </script>
