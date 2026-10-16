@@ -48,7 +48,13 @@
   body.notes .note { display: block; }
 
   /* announcement + header */
-  .announce { background: var(--sage-deep); color: var(--cream); text-align: center; font-size: .8rem; font-weight: 500; letter-spacing: .02em; padding: .65rem 1rem; } @media (min-width: 640px) { .announce { font-size: .875rem; } }
+  .announce { background: var(--sage-deep); color: var(--cream); font-size: .8rem; font-weight: 500; letter-spacing: .02em; padding: .65rem 0; overflow: hidden; } @media (min-width: 640px) { .announce { font-size: .875rem; } }
+  .ticker { display: flex; width: max-content; will-change: transform; animation: ticker var(--ticker-duration, 40s) linear infinite; }
+  .announce:hover .ticker, .announce:focus-within .ticker { animation-play-state: paused; }
+  .ticker-set { flex: none; display: flex; list-style: none; margin: 0; padding: 0; }
+  .ticker-set li { white-space: nowrap; padding: 0 1.75rem; position: relative; } .ticker-set li::before { content: ""; position: absolute; left: -3px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: var(--clay); }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .ticker { animation: none; width: 100%; justify-content: center; } .ticker-set { flex-wrap: wrap; justify-content: center; row-gap: .25rem; } .ticker-set li::before { display: none; } .ticker-set li { padding: 0 .75rem; } .ticker-set[aria-hidden] { display: none; } }
   header.site { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 40; background: rgba(250,246,239,.9); backdrop-filter: blur(8px); }
   header.site.scrolled { box-shadow: 0 1px 0 rgba(31,42,36,.08); }
   header.site .container { display: flex; height: 4rem; align-items: center; justify-content: space-between; gap: 1rem; }
@@ -404,7 +410,15 @@
   </div>
 </div>
 
-<div class="announce">Coming soon: thoughtfully designed essentials for everyday pet life</div>
+<div class="announce" id="announce" role="region" aria-label="Announcements">
+  <div class="ticker" id="ticker">
+    <ul class="ticker-set" id="tickerSet">
+      <li>Coming soon: thoughtfully designed essentials for everyday pet life</li>
+      <li>15% off your first order when you leave your email</li>
+      <li>Only the useful stuff makes the cut</li>
+    </ul>
+  </div>
+</div>
 
 <header class="site" id="siteHeader">
   <div class="container hdr">
@@ -1928,5 +1942,20 @@
     }
     draw(); window.addEventListener("resize", draw); window.addEventListener("load", draw);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+  })();
+
+  // ── Announcement ticker: the message set is cloned until the track is at least twice the viewport, then slides at a constant speed. Pauses on hover; static under prefers-reduced-motion. ──
+  (function () {
+    var bar = document.getElementById("announce"), track = document.getElementById("ticker"), set = document.getElementById("tickerSet"); if (!bar || !track || !set) return;
+    var SPEED = 55; // px per second
+    function build() {
+      Array.prototype.slice.call(track.children).forEach(function (c, i) { if (i) track.removeChild(c); });
+      var w = set.getBoundingClientRect().width; if (!w) return;
+      var copies = Math.max(1, Math.ceil(bar.clientWidth / w));                       // one half of the track must cover the bar
+      for (var i = 0; i < copies * 2 - 1; i++) { var c = set.cloneNode(true); c.removeAttribute("id"); c.setAttribute("aria-hidden", "true"); track.appendChild(c); }
+      track.style.setProperty("--ticker-duration", Math.round((w * copies) / SPEED) + "s");
+    }
+    build(); var t; window.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(build, 150); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(build);
   })();
 </script>

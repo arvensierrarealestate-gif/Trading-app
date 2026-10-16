@@ -204,6 +204,10 @@ with sync_playwright() as p:
         # ── promotion-reminder helper (scripted bubble) ──
         pg.goto("file://" + PAGE); pg.wait_for_timeout(400)
         check(f"[{label}] four-pillar strip under the hero removed", pg.evaluate("document.querySelector('.strip') === null && !/Built for routines|Honest by design/.test(document.body.innerText)"))
+        tx0 = pg.evaluate("new DOMMatrix(getComputedStyle(document.getElementById('ticker')).transform).m41"); pg.wait_for_timeout(500); tx1 = pg.evaluate("new DOMMatrix(getComputedStyle(document.getElementById('ticker')).transform).m41")
+        check(f"[{label}] announcement bar is a moving ticker with the three messages, track wider than the bar, no page overflow", tx0 - tx1 > 10 and pg.evaluate("/Coming soon/.test(document.getElementById('tickerSet').textContent) && /15% off your first order/.test(document.getElementById('tickerSet').textContent) && /Only the useful stuff makes the cut/.test(document.getElementById('tickerSet').textContent) && document.getElementById('ticker').getBoundingClientRect().width >= 2 * document.getElementById('announce').clientWidth && document.documentElement.scrollWidth <= innerWidth && document.querySelectorAll('#ticker .ticker-set[aria-hidden]').length === document.querySelectorAll('#ticker .ticker-set').length - 1"), f"moved {tx0 - tx1:.1f}px")
+        pg.hover("#announce"); pg.wait_for_timeout(200); tx0 = pg.evaluate("new DOMMatrix(getComputedStyle(document.getElementById('ticker')).transform).m41"); pg.wait_for_timeout(400); tx1 = pg.evaluate("new DOMMatrix(getComputedStyle(document.getElementById('ticker')).transform).m41")
+        check(f"[{label}] ticker pauses on hover", abs(tx0 - tx1) < 0.5); pg.mouse.move(w / 2, h / 2)
         lb = pg.locator("#assistBtn").bounding_box()
         check(f"[{label}] helper launcher bottom-right, teaser not shown yet", lb and abs(lb["x"] + lb["width"] - w) < 40 and abs(lb["y"] + lb["height"] - h) < 40 and pg.evaluate("document.getElementById('assistTeaser').hidden"), str(lb))
         pg.click("#assistBtn"); pg.wait_for_timeout(350)
@@ -312,6 +316,10 @@ with sync_playwright() as p:
     check("[desktop] popup returns after the 7-day cooldown", pg.evaluate("!document.getElementById('offerRoot').hidden"))
     pg.keyboard.press("Escape"); pg.wait_for_timeout(400)
     check("[desktop] Escape closes the popup", pg.evaluate("document.getElementById('offerRoot').hidden"))
+    ctx.close()
+    ctx = b.new_context(viewport={"width": 1280, "height": 900}, reduced_motion="reduce"); pg = ctx.new_page()
+    pg.add_init_script("localStorage.setItem('urpick_offer_v1', JSON.stringify({status:'dismissed', at: Date.now()}))"); pg.goto("file://" + PAGE); pg.wait_for_timeout(500)
+    check("[desktop] reduced motion: ticker is static, one copy of the messages, centred", pg.evaluate("getComputedStyle(document.getElementById('ticker')).animationName === 'none' && Array.from(document.querySelectorAll('#ticker .ticker-set')).filter(e => e.offsetParent !== null).length === 1"))
     ctx.close()
     # not on routed pages
     for route in ["#about", "#collection-all", "#need-travel", "#help"]:
