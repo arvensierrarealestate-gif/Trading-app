@@ -69,3 +69,10 @@ Restructure only: the photos and the copy stayed as they were; the wording that 
 - **About:** same copy and photo, plus the brief's "The pet aisle is full. Your home does not need all of it." block and the closing "Only the useful stuff should make the cut.", ending with Shop by pet + Shop by need.
 - **Popup:** unchanged; it still shows only on the homepage, not on any routed page.
 - Tests: 304 checks across desktop, tablet and phone (`tools/test_nav.py`).
+
+## Promotion-reminder helper and hero strip (16 Oct 2026)
+
+- **Helper bubble** ("Need a hand?", bottom-right on every page). It is a scripted assistant whose only job for now is to remind visitors about the welcome offer and point them to the right page. The header says "Scripted answers · not live chat yet" and there is no text box, so nothing pretends a person is replying. Options: Tell me about the 15% offer (card with an "Unlock my 15% off" button that hands over to the welcome popup; a signed-up visitor is told the offer is saved to their email and not applied yet), Shop by pet, Shop by need, Shipping & returns (quotes the draft policy: 3–7 business days, free over $55, $4.99 under, 30-day returns), Talk to a person (says nobody can reply here yet, gives the email and the contact form). Following a link closes the panel. Escape closes it and returns focus to the launcher.
+- **Teaser:** on a first visit a small "15% off your first order is waiting" bubble appears above the launcher after 6 s, never while the welcome popup is open, never after signup, and not again once the helper has been used or for 7 days after its X is pressed. Config is the `ASSISTANT` object (`teaserAfterMs`, `teaserCooldownDays`); copy lives in `TOPICS`. The launcher rises above the sticky mobile purchase bar.
+- **Removed** the four-pillar strip under the hero (Built for routines / Dogs and cats, both / Simple to care for / Honest by design) at the owner's request.
+- Tests: 350 checks.

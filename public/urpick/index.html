@@ -124,11 +124,6 @@
   @media (min-width: 1024px) { .hero > .container { grid-template-columns: repeat(12, 1fr); gap: 3rem; padding-block: 5rem; } .hero .copy { grid-column: span 6; } .hero .visual { grid-column: span 6; } }
 
   /* benefit strip */
-  .strip { border-block: 1px solid rgba(31,42,36,.05); background: rgba(239,230,216,.6); }
-  .strip ul { list-style: none; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 0; padding-block: 1.25rem; } @media (min-width: 640px) { .strip ul { grid-template-columns: repeat(4, 1fr); } }
-  .strip li { display: flex; align-items: center; justify-content: center; gap: .625rem; font-size: .875rem; font-weight: 500; }
-  .strip li span { display: flex; height: 2.25rem; width: 2.25rem; align-items: center; justify-content: center; border-radius: 999px; background: var(--white); color: var(--sage); box-shadow: 0 0 0 1px rgba(31,42,36,.05); }
-  .strip .icon { width: 1.1rem; height: 1.1rem; }
 
   /* use cases */
   .cases { margin-top: 3rem; display: flex; gap: 1.25rem; overflow-x: auto; padding-bottom: 1rem; scroll-snap-type: x mandatory; list-style: none; padding-left: 0; margin-inline: 0; -webkit-overflow-scrolling: touch; }
@@ -283,6 +278,35 @@
   .sr-only { position: absolute; left: -9999px; }
   .pdp-details { margin-top: 2rem; border-top: 1px solid rgba(31,42,36,.1); } .pdp-details details { border-bottom: 1px solid rgba(31,42,36,.1); } .pdp-details summary { display: flex; justify-content: space-between; align-items: center; min-height: 52px; padding: .75rem 0; font-weight: 600; cursor: pointer; list-style: none; } .pdp-details summary::-webkit-details-marker { display: none; } .pdp-details summary::after { content: "+"; font-size: 1.25rem; color: var(--sage-deep); } .pdp-details details[open] summary::after { content: "\2013"; } .pdp-details .dbody { padding: 0 0 1rem; color: var(--taupe); line-height: 1.65; font-size: .9375rem; } .pdp-details .dbody a { color: var(--sage-deep); } .pdp-details summary:focus-visible { outline: 2px solid var(--sage-deep); outline-offset: 2px; }
   #searchInput::-webkit-search-cancel-button, #searchInput::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
+  /* ── Promotion-reminder helper: a scripted bubble, bottom-right. Honest about being scripted; no live chat yet. ── */
+  .assist { position: fixed; right: 1rem; bottom: calc(1rem + env(safe-area-inset-bottom)); z-index: 44; display: grid; justify-items: end; gap: .625rem; transition: bottom .25s ease; }
+  @media (min-width: 1024px) { .assist { right: 1.5rem; bottom: 1.5rem; } }
+  body.buybar-on .assist { bottom: calc(5.75rem + env(safe-area-inset-bottom)); }
+  .assist-launch { display: inline-flex; align-items: center; gap: .5rem; min-height: 52px; padding: 0 1.125rem 0 .875rem; border: 0; border-radius: 999px; background: var(--sage-deep); color: #fff; font-family: var(--body); font-size: .875rem; font-weight: 600; cursor: pointer; box-shadow: 0 12px 28px -8px rgba(31,42,36,.5); transition: transform .15s ease, background .15s ease; }
+  .assist-launch:hover { background: #26402F; transform: translateY(-1px); } .assist-launch .icon { width: 22px; height: 22px; }
+  .assist-launch .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--clay); animation: assist-pulse 2.2s infinite; } .assist-launch[aria-expanded="true"] .dot, .assist-launch.quiet .dot { display: none; }
+  @keyframes assist-pulse { 0% { box-shadow: 0 0 0 0 rgba(194,101,63,.55); } 70% { box-shadow: 0 0 0 9px rgba(194,101,63,0); } 100% { box-shadow: 0 0 0 0 rgba(194,101,63,0); } }
+  .assist-teaser { position: relative; max-width: 270px; padding: .75rem 2.5rem .75rem 1rem; border-radius: 16px 16px 4px 16px; background: #fff; color: var(--ink); font-size: .875rem; line-height: 1.45; box-shadow: 0 12px 28px -8px rgba(31,42,36,.3); cursor: pointer; }
+  .assist-teaser[hidden] { display: none; } .assist-teaser b { color: var(--clay); }
+  .assist-teaser .x { position: absolute; top: .3rem; right: .3rem; width: 30px; height: 30px; border: 0; border-radius: 50%; background: transparent; color: var(--taupe); cursor: pointer; display: grid; place-items: center; } .assist-teaser .x:hover { background: var(--sand); } .assist-teaser .x .icon { width: 16px; height: 16px; }
+  .assist-panel { width: min(360px, calc(100vw - 2rem)); max-height: min(72vh, 580px); display: flex; flex-direction: column; background: var(--cream); border-radius: 20px; overflow: hidden; box-shadow: 0 28px 64px -18px rgba(31,42,36,.45); transform-origin: bottom right; transform: scale(.96) translateY(8px); opacity: 0; transition: transform .2s ease, opacity .2s ease; }
+  .assist.open .assist-panel { transform: none; opacity: 1; } .assist-panel[hidden] { display: none; }
+  .assist-head { display: flex; align-items: center; gap: .75rem; padding: .875rem 1rem; background: var(--sage-deep); color: #fff; }
+  .assist-head .av { flex: none; width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,.14); display: grid; place-items: center; } .assist-head .av .icon { width: 20px; height: 20px; }
+  .assist-head b { display: block; font-family: var(--display); font-size: 1.0625rem; font-weight: 600; line-height: 1.2; } .assist-head small { display: block; font-size: .75rem; opacity: .82; margin-top: .125rem; }
+  .assist-head .iconbtn { margin-left: auto; color: #fff; } .assist-head .iconbtn:hover { background: rgba(255,255,255,.12); }
+  .assist-log { flex: 1; overflow: auto; padding: 1rem; display: grid; gap: .625rem; align-content: start; }
+  .msg { max-width: 90%; padding: .625rem .875rem; border-radius: 16px; font-size: .9rem; line-height: 1.45; }
+  .msg.bot { justify-self: start; background: #fff; border-bottom-left-radius: 4px; box-shadow: 0 1px 2px rgba(31,42,36,.06); } .msg.me { justify-self: end; background: var(--sage-soft); color: var(--sage-deep); border-bottom-right-radius: 4px; font-weight: 600; }
+  .msg .pct { display: block; font-family: var(--display); font-size: 1.625rem; line-height: 1.1; color: var(--clay); margin-bottom: .25rem; }
+  .msg .btn { margin-top: .625rem; min-height: 40px; padding: .5rem 1rem; font-size: .8125rem; } .msg a:not(.btn) { color: var(--sage-deep); font-weight: 600; }
+  .msg .links { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; } .msg .links a { display: inline-flex; align-items: center; min-height: 36px; padding: .35rem .75rem; border-radius: 999px; background: var(--sand); color: var(--sage-deep); font-size: .8125rem; font-weight: 600; text-decoration: none; } .msg .links a:hover { background: var(--sand-2); }
+  .msg .fine { display: block; margin-top: .5rem; font-size: .75rem; color: var(--taupe); }
+  .assist-replies { padding: .625rem 1rem; display: flex; flex-wrap: wrap; gap: .5rem; border-top: 1px solid rgba(31,42,36,.08); }
+  .assist-replies button { min-height: 40px; padding: .5rem .875rem; border: 1px solid rgba(47,74,58,.35); border-radius: 999px; background: #fff; color: var(--sage-deep); font-family: var(--body); font-size: .8125rem; font-weight: 600; cursor: pointer; } .assist-replies button:hover { background: var(--sand); }
+  .assist-foot { margin: 0; padding: 0 1rem .75rem; font-size: .6875rem; line-height: 1.4; color: var(--taupe); text-align: center; } .assist-foot a { color: var(--sage-deep); }
+  @media (max-width: 480px) { .assist { left: .75rem; right: .75rem; } .assist-panel { width: 100%; max-height: 76vh; } .assist-teaser { max-width: 100%; } }
+  @media (prefers-reduced-motion: reduce) { .assist-launch .dot { animation: none; } .assist-panel, .assist, .assist-launch { transition: none; } }
   .buybar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; display: flex; align-items: center; gap: 1rem; padding: .75rem 1rem calc(.75rem + env(safe-area-inset-bottom)); background: rgba(250,246,239,.96); backdrop-filter: blur(8px); box-shadow: 0 -8px 24px rgba(31,42,36,.12); transform: translateY(100%); transition: transform .25s ease; } .buybar.show { transform: none; } .buybar[hidden] { display: none; } @media (min-width: 1024px) { .buybar { display: none !important; } }
   .bb-info { flex: 1; min-width: 0; display: grid; } .bb-info b { font-size: .9375rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .bb-info span { font-size: .875rem; color: var(--taupe); } .buybar .btn { flex: none; min-height: 48px; }
   body.buybar-on { padding-bottom: 5rem; }
@@ -532,14 +556,6 @@
     <div class="visual">
       <div class="ph vid photo-family-all"><video data-video="hero-loop" muted loop playsinline preload="metadata" aria-label="Household pets playing together in a bright living room"></video><span class="cap"><b>Video · 4/5</b> — hero loop, household pets (uploaded 9 Oct). Poster: photo 6. Replace with the dog-using-product clip once a product exists.</span></div>
     </div>
-  </div>
-  <div class="strip">
-    <ul class="container">
-      <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 21c0-9 4-15 14-16-1 10-7 14-14 16Zm0 0c3-5 6-8 10-10"/></svg></span>Built for routines</li>
-      <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M12 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm0 4v14m-7-7a7 7 0 0 0 14 0M3 14h2m14 0h2"/></svg></span>Dogs and cats, both</li>
-      <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z"/></svg></span>Simple to care for</li>
-      <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M12 3v4m0 10v4M3 12h4m10 0h4m-3.5-7.5-2.8 2.8M8.3 15.7l-2.8 2.8m0-13 2.8 2.8m7.4 7.4 2.8 2.8"/></svg></span>Honest by design</li>
-    </ul>
   </div>
 </section>
 
@@ -1170,6 +1186,22 @@
   </div>
 </footer>
 
+<!-- Promotion-reminder helper. Scripted answers only: it reminds visitors about the welcome offer and points them to the right page. It never pretends a person is replying. -->
+<div class="assist" id="assistRoot">
+  <div class="assist-teaser" id="assistTeaser" hidden role="status"><span id="assistTeaserText"><b>15% off</b> your first order is waiting. Tap for how it works.</span><button type="button" class="x" id="assistTeaserClose" aria-label="Dismiss this reminder"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <section class="assist-panel" id="assistPanel" hidden role="dialog" aria-labelledby="assistTitle" aria-describedby="assistSub">
+    <div class="assist-head">
+      <span class="av" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/></svg></span>
+      <div><b id="assistTitle">UrPick helper</b><small id="assistSub">Scripted answers · not live chat yet</small></div>
+      <button type="button" class="iconbtn" id="assistClose" aria-label="Close helper"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="assist-log" id="assistLog" role="log" aria-live="polite"></div>
+    <div class="assist-replies" id="assistReplies" aria-label="Choose a question"></div>
+    <p class="assist-foot">Pick an option above. Nobody can reply here yet; for a real answer email <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a>.</p>
+  </section>
+  <button type="button" class="assist-launch" id="assistBtn" aria-expanded="false" aria-controls="assistPanel" aria-haspopup="dialog"><span class="dot" aria-hidden="true"></span><svg class="icon" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/></svg><span>Need a hand?</span></button>
+</div>
+
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
   var VIDEO_SRC = "assets/video/hero-loop.mp4";
@@ -1774,6 +1806,91 @@
       ? "<b>Welcome offer:</b> " + WELCOME_OFFER.percent + "% off your first order is applied automatically when you check out with " + st.email + "."
       : "<b>Welcome offer:</b> " + st.email + " is saved for the " + WELCOME_OFFER.percent + "% first-order offer. The store applies it at checkout once connected; it is not applied yet.";
   }
+
+  // ── Promotion-reminder helper. Everything it says is scripted below; nothing is generated and nobody is replying live. ──
+  var ASSISTANT = {
+    enabled: true,
+    teaserAfterMs: 6000,       // first visit: small reminder bubble appears after this delay (not while the welcome popup is open)
+    teaserCooldownDays: 7,     // dismissed teaser stays away this long
+    storageKey: "urpick_assist_v1"
+  };
+  (function () {
+    var root = document.getElementById("assistRoot"); if (!root || !ASSISTANT.enabled) return;
+    var btn = document.getElementById("assistBtn"), panel = document.getElementById("assistPanel"), closeBtn = document.getElementById("assistClose"), log = document.getElementById("assistLog"), replies = document.getElementById("assistReplies");
+    var teaser = document.getElementById("assistTeaser"), teaserClose = document.getElementById("assistTeaserClose");
+    var pct = WELCOME_OFFER.percent, hideTimer = null, started = false;
+    function load() { try { return JSON.parse(localStorage.getItem(ASSISTANT.storageKey) || "{}"); } catch (e) { return {}; } }
+    function save(patch) { var st = load(); for (var k in patch) st[k] = patch[k]; try { localStorage.setItem(ASSISTANT.storageKey, JSON.stringify(st)); } catch (e) {} }
+    function offerState() { return window.urpickOffer && window.urpickOffer.state ? window.urpickOffer.state() : null; }
+    function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+    function say(html, who) { var d = document.createElement("div"); d.className = "msg " + (who || "bot"); d.innerHTML = html; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; }
+    function links(list) { return '<span class="links">' + list.map(function (l) { return '<a href="' + l[0] + '">' + esc(l[1]) + '</a>'; }).join("") + '</span>'; }
+    // Scripts. Keep every claim consistent with the rest of the site (offer copy, Shipping & Returns draft, "not connected yet" notices).
+    var TOPICS = {
+      offer: { label: "Tell me about the " + pct + "% offer", answer: function () {
+        var st = offerState();
+        if (st && st.status === "signed") return 'You already saved <b>' + esc(st.email) + '</b> for the ' + pct + '% first-order offer. ' + (st.confirmed ? 'It is applied automatically when you check out with that email.' : 'The store applies it at checkout once it is connected; nothing is applied yet.') + links([["#collection-all", "Shop what made the cut"]]);
+        return '<span class="pct">' + pct + '% off</span>your first order. Leave your email and we save the offer to it; it is applied at checkout once the store is live, so there is no code to remember.<button type="button" class="btn btn-primary" data-act="offer">Unlock my ' + pct + '% off</button><span class="fine">First order only. We only email you about your order and the offer.</span>';
+      } },
+      pet: { label: "Shop by pet", answer: function () { return 'Who are you shopping for?' + links([["#collection-dogs", "Dogs"], ["#collection-cats", "Cats"], ["#collection-other", "Other pets"]]); } },
+      need: { label: "Shop by need", answer: function () { return 'Pick the problem, not the aisle.' + links(NEED_ORDER.map(function (k) { return ["#need-" + k, NEEDS[k].name]; })); } },
+      shipping: { label: "Shipping & returns", answer: function () { return 'Our planned policy (still a draft): standard shipping takes about <b>3–7 business days</b>, it is <b>free on orders of $55 or more</b> and <b>$4.99</b> under that, and returns are accepted within <b>30 days</b>. The full draft is on the Shipping &amp; Returns page.' + links([["#shipping-returns", "Shipping & Returns"], ["#track-order", "Track an order"]]); } },
+      human: { label: "Talk to a person", answer: function () { return 'Nobody can reply in this window yet; it only runs the scripted answers you see here. Email <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a> and a person will get back to you, or use the contact form.' + links([["#contact", "Contact form"], ["#faq", "FAQ"]]); } }
+    };
+    var ORDER = ["offer", "pet", "need", "shipping", "human"];
+    function renderReplies() {
+      replies.innerHTML = "";
+      ORDER.forEach(function (k) { var b = document.createElement("button"); b.type = "button"; b.textContent = TOPICS[k].label; b.setAttribute("data-topic", k); b.addEventListener("click", function () { ask(k); }); replies.appendChild(b); });
+    }
+    function ask(k) {
+      say(esc(TOPICS[k].label), "me");
+      var d = say(TOPICS[k].answer(), "bot");
+      var act = d.querySelector('[data-act="offer"]'); if (act) act.addEventListener("click", function () { close(true); if (window.urpickOffer) window.urpickOffer.open(); });
+      if (window.dataLayer) window.dataLayer.push({ event: "assistant_topic", topic: k });
+    }
+    function start(topic) {
+      if (!started) {
+        started = true;
+        var st = offerState(), signed = st && st.status === "signed";
+        say('Hi! I’m the UrPick helper. I can point you to the right place and remind you what’s on offer. I run on scripted answers for now, so pick an option below.');
+        if (!signed && WELCOME_OFFER.enabled) say('Quick reminder: <b>' + pct + '% off your first order</b> is available when you leave your email.');
+        renderReplies();
+      }
+      if (topic) ask(topic);
+    }
+    function open(topic) {
+      hideTeaser(false); clearTimeout(hideTimer); panel.hidden = false; btn.setAttribute("aria-expanded", "true"); btn.classList.add("quiet");
+      requestAnimationFrame(function () { root.classList.add("open"); closeBtn.focus({ preventScroll: true }); });
+      save({ opened: Date.now() }); start(topic);
+      if (window.dataLayer) window.dataLayer.push({ event: "assistant_open" });
+    }
+    function close(keepFocus) {
+      if (panel.hidden) return;
+      root.classList.remove("open"); btn.setAttribute("aria-expanded", "false");
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      hideTimer = setTimeout(function () { panel.hidden = true; if (!keepFocus) btn.focus({ preventScroll: true }); }, reduce ? 0 : 200);
+    }
+    function hideTeaser(remember) { if (teaser.hidden) return; teaser.hidden = true; if (remember) save({ teaserDismissed: Date.now() }); }
+    function maybeTeaser() {
+      var st = load(), off = offerState();
+      if (st.opened) return;                                                                        // they have used the helper before
+      if (st.teaserDismissed && Date.now() - st.teaserDismissed < ASSISTANT.teaserCooldownDays * 864e5) return;
+      if (off && off.status === "signed") return;                                                    // nothing to remind them about
+      if (!WELCOME_OFFER.enabled) return;
+      if (document.body.classList.contains("offer-open") || !panel.hidden) { setTimeout(maybeTeaser, 4000); return; } // wait for the popup to close
+      teaser.hidden = false;
+      if (window.dataLayer) window.dataLayer.push({ event: "assistant_teaser_view" });
+    }
+    btn.addEventListener("click", function () { if (panel.hidden) open(); else close(); });
+    closeBtn.addEventListener("click", function () { close(); });
+    teaser.addEventListener("click", function (ev) { if (ev.target.closest(".x")) return; open("offer"); });
+    teaserClose.addEventListener("click", function () { hideTeaser(true); });
+    panel.addEventListener("keydown", function (ev) { if (ev.key === "Escape") { ev.preventDefault(); close(); } });
+    log.addEventListener("click", function (ev) { if (ev.target.closest("a[href^='#']")) close(true); });   // following a link: get out of the way
+    window.addEventListener("hashchange", function () { if (!panel.hidden && /^#(checkout|cart)$/.test(location.hash)) close(); });
+    setTimeout(maybeTeaser, ASSISTANT.teaserAfterMs);
+    window.urpickAssistant = { open: open, close: close };
+  })();
 </script>
 
 </body>
