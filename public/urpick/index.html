@@ -123,11 +123,12 @@
 
   /* hero */
   .hero > .container { display: grid; align-items: center; gap: 2.5rem; padding-block: 3rem; }
+  .hero .copy { text-align: center; max-width: 46rem; margin-inline: auto; } .hero .sub { margin-inline: auto; }
   .hero h1 { font-size: 2.6rem; line-height: 1.02; margin-top: 1rem; } @media (min-width: 640px) { .hero h1 { font-size: 3.75rem; } } @media (min-width: 1024px) { .hero h1 { font-size: 4.25rem; } }
   .hero .sub { margin-top: 1.5rem; max-width: 36rem; font-size: 1.125rem; color: var(--taupe); line-height: 1.7; }
-  .hero .ctas { margin-top: 2rem; display: flex; flex-direction: column; gap: .75rem; align-items: flex-start; } @media (min-width: 640px) { .hero .ctas { flex-direction: row; align-items: center; gap: 1.25rem; } }
-  .hero .ph { aspect-ratio: 4 / 5; box-shadow: var(--shadow-card); }
-  @media (min-width: 1024px) { .hero > .container { grid-template-columns: repeat(12, 1fr); gap: 3rem; padding-block: 5rem; } .hero .copy { grid-column: span 6; } .hero .visual { grid-column: span 6; } }
+  .hero .ctas { margin-top: 2rem; display: flex; flex-direction: column; gap: .75rem; align-items: center; } @media (min-width: 640px) { .hero .ctas { flex-direction: row; justify-content: center; gap: 1.25rem; } }
+  .hero .ph { aspect-ratio: 16 / 9; box-shadow: var(--shadow-card); }   /* the video's own 1280x720 frame: shown whole, never cropped */
+  @media (min-width: 1024px) { .hero > .container { gap: 3.5rem; padding-block: 4.5rem 5rem; } .hero h1 { font-size: 4.5rem; } }
 
   /* benefit strip */
 
@@ -411,6 +412,7 @@
 .photo-family-all{background-image:url('assets/photos/family-all.jpg')}
 .photo-garden-three{background-image:url('assets/photos/garden-three.jpg')}
 .photo-hero-family{background-image:url('assets/photos/hero-family.jpg')}
+.photo-hero-poster{background-image:url('assets/photos/hero-poster.jpg')}
 .photo-quiet-afternoon{background-image:url('assets/photos/quiet-afternoon.jpg')}
 .photo-treat-time{background-image:url('assets/photos/treat-time.jpg')}
 </style>
@@ -586,7 +588,7 @@
       </div>
     </div>
     <div class="visual">
-      <div class="ph vid photo-family-all"><video data-video="hero-loop" muted loop playsinline preload="metadata" aria-label="Household pets playing together in a bright living room"></video><span class="cap"><b>Video · 4/5</b> — hero loop, household pets (uploaded 9 Oct). Poster: photo 6. Replace with the dog-using-product clip once a product exists.</span></div>
+      <div class="ph vid photo-hero-poster"><video data-video="hero-loop" poster="assets/video/hero-loop-poster.jpg" muted loop playsinline preload="metadata" aria-label="Household pets playing together in a bright living room"></video><span class="cap"><b>Video · 16/9</b> — hero loop, household pets, rabbit-free 1280x720 export (uploaded 20 Oct). Poster: the loop's own first frame. Replace with the dog-using-product clip once a product exists.</span></div>
     </div>
   </div>
 </section>

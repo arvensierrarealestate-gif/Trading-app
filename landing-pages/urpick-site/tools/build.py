@@ -33,10 +33,7 @@ out = src.replace("</style>\n", "</style>\n" + block, 1)
 
 def video(m):
     name = m.group(1)
-    if deploy:
-        return f"assets/video/{name}.mp4"
-    with open(os.path.join(ROOT, "assets", "video", name + ".mp4"), "rb") as f:
-        return "data:video/mp4;base64," + base64.b64encode(f.read()).decode()
+    return f"assets/video/{name}.mp4"   # referenced, not inlined: the preview sits next to assets/, and inlining a multi-MB video bloated index.html
 out = re.sub(r"\{\{VIDEO:([a-z0-9-]+)\}\}", video, out)
 
 if not deploy:
