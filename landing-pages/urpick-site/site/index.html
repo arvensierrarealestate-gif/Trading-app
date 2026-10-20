@@ -266,6 +266,9 @@
   .offer-close { position: absolute; top: .75rem; right: .75rem; z-index: 2; background: var(--cream); box-shadow: 0 1px 4px rgba(31,42,36,.15); } @media (min-width: 768px) { .offer-close { background: transparent; box-shadow: none; } }
   .offer-done { display: none; } .offer-done.show { display: block; }
   .offer-done .email { display: inline-block; margin-top: 1rem; padding: .5rem .875rem; border-radius: 999px; background: var(--sand); font-weight: 600; color: var(--sage-deep); word-break: break-all; }
+  .offer-code { display: flex; flex-wrap: wrap; align-items: center; gap: .625rem; margin-top: 1.25rem; } .offer-code .lbl { font-size: .75rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--sage); width: 100%; }
+  .offer-code code { font-family: var(--display); font-size: 1.5rem; font-weight: 600; letter-spacing: .06em; color: var(--sage-deep); padding: .5rem 1rem; border: 1.5px dashed var(--sage-deep); border-radius: 12px; background: #fff; }
+  .offer-code .copy { min-height: 44px; padding: 0 1rem; border: 1.5px solid var(--sage-deep); border-radius: 999px; background: var(--sage-deep); color: #fff; font-family: var(--body); font-size: .8125rem; font-weight: 600; cursor: pointer; } .offer-code .copy:hover { background: #26402F; }
   .offer-done .notice { margin-top: 1rem; border-radius: 12px; border: 1px dashed rgba(31,42,36,.3); background: rgba(239,230,216,.6); padding: .875rem 1rem; font-size: .875rem; line-height: 1.6; color: var(--ink); } .offer-done .notice b { display: block; margin-bottom: .25rem; }
   .offer-done .btn { margin-top: 1.5rem; min-height: 52px; letter-spacing: .12em; text-transform: uppercase; font-size: .8125rem; background: var(--sage-deep); box-shadow: none; } .offer-done .btn:hover { background: #253b2e; }
   @media (max-width: 767px) { .offer-root { padding: 0; align-items: stretch; } .offer { width: 100%; max-height: 100dvh; border-radius: 0; } }
@@ -462,20 +465,21 @@
       <div class="offer-ask" id="offerAsk">
         <p class="eyebrow">Welcome to UrPick</p>
         <h2 id="offerTitle">A little something for your first pick.</h2>
-        <p class="sub">Enter your email and get 15% off your first order. Your discount will automatically apply at checkout when you use the same email.</p>
+        <p class="sub">Enter your email and get 15% off your first order. We’ll show you your discount code straight away to use at checkout.</p>
         <form class="offer-form" id="offerForm" novalidate>
           <label for="offerEmail" style="position:absolute;left:-9999px">Email address</label>
           <input id="offerEmail" type="email" placeholder="Enter your email address" autocomplete="email" inputmode="email" required>
           <p class="offer-error" id="offerError" role="alert"></p>
           <button type="submit" class="btn btn-primary" id="offerSubmit">Unlock my 15% off</button>
         </form>
-        <p class="offer-micro">No code to remember. Just shop and we’ll take care of the rest.</p>
+        <p class="offer-micro">Your code appears here as soon as you enter your email.</p>
         <p class="offer-consent">By entering your email you agree to receive UrPick emails about launch news and offers. You can unsubscribe at any time. See our <a href="#privacy">Privacy Policy</a>.</p>
       </div>
       <div class="offer-done" id="offerDone" aria-live="polite">
         <p class="eyebrow">Welcome to UrPick</p>
         <h2 id="offerDoneTitle">You’re in!</h2>
         <p class="sub" id="offerDoneBody">Your 15% first-order discount is ready. Shop normally and use this email at checkout. We’ll apply your discount automatically.</p>
+        <div class="offer-code" id="offerCodeWrap" hidden><span class="lbl">Your code</span><code id="offerCode"></code><button type="button" class="copy" id="offerCopy" aria-label="Copy discount code">Copy</button></div>
         <span class="email" id="offerDoneEmail"></span>
         <div class="notice" id="offerDoneNotice" hidden></div>
         <p><button type="button" class="btn btn-primary" id="offerStart">Start shopping</button></p>
@@ -1744,6 +1748,7 @@
   var WELCOME_OFFER = {
     enabled: true,
     percent: 15,
+    code: "Urpick15off",      // the discount code shown after signup; must exist in the store (one use per customer, first order)
     endpoint: "",            // e.g. "/api/welcome-offer" — POST {email, consent, source} -> {eligible: true|false, reason?}
     showAfterMs: 1200,       // delay before the popup appears on a first visit
     dismissCooldownDays: 7,  // closed without signing up: wait this long before showing again
@@ -1786,11 +1791,18 @@
       ask.style.display = "none"; done.classList.add("show");
       document.getElementById("offerDoneEmail").textContent = addr;
       var body = document.getElementById("offerDoneBody"), notice = document.getElementById("offerDoneNotice");
-      if (confirmed) {
+      var codeWrap = document.getElementById("offerCodeWrap"), codeEl = document.getElementById("offerCode");
+      if (WELCOME_OFFER.code) {
+        body.textContent = "Here’s your " + WELCOME_OFFER.percent + "% first-order code. Enter it in the discount field at checkout.";
+        codeEl.textContent = WELCOME_OFFER.code; codeWrap.hidden = false;
+        notice.innerHTML = "<b>One use per customer, first order only.</b>" + (reason || "We’ve saved this email for launch news and offers.");
+        notice.hidden = false;
+      } else if (confirmed) {
         body.textContent = "Your " + WELCOME_OFFER.percent + "% first-order discount is ready. Shop normally and use this email at checkout. We’ll apply your discount automatically.";
-        notice.hidden = true;
+        codeWrap.hidden = true; notice.hidden = true;
       } else {
         body.textContent = "Thanks — we’ve saved this email for the " + WELCOME_OFFER.percent + "% first-order offer.";
+        codeWrap.hidden = true;
         notice.innerHTML = "<b>Not confirmed yet.</b>" + (reason || "The discount is set up in the store, which isn’t connected to this page yet. Once it is, checking out with this email applies the offer automatically. Nothing is applied until then.");
         notice.hidden = false;
       }
@@ -1813,13 +1825,18 @@
         submit.disabled = false; submit.textContent = "Unlock my 15% off";
         if (res.network) { showError("We couldn’t reach the server. Please check your connection and try again."); return; }
         if (!res.ok && !res.offline && res.reason) { showError(res.reason); return; }       // e.g. "This email has already used the first-order offer."
-        save({ status: "signed", email: addr, consent: true, confirmed: !!res.ok, at: Date.now() });
+        save({ status: "signed", email: addr, consent: true, confirmed: !!res.ok, code: WELCOME_OFFER.code || null, at: Date.now() });
         showDone(addr, !!res.ok, res.offline ? null : res.reason);
         if (window.dataLayer) window.dataLayer.push({ event: "welcome_offer_signup", confirmed: !!res.ok });
       });
     });
     closeBtn.addEventListener("click", function () { close("dismiss"); });
     overlay.addEventListener("click", function () { close("dismiss"); });
+    var copyBtn = document.getElementById("offerCopy");
+    if (copyBtn) copyBtn.addEventListener("click", function () {
+      var code = document.getElementById("offerCode").textContent, done = function () { copyBtn.textContent = "Copied"; setTimeout(function () { copyBtn.textContent = "Copy"; }, 1800); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, done); else { var r = document.createRange(); r.selectNodeContents(document.getElementById("offerCode")); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); try { document.execCommand("copy"); } catch (e) {} done(); }
+    });
     startBtn.addEventListener("click", function () { close("done"); if (location.hash && !onHome()) location.hash = "#top"; });
     dialog.addEventListener("keydown", function (ev) {
       if (ev.key === "Escape") { ev.preventDefault(); close("dismiss"); return; }
@@ -1836,7 +1853,9 @@
     var st = null; try { st = JSON.parse(localStorage.getItem(WELCOME_OFFER.storageKey) || "null"); } catch (e) {}
     if (!st || st.status !== "signed") { el.hidden = true; return; }
     el.hidden = false;
-    el.innerHTML = st.confirmed
+    el.innerHTML = st.code
+      ? "<b>Welcome offer:</b> enter code <b>" + st.code + "</b> in the discount field at checkout for " + WELCOME_OFFER.percent + "% off your first order (saved for " + st.email + ")."
+      : st.confirmed
       ? "<b>Welcome offer:</b> " + WELCOME_OFFER.percent + "% off your first order is applied automatically when you check out with " + st.email + "."
       : "<b>Welcome offer:</b> " + st.email + " is saved for the " + WELCOME_OFFER.percent + "% first-order offer. The store applies it at checkout once connected; it is not applied yet.";
   }
@@ -1863,8 +1882,8 @@
     var TOPICS = {
       offer: { label: "Tell me about the " + pct + "% offer", answer: function () {
         var st = offerState();
-        if (st && st.status === "signed") return 'You already saved <b>' + esc(st.email) + '</b> for the ' + pct + '% first-order offer. ' + (st.confirmed ? 'It is applied automatically when you check out with that email.' : 'The store applies it at checkout once it is connected; nothing is applied yet.') + links([["#collection-all", "Shop what made the cut"]]);
-        return '<span class="pct">' + pct + '% off</span>your first order. Leave your email and we save the offer to it; it is applied at checkout once the store is live, so there is no code to remember.<button type="button" class="btn btn-primary" data-act="offer">Unlock my ' + pct + '% off</button><span class="fine">First order only. We only email you about your order and the offer.</span>';
+        if (st && st.status === "signed") return st.code ? 'You already have your ' + pct + '% first-order code: <b>' + esc(st.code) + '</b>. Enter it in the discount field at checkout (saved for ' + esc(st.email) + ').' + links([["#collection-all", "Shop what made the cut"]]) : 'You already saved <b>' + esc(st.email) + '</b> for the ' + pct + '% first-order offer. ' + (st.confirmed ? 'It is applied automatically when you check out with that email.' : 'The store applies it at checkout once it is connected; nothing is applied yet.') + links([["#collection-all", "Shop what made the cut"]]);
+        return '<span class="pct">' + pct + '% off</span>your first order. Leave your email and we show you your discount code straight away to use at checkout.<button type="button" class="btn btn-primary" data-act="offer">Unlock my ' + pct + '% off</button><span class="fine">First order only, one use per customer. We only email you about launch news and offers.</span>';
       } },
       pet: { label: "Shop by pet", answer: function () { return 'Who are you shopping for?' + links([["#collection-dogs", "Dogs"], ["#collection-cats", "Cats"], ["#collection-other", "Other pets"]]); } },
       need: { label: "Shop by need", answer: function () { return 'Pick the problem, not the aisle.' + links(NEED_ORDER.map(function (k) { return ["#need-" + k, NEEDS[k].name]; })); } },
