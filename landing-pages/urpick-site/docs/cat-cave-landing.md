@@ -60,10 +60,10 @@ Hormozi's value equation is applied as a lens: dream outcome (a spot that is the
 
 | Format | Ad | Landing URL | Hero | Video in "Watch" |
 |---|---|---|---|---|
-| M01 Demonstration / problem-first | Ad 01 "Three cat beds later, Bruce still wanted my chair." | `?angle=problem` (default) | "Your Cat Took Your Favorite Spot. Give Them One of Their Own." | Ad 01 concept |
+| M01 Demonstration / problem-first | Ad 01 "Three cat beds later, Bruce still wanted my chair." | `?angle=problem` (default) | "Your Cat Took Your Favorite Spot. Give Them One of Their Own." | Ad 01 concept (`assets/video/ad01-problem.mp4`, received 21 Oct; shows a white plush cave, disclosed) |
 | M02 Testimonial / UGC | future UGC | `?angle=ugc` | "What Cat Owners Say Once Their Cat Moves In." (explains reviews appear when collected) | Ad 02 concept |
 | M03 Educational | future | `?angle=education` | "Which Bed Will Your Cat Actually Use?" | Demo |
-| M04 Storytelling | Ad 02 "I pay the mortgage. Bruce owns the house." | `?angle=story` | "I Pay the Mortgage. Bruce Owns the House." | Ad 02 concept |
+| M04 Storytelling | Ad 02 "I pay the mortgage. Bruce owns the house." | `?angle=story` | "I Pay the Mortgage. Bruce Owns the House." | Ad 02 concept (`assets/video/ad02-story.mp4`, received 21 Oct) |
 | M05 Faceless / product | future | `?angle=product` | "An Enclosed Plush Cave With a Cow-Print Shell." | Demo |
 
 CTA test (Test D): `?cta=a` Shop the Cat Cave · `?cta=b` Find Their Cozy Corner · `?cta=c` Choose Your Cat Cave. Invalid values fall back to defaults. Angle and CTA are recorded on every event. Product facts, price state and policies never change with the angle.
@@ -116,7 +116,7 @@ Tested (locally, served from `site/` over HTTP; chromium at 1280, 768 and 390 px
 - Main site unaffected (its 359-check suite passes).
 
 Not verified / not possible yet:
-- Real media (Bruce photos, product photography, Ad 01, Ad 02, demonstration footage): all slots are labelled placeholders.
+- Ad 01 and Ad 02 concept videos are in (830×1108 portrait, re-encoded H.264 + AAC, ~4 MB each, posters extracted). They play only on click, in a portrait modal, with the AI-concept disclosure under the player; the hero shows the angle's poster frame with a play button. Still placeholders: Bruce photos, product photography, demonstration footage. Playback itself could not be watched in the test browser (no H.264 decoder); the files are standard MP4.
 - Live mode (price, stock, Add to cart into the shared cart, InitiateCheckout): code path exists but is inactive until `status: "live"` and a price are set; it has not been exercised with real Shopify variant IDs.
 - Pixel delivery, CAPI/Events API, Purchase: no IDs, no server, no checkout.
 - Real Core Web Vitals in the field: the page is static, inline-styled, lazy-loads images and does not autoplay video, which is favourable, but numbers come only once real media is in.
@@ -126,7 +126,7 @@ Not verified / not possible yet:
 Required before paid traffic:
 1. Supplier confirms dimensions, materials, construction, care and safety → fill `specs` in the JSON.
 2. Approve selling price (and compare-at if any), stock → set `price`, `stock`, `status: "live"`.
-3. Product photography (six views + hero), Bruce photos (three), final Ad 01 / Ad 02 / demo videos → drop files in `assets/` and set `src` fields.
+3. Product photography (six views + hero), Bruce photos (three), demo video → drop files in `assets/` and set `src` fields. Ad 01 and Ad 02 are in; decide whether Ad 01 (white cave) may run against the cow-print page or needs a cow-print re-render.
 4. Connect checkout (Shopify) and set variant IDs; verify Add to cart → cart → checkout end to end.
 5. Final shipping and returns policy → update the drafts and remove the "draft" flags.
 6. Meta Pixel ID and TikTok Pixel ID → `analytics`; server-side tokens in Shopify or a serverless function, never in the page.
