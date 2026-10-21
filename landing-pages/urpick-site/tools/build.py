@@ -70,7 +70,7 @@ os.makedirs(os.path.join(site, "assets", "photos"))
 os.makedirs(os.path.join(site, "assets", "video"))
 for path in photos:
     shutil.copy(path, os.path.join(site, "assets", "photos"))
-for path in glob.glob(os.path.join(ROOT, "assets", "video", "hero-loop*")):
+for path in glob.glob(os.path.join(ROOT, "assets", "video", "*")):
     shutil.copy(path, os.path.join(site, "assets", "video"))
 favicon = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#2F4A3A"/><text x="32" y="43" text-anchor="middle" font-family="Georgia,serif" font-size="34" font-weight="600" fill="#FAF6EF">U</text></svg>"""
 open(os.path.join(site, "assets", "favicon.svg"), "w").write(favicon)
