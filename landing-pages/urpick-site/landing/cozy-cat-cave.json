@@ -1,0 +1,116 @@
+{
+  "slug": "cozy-cat-cave",
+  "route": "/products/cozy-cat-cave",
+  "brand": "UrPick",
+  "name": "Cow Print Enclosed Plush Cat Cave",
+  "shortName": "Cat Cave",
+  "productId": "urpick-cat-cave",
+  "status": "preview",
+  "statusNote": "Preview build. Ordering opens once the supplier confirms price, stock and dimensions.",
+  "currency": "USD",
+  "price": null,
+  "compareAt": null,
+  "stock": null,
+  "variants": [
+    { "id": "cow-print", "name": "Cow print", "hex": "#1F1F1F", "hex2": "#FFFFFF", "status": "hero", "available": false, "variantId": null, "note": "Hero design" },
+    { "id": "white-cat", "name": "White cat", "hex": "#F3F0EA", "status": "researched", "available": false, "variantId": null, "note": "Not yet confirmed" },
+    { "id": "yellow-dots", "name": "Yellow polka dot", "hex": "#E9C45C", "status": "researched", "available": false, "variantId": null, "note": "Not yet confirmed" },
+    { "id": "green-dino", "name": "Green dinosaur", "hex": "#7E9A86", "status": "researched", "available": false, "variantId": null, "note": "Not yet confirmed" }
+  ],
+  "highlights": [
+    "Enclosed cave with one front opening",
+    "Plush entrance trim and a cushioned interior",
+    "Cow-print shell with decorative ears, horns and a hanging pom-pom"
+  ],
+  "highlightsNote": "From the product description. Materials, dimensions and care are confirmed with the supplier before launch.",
+  "specs": {
+    "external": null,
+    "interior": null,
+    "entrance": null,
+    "weight": null,
+    "materials": null,
+    "construction": null,
+    "care": null,
+    "safety": null
+  },
+  "shipping": {
+    "draft": true,
+    "processing": "1–2 business days (planned)",
+    "delivery": "Standard shipping, about 3–7 business days (planned)",
+    "cost": "Free on orders of $55 or more, $4.99 under that (planned)",
+    "regions": "United States at launch (planned)"
+  },
+  "returns": { "draft": true, "window": "30 days, unused and in original condition (planned)", "damaged": "Report damaged or incorrect items within 7 days of delivery (planned)" },
+  "support": { "email": "yourpick2025@gmail.com", "tiktok": "https://www.tiktok.com/@yourpick2025", "facebook": "https://www.facebook.com/profile.php?id=61585565952893" },
+  "media": {
+    "hero": { "src": null, "alt": "The cow-print Cat Cave with its plush entrance and hanging pom-pom", "label": "Product photo · front three-quarter view" },
+    "gallery": [
+      { "src": null, "alt": "Front opening of the Cat Cave", "label": "Front opening" },
+      { "src": null, "alt": "Side profile of the Cat Cave", "label": "Side profile" },
+      { "src": null, "alt": "Interior of the Cat Cave", "label": "Interior" },
+      { "src": null, "alt": "The removable cushion", "label": "Cushion" },
+      { "src": null, "alt": "Decorative ears, horns and pom-pom", "label": "Decorative details" },
+      { "src": null, "alt": "The Cat Cave next to a cat for scale", "label": "Relative size" }
+    ],
+    "problem": [
+      { "src": null, "alt": "Bruce stretched out on the owner's armchair", "label": "Bruce · the chair" },
+      { "src": null, "alt": "Bruce asleep on the couch cushions", "label": "Bruce · the couch" },
+      { "src": null, "alt": "Bruce sitting in a delivery box", "label": "Bruce · the box" }
+    ],
+    "storyVideo": { "src": null, "poster": null, "title": "Bruce Took Over the House", "label": "Ad 02 · storytelling concept", "disclosure": "AI-generated advertising concept. Not a customer testimonial and not evidence of Bruce using the physical product." },
+    "demoVideo": { "src": null, "poster": null, "title": "See the Cat Cave up close", "label": "Product demonstration", "disclosure": "Real product footage is recorded once the sample arrives. Any concept visual shown before then is labelled as such." },
+    "problemVideo": { "src": null, "poster": null, "title": "Three cat beds later", "label": "Ad 01 · problem-first concept", "disclosure": "AI-generated advertising concept. Not a customer testimonial and not evidence of Bruce using the physical product." }
+  },
+  "angles": {
+    "problem":   { "format": "M01 Demonstration / problem-first", "eyebrow": "For the cat who owns your chair", "headline": "Your Cat Took Your Favorite Spot. Give Them One of Their Own.", "sub": "A cozy little hideaway for the cat who thinks every piece of furniture belongs to them.", "media": "hero", "video": "problemVideo" },
+    "story":     { "format": "M04 Storytelling", "eyebrow": "Bruce took over the house", "headline": "I Pay the Mortgage. Bruce Owns the House.", "sub": "The chairs, the couch, the good blanket. This little cave is the one spot in the house that is actually his.", "media": "hero", "video": "storyVideo" },
+    "education": { "format": "M03 Educational", "eyebrow": "Choosing a bed your cat might actually use", "headline": "Which Bed Will Your Cat Actually Use?", "sub": "Size, placement and a slow introduction matter more than the price tag. Here is what to check before you buy an enclosed bed.", "media": "hero", "video": "demoVideo" },
+    "ugc":       { "format": "M02 Testimonial / UGC", "eyebrow": "From cat owners, not from us", "headline": "What Cat Owners Say Once Their Cat Moves In.", "sub": "Real owner reviews and photos appear here as they are collected, with permission. Until then, here is everything we can verify about the Cat Cave.", "media": "hero", "video": "storyVideo" },
+    "product":   { "format": "M05 Faceless / product", "eyebrow": "Cow Print Enclosed Plush Cat Cave", "headline": "An Enclosed Plush Cave With a Cow-Print Shell.", "sub": "One front opening, a cushioned interior and plush entrance trim. Dimensions, materials and care are listed below as they are confirmed.", "media": "hero", "video": "demoVideo" }
+  },
+  "defaultAngle": "problem",
+  "ctaTests": { "a": "Shop the Cat Cave", "b": "Find Their Cozy Corner", "c": "Choose Your Cat Cave" },
+  "defaultCta": "a",
+  "benefits": [
+    { "title": "A spot that is theirs", "text": "An enclosed cave gives a cat somewhere to tuck in that is not your chair. Some cats take to a covered bed quickly, others take their time." },
+    { "title": "Soft where it counts", "text": "A cushioned floor and plush trim around the entrance. The interior cushion detail is confirmed with the supplier before launch." },
+    { "title": "Looks like it belongs", "text": "Black-and-white cow print with small ears, horns and a pom-pom. A pet bed you do not have to hide when guests come over." },
+    { "title": "Simple to live with", "text": "Care instructions are published exactly as the supplier confirms them. We will not claim machine-washable until we know it is." }
+  ],
+  "intro": [
+    "Put it somewhere quiet, away from doors and foot traffic.",
+    "Leave it alone for a few days. Let your cat find it.",
+    "A familiar blanket or a treat inside can help, but do not place the cat in it.",
+    "Give it a couple of weeks before deciding."
+  ],
+  "faq": [
+    { "id": "use", "q": "What if my cat doesn’t use it?", "a": "Every cat has its own preferences, and no bed works for every cat. The best odds come from a quiet spot, a slow introduction and patience: see the four-step guide above. If it still is not working, our returns policy applies as published." },
+    { "id": "fit", "q": "Will my cat fit?", "a": "We publish the external size, the usable interior and the entrance measurements once the supplier confirms them, with a short guide for measuring your cat. Until then we do not claim a fit for any particular size of cat.", "spec": true },
+    { "id": "clean", "q": "Is it easy to clean?", "a": "The approved cleaning method is published here as soon as the supplier confirms it. We will not claim a removable cover or machine-washability before that.", "specKey": "care" },
+    { "id": "shape", "q": "Will it hold its shape?", "a": "Construction and materials are listed here once confirmed, along with what we observe on the sample. No stability claims until then.", "specKey": "construction" },
+    { "id": "return", "q": "What if it isn’t suitable?", "a": "Our draft returns policy allows returns within 30 days for unused items in original condition, and damaged or incorrect items reported within 7 days of delivery. The final policy is confirmed at launch; the full draft is on the Shipping & Returns page.", "link": "/#shipping-returns" }
+  ],
+  "analytics": {
+    "metaPixelId": "",
+    "tiktokPixelId": "",
+    "consentRequired": false,
+    "debug": true
+  },
+  "missing": [
+    "Supplier-confirmed dimensions (external, interior, entrance), weight",
+    "Materials and construction",
+    "Exact cleaning instructions",
+    "Product safety details",
+    "Selling price and any compare-at price",
+    "Confirmed variants and Shopify variant IDs",
+    "Inventory and stock status",
+    "Fulfilment cost and shipping subsidy",
+    "Final shipping policy and returns policy (drafts in use)",
+    "Checkout integration (Shopify domain and storefront token)",
+    "Meta Pixel ID and Conversions API access token (server side)",
+    "TikTok Pixel ID and Events API access token (server side)",
+    "Customer service phone or hours, if any beyond email",
+    "Authentic customer reviews and photos, with permission",
+    "Final approved media: Bruce photos, product photography, Ad 01 and Ad 02 videos, product demonstration footage"
+  ]
+}

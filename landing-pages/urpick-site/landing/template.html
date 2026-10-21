@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<meta property="og:type" content="product">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:image" content="{{OG_IMAGE}}">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="{{BASE}}/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap">
+<style>
+  :root { --cream:#FAF6EF; --sand:#EFE6D8; --sand-2:#E3D6C2; --white:#fff; --ink:#1F2A24; --taupe:#7A6F66; --sage:#4F6B57; --sage-deep:#2F4A3A; --sage-soft:#C9D6CB; --clay:#C2653F; --display:"Fraunces",Georgia,serif; --body:"Inter",system-ui,sans-serif; --r-card:16px; --r-btn:28px; --shadow-card:0 8px 30px -12px rgba(31,42,36,.18); }
+  *{box-sizing:border-box} html{scroll-behavior:smooth;color-scheme:light} @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *,*::before,*::after{transition:none!important;animation:none!important}}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3{margin:0;font-family:var(--display);font-weight:600;letter-spacing:-.025em;color:var(--ink);text-wrap:balance} p{margin:0} a{color:inherit} img{max-width:100%;display:block}
+  a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--sage);outline-offset:3px}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  .container{width:100%;max-width:1200px;margin-inline:auto;padding-inline:1rem} @media (min-width:640px){.container{padding-inline:1.5rem}} @media (min-width:1024px){.container{padding-inline:2rem}}
+  .sec{padding-block:3.5rem} @media (min-width:1024px){.sec{padding-block:5.5rem}} .sec.alt{background:var(--sand)} .sec.dark{background:var(--sage-deep);color:var(--cream)} .sec.dark h2,.sec.dark h3{color:var(--cream)}
+  .eyebrow{font-size:.75rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--sage)} .sec.dark .eyebrow{color:var(--sage-soft)}
+  .h1{font-size:2.5rem;line-height:1.04} @media (min-width:640px){.h1{font-size:3.25rem}} @media (min-width:1024px){.h1{font-size:3.75rem}}
+  .h2{font-size:1.875rem;line-height:1.1;margin-top:.75rem} @media (min-width:1024px){.h2{font-size:2.5rem}}
+  .lead{margin-top:1rem;font-size:1.0625rem;color:var(--taupe);line-height:1.65;max-width:38rem} .sec.dark .lead{color:rgba(250,246,239,.8)}
+  .head{max-width:44rem} .head.center{margin-inline:auto;text-align:center} .head.center .lead{margin-inline:auto}
+  .btn{display:inline-flex;min-height:52px;align-items:center;justify-content:center;gap:.5rem;border:0;border-radius:var(--r-btn);padding:.875rem 1.75rem;font-family:var(--body);font-size:.9375rem;font-weight:600;text-decoration:none;cursor:pointer;transition:transform .15s,background .15s}
+  .btn-primary{background:var(--clay);color:#fff;box-shadow:0 6px 18px -6px rgba(194,101,63,.6)} .btn-primary:hover{background:#AD5736;transform:translateY(-1px)} .btn-primary[disabled]{background:var(--sand-2);color:var(--taupe);box-shadow:none;cursor:not-allowed;transform:none}
+  .btn-ghost{background:transparent;color:var(--sage-deep);border:1.5px solid rgba(47,74,58,.4)} .btn-ghost:hover{background:#fff} .sec.dark .btn-ghost{color:var(--cream);border-color:rgba(250,246,239,.5)}
+  .btn-wide{width:100%}
+  .ph{position:relative;overflow:hidden;border-radius:var(--r-card);background:var(--sand);background-size:cover;background-position:center} .ph img{width:100%;height:100%;object-fit:cover}
+  .ph.empty{display:grid;place-items:center;background:var(--sand) radial-gradient(rgba(31,42,36,.08) 1px,transparent 1px);background-size:14px 14px} .ph.empty .lbl{font-size:.8125rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--taupe);text-align:center;padding:1rem}
+  .ph.empty .lbl small{display:block;margin-top:.375rem;font-weight:500;letter-spacing:0;text-transform:none;color:var(--taupe);opacity:.9}
+  .dev{display:inline-flex;align-items:center;gap:.375rem;border:1px dashed rgba(194,101,63,.7);border-radius:999px;padding:.2rem .625rem;font-size:.6875rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--clay);background:rgba(255,255,255,.7)} .dev::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--clay)}
+  .ph .dev{position:absolute;top:.75rem;left:.75rem}
+  /* header */
+  .lp-hdr{position:sticky;top:0;z-index:40;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(31,42,36,.06)} .lp-hdr .container{display:flex;align-items:center;justify-content:space-between;min-height:60px}
+  .brand{font-family:var(--display);font-weight:600;font-size:1.5rem;letter-spacing:-.02em;color:var(--ink);text-decoration:none} .lp-hdr .cta{min-height:44px;padding:.5rem 1.125rem;font-size:.8125rem}
+  .status{background:var(--sage-deep);color:var(--cream);font-size:.8125rem;text-align:center;padding:.5rem 1rem} .status b{color:#F2C9B5}
+  /* hero */
+  .hero .container{display:grid;gap:2rem;padding-block:2.5rem} @media (min-width:1024px){.hero .container{grid-template-columns:7fr 6fr;align-items:center;gap:3.5rem;padding-block:4.5rem}}
+  .hero .ph{aspect-ratio:4/5;box-shadow:var(--shadow-card)} @media (max-width:1023px){.hero .visual{order:-1}.hero .ph{aspect-ratio:4/3}}
+  .hero .ctas{margin-top:1.75rem;display:flex;flex-direction:column;gap:.75rem} @media (min-width:640px){.hero .ctas{flex-direction:row;flex-wrap:wrap}}
+  .hero .price{margin-top:1.25rem;display:flex;align-items:baseline;gap:.5rem;font-family:var(--display);font-size:1.5rem;font-weight:600} .hero .price small{font-family:var(--body);font-size:.8125rem;font-weight:500;color:var(--taupe)}
+  .hl{list-style:none;margin:1.5rem 0 0;padding:0;display:grid;gap:.5rem} .hl li{display:flex;gap:.625rem;align-items:flex-start;font-size:.9375rem} .hl .icon{flex:none;width:20px;height:20px;color:var(--sage)}
+  .icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .fine{margin-top:.75rem;font-size:.8125rem;color:var(--taupe)}
+  /* grids */
+  .grid3{margin-top:2.5rem;display:grid;gap:1rem} @media (min-width:640px){.grid3{grid-template-columns:repeat(3,1fr)}} .grid3 .ph{aspect-ratio:4/3}
+  .gallery{margin-top:2.5rem;display:grid;gap:.75rem;grid-template-columns:repeat(2,1fr)} @media (min-width:768px){.gallery{grid-template-columns:repeat(3,1fr);gap:1rem}} .gallery .ph{aspect-ratio:1} .gallery li{list-style:none}
+  .cards{margin-top:2.5rem;display:grid;gap:1rem} @media (min-width:640px){.cards{grid-template-columns:repeat(2,1fr)}} @media (min-width:1024px){.cards{grid-template-columns:repeat(4,1fr)}}
+  .card{background:#fff;border-radius:var(--r-card);padding:1.5rem;box-shadow:var(--shadow-card)} .card h3{font-size:1.25rem} .card p{margin-top:.5rem;font-size:.9375rem;color:var(--taupe);line-height:1.6} .card .n{display:inline-grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:50%;background:var(--sage-soft);color:var(--sage-deep);font-family:var(--display);font-weight:600;margin-bottom:.875rem}
+  /* video block */
+  .video{position:relative;margin-top:2.5rem;border-radius:var(--r-card);overflow:hidden;background:#1F2A24;aspect-ratio:16/9;max-width:60rem;margin-inline:auto;box-shadow:var(--shadow-card)} .video video{width:100%;height:100%;object-fit:cover;display:block}
+  .video .play{position:absolute;inset:0;display:grid;place-items:center;background:rgba(31,42,36,.35);color:#fff;border:0;cursor:pointer;font-family:var(--body);font-weight:600} .video .play span{display:grid;place-items:center;width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.95);color:var(--sage-deep)} .video .play .icon{width:28px;height:28px}
+  .video.empty{display:grid;place-items:center;background:var(--sand) radial-gradient(rgba(31,42,36,.08) 1px,transparent 1px);background-size:14px 14px;color:var(--taupe)}
+  .disclose{margin-top:.75rem;font-size:.8125rem;color:var(--taupe);text-align:center;max-width:44rem;margin-inline:auto}
+  /* steps */
+  .steps{margin-top:2rem;padding:0;list-style:none;display:grid;gap:1rem;counter-reset:s} @media (min-width:768px){.steps{grid-template-columns:repeat(4,1fr)}} .steps li{counter-increment:s;background:#fff;border-radius:var(--r-card);padding:1.25rem;font-size:.9375rem;color:var(--ink)} .steps li::before{content:"0" counter(s);display:block;font-family:var(--display);font-weight:600;color:var(--sage);margin-bottom:.5rem}
+  /* specs + faq */
+  .specs{margin-top:2rem;width:100%;border-collapse:collapse;font-size:.9375rem;background:#fff;border-radius:var(--r-card);overflow:hidden} .specs th,.specs td{text-align:left;padding:.875rem 1rem;border-bottom:1px solid rgba(31,42,36,.08);vertical-align:top} .specs th{width:38%;font-weight:600;color:var(--ink)} .specs td{color:var(--taupe)} .specs tr:last-child th,.specs tr:last-child td{border-bottom:0}
+  .faq{margin-top:2rem;display:grid;gap:.5rem} .faq details{background:#fff;border-radius:14px;box-shadow:var(--shadow-card)} .faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.25rem;min-height:56px;font-weight:600;cursor:pointer} .faq summary::-webkit-details-marker{display:none} .faq summary::after{content:"+";font-size:1.5rem;color:var(--sage);line-height:1} .faq details[open] summary::after{content:"–"} .faq .body{padding:0 1.25rem 1.25rem;color:var(--taupe);font-size:.9375rem;line-height:1.65} .faq .body a{color:var(--sage-deep);font-weight:600}
+  /* purchase */
+  .buy{margin-top:2.5rem;display:grid;gap:2rem} @media (min-width:1024px){.buy{grid-template-columns:6fr 5fr;align-items:start}} .buy .ph{aspect-ratio:1}
+  .panel{background:#fff;border-radius:20px;padding:1.5rem;box-shadow:var(--shadow-card)} @media (min-width:640px){.panel{padding:2rem}}
+  .panel h3{font-size:1.375rem} .panel .price{margin-top:.75rem;font-family:var(--display);font-size:1.75rem;font-weight:600} .panel .price small{font-family:var(--body);font-size:.8125rem;font-weight:500;color:var(--taupe);margin-left:.5rem}
+  .lbl{display:block;margin-top:1.25rem;font-size:.75rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--taupe)}
+  .variants{margin-top:.625rem;display:flex;flex-wrap:wrap;gap:.5rem;padding:0;list-style:none} .variants button{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;padding:.5rem .875rem;border-radius:999px;border:1.5px solid rgba(31,42,36,.2);background:#fff;font-family:var(--body);font-size:.875rem;font-weight:600;color:var(--ink);cursor:pointer} .variants button[aria-pressed="true"]{border-color:var(--sage-deep);box-shadow:inset 0 0 0 1px var(--sage-deep)} .variants button[disabled]{opacity:.55;cursor:not-allowed}
+  .variants .sw{width:18px;height:18px;border-radius:50%;border:1px solid rgba(31,42,36,.15);background:var(--sw,#ccc)} .variants .sw.cow{background:repeating-linear-gradient(135deg,#1F1F1F 0 4px,#fff 4px 8px)} .variants small{font-weight:500;color:var(--taupe)}
+  .qty{margin-top:.625rem;display:inline-flex;align-items:center;border:1.5px solid rgba(31,42,36,.2);border-radius:999px} .qty button{width:44px;height:44px;border:0;background:transparent;font-size:1.25rem;cursor:pointer;color:var(--sage-deep)} .qty output{min-width:2rem;text-align:center;font-weight:600}
+  .panel .btn{margin-top:1.5rem} .stock{margin-top:.75rem;font-size:.875rem;color:var(--taupe)}
+  .reassure{margin:1.25rem 0 0;padding:0;list-style:none;display:grid;gap:.5rem;font-size:.875rem;color:var(--taupe)} .reassure li{display:flex;gap:.5rem;align-items:flex-start} .reassure .icon{flex:none;width:18px;height:18px;color:var(--sage)} .reassure a{color:var(--sage-deep);font-weight:600}
+  .wait{margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(31,42,36,.08)} .wait form{display:flex;flex-direction:column;gap:.5rem;margin-top:.625rem} @media (min-width:480px){.wait form{flex-direction:row}} .wait input{flex:1;min-height:48px;border:1.5px solid rgba(31,42,36,.2);border-radius:999px;padding:0 1rem;font:inherit;background:#fff} .wait input[aria-invalid="true"]{border-color:var(--clay)} .wait .btn{margin-top:0;min-height:48px;padding:.5rem 1.25rem} .wait .msg{margin-top:.5rem;font-size:.8125rem;color:var(--taupe)} .wait .msg.err{color:var(--clay)}
+  .note{margin-top:1rem;border:1px dashed rgba(194,101,63,.6);background:rgba(239,230,216,.6);border-radius:12px;padding:.75rem 1rem;font-size:.8125rem;line-height:1.5;color:var(--ink)} .note b{color:var(--clay)}
+  /* confidence */
+  .conf{margin-top:2.5rem;display:grid;gap:1rem} @media (min-width:768px){.conf{grid-template-columns:repeat(3,1fr)}} .conf .card p a{color:var(--sage-deep);font-weight:600}
+  .offer{margin-top:2.5rem;display:grid;gap:1rem} @media (min-width:768px){.offer{grid-template-columns:repeat(3,1fr)}} .offer .card.off{opacity:.6}
+  /* final */
+  .final .ctas{margin-top:1.75rem;display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center}
+  /* sticky bar */
+  .bar{position:fixed;left:0;right:0;bottom:0;z-index:45;display:flex;align-items:center;gap:1rem;padding:.75rem 1rem calc(.75rem + env(safe-area-inset-bottom));background:rgba(250,246,239,.96);backdrop-filter:blur(8px);box-shadow:0 -8px 24px rgba(31,42,36,.12);transform:translateY(100%);transition:transform .25s} .bar.show{transform:none} .bar .info{flex:1;min-width:0;display:grid} .bar .info b{font-size:.9375rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .bar .info span{font-size:.8125rem;color:var(--taupe)} .bar .btn{flex:none;min-height:48px;padding:.5rem 1.25rem} @media (min-width:1024px){.bar{display:none}}
+  body.bar-on{padding-bottom:5rem}
+  /* modal */
+  .modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(31,42,36,.7)} .modal.open{display:flex} .modal .box{width:min(56rem,100%);background:#000;border-radius:16px;overflow:hidden;position:relative} .modal video{width:100%;aspect-ratio:16/9;display:block} .modal .close{position:absolute;top:.5rem;right:.5rem;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.9);cursor:pointer;display:grid;place-items:center} .modal .empty{aspect-ratio:16/9;display:grid;place-items:center;text-align:center;color:#fff;padding:2rem;background:var(--sage-deep)} .modal .empty p{max-width:30rem;margin-top:.5rem;color:rgba(250,246,239,.8);font-size:.9375rem}
+  /* footer */
+  .lp-foot{padding:2.5rem 0 3rem;border-top:1px solid rgba(31,42,36,.08);font-size:.875rem;color:var(--taupe)} .lp-foot .container{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:center;justify-content:space-between} .lp-foot ul{display:flex;flex-wrap:wrap;gap:1rem;list-style:none;margin:0;padding:0} .lp-foot a{color:var(--sage-deep);text-decoration:none;font-weight:600}
+  .consent{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:70;background:#fff;border-radius:14px;padding:1rem;box-shadow:0 12px 40px -12px rgba(31,42,36,.4);display:none;gap:.75rem;align-items:center;font-size:.875rem} .consent.show{display:flex;flex-wrap:wrap} .consent .btn{min-height:44px;padding:.5rem 1rem}
+</style>
+</head>
+<body>
+<a class="sr-only" href="#buy">Skip to purchase</a>
+<header class="lp-hdr">
+  <div class="container">
+    <a class="brand" href="{{BASE}}/" id="brandLink">UrPick</a>
+    <a class="btn btn-primary cta" href="#buy" data-track="hero_cta" data-place="header">Shop the Cat Cave</a>
+  </div>
+</header>
+<div class="status" id="statusBar" hidden></div>
+
+<main id="main">
+  <!-- 1. HERO -->
+  <section class="hero" id="hero" aria-labelledby="heroTitle">
+    <div class="container">
+      <div class="copy">
+        <p class="eyebrow" id="heroEyebrow"></p>
+        <h1 class="h1" id="heroTitle"></h1>
+        <p class="lead" id="heroSub"></p>
+        <p class="price" id="heroPrice"></p>
+        <ul class="hl" id="heroHighlights"></ul>
+        <div class="ctas">
+          <a class="btn btn-primary" href="#buy" id="heroCta" data-track="hero_cta" data-place="hero">Shop the Cat Cave</a>
+          <button type="button" class="btn btn-ghost" id="heroWatch" data-track="video_open"><svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Watch Bruce’s Story</button>
+        </div>
+        <p class="fine" id="heroFine"></p>
+      </div>
+      <div class="visual"><div class="ph" id="heroMedia"></div></div>
+    </div>
+  </section>
+
+  <!-- 2. PROBLEM -->
+  <section class="sec alt" id="problem" aria-labelledby="problemTitle">
+    <div class="container">
+      <div class="head center"><p class="eyebrow">The problem</p><h2 class="h2" id="problemTitle">You Bought the Bed. They Chose Your Chair.</h2>
+        <p class="lead">Plenty of cat owners know this one: the bed goes unused while the cat settles on the armchair, the couch, a laundry pile or the box the bed came in. Not every cat does it, but if yours does, you are in good company.</p></div>
+      <ul class="grid3" id="problemPhotos" style="list-style:none;padding:0"></ul>
+      <p class="lead" style="margin-inline:auto;text-align:center">One thing that sometimes helps is giving them a spot that is clearly theirs, placed where they already like to be.</p>
+    </div>
+  </section>
+
+  <!-- 3. PRODUCT -->
+  <section class="sec" id="product" aria-labelledby="productTitle">
+    <div class="container">
+      <div class="head center"><p class="eyebrow">The Cat Cave</p><h2 class="h2" id="productTitle">Meet Their New Little Hideaway.</h2>
+        <p class="lead">An enclosed plush cave with a single front opening, a cushioned floor and plush trim around the entrance. The shell is black-and-white cow print with small ears, horns and a hanging pom-pom. That is what it is; no more, no less.</p></div>
+      <ul class="gallery" id="gallery"></ul>
+      <p class="disclose" id="galleryNote"></p>
+    </div>
+  </section>
+
+  <!-- 4. BENEFITS -->
+  <section class="sec alt" id="benefits" aria-labelledby="benefitsTitle">
+    <div class="container">
+      <div class="head center"><p class="eyebrow">Why it might earn its spot</p><h2 class="h2" id="benefitsTitle">Made for Cozy Moments. Designed for Your Home.</h2></div>
+      <div class="cards" id="benefitCards"></div>
+    </div>
+  </section>
+
+  <!-- 5. DEMONSTRATION -->
+  <section class="sec" id="demo" aria-labelledby="demoTitle">
+    <div class="container">
+      <div class="head center"><p class="eyebrow">Up close</p><h2 class="h2" id="demoTitle">See the Cat Cave Up Close.</h2>
+        <p class="lead">Exterior, entrance, interior cushion, a cat approaching the opening, and how much room is actually inside.</p></div>
+      <div class="video" id="demoVideo"></div>
+      <p class="disclose" id="demoNote"></p>
+    </div>
+  </section>
+
+  <!-- 6. OBJECTIONS -->
+  <section class="sec alt" id="objections" aria-labelledby="objTitle">
+    <div class="container">
+      <div class="head"><p class="eyebrow">Before you decide</p><h2 class="h2" id="objTitle">The Questions Cat Owners Ask First.</h2>
+        <p class="lead">Straight answers, and a clear "to be confirmed" wherever we do not have the information yet.</p></div>
+      <h3 style="margin-top:2.5rem;font-size:1.25rem">Introducing a new bed</h3>
+      <ol class="steps" id="introSteps"></ol>
+      <h3 style="margin-top:2.5rem;font-size:1.25rem">Measurements and materials</h3>
+      <table class="specs" id="specs"><caption class="sr-only">Product specifications</caption><tbody></tbody></table>
+      <div class="faq" id="faq"></div>
+    </div>
+  </section>
+
+  <!-- 7. PURCHASE -->
+  <section class="sec" id="buy" aria-labelledby="buyTitle">
+    <div class="container">
+      <div class="head center"><p class="eyebrow">Choose yours</p><h2 class="h2" id="buyTitle">Find Their Favorite Little Hideaway.</h2></div>
+      <div class="buy">
+        <div class="ph" id="buyMedia"></div>
+        <div class="panel" id="buyPanel">
+          <h3 id="buyName"></h3>
+          <p class="price" id="buyPrice"></p>
+          <span class="lbl" id="variantLbl">Design</span>
+          <ul class="variants" id="variants" aria-labelledby="variantLbl"></ul>
+          <span class="lbl" id="qtyLbl">Quantity</span>
+          <div class="qty" role="group" aria-labelledby="qtyLbl"><button type="button" id="qtyMinus" aria-label="Decrease quantity">−</button><output id="qtyOut" aria-live="polite">1</output><button type="button" id="qtyPlus" aria-label="Increase quantity">+</button></div>
+          <p class="stock" id="stock"></p>
+          <button type="button" class="btn btn-primary btn-wide" id="addToCart" data-track="add_to_cart">Add to cart</button>
+          <div class="note" id="buyNote" hidden></div>
+          <ul class="reassure" id="reassure"></ul>
+          <div class="wait" id="waitlist" hidden>
+            <b>Hear first when ordering opens</b>
+            <form id="waitForm" novalidate><label for="waitEmail" class="sr-only">Email address</label><input id="waitEmail" type="email" placeholder="you@example.com" autocomplete="email" inputmode="email"><button type="submit" class="btn btn-ghost">Notify me</button></form>
+            <p class="msg" id="waitMsg" aria-live="polite"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. CONFIDENCE -->
+  <section class="sec alt" id="confidence" aria-labelledby="confTitle">
+    <div class="container">
+      <div class="head center"><p class="eyebrow">Know before you buy</p><h2 class="h2" id="confTitle">Everything We Can Tell You Today.</h2></div>
+      <div class="conf" id="confCards"></div>
+    </div>
+  </section>
+
+  <!-- 9. OFFER -->
+  <section class="sec" id="offer" aria-labelledby="offerTitle">
+    <div class="container">
+      <div class="head center"><p class="eyebrow">The offer</p><h2 class="h2" id="offerTitle">One Cave. One Clear Price.</h2>
+        <p class="lead" id="offerLead">Bundles, introductory pricing and extra designs are tested only once they are approved and real. Nothing here is invented.</p></div>
+      <div class="offer" id="offerCards"></div>
+    </div>
+  </section>
+
+  <!-- 10. FINAL CTA -->
+  <section class="sec dark final" id="final" aria-labelledby="finalTitle">
+    <div class="container">
+      <div class="head center"><p class="eyebrow">Ready when you are</p><h2 class="h2" id="finalTitle">Their Very Own Little Spot Is Waiting.</h2>
+        <p class="lead">Discover the Cat Cave collection and find a cozy corner that suits your cat and your home.</p>
+        <div class="ctas"><a class="btn btn-primary" href="#buy" id="finalCta" data-track="hero_cta" data-place="final">Shop the Cat Cave</a></div></div>
+    </div>
+  </section>
+</main>
+
+<footer class="lp-foot">
+  <div class="container">
+    <div><b style="color:var(--ink)">UrPick</b> · Everyday essentials for pets and the people who love them. Questions: <a id="footEmail" href="#">email</a></div>
+    <ul id="footLinks"></ul>
+  </div>
+</footer>
+
+<div class="bar" id="bar" aria-hidden="true"><div class="info"><b id="barName"></b><span id="barPrice"></span></div><a class="btn btn-primary" href="#buy" id="barCta" data-track="hero_cta" data-place="sticky">Shop the Cat Cave</a></div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+  <div class="box"><button type="button" class="close" id="modalClose" aria-label="Close video"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button><h2 id="modalTitle" class="sr-only">Video</h2><div id="modalBody"></div></div>
+</div>
+<div class="consent" id="consent" role="region" aria-label="Cookie preferences"><span>We use cookies for ads measurement. Allow?</span><button type="button" class="btn btn-primary" id="consentYes">Allow</button><button type="button" class="btn btn-ghost" id="consentNo">No thanks</button></div>
+
+<script>
+var CONFIG = {{PRODUCT_JSON}};
+var BASE = "{{BASE}}";
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var params = new URLSearchParams(location.search);
+
+  // ── Campaign angle + CTA test, validated; defaults otherwise ──
+  var angleKey = CONFIG.angles[params.get("angle")] ? params.get("angle") : CONFIG.defaultAngle;
+  var angle = CONFIG.angles[angleKey];
+  var ctaKey = CONFIG.ctaTests[params.get("cta")] ? params.get("cta") : CONFIG.defaultCta;
+  var ctaText = CONFIG.ctaTests[ctaKey];
+  document.documentElement.setAttribute("data-angle", angleKey);
+
+  // ── Attribution: keep UTM + click ids for the session so later events and signups carry them ──
+  var ATTR_KEY = "urpick_attribution";
+  function attribution() {
+    var keys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid", "ttclid"], found = {}, any = false;
+    keys.forEach(function (k) { if (params.get(k)) { found[k] = params.get(k); any = true; } });
+    try { if (any) { found.landed = new Date().toISOString(); found.landing = location.pathname; sessionStorage.setItem(ATTR_KEY, JSON.stringify(found)); return found; } return JSON.parse(sessionStorage.getItem(ATTR_KEY) || "{}"); } catch (e) { return found; }
+  }
+  var attr = attribution();
+
+  // ── Analytics layer: one track() call → dataLayer always; Meta/TikTok pixels only when an ID is configured and consent allows. ──
+  var A = CONFIG.analytics || {}, consentOk = !A.consentRequired, pixelsLoaded = false, queue = [];
+  window.dataLayer = window.dataLayer || [];
+  function eventId() { return "ev_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8); }
+  var STD = { PageView: 1, ViewContent: 1, AddToCart: 1, InitiateCheckout: 1 }; // Purchase is deliberately not fired from this page: it needs an order confirmation source
+  function track(name, data) {
+    data = data || {};
+    var ev = Object.assign({ event: name, event_id: eventId(), angle: angleKey, cta_variant: ctaKey, product_id: CONFIG.productId, page: CONFIG.route }, attr, data);
+    window.dataLayer.push(ev);
+    if (A.debug) try { console.debug("[urpick track]", name, ev); } catch (e) {}
+    if (!STD[name]) return ev;
+    if (!pixelsLoaded) { queue.push(ev); return ev; }
+    sendPixels(ev); return ev;
+  }
+  function sendPixels(ev) {
+    var p = { content_ids: [CONFIG.productId], content_name: CONFIG.name, content_type: "product", currency: CONFIG.currency }; if (ev.value != null) p.value = ev.value;
+    if (window.fbq) { try { if (ev.event === "PageView") fbq("track", "PageView", {}, { eventID: ev.event_id }); else fbq("track", ev.event, p, { eventID: ev.event_id }); } catch (e) {} }
+    if (window.ttq) { try { if (ev.event === "PageView") ttq.page(); else ttq.track(ev.event, { contents: [{ content_id: CONFIG.productId, content_name: CONFIG.name, content_type: "product", quantity: ev.quantity || 1 }], currency: CONFIG.currency, value: ev.value }, { event_id: ev.event_id }); } catch (e) {} }
+  }
+  function loadPixels() {
+    if (pixelsLoaded || !consentOk) return;
+    if (A.metaPixelId) { !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js'); fbq("init", A.metaPixelId); }
+    if (A.tiktokPixelId) { !function (w, d, t) { w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};ttq.load(A.tiktokPixelId); }(window, document, 'ttq'); }
+    pixelsLoaded = !!(A.metaPixelId || A.tiktokPixelId);
+    if (pixelsLoaded) { queue.splice(0).forEach(sendPixels); }
+  }
+  // consent (only shown when required)
+  var CONSENT_KEY = "urpick_consent";
+  try { if (A.consentRequired && localStorage.getItem(CONSENT_KEY) === "granted") consentOk = true; } catch (e) {}
+  if (A.consentRequired && !consentOk) { try { if (localStorage.getItem(CONSENT_KEY) !== "denied") $("consent").classList.add("show"); } catch (e) {} }
+  $("consentYes").addEventListener("click", function () { consentOk = true; try { localStorage.setItem(CONSENT_KEY, "granted"); } catch (e) {} $("consent").classList.remove("show"); loadPixels(); });
+  $("consentNo").addEventListener("click", function () { try { localStorage.setItem(CONSENT_KEY, "denied"); } catch (e) {} $("consent").classList.remove("show"); });
+  window.urpickConsent = { grant: function () { $("consentYes").click(); }, deny: function () { $("consentNo").click(); } };
+  loadPixels();
+
+  // ── Media helpers: a real <img>/<video> when a source exists; otherwise a labelled development placeholder ──
+  function media(el, m, extra) {
+    el.innerHTML = "";
+    if (m && m.src) { el.classList.remove("empty"); var img = document.createElement("img"); img.src = BASE + m.src; img.alt = m.alt || ""; img.loading = extra && extra.eager ? "eager" : "lazy"; img.decoding = "async"; el.appendChild(img); el.removeAttribute("role"); }
+    else { el.classList.add("empty"); el.setAttribute("role", "img"); el.setAttribute("aria-label", (m && m.alt ? m.alt : "Image") + " (placeholder, final photo pending)"); el.innerHTML = '<span class="dev">Placeholder</span><span class="lbl">' + esc(m ? m.label : "Image") + '<small>Final photo pending</small></span>'; }
+  }
+  function videoBlock(el, v, name) {
+    el.innerHTML = "";
+    if (v && v.src) {
+      el.classList.remove("empty");
+      var vid = document.createElement("video"); vid.src = BASE + v.src; if (v.poster) vid.poster = BASE + v.poster; vid.playsInline = true; vid.preload = "metadata"; vid.controls = false; vid.setAttribute("aria-label", v.title || "Video");
+      var play = document.createElement("button"); play.type = "button"; play.className = "play"; play.innerHTML = '<span><svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span><span class="sr-only">Play ' + esc(v.title) + '</span>';
+      play.addEventListener("click", function () { play.remove(); vid.controls = true; vid.muted = false; vid.play(); track("video_play", { video: name }); });
+      vid.addEventListener("ended", function () { track("video_complete", { video: name }); });
+      el.appendChild(vid); el.appendChild(play);
+    } else { el.classList.add("empty"); el.setAttribute("role", "img"); el.setAttribute("aria-label", (v && v.title ? v.title : "Video") + " (placeholder, footage pending)"); el.innerHTML = '<span class="dev">Placeholder</span><span class="lbl" style="font-size:.8125rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--taupe);text-align:center;padding:1rem">' + esc(v ? v.label : "Video") + '<small style="display:block;margin-top:.375rem;font-weight:500;letter-spacing:0;text-transform:none">Footage not supplied yet</small></span>'; }
+  }
+
+  // ── 1. Hero ──
+  var st = CONFIG.status, live = st === "live" && CONFIG.price != null;
+  var priceText = live ? "$" + Number(CONFIG.price).toFixed(2) : "Price to be confirmed";
+  $("heroEyebrow").textContent = angle.eyebrow; $("heroTitle").textContent = angle.headline; $("heroSub").textContent = angle.sub;
+  $("heroPrice").innerHTML = live ? esc(priceText) + (CONFIG.compareAt ? ' <small><s>$' + Number(CONFIG.compareAt).toFixed(2) + '</s></small>' : "") : '<span>' + esc(priceText) + '</span><small>Ordering opens once price and stock are confirmed</small>';
+  $("heroHighlights").innerHTML = CONFIG.highlights.map(function (h) { return '<li><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg><span>' + esc(h) + '</span></li>'; }).join("");
+  $("heroFine").textContent = CONFIG.highlightsNote;
+  media($("heroMedia"), CONFIG.media[angle.media], { eager: true });
+  document.querySelectorAll('[data-track="hero_cta"]').forEach(function (a) { a.textContent = ctaText; });
+  if (st !== "live") { $("statusBar").hidden = false; $("statusBar").innerHTML = "<b>Preview.</b> " + esc(CONFIG.statusNote); }
+  document.title = CONFIG.name + " · " + CONFIG.brand;
+
+  // video modal (hero secondary action)
+  var heroVideo = CONFIG.media[angle.video];
+  $("heroWatch").textContent = ""; $("heroWatch").innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>' + (angleKey === "story" || angleKey === "problem" || angleKey === "ugc" ? "Watch Bruce’s Story" : "Watch the demo");
+  var lastFocus = null;
+  function openModal(v, name) {
+    lastFocus = document.activeElement; var body = $("modalBody"); body.innerHTML = "";
+    $("modalTitle").textContent = v.title || "Video";
+    if (v.src) { var vid = document.createElement("video"); vid.src = BASE + v.src; if (v.poster) vid.poster = BASE + v.poster; vid.controls = true; vid.playsInline = true; vid.setAttribute("aria-label", v.title); body.appendChild(vid); vid.addEventListener("play", function () { track("video_play", { video: name }); }, { once: true }); vid.addEventListener("ended", function () { track("video_complete", { video: name }); }); vid.play().catch(function () {}); }
+    else body.innerHTML = '<div class="empty"><div><span class="dev">Placeholder</span><h3 style="color:#fff;margin-top:.75rem">' + esc(v.title) + '</h3><p>' + esc(v.label) + '. Footage not supplied yet.</p><p>' + esc(v.disclosure || "") + '</p></div></div>';
+    $("modal").hidden = false; $("modal").classList.add("open"); document.body.style.overflow = "hidden"; $("modalClose").focus();
+    track("video_open", { video: name });
+  }
+  function closeModal() { $("modal").classList.remove("open"); $("modal").hidden = true; $("modalBody").innerHTML = ""; document.body.style.overflow = ""; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  $("heroWatch").addEventListener("click", function () { openModal(heroVideo, angle.video); });
+  $("modalClose").addEventListener("click", closeModal);
+  $("modal").addEventListener("click", function (e) { if (e.target === $("modal")) closeModal(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("modal").hidden) closeModal(); });
+
+  // ── 2. Problem photos ──
+  $("problemPhotos").innerHTML = CONFIG.media.problem.map(function () { return '<li><div class="ph"></div></li>'; }).join("");
+  Array.prototype.forEach.call($("problemPhotos").querySelectorAll(".ph"), function (el, i) { media(el, CONFIG.media.problem[i]); });
+
+  // ── 3. Gallery ──
+  $("gallery").innerHTML = CONFIG.media.gallery.map(function () { return '<li><div class="ph"></div></li>'; }).join("");
+  Array.prototype.forEach.call($("gallery").querySelectorAll(".ph"), function (el, i) { media(el, CONFIG.media.gallery[i]); el.setAttribute("data-track", "gallery"); el.addEventListener("click", function () { track("product_detail_interaction", { detail: CONFIG.media.gallery[i].label }); }); });
+  var missingPhotos = CONFIG.media.gallery.filter(function (g) { return !g.src; }).length;
+  $("galleryNote").textContent = missingPhotos ? "Product photography is being shot from the supplier sample. " + missingPhotos + " of " + CONFIG.media.gallery.length + " views are placeholders in this preview." : "";
+
+  // ── 4. Benefits ──
+  $("benefitCards").innerHTML = CONFIG.benefits.map(function (b, i) { return '<div class="card"><span class="n">' + (i + 1) + '</span><h3>' + esc(b.title) + '</h3><p>' + esc(b.text) + '</p></div>'; }).join("");
+
+  // ── 5. Demo ──
+  videoBlock($("demoVideo"), CONFIG.media.demoVideo, "demoVideo");
+  $("demoNote").textContent = CONFIG.media.demoVideo.disclosure;
+
+  // ── 6. Objections ──
+  $("introSteps").innerHTML = CONFIG.intro.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("");
+  var S = CONFIG.specs, tbc = '<span class="dev">To be confirmed by supplier</span>';
+  var rows = [["External size", S.external], ["Usable interior", S.interior], ["Entrance", S.entrance], ["Weight", S.weight], ["Materials", S.materials], ["Construction", S.construction], ["Care", S.care], ["Safety", S.safety]];
+  $("specs").querySelector("tbody").innerHTML = rows.map(function (r) { return "<tr><th scope=\"row\">" + esc(r[0]) + "</th><td>" + (r[1] ? esc(r[1]) : tbc) + "</td></tr>"; }).join("");
+  $("faq").innerHTML = CONFIG.faq.map(function (f) {
+    var body = esc(f.a);
+    if (f.spec) body += S.external ? "<br><br><b>External:</b> " + esc(S.external) + " · <b>Interior:</b> " + esc(S.interior || "tbc") + " · <b>Entrance:</b> " + esc(S.entrance || "tbc") : "<br><br>" + tbc;
+    if (f.specKey) body += "<br><br>" + (S[f.specKey] ? esc(S[f.specKey]) : tbc);
+    if (f.link) body += ' <a href="' + esc(BASE + f.link) + '">Read the draft policy</a>.';
+    return '<details data-id="' + esc(f.id) + '"><summary>' + esc(f.q) + '</summary><div class="body">' + body + '</div></details>';
+  }).join("");
+  Array.prototype.forEach.call($("faq").querySelectorAll("details"), function (d) { d.addEventListener("toggle", function () { if (d.open) track(d.getAttribute("data-id") === "fit" ? "size_guide_open" : "faq_expand", { faq: d.getAttribute("data-id") }); }); });
+
+  // ── 7. Purchase module ──
+  var selected = CONFIG.variants.filter(function (v) { return v.status === "hero"; })[0] || CONFIG.variants[0], qty = 1;
+  $("buyName").textContent = CONFIG.name;
+  function renderPrice() { $("buyPrice").innerHTML = live ? esc(priceText) + (CONFIG.compareAt ? '<small><s>$' + Number(CONFIG.compareAt).toFixed(2) + '</s></small>' : "") : esc(priceText) + '<small>not yet approved</small>'; }
+  function renderVariants() {
+    $("variants").innerHTML = CONFIG.variants.map(function (v) { var on = v.id === selected.id; return '<li><button type="button" data-id="' + esc(v.id) + '" aria-pressed="' + on + '"' + (v.status === "researched" ? ' disabled aria-describedby="variantNote"' : "") + '><span class="sw' + (v.id === "cow-print" ? " cow" : "") + '" style="--sw:' + esc(v.hex) + '" aria-hidden="true"></span>' + esc(v.name) + (v.status === "researched" ? ' <small>· ' + esc(v.note) + '</small>' : "") + '</button></li>'; }).join("");
+    Array.prototype.forEach.call($("variants").querySelectorAll("button:not([disabled])"), function (b) { b.addEventListener("click", function () { selected = CONFIG.variants.filter(function (v) { return v.id === b.getAttribute("data-id"); })[0]; renderVariants(); track("variant_select", { variant: selected.id }); }); });
+  }
+  renderVariants(); renderPrice();
+  media($("buyMedia"), CONFIG.media.hero);
+  $("qtyMinus").addEventListener("click", function () { qty = Math.max(1, qty - 1); $("qtyOut").textContent = qty; });
+  $("qtyPlus").addEventListener("click", function () { qty = Math.min(10, qty + 1); $("qtyOut").textContent = qty; });
+  var add = $("addToCart");
+  if (live && selected.available) {
+    $("stock").textContent = CONFIG.stock == null ? "" : CONFIG.stock > 0 ? "In stock" : "Out of stock";
+    add.disabled = !(CONFIG.stock == null || CONFIG.stock > 0);
+    add.addEventListener("click", function () {
+      // Shared local cart (same shape as the main site) until Shopify is connected
+      var KEY = "eb_cart_v1", cart = { lines: [] }; try { cart = JSON.parse(localStorage.getItem(KEY) || "null") || cart; } catch (e) {}
+      var ex = cart.lines.filter(function (l) { return l.variantId === selected.variantId; })[0];
+      if (ex) ex.qty = Math.min(10, ex.qty + qty); else cart.lines.push({ variantId: selected.variantId, productId: CONFIG.productId, title: CONFIG.name, color: selected.name, hex: selected.hex, price: CONFIG.price, qty: qty });
+      try { localStorage.setItem(KEY, JSON.stringify({ lines: cart.lines })); } catch (e) {}
+      track("AddToCart", { variant: selected.id, quantity: qty, value: CONFIG.price * qty });
+      add.textContent = "Added · View cart"; add.addEventListener("click", function () { track("InitiateCheckout", { value: CONFIG.price * qty }); location.href = BASE + "/#cart"; }, { once: true });
+    });
+  } else {
+    add.disabled = true; add.textContent = "Add to cart"; add.setAttribute("aria-describedby", "buyNote");
+    $("stock").textContent = "Ordering not open yet";
+    $("buyNote").hidden = false; $("buyNote").innerHTML = "<b>Preview state.</b> This is the real purchase module with the price, stock and checkout switched off until they are confirmed. Nothing can be ordered from this page yet, and no payment is taken.";
+    $("waitlist").hidden = false;
+    $("waitForm").addEventListener("submit", function (e) {
+      e.preventDefault(); var em = $("waitEmail"), v = (em.value || "").trim().toLowerCase(), msg = $("waitMsg");
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v)) { em.setAttribute("aria-invalid", "true"); msg.className = "msg err"; msg.textContent = "Please enter a valid email address."; em.focus(); return; }
+      em.removeAttribute("aria-invalid"); var rec = Object.assign({ email: v, product: CONFIG.productId, variant: selected.id, at: new Date().toISOString() }, attr);
+      try { var list = JSON.parse(localStorage.getItem("urpick_waitlist_v1") || "[]"); list.push(rec); localStorage.setItem("urpick_waitlist_v1", JSON.stringify(list)); } catch (err) {}
+      msg.className = "msg"; msg.textContent = "Saved on this device only. The email service is not connected yet, so nothing has been sent; it will be once it is."; track("waitlist_signup", { variant: selected.id });
+    });
+  }
+  var ship = CONFIG.shipping, ret = CONFIG.returns, tick = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg>';
+  $("reassure").innerHTML = [ship.delivery + (ship.draft ? " · draft policy" : ""), ship.cost, ret.window + (ret.draft ? " · draft policy" : ""), 'Questions: <a href="mailto:' + esc(CONFIG.support.email) + '">' + esc(CONFIG.support.email) + '</a>'].map(function (t) { return "<li>" + tick + "<span>" + t + "</span></li>"; }).join("");
+
+  // ── 8. Confidence ──
+  var conf = [
+    { h: "Reviews", p: "No reviews yet. Real customer reviews and photos appear here once collected, with permission. We never show ratings, counts or names we cannot verify." },
+    { h: "Measurements", p: S.external ? "External " + esc(S.external) + ", interior " + esc(S.interior) + ", entrance " + esc(S.entrance) + "." : "Published as soon as the supplier confirms them, with a guide to measuring your cat." },
+    { h: "Cleaning", p: S.care ? esc(S.care) : "The approved cleaning method is published exactly as confirmed." },
+    { h: "Shipping", p: esc(ship.regions) + ". " + esc(ship.processing) + " to process, then " + esc(ship.delivery.toLowerCase()) + ". " + esc(ship.cost) + "." },
+    { h: "Returns", p: esc(ret.window) + ". " + esc(ret.damaged) + '. <a href="' + esc(BASE + "/#shipping-returns") + '">Full draft policy</a>.' },
+    { h: "Support", p: 'Email <a href="mailto:' + esc(CONFIG.support.email) + '">' + esc(CONFIG.support.email) + '</a>. We read everything and reply as quickly as we can.' }
+  ];
+  $("confCards").innerHTML = conf.map(function (c) { return '<div class="card"><h3>' + esc(c.h) + '</h3><p>' + c.p + '</p></div>'; }).join("");
+
+  // ── 9. Offer ──
+  $("offerCards").innerHTML = [
+    '<div class="card"><h3>Single Cat Cave</h3><p class="price" style="font-family:var(--display);font-size:1.5rem;font-weight:600;color:var(--ink);margin-top:.5rem">' + esc(priceText) + '</p><p>Cow print, the design shown on this page.</p></div>',
+    '<div class="card off"><h3>Two-cave bundle</h3><p><span class="dev">Not configured</span></p><p>Tested only once a bundle price is approved.</p></div>',
+    '<div class="card off"><h3>Introduction guide</h3><p><span class="dev">Not configured</span></p><p>A simple cat-bed introduction guide may be included once written.</p></div>'
+  ].join("");
+
+  // footer
+  $("footEmail").href = "mailto:" + CONFIG.support.email; $("footEmail").textContent = CONFIG.support.email;
+  $("footLinks").innerHTML = [["Shipping & Returns", BASE + "/#shipping-returns"], ["Privacy Policy", BASE + "/#privacy"], ["Terms of Service", BASE + "/#terms"], ["TikTok", CONFIG.support.tiktok], ["Facebook", CONFIG.support.facebook], ["UrPick home", BASE + "/"]].map(function (l) { return '<li><a href="' + esc(l[1]) + '"' + (/^https?:/.test(l[1]) ? ' target="_blank" rel="noopener"' : "") + '>' + esc(l[0]) + '</a></li>'; }).join("");
+
+  // ── Sticky bar (below 1024px): after the hero, hidden while the purchase module is on screen ──
+  $("barName").textContent = CONFIG.shortName; $("barPrice").textContent = priceText; $("barCta").textContent = ctaText;
+  var queued = false;
+  function barUpdate() { queued = false; var hero = $("hero").getBoundingClientRect(), buy = $("buy").getBoundingClientRect(), show = window.innerWidth < 1024 && hero.bottom < 0 && !(buy.top < window.innerHeight && buy.bottom > 0); $("bar").classList.toggle("show", show); $("bar").setAttribute("aria-hidden", String(!show)); document.body.classList.toggle("bar-on", show); }
+  window.addEventListener("scroll", function () { if (!queued) { queued = true; requestAnimationFrame(barUpdate); } }, { passive: true }); window.addEventListener("resize", barUpdate); barUpdate();
+
+  // ── CTA clicks ──
+  document.querySelectorAll('[data-track="hero_cta"]').forEach(function (a) { a.addEventListener("click", function () { track("hero_cta_click", { place: a.getAttribute("data-place") }); }); });
+
+  // ── Funnel events on load ──
+  track("PageView"); track("ViewContent", { variant: selected.id, value: live ? CONFIG.price : undefined });
+  window.urpickLanding = { track: track, config: CONFIG, angle: angleKey, cta: ctaKey, attribution: attr };
+})();
+</script>
+</body>
+</html>
