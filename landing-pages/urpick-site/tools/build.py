@@ -75,12 +75,32 @@ for path in glob.glob(os.path.join(ROOT, "assets", "video", "hero-loop*")):
 favicon = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#2F4A3A"/><text x="32" y="43" text-anchor="middle" font-family="Georgia,serif" font-size="34" font-weight="600" fill="#FAF6EF">U</text></svg>"""
 open(os.path.join(site, "assets", "favicon.svg"), "w").write(favicon)
 open(os.path.join(site, "index.html"), "w").write(doc)
+
+# ── Product landing pages: landing/<slug>.json + landing/template.html → site/products/<slug>/index.html ──
+import json
+landing_tpl = os.path.join(ROOT, "landing", "template.html")
+landing_pages = []
+if os.path.exists(landing_tpl):
+    tpl = open(landing_tpl, encoding="utf-8").read()
+    for cfg_path in sorted(glob.glob(os.path.join(ROOT, "landing", "*.json"))):
+        cfg = json.load(open(cfg_path, encoding="utf-8"))
+        def render(base):
+            page = tpl.replace("{{PRODUCT_JSON}}", json.dumps(cfg, ensure_ascii=False).replace("</", "<\\/"))
+            desc = cfg["angles"][cfg["defaultAngle"]]["sub"]
+            og = (base + cfg["media"]["hero"]["src"]) if cfg["media"]["hero"].get("src") else base + "/assets/video/hero-loop-poster.jpg"
+            return (page.replace("{{TITLE}}", f'{cfg["name"]} · {cfg["brand"]}').replace("{{DESCRIPTION}}", desc)
+                        .replace("{{OG_IMAGE}}", og).replace("{{BASE}}", base))
+        out_dir = os.path.join(site, "products", cfg["slug"]); os.makedirs(out_dir, exist_ok=True)
+        open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8").write(render(""))
+        landing_pages.append((cfg["slug"], render))
 open(os.path.join(site, "vercel.json"), "w").write('{\n  "framework": null,\n  "buildCommand": null,\n  "installCommand": null,\n  "outputDirectory": null,\n  "cleanUrls": true,\n  "headers": [\n    { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] }\n  ]\n}\n')
 # mirror into the repo's Next.js public/ folder so the existing Vercel deployment serves it at /urpick/
 pub = os.path.normpath(os.path.join(ROOT, "..", "..", "public", "urpick"))
 if os.path.isdir(os.path.dirname(pub)):
     shutil.rmtree(pub, ignore_errors=True)
     shutil.copytree(site, pub, ignore=shutil.ignore_patterns("vercel.json"))
+    for slug, render in landing_pages:   # the mirror lives under /urpick/, so its landing pages need that base path
+        open(os.path.join(pub, "products", slug, "index.html"), "w", encoding="utf-8").write(render("/urpick"))
     print(f"mirrored to {os.path.relpath(pub, os.path.join(ROOT, '..', '..'))}/")
 total = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(site) for f in fs)
-print(f"site/ written: index.html {len(doc) // 1024} KB, folder {total // 1024} KB, mock bar and notes stripped")
+print(f"site/ written: index.html {len(doc) // 1024} KB, folder {total // 1024} KB, mock bar and notes stripped; landing pages: " + ", ".join("/products/" + s for s, _ in landing_pages))
