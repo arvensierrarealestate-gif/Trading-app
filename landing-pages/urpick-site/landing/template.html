@@ -138,6 +138,7 @@
       <div class="gal" id="gallery" aria-label="Product photos">
         <button type="button" class="main" id="galMain" aria-label="Enlarge product photo"></button>
         <ul class="thumbs" id="thumbs"></ul>
+        <p class="cap" id="galNote" hidden style="text-align:left;max-width:none"></p>
       </div>
       <div class="panel" id="buyPanel">
         <p class="edition" id="buyEdition"></p>
@@ -295,25 +296,32 @@ var BASE = "{{BASE}}";
   } else { adv.classList.add("empty"); adv.setAttribute("role", "img"); adv.setAttribute("aria-label", (v && v.title ? v.title : "Ad video") + " (placeholder, footage pending)"); adv.innerHTML = esc(v ? v.label : "Ad video") + "<br><small style='font-weight:500;text-transform:none;letter-spacing:0'>Footage not supplied yet</small>"; $("heroWatch").hidden = true; }
   $("heroWatch").querySelector("span").textContent = (angleKey === "education" || angleKey === "product") ? "Watch the video" : "Watch Bruce’s Story";
 
-  // ── 2. Gallery (shared by every angle) ──
+  // ── 2. Gallery (shared by every angle; photos follow the selected design) ──
+  var confirmed = CONFIG.variants.filter(function (x) { return x.status === "hero" || x.available; }), unconfirmed = CONFIG.variants.length - confirmed.length;
+  var selected = confirmed.filter(function (x) { return x.id === angle.variant; })[0] || confirmed[0] || CONFIG.variants[0], qty = 1;
   var G = CONFIG.media.gallery, gi = 0;
+  function srcFor(g, key) { var v = g[key]; if (!v) return null; return typeof v === "string" ? v : (v[selected.id] || null); }
   function galleryMedia(el, g, big) {
-    el.innerHTML = "";
-    if (g.src) { var img = document.createElement("img"); img.src = BASE + g.src; img.alt = g.alt; img.loading = big ? "eager" : "lazy"; img.decoding = "async"; el.appendChild(img); }
+    el.innerHTML = ""; var src = srcFor(g, "src");
+    if (src) { var img = document.createElement("img"); img.src = BASE + src; img.alt = g.alt + " (" + selected.edition + ")"; img.loading = big ? "eager" : "lazy"; img.decoding = "async"; el.appendChild(img); }
     else { var ph = document.createElement("div"); ph.className = "ph empty"; ph.style.height = "100%"; ph.setAttribute("role", "img"); ph.setAttribute("aria-label", g.alt + " (final photo pending)"); ph.innerHTML = placeholder(g.label); el.appendChild(ph); }
   }
   function renderMain() {
     var g = G[gi]; galleryMedia($("galMain"), g, true);
-    $("galMain").insertAdjacentHTML("beforeend", '<span class="cap2">' + esc(g.label) + '</span><span class="zoom"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5M11 8v6M8 11h6"/></svg>Enlarge</span>');
-    $("galMain").setAttribute("aria-label", "Enlarge: " + g.label + (g.src ? "" : " (final photo pending)"));
+    $("galMain").insertAdjacentHTML("beforeend", '<span class="cap2">' + esc(g.label) + ' · ' + esc(selected.edition) + '</span><span class="zoom"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5M11 8v6M8 11h6"/></svg>Enlarge</span>');
+    $("galMain").setAttribute("aria-label", "Enlarge: " + g.label + (srcFor(g, "src") ? "" : " (final photo pending)"));
     Array.prototype.forEach.call($("thumbs").querySelectorAll("button"), function (b, i) { b.setAttribute("aria-pressed", String(i === gi)); });
   }
-  $("thumbs").innerHTML = G.map(function (g, i) { return '<li><button type="button" data-i="' + i + '" aria-pressed="false" aria-label="' + esc(g.label) + (g.src ? "" : ", final photo pending") + '"><span class="t">' + (g.src ? '<img src="' + esc(BASE + g.src) + '" alt="" loading="lazy">' : (i + 1)) + '</span><span class="l">' + esc(g.label) + '</span></button></li>'; }).join("");
-  Array.prototype.forEach.call($("thumbs").querySelectorAll("button"), function (b) { b.addEventListener("click", function () { gi = +b.getAttribute("data-i"); renderMain(); track("product_detail_interaction", { detail: G[gi].label }); }); });
-  renderMain();
+  function renderThumbs() {
+    $("thumbs").innerHTML = G.map(function (g, i) { var src = srcFor(g, "src"), th = srcFor(g, "thumb") || src; return '<li><button type="button" data-i="' + i + '" aria-pressed="false" aria-label="' + esc(g.label) + (src ? "" : ", final photo pending") + '"><span class="t">' + (src ? '<img src="' + esc(BASE + th) + '" alt="" loading="lazy">' : (i + 1)) + '</span><span class="l">' + esc(g.label) + '</span></button></li>'; }).join("");
+    Array.prototype.forEach.call($("thumbs").querySelectorAll("button"), function (b) { b.addEventListener("click", function () { gi = +b.getAttribute("data-i"); renderMain(); track("product_detail_interaction", { detail: G[gi].label }); }); });
+    var have = G.filter(function (g) { return srcFor(g, "src"); }).length;
+    $("galNote").hidden = false; $("galNote").textContent = have ? have + " of " + G.length + " views photographed for the " + selected.edition + "; the rest follow once the sample arrives." : "Photography of the " + selected.edition + " follows once the sample arrives.";
+  }
+  function renderGallery() { renderThumbs(); renderMain(); }
   // lightbox
   var lbLast = null, touchX = null;
-  function lbRender() { var g = G[gi]; galleryMedia($("lbMedia"), g, true); $("lbTitle").textContent = g.label + (g.src ? "" : " · final photo pending"); $("lbCount").textContent = (gi + 1) + " / " + G.length; }
+  function lbRender() { var g = G[gi]; galleryMedia($("lbMedia"), g, true); $("lbTitle").textContent = g.label + (g.note ? " · " + g.note : "") + (g.src ? "" : " · final photo pending"); $("lbCount").textContent = (gi + 1) + " / " + G.length; }
   function lbOpen() { lbLast = document.activeElement; $("lb").hidden = false; $("lb").classList.add("open"); document.body.style.overflow = "hidden"; lbRender(); $("lbClose").focus(); track("gallery_open", { detail: G[gi].label }); }
   function lbClose() { $("lb").classList.remove("open"); $("lb").hidden = true; document.body.style.overflow = ""; renderMain(); if (lbLast && lbLast.focus) lbLast.focus(); }
   function lbStep(d) { gi = (gi + d + G.length) % G.length; lbRender(); }
@@ -325,23 +333,21 @@ var BASE = "{{BASE}}";
   $("lbStage").addEventListener("touchend", function (e) { if (touchX == null) return; var dx = e.changedTouches[0].clientX - touchX; touchX = null; if (Math.abs(dx) > 40) lbStep(dx < 0 ? 1 : -1); }, { passive: true });
 
   // ── 2b. Purchase module (shared) ──
-  var confirmed = CONFIG.variants.filter(function (x) { return x.status === "hero" || x.available; }), unconfirmed = CONFIG.variants.length - confirmed.length;
-  var selected = confirmed[0] || CONFIG.variants[0], qty = 1;
-  $("buyEdition").textContent = CONFIG.edition; $("buyName").textContent = CONFIG.displayName;
+  $("buyName").textContent = CONFIG.displayName;
+  function renderEdition() { $("buyEdition").textContent = selected.edition; $("buyHighlights").innerHTML = CONFIG.highlights.slice(0, 2).concat([selected.detail]).map(function (h) { return "<li>" + tick + "<span>" + esc(h) + "</span></li>"; }).join(""); $("barName").textContent = CONFIG.displayName + " · " + selected.edition; }
   $("buyPrice").innerHTML = live ? esc(priceText) + (CONFIG.compareAt ? '<small><s>$' + Number(CONFIG.compareAt).toFixed(2) + '</s></small>' : "") : esc(priceText) + '<small>not yet approved</small>';
-  $("buyHighlights").innerHTML = CONFIG.highlights.slice(0, 3).map(function (h) { return "<li>" + tick + "<span>" + esc(h) + "</span></li>"; }).join("");
   function renderVariants() {
     $("variants").innerHTML = confirmed.map(function (x) { return '<li><button type="button" data-id="' + esc(x.id) + '" aria-pressed="' + (x.id === selected.id) + '"><span class="sw' + (x.id === "cow-print" ? " cow" : "") + '" style="--sw:' + esc(x.hex) + '" aria-hidden="true"></span>' + esc(x.name) + '</button></li>'; }).join("") + (unconfirmed ? '<li class="more">' + unconfirmed + ' more design' + (unconfirmed > 1 ? "s" : "") + ' to be confirmed</li>' : "");
-    Array.prototype.forEach.call($("variants").querySelectorAll("button"), function (b) { b.addEventListener("click", function () { selected = confirmed.filter(function (x) { return x.id === b.getAttribute("data-id"); })[0]; renderVariants(); track("variant_select", { variant: selected.id }); }); });
+    Array.prototype.forEach.call($("variants").querySelectorAll("button"), function (b) { b.addEventListener("click", function () { selected = confirmed.filter(function (x) { return x.id === b.getAttribute("data-id"); })[0]; renderVariants(); renderEdition(); renderGallery(); renderUpsPics(); track("variant_select", { variant: selected.id }); }); });
   }
-  renderVariants();
+  renderVariants(); renderEdition(); renderGallery();
   function setQty(n) { qty = Math.max(1, Math.min(10, n)); $("qtyOut").textContent = qty; Array.prototype.forEach.call(document.querySelectorAll('#upsOptions input'), function (r) { r.checked = (+r.value === qty); }); }
   $("qtyMinus").addEventListener("click", function () { setQty(qty - 1); }); $("qtyPlus").addEventListener("click", function () { setQty(qty + 1); });
   var add = $("addToCart");
   function addToCart(n, source) {
     var KEY = "eb_cart_v1", cart = { lines: [] }; try { cart = JSON.parse(localStorage.getItem(KEY) || "null") || cart; } catch (e) {}
     var ex = cart.lines.filter(function (l) { return l.variantId === selected.variantId; })[0];
-    if (ex) ex.qty = Math.min(10, ex.qty + n); else cart.lines.push({ variantId: selected.variantId, productId: CONFIG.productId, title: CONFIG.displayName, color: selected.name, hex: selected.hex, price: CONFIG.price, qty: n });
+    if (ex) ex.qty = Math.min(10, ex.qty + n); else cart.lines.push({ variantId: selected.variantId, productId: CONFIG.productId, title: CONFIG.displayName + " · " + selected.edition, color: selected.name, hex: selected.hex, price: CONFIG.price, qty: n });
     try { localStorage.setItem(KEY, JSON.stringify({ lines: cart.lines })); } catch (e) {}
     track("AddToCart", { variant: selected.id, quantity: n, value: CONFIG.price * n, source: source });
   }
@@ -376,7 +382,8 @@ var BASE = "{{BASE}}";
     var pic = o.qty === 2 ? '<div class="pic two"><div class="ph empty"></div><div class="ph empty"></div></div>' : '<div class="pic"><div class="ph empty" style="height:100%"></div></div>';
     return '<label class="opt"><input type="radio" name="ups" value="' + o.qty + '"' + (i === 0 ? " checked" : "") + '>' + pic + '<div><h3>' + esc(o.title) + '</h3><p class="p">' + esc(upsPrice(o)) + '<small>' + (o.qty === 2 ? "for two" : "each") + '</small></p><p class="n">' + esc(o.note) + '</p></div><span class="check" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="m5 12 4 4L19 7"/></svg></span></label>';
   }).join("");
-  if (CONFIG.media.hero.src) Array.prototype.forEach.call($("upsOptions").querySelectorAll(".pic .ph"), function (ph) { ph.outerHTML = '<img src="' + esc(BASE + CONFIG.media.hero.src) + '" alt="">'; });
+  function renderUpsPics() { Array.prototype.forEach.call($("upsOptions").querySelectorAll(".pic"), function (pic) { var two = pic.classList.contains("two"); pic.innerHTML = selected.image ? (two ? '<img src="' + esc(BASE + (selected.thumb || selected.image)) + '" alt=""><img src="' + esc(BASE + (selected.thumb || selected.image)) + '" alt="">' : '<img src="' + esc(BASE + (selected.thumb || selected.image)) + '" alt="">') : (two ? '<div class="ph empty"></div><div class="ph empty"></div>' : '<div class="ph empty" style="height:100%"></div>'); }); }
+  renderUpsPics();
   Array.prototype.forEach.call($("upsOptions").querySelectorAll("input"), function (r) { r.addEventListener("change", function () { upsSel = U.options.filter(function (o) { return o.qty === +r.value; })[0]; setQty(upsSel.qty); upsRender(); track("upsell_select", { option: upsSel.id }); }); });
   function upsRender() {
     var canBuy = live && selected.available && (upsSel.qty === 1 || U.configured);
@@ -403,7 +410,7 @@ var BASE = "{{BASE}}";
   $("footLinks").innerHTML = [["Shipping & Returns", BASE + "/#shipping-returns"], ["Privacy Policy", BASE + "/#privacy"], ["Terms of Service", BASE + "/#terms"], ["TikTok", CONFIG.support.tiktok], ["Facebook", CONFIG.support.facebook], ["UrPick home", BASE + "/"]].map(function (l) { return '<li><a href="' + esc(l[1]) + '"' + (/^https?:/.test(l[1]) ? ' target="_blank" rel="noopener"' : "") + '>' + esc(l[0]) + '</a></li>'; }).join("");
 
   // ── Sticky bar (below 1024px): once the purchase module has scrolled out of view ──
-  $("barName").textContent = CONFIG.displayName; $("barPrice").textContent = priceText; $("barCta").textContent = ctaText;
+  $("barPrice").textContent = priceText; $("barCta").textContent = ctaText;
   var queued = false;
   function barUpdate() { queued = false; var panel = $("buyPanel").getBoundingClientRect(), show = window.innerWidth < 1024 && panel.bottom < 0; $("bar").classList.toggle("show", show); $("bar").setAttribute("aria-hidden", String(!show)); document.body.classList.toggle("bar-on", show); }
   window.addEventListener("scroll", function () { if (!queued) { queued = true; requestAnimationFrame(barUpdate); } }, { passive: true }); window.addEventListener("resize", barUpdate); barUpdate();

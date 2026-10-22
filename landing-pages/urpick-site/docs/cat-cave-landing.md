@@ -32,7 +32,7 @@ site/products/cozy-cat-cave/index.html   (generated from landing/template.html +
 └─ lightbox      role=dialog, focus managed, Escape / arrows / swipe
 ```
 
-Gallery, purchase module, upsell, benefits and FAQ are identical for every angle; only hero copy and the video change.
+Gallery, purchase module, upsell, benefits and FAQ are the same component for every angle; the hero copy, the video and the **pre-selected design** follow the ad: `?angle=problem` (Ad 1) pre-selects the Green Dinosaur Edition, which is the cave shown in that video; `?angle=story` (Ad 2) pre-selects the Cow Print Edition. Both designs are selectable in the module, and the gallery, edition label, third highlight, upsell pictures and cart line follow the selected design. Gallery photos are stored per design (`media.gallery[].src` keyed by variant id); one supplier photo of the green dinosaur front view is in, everything else is a labelled placeholder.
 
 ## C. Conversion rationale
 
@@ -55,10 +55,10 @@ Hormozi's value equation is applied as a lens: dream outcome (a spot that is the
 
 | Format | Ad | Landing URL | Hero | Video in "Watch" |
 |---|---|---|---|---|
-| M01 Demonstration / problem-first | Ad 01 "Three cat beds later, Bruce still wanted my chair." | `?angle=problem` (default) | "Your Cat Took Your Favorite Spot. Give Them One of Their Own." | Ad 01 concept (`assets/video/ad01-problem.mp4`, received 21 Oct; shows a white plush cave, disclosed) |
+| M01 Demonstration / problem-first | Ad 01 "Three cat beds later, Bruce still wanted my chair." | `?angle=problem` (default) | "Your Cat Took Your Favorite Spot. Give Them One of Their Own."; Green Dinosaur Edition pre-selected (the cave in the ad) | Ad 01 concept (`assets/video/ad01-problem.mp4`) |
 | M02 Testimonial / UGC | future UGC | `?angle=ugc` | "What Cat Owners Say Once Their Cat Moves In." (explains reviews appear when collected) | Ad 02 concept |
 | M03 Educational | future | `?angle=education` | "Which Bed Will Your Cat Actually Use?" | Demo |
-| M04 Storytelling | Ad 02 "I pay the mortgage. Bruce owns the house." | `?angle=story` | "I Pay the Mortgage. Bruce Owns the House." | Ad 02 concept (`assets/video/ad02-story.mp4`, received 21 Oct) |
+| M04 Storytelling | Ad 02 "I pay the mortgage. Bruce owns the house." | `?angle=story` | "I Pay the Mortgage. Bruce Owns the House."; Cow Print Edition pre-selected | Ad 02 concept (`assets/video/ad02-story.mp4`) |
 | M05 Faceless / product | future | `?angle=product` | "An Enclosed Plush Cave With a Cow-Print Shell." | Demo |
 
 CTA test (Test D): `?cta=a` Shop the Cat Cave · `?cta=b` Find Their Cozy Corner · `?cta=c` Choose Your Cat Cave. Invalid values fall back to defaults. Angle and CTA are recorded on every event. Product facts, price state and policies never change with the angle.
@@ -101,7 +101,7 @@ Recommended first build: a Google Sheet with one row per day × campaign × angl
 
 ## H. Validation report
 
-Tested (locally, served from `site/` over HTTP; chromium at 1280, 768 and 390 px) — 121 checks after the 22 Oct simplification:
+Tested (locally, served from `site/` over HTTP; chromium at 1280, 768 and 390 px) — 130 checks after the 22 Oct simplification and the per-ad design selection:
 - Route renders; clean URL with and without trailing slash; both base paths generated.
 - Angle switching for all five formats, invalid value falls back; CTA test variants; product facts unchanged across angles.
 - Five-section order, single h1, alt text, 'Final photo pending' placeholders, keyboard reach, 44 px targets, no horizontal overflow, page height under 4000 px desktop / 6200 px phone.

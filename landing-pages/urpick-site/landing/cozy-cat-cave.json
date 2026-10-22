@@ -2,7 +2,7 @@
   "slug": "cozy-cat-cave",
   "route": "/products/cozy-cat-cave",
   "brand": "UrPick",
-  "name": "Cow Print Enclosed Plush Cat Cave",
+  "name": "Enclosed Plush Cat Cave",
   "shortName": "Cat Cave",
   "productId": "urpick-cat-cave",
   "status": "preview",
@@ -20,7 +20,10 @@
       "status": "hero",
       "available": false,
       "variantId": null,
-      "note": "Hero design"
+      "note": "Hero design",
+      "edition": "Cow Print Edition",
+      "detail": "Cow-print shell with ears, horns and a pom-pom",
+      "image": null
     },
     {
       "id": "white-cat",
@@ -44,16 +47,19 @@
       "id": "green-dino",
       "name": "Green dinosaur",
       "hex": "#7E9A86",
-      "status": "researched",
+      "status": "hero",
       "available": false,
       "variantId": null,
-      "note": "Not yet confirmed"
+      "note": "Shown in Ad 1",
+      "image": "/assets/photos/cat-cave-green-front.jpg",
+      "edition": "Green Dinosaur Edition",
+      "detail": "Mint shell with dinosaur spikes and a pom-pom",
+      "thumb": "/assets/photos/cat-cave-green-thumb.jpg"
     }
   ],
   "highlights": [
     "Enclosed cave with one front opening",
-    "Plush entrance trim, cushioned floor",
-    "Cow-print shell with ears, horns and a pom-pom"
+    "Plush entrance trim, cushioned floor"
   ],
   "highlightsNote": "From the product description. Materials, dimensions and care are confirmed with the supplier before launch.",
   "specs": {
@@ -86,37 +92,42 @@
   "media": {
     "hero": {
       "src": null,
-      "alt": "The cow-print Cat Cave with its plush entrance and hanging pom-pom",
-      "label": "Product photo · front three-quarter view"
+      "alt": "The enclosed plush cat cave",
+      "label": "Product photo"
     },
     "gallery": [
       {
-        "src": null,
-        "alt": "Front opening of the Cat Cave",
-        "label": "Front opening"
+        "label": "Front opening",
+        "alt": "Front view of the enclosed plush cat cave: round plush-trimmed opening, cushioned floor and hanging pom-pom",
+        "src": {
+          "green-dino": "/assets/photos/cat-cave-green-front.jpg"
+        },
+        "thumb": {
+          "green-dino": "/assets/photos/cat-cave-green-thumb.jpg"
+        }
       },
       {
-        "src": null,
+        "src": {},
         "alt": "Side profile of the Cat Cave",
         "label": "Side profile"
       },
       {
-        "src": null,
+        "src": {},
         "alt": "Interior of the Cat Cave",
         "label": "Interior"
       },
       {
-        "src": null,
+        "src": {},
         "alt": "The removable cushion",
         "label": "Cushion"
       },
       {
-        "src": null,
+        "src": {},
         "alt": "Decorative ears, horns and pom-pom",
         "label": "Decorative details"
       },
       {
-        "src": null,
+        "src": {},
         "alt": "The Cat Cave next to a cat for scale",
         "label": "Relative size"
       }
@@ -161,8 +172,8 @@
       "portrait": true,
       "title": "Three cat beds later",
       "label": "Ad 01 · problem-first concept",
-      "disclosure": "AI-generated advertising concept. The cave shown in this concept is a white plush design, not the cow-print product sold on this page. Not a customer testimonial and not evidence of Bruce using the physical product.",
-      "caption": "Concept video: the cave shown is a white plush sample. The product on this page is the cow-print edition.",
+      "disclosure": "AI-generated advertising concept showing the green dinosaur edition. Not a customer testimonial and not evidence of Bruce using the physical product.",
+      "caption": "",
       "tag": "AI-generated ad concept"
     }
   },
@@ -173,7 +184,8 @@
       "headline": "Your Cat Took Your Favorite Spot. Give Them One of Their Own.",
       "sub": "A cozy little hideaway for the cat who thinks every piece of furniture belongs to them.",
       "media": "hero",
-      "video": "problemVideo"
+      "video": "problemVideo",
+      "variant": "green-dino"
     },
     "story": {
       "format": "M04 Storytelling",
@@ -181,7 +193,8 @@
       "headline": "I Pay the Mortgage. Bruce Owns the House.",
       "sub": "The chairs, the couch, the good blanket. This little cave is the one spot in the house that is actually his.",
       "media": "hero",
-      "video": "storyVideo"
+      "video": "storyVideo",
+      "variant": "cow-print"
     },
     "education": {
       "format": "M03 Educational",
@@ -189,7 +202,8 @@
       "headline": "Which Bed Will Your Cat Actually Use?",
       "sub": "Size, placement and a slow introduction matter more than the price tag. Here is what to check before you buy an enclosed bed.",
       "media": "hero",
-      "video": "demoVideo"
+      "video": "demoVideo",
+      "variant": "cow-print"
     },
     "ugc": {
       "format": "M02 Testimonial / UGC",
@@ -197,7 +211,8 @@
       "headline": "What Cat Owners Say Once Their Cat Moves In.",
       "sub": "Real owner reviews and photos appear here as they are collected, with permission. Until then, here is everything we can verify about the Cat Cave.",
       "media": "hero",
-      "video": "storyVideo"
+      "video": "storyVideo",
+      "variant": "cow-print"
     },
     "product": {
       "format": "M05 Faceless / product",
@@ -205,7 +220,8 @@
       "headline": "An Enclosed Plush Cave With a Cow-Print Shell.",
       "sub": "One front opening, a cushioned interior and plush entrance trim. Dimensions, materials and care are listed below as they are confirmed.",
       "media": "hero",
-      "video": "demoVideo"
+      "video": "demoVideo",
+      "variant": "cow-print"
     }
   },
   "defaultAngle": "problem",
@@ -292,7 +308,7 @@
     "TikTok Pixel ID and Events API access token (server side)",
     "Customer service phone or hours, if any beyond email",
     "Authentic customer reviews and photos, with permission",
-    "Final approved media: Bruce photos, product photography, product demonstration footage (Ad 01 and Ad 02 concept videos received 21 Oct; Ad 01 shows a white plush cave, not the cow print)"
+    "Final approved media: Bruce photos; product photography for the cow-print edition (all six views) and the remaining five views of the green dinosaur edition; product demonstration footage"
   ],
   "displayName": "UrPick Cozy Cat Cave",
   "edition": "Cow Print Edition",
