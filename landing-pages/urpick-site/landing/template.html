@@ -40,54 +40,66 @@
   .lp-hdr{position:sticky;top:0;z-index:40;background:rgba(250,246,239,.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(31,42,36,.06)} .lp-hdr .container{display:flex;align-items:center;justify-content:space-between;min-height:60px}
   .brand{font-family:var(--display);font-weight:600;font-size:1.5rem;letter-spacing:-.02em;color:var(--ink);text-decoration:none} .lp-hdr .cta{min-height:44px;padding:.5rem 1.125rem;font-size:.8125rem}
   .status{background:var(--sage-deep);color:var(--cream);font-size:.8125rem;text-align:center;padding:.5rem 1rem} .status b{color:#F2C9B5}
-  /* hero */
-  .hero .container{display:grid;gap:2rem;padding-block:2.5rem} @media (min-width:1024px){.hero .container{grid-template-columns:7fr 6fr;align-items:center;gap:3.5rem;padding-block:4.5rem}}
-  .hero .ph{aspect-ratio:4/5;box-shadow:var(--shadow-card)} @media (max-width:1023px){.hero .visual{order:-1}.hero .ph{aspect-ratio:4/3}}
-  .hero .ctas{margin-top:1.75rem;display:flex;flex-direction:column;gap:.75rem} @media (min-width:640px){.hero .ctas{flex-direction:row;flex-wrap:wrap}}
-  .hero .price{margin-top:1.25rem;display:flex;align-items:baseline;gap:.5rem;font-family:var(--display);font-size:1.5rem;font-weight:600} .hero .price small{font-family:var(--body);font-size:.8125rem;font-weight:500;color:var(--taupe)}
-  .hl{list-style:none;margin:1.5rem 0 0;padding:0;display:grid;gap:.5rem} .hl li{display:flex;gap:.625rem;align-items:flex-start;font-size:.9375rem} .hl .icon{flex:none;width:20px;height:20px;color:var(--sage)}
+  /* 1. hero + ad video */
+  .hero .container{display:grid;gap:1.75rem;padding-block:2rem 2.5rem} @media (min-width:1024px){.hero .container{grid-template-columns:7fr 5fr;align-items:center;gap:3.5rem;padding-block:3.5rem}}
+  .hero .ctas{margin-top:1.5rem;display:flex;flex-direction:column;gap:.75rem} @media (min-width:640px){.hero .ctas{flex-direction:row;flex-wrap:wrap;align-items:center}}
+  .hero .price{margin-top:1rem;display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem;font-family:var(--display);font-size:1.375rem;font-weight:600} .hero .price small{font-family:var(--body);font-size:.8125rem;font-weight:500;color:var(--taupe)}
+  .adv{position:relative;width:100%;max-width:24rem;margin-inline:auto;aspect-ratio:830/1108;border-radius:var(--r-card);overflow:hidden;background:#1F2A24;box-shadow:var(--shadow-card)} @media (min-width:1024px){.adv{max-width:none;max-height:34rem;width:auto;margin-inline:auto}}
+  .adv video,.adv img{width:100%;height:100%;object-fit:cover;display:block} .adv .play{position:absolute;inset:0;display:grid;place-items:center;border:0;cursor:pointer;background:linear-gradient(to top,rgba(31,42,36,.45),rgba(31,42,36,0) 60%);color:#fff} .adv .play span{display:grid;place-items:center;width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.95);color:var(--sage-deep)} .adv .play .icon{width:28px;height:28px}
+  .adv .tag{position:absolute;left:.75rem;top:.75rem;background:rgba(255,255,255,.9);border-radius:999px;padding:.3rem .7rem;font-size:.6875rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);pointer-events:none}
+  .adv.empty{display:grid;place-items:center;background:var(--sand) radial-gradient(rgba(31,42,36,.08) 1px,transparent 1px);background-size:14px 14px;color:var(--taupe);text-align:center;padding:1rem;font-size:.8125rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+  .cap{margin:.625rem auto 0;max-width:24rem;font-size:.75rem;line-height:1.45;color:var(--taupe);text-align:center} @media (min-width:1024px){.cap{max-width:none}}
   .icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-  .fine{margin-top:.75rem;font-size:.8125rem;color:var(--taupe)}
-  /* grids */
-  .grid3{margin-top:2.5rem;display:grid;gap:1rem} @media (min-width:640px){.grid3{grid-template-columns:repeat(3,1fr)}} .grid3 .ph{aspect-ratio:4/3}
-  .gallery{margin-top:2.5rem;display:grid;gap:.75rem;grid-template-columns:repeat(2,1fr)} @media (min-width:768px){.gallery{grid-template-columns:repeat(3,1fr);gap:1rem}} .gallery .ph{aspect-ratio:1} .gallery li{list-style:none}
-  .cards{margin-top:2.5rem;display:grid;gap:1rem} @media (min-width:640px){.cards{grid-template-columns:repeat(2,1fr)}} @media (min-width:1024px){.cards{grid-template-columns:repeat(4,1fr)}}
-  .card{background:#fff;border-radius:var(--r-card);padding:1.5rem;box-shadow:var(--shadow-card)} .card h3{font-size:1.25rem} .card p{margin-top:.5rem;font-size:.9375rem;color:var(--taupe);line-height:1.6} .card .n{display:inline-grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:50%;background:var(--sage-soft);color:var(--sage-deep);font-family:var(--display);font-weight:600;margin-bottom:.875rem}
-  /* video block */
-  .video{position:relative;margin-top:2.5rem;border-radius:var(--r-card);overflow:hidden;background:#1F2A24;aspect-ratio:16/9;max-width:60rem;margin-inline:auto;box-shadow:var(--shadow-card)} .video video{width:100%;height:100%;object-fit:cover;display:block}
-  .video .play{position:absolute;inset:0;display:grid;place-items:center;background:rgba(31,42,36,.35);color:#fff;border:0;cursor:pointer;font-family:var(--body);font-weight:600} .video .play span{display:grid;place-items:center;width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.95);color:var(--sage-deep)} .video .play .icon{width:28px;height:28px}
-  .video.empty{display:grid;place-items:center;background:var(--sand) radial-gradient(rgba(31,42,36,.08) 1px,transparent 1px);background-size:14px 14px;color:var(--taupe)}
-  .disclose{margin-top:.75rem;font-size:.8125rem;color:var(--taupe);text-align:center;max-width:44rem;margin-inline:auto}
-  /* steps */
-  .steps{margin-top:2rem;padding:0;list-style:none;display:grid;gap:1rem;counter-reset:s} @media (min-width:768px){.steps{grid-template-columns:repeat(4,1fr)}} .steps li{counter-increment:s;background:#fff;border-radius:var(--r-card);padding:1.25rem;font-size:.9375rem;color:var(--ink)} .steps li::before{content:"0" counter(s);display:block;font-family:var(--display);font-weight:600;color:var(--sage);margin-bottom:.5rem}
-  /* specs + faq */
-  .specs{margin-top:2rem;width:100%;border-collapse:collapse;font-size:.9375rem;background:#fff;border-radius:var(--r-card);overflow:hidden} .specs th,.specs td{text-align:left;padding:.875rem 1rem;border-bottom:1px solid rgba(31,42,36,.08);vertical-align:top} .specs th{width:38%;font-weight:600;color:var(--ink)} .specs td{color:var(--taupe)} .specs tr:last-child th,.specs tr:last-child td{border-bottom:0}
-  .faq{margin-top:2rem;display:grid;gap:.5rem} .faq details{background:#fff;border-radius:14px;box-shadow:var(--shadow-card)} .faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.25rem;min-height:56px;font-weight:600;cursor:pointer} .faq summary::-webkit-details-marker{display:none} .faq summary::after{content:"+";font-size:1.5rem;color:var(--sage);line-height:1} .faq details[open] summary::after{content:"–"} .faq .body{padding:0 1.25rem 1.25rem;color:var(--taupe);font-size:.9375rem;line-height:1.65} .faq .body a{color:var(--sage-deep);font-weight:600}
-  /* purchase */
-  .buy{margin-top:2.5rem;display:grid;gap:2rem} @media (min-width:1024px){.buy{grid-template-columns:6fr 5fr;align-items:start}} .buy .ph{aspect-ratio:1}
-  .panel{background:#fff;border-radius:20px;padding:1.5rem;box-shadow:var(--shadow-card)} @media (min-width:640px){.panel{padding:2rem}}
-  .panel h3{font-size:1.375rem} .panel .price{margin-top:.75rem;font-family:var(--display);font-size:1.75rem;font-weight:600} .panel .price small{font-family:var(--body);font-size:.8125rem;font-weight:500;color:var(--taupe);margin-left:.5rem}
-  .lbl{display:block;margin-top:1.25rem;font-size:.75rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--taupe)}
-  .variants{margin-top:.625rem;display:flex;flex-wrap:wrap;gap:.5rem;padding:0;list-style:none} .variants button{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;padding:.5rem .875rem;border-radius:999px;border:1.5px solid rgba(31,42,36,.2);background:#fff;font-family:var(--body);font-size:.875rem;font-weight:600;color:var(--ink);cursor:pointer} .variants button[aria-pressed="true"]{border-color:var(--sage-deep);box-shadow:inset 0 0 0 1px var(--sage-deep)} .variants button[disabled]{opacity:.55;cursor:not-allowed}
-  .variants .sw{width:18px;height:18px;border-radius:50%;border:1px solid rgba(31,42,36,.15);background:var(--sw,#ccc)} .variants .sw.cow{background:repeating-linear-gradient(135deg,#1F1F1F 0 4px,#fff 4px 8px)} .variants small{font-weight:500;color:var(--taupe)}
-  .qty{margin-top:.625rem;display:inline-flex;align-items:center;border:1.5px solid rgba(31,42,36,.2);border-radius:999px} .qty button{width:44px;height:44px;border:0;background:transparent;font-size:1.25rem;cursor:pointer;color:var(--sage-deep)} .qty output{min-width:2rem;text-align:center;font-weight:600}
-  .panel .btn{margin-top:1.5rem} .stock{margin-top:.75rem;font-size:.875rem;color:var(--taupe)}
-  .reassure{margin:1.25rem 0 0;padding:0;list-style:none;display:grid;gap:.5rem;font-size:.875rem;color:var(--taupe)} .reassure li{display:flex;gap:.5rem;align-items:flex-start} .reassure .icon{flex:none;width:18px;height:18px;color:var(--sage)} .reassure a{color:var(--sage-deep);font-weight:600}
-  .wait{margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(31,42,36,.08)} .wait form{display:flex;flex-direction:column;gap:.5rem;margin-top:.625rem} @media (min-width:480px){.wait form{flex-direction:row}} .wait input{flex:1;min-height:48px;border:1.5px solid rgba(31,42,36,.2);border-radius:999px;padding:0 1rem;font:inherit;background:#fff} .wait input[aria-invalid="true"]{border-color:var(--clay)} .wait .btn{margin-top:0;min-height:48px;padding:.5rem 1.25rem} .wait .msg{margin-top:.5rem;font-size:.8125rem;color:var(--taupe)} .wait .msg.err{color:var(--clay)}
-  .note{margin-top:1rem;border:1px dashed rgba(194,101,63,.6);background:rgba(239,230,216,.6);border-radius:12px;padding:.75rem 1rem;font-size:.8125rem;line-height:1.5;color:var(--ink)} .note b{color:var(--clay)}
-  /* confidence */
-  .conf{margin-top:2.5rem;display:grid;gap:1rem} @media (min-width:768px){.conf{grid-template-columns:repeat(3,1fr)}} .conf .card p a{color:var(--sage-deep);font-weight:600}
-  .offer{margin-top:2.5rem;display:grid;gap:1rem} @media (min-width:768px){.offer{grid-template-columns:repeat(3,1fr)}} .offer .card.off{opacity:.6}
-  /* final */
-  .final .ctas{margin-top:1.75rem;display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center}
+  /* 2. gallery + purchase */
+  .shop{display:grid;gap:1.5rem} @media (min-width:1024px){.shop{grid-template-columns:7fr 5fr;gap:3rem;align-items:start}}
+  .gal .main{position:relative;aspect-ratio:1;border-radius:var(--r-card);overflow:hidden;background:var(--sand);cursor:zoom-in;border:0;padding:0;width:100%;display:block} .gal .main img{width:100%;height:100%;object-fit:cover;display:block} .gal .main .ph.empty{position:absolute;inset:0;height:auto}
+  .gal .main .zoom{position:absolute;right:.75rem;bottom:.75rem;display:inline-flex;align-items:center;gap:.375rem;background:rgba(255,255,255,.92);border-radius:999px;padding:.4rem .75rem;font-size:.75rem;font-weight:600;color:var(--ink)} .gal .main .zoom .icon{width:16px;height:16px}
+  .gal .main .cap2{position:absolute;left:.75rem;bottom:.75rem;background:rgba(255,255,255,.92);border-radius:999px;padding:.4rem .75rem;font-size:.75rem;font-weight:600;color:var(--ink)}
+  .ph.empty{display:grid;place-items:center;background:var(--sand) radial-gradient(rgba(31,42,36,.08) 1px,transparent 1px);background-size:14px 14px} .ph.empty .lbl{font-size:.8125rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--taupe);text-align:center;padding:1rem} .ph.empty .lbl small{display:block;margin-top:.375rem;font-weight:500;letter-spacing:0;text-transform:none}
+  .thumbs{margin:.75rem 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem} @media (max-width:479px){.thumbs{grid-template-columns:repeat(3,1fr)}}
+  .thumbs button{width:100%;border:2px solid transparent;border-radius:12px;padding:0;background:transparent;cursor:pointer;text-align:center;font-family:var(--body)} .thumbs button[aria-pressed="true"]{border-color:var(--sage-deep)}
+  .thumbs .t{aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--sand) radial-gradient(rgba(31,42,36,.08) 1px,transparent 1px);background-size:10px 10px;display:grid;place-items:center;color:var(--taupe);font-size:1rem;font-weight:600} .thumbs .t img{width:100%;height:100%;object-fit:cover;display:block}
+  .thumbs .l{display:block;margin-top:.3rem;font-size:.6875rem;line-height:1.2;font-weight:600;color:var(--taupe)}
+  .panel{background:#fff;border-radius:20px;padding:1.5rem;box-shadow:var(--shadow-card)} @media (min-width:640px){.panel{padding:1.75rem}}
+  .panel .edition{font-size:.75rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--sage)} .panel h2{font-size:1.5rem;margin-top:.25rem}
+  .panel .price{margin-top:.75rem;font-family:var(--display);font-size:1.625rem;font-weight:600} .panel .price small{font-family:var(--body);font-size:.8125rem;font-weight:500;color:var(--taupe);margin-left:.5rem}
+  .hl{list-style:none;margin:1rem 0 0;padding:0;display:grid;gap:.4rem} .hl li{display:flex;gap:.5rem;align-items:flex-start;font-size:.9rem} .hl .icon{flex:none;width:18px;height:18px;color:var(--sage);margin-top:.15rem}
+  .lbl{display:block;margin-top:1.25rem;font-size:.6875rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--taupe)}
+  .variants{margin:.5rem 0 0;display:flex;flex-wrap:wrap;gap:.5rem;padding:0;list-style:none} .variants button{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;padding:.5rem .875rem;border-radius:999px;border:1.5px solid rgba(31,42,36,.2);background:#fff;font-family:var(--body);font-size:.875rem;font-weight:600;color:var(--ink);cursor:pointer} .variants button[aria-pressed="true"]{border-color:var(--sage-deep);box-shadow:inset 0 0 0 1px var(--sage-deep)}
+  .variants .sw{width:18px;height:18px;border-radius:50%;border:1px solid rgba(31,42,36,.15);background:var(--sw,#ccc)} .variants .sw.cow{background:repeating-linear-gradient(135deg,#1F1F1F 0 4px,#fff 4px 8px)} .variants .more{font-size:.8125rem;color:var(--taupe);align-self:center}
+  .row{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:.5rem}
+  .qty{display:inline-flex;align-items:center;border:1.5px solid rgba(31,42,36,.2);border-radius:999px} .qty button{width:44px;height:44px;border:0;background:transparent;font-size:1.25rem;cursor:pointer;color:var(--sage-deep)} .qty output{min-width:2rem;text-align:center;font-weight:600}
+  .stock{font-size:.8125rem;color:var(--taupe)}
+  .panel .btn-wide{margin-top:1.25rem;width:100%}
+  .note{margin-top:.875rem;border:1px dashed rgba(194,101,63,.6);background:rgba(239,230,216,.6);border-radius:12px;padding:.625rem .875rem;font-size:.8125rem;line-height:1.5;color:var(--ink)} .note b{color:var(--clay)}
+  .ship{margin:1rem 0 0;padding:0;list-style:none;display:grid;gap:.375rem;font-size:.8125rem;color:var(--taupe)} .ship li{display:flex;gap:.5rem;align-items:flex-start} .ship .icon{flex:none;width:16px;height:16px;color:var(--sage);margin-top:.15rem} .ship a{color:var(--sage-deep);font-weight:600}
+  .more-info{margin-top:1rem;border-top:1px solid rgba(31,42,36,.08)} .more-info details{border-bottom:1px solid rgba(31,42,36,.08)} .more-info summary{list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:48px;padding:.5rem 0;font-size:.9rem;font-weight:600;cursor:pointer} .more-info summary::-webkit-details-marker{display:none} .more-info summary::after{content:"+";font-size:1.25rem;color:var(--sage)} .more-info details[open] summary::after{content:"–"}
+  .specs{width:100%;border-collapse:collapse;font-size:.8125rem;margin-bottom:.75rem} .specs th,.specs td{text-align:left;padding:.4rem 0;vertical-align:top;border-top:1px solid rgba(31,42,36,.06)} .specs th{width:40%;font-weight:600;color:var(--ink);padding-right:.75rem} .specs td{color:var(--taupe)}
+  .wait{margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(31,42,36,.08);font-size:.875rem} .wait form{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem} @media (min-width:480px){.wait form{flex-direction:row}} .wait input{flex:1;min-height:46px;border:1.5px solid rgba(31,42,36,.2);border-radius:999px;padding:0 1rem;font:inherit;background:#fff} .wait input[aria-invalid="true"]{border-color:var(--clay)} .wait .btn{min-height:46px;padding:.5rem 1.25rem} .wait .msg{margin-top:.5rem;font-size:.8125rem;color:var(--taupe)} .wait .msg.err{color:var(--clay)}
+  .dev{display:inline-flex;align-items:center;gap:.375rem;border:1px dashed rgba(194,101,63,.7);border-radius:999px;padding:.2rem .625rem;font-size:.6875rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--clay);background:rgba(255,255,255,.7)} .dev::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--clay)}
+  /* 3. upsell */
+  .ups{margin-top:1.75rem;display:grid;gap:1rem} @media (min-width:768px){.ups{grid-template-columns:1fr 1fr}}
+  .opt{position:relative;display:grid;grid-template-columns:5rem 1fr;gap:1rem;align-items:center;padding:1rem;background:#fff;border-radius:16px;border:2px solid transparent;box-shadow:var(--shadow-card);cursor:pointer} .opt:has(input:checked){border-color:var(--sage-deep)} .opt input{position:absolute;opacity:0;pointer-events:none} .opt:has(input:focus-visible){outline:3px solid var(--sage);outline-offset:3px}
+  .opt .pic{aspect-ratio:1;border-radius:12px;overflow:hidden} .opt .pic.two{display:grid;grid-template-columns:1fr 1fr;gap:3px} .opt .pic .ph,.opt .pic img{width:100%;height:100%;object-fit:cover} .opt .pic .ph{border-radius:0}
+  .opt h3{font-size:1.125rem} .opt .p{margin-top:.25rem;font-family:var(--display);font-size:1.25rem;font-weight:600} .opt .p small{font-family:var(--body);font-size:.75rem;font-weight:500;color:var(--taupe);margin-left:.4rem} .opt .n{margin-top:.25rem;font-size:.8125rem;color:var(--taupe)}
+  .opt .check{position:absolute;top:.75rem;right:.75rem;width:24px;height:24px;border-radius:50%;border:2px solid rgba(31,42,36,.25);display:grid;place-items:center;color:#fff} .opt:has(input:checked) .check{background:var(--sage-deep);border-color:var(--sage-deep)} .opt .check .icon{width:14px;height:14px}
+  .ups-act{margin-top:1.25rem;display:flex;flex-wrap:wrap;gap:.75rem;align-items:center} .ups-act .fine{font-size:.8125rem;color:var(--taupe)}
+  /* 4. benefits + faq */
+  .cards{margin-top:2rem;display:grid;gap:1rem} @media (min-width:768px){.cards{grid-template-columns:repeat(3,1fr)}}
+  .card{background:#fff;border-radius:var(--r-card);padding:1.5rem;box-shadow:var(--shadow-card)} .card h3{font-size:1.125rem} .card p{margin-top:.5rem;font-size:.9rem;color:var(--taupe);line-height:1.6}
+  .faq{margin-top:2.5rem;display:grid;gap:.5rem;max-width:48rem;margin-inline:auto} .faq details{background:#fff;border-radius:14px;box-shadow:var(--shadow-card)} .faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.875rem 1.25rem;min-height:52px;font-weight:600;cursor:pointer} .faq summary::-webkit-details-marker{display:none} .faq summary::after{content:"+";font-size:1.5rem;color:var(--sage);line-height:1} .faq details[open] summary::after{content:"–"} .faq .body{padding:0 1.25rem 1.125rem;color:var(--taupe);font-size:.9rem;line-height:1.6} .faq .body a{color:var(--sage-deep);font-weight:600}
+  /* 5. final */
+  .final .ctas{margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center}
   /* sticky bar */
   .bar{position:fixed;left:0;right:0;bottom:0;z-index:45;display:flex;align-items:center;gap:1rem;padding:.75rem 1rem calc(.75rem + env(safe-area-inset-bottom));background:rgba(250,246,239,.96);backdrop-filter:blur(8px);box-shadow:0 -8px 24px rgba(31,42,36,.12);transform:translateY(100%);transition:transform .25s} .bar.show{transform:none} .bar .info{flex:1;min-width:0;display:grid} .bar .info b{font-size:.9375rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .bar .info span{font-size:.8125rem;color:var(--taupe)} .bar .btn{flex:none;min-height:48px;padding:.5rem 1.25rem} @media (min-width:1024px){.bar{display:none}}
   body.bar-on{padding-bottom:5rem}
-  /* modal */
-  .modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(31,42,36,.7)} .modal.open{display:flex} .modal .box{width:min(56rem,100%);background:#000;border-radius:16px;overflow:hidden;position:relative} .modal video{width:100%;aspect-ratio:16/9;display:block;max-height:78vh;object-fit:contain;background:#000} .modal .box.portrait{width:min(30rem,100%)} .modal .box.portrait video{aspect-ratio:830/1108}
-  .modal .disc{margin:0;padding:.75rem 1rem;background:#1F2A24;color:rgba(250,246,239,.85);font-size:.75rem;line-height:1.5} .modal .disc .dev{margin-right:.5rem;vertical-align:middle}
-  .ph.poster .play{position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(to top,rgba(31,42,36,.45),rgba(31,42,36,0) 60%);border:0;cursor:pointer;color:#fff} .ph.poster .play span{display:grid;place-items:center;width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.95);color:var(--sage-deep)} .ph.poster .play .icon{width:28px;height:28px} .ph.poster .tag{position:absolute;left:.75rem;bottom:.75rem;background:rgba(255,255,255,.9);border-radius:999px;padding:.3rem .75rem;font-size:.75rem;font-weight:600;color:var(--ink)} .modal .close{position:absolute;top:.5rem;right:.5rem;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.9);cursor:pointer;display:grid;place-items:center} .modal .empty{aspect-ratio:16/9;display:grid;place-items:center;text-align:center;color:#fff;padding:2rem;background:var(--sage-deep)} .modal .empty p{max-width:30rem;margin-top:.5rem;color:rgba(250,246,239,.8);font-size:.9375rem}
-  /* footer */
+  /* lightbox */
+  .lb{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(31,42,36,.85)} .lb.open{display:flex} .lb .box{position:relative;width:min(56rem,100%);max-height:92vh;display:grid;gap:.5rem}
+  .lb .stage{position:relative;aspect-ratio:1;max-height:76vh;margin-inline:auto;width:100%;max-width:76vh;border-radius:12px;overflow:hidden;background:#000;touch-action:pan-y} .lb .stage img{width:100%;height:100%;object-fit:contain;display:block} .lb .stage .ph{height:100%;border-radius:0}
+  .lb .meta{display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:.875rem;font-weight:600;padding:0 .25rem} .lb .meta span{opacity:.8;font-weight:500}
+  .lb .nav{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:var(--sage-deep);cursor:pointer;display:grid;place-items:center;z-index:2} .lb .prev{left:.5rem} .lb .next{right:.5rem}
+  .lb .close{position:absolute;top:-.25rem;right:-.25rem;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.92);cursor:pointer;display:grid;place-items:center;z-index:3} @media (min-width:1024px){.lb .close{top:-3rem;right:0}}
+  /* footer + consent */
   .lp-foot{padding:2.5rem 0 3rem;border-top:1px solid rgba(31,42,36,.08);font-size:.875rem;color:var(--taupe)} .lp-foot .container{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:center;justify-content:space-between} .lp-foot ul{display:flex;flex-wrap:wrap;gap:1rem;list-style:none;margin:0;padding:0} .lp-foot a{color:var(--sage-deep);text-decoration:none;font-weight:600}
   .consent{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:70;background:#fff;border-radius:14px;padding:1rem;box-shadow:0 12px 40px -12px rgba(31,42,36,.4);display:none;gap:.75rem;align-items:center;font-size:.875rem} .consent.show{display:flex;flex-wrap:wrap} .consent .btn{min-height:44px;padding:.5rem 1rem}
 </style>
@@ -103,7 +115,7 @@
 <div class="status" id="statusBar" hidden></div>
 
 <main id="main">
-  <!-- 1. HERO -->
+  <!-- 1. HERO + AD VIDEO -->
   <section class="hero" id="hero" aria-labelledby="heroTitle">
     <div class="container">
       <div class="copy">
@@ -111,119 +123,69 @@
         <h1 class="h1" id="heroTitle"></h1>
         <p class="lead" id="heroSub"></p>
         <p class="price" id="heroPrice"></p>
-        <ul class="hl" id="heroHighlights"></ul>
         <div class="ctas">
           <a class="btn btn-primary" href="#buy" id="heroCta" data-track="hero_cta" data-place="hero">Shop the Cat Cave</a>
-          <button type="button" class="btn btn-ghost" id="heroWatch" data-track="video_open"><svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Watch Bruce’s Story</button>
+          <button type="button" class="btn btn-ghost" id="heroWatch"><svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><span>Watch Bruce’s Story</span></button>
         </div>
-        <p class="fine" id="heroFine"></p>
       </div>
-      <div class="visual"><div class="ph" id="heroMedia"></div></div>
+      <div class="visual"><div class="adv" id="adVideo"></div><p class="cap" id="adCaption" hidden></p></div>
     </div>
   </section>
 
-  <!-- 2. PROBLEM -->
-  <section class="sec alt" id="problem" aria-labelledby="problemTitle">
-    <div class="container">
-      <div class="head center"><p class="eyebrow">The problem</p><h2 class="h2" id="problemTitle">You Bought the Bed. They Chose Your Chair.</h2>
-        <p class="lead">Plenty of cat owners know this one: the bed goes unused while the cat settles on the armchair, the couch, a laundry pile or the box the bed came in. Not every cat does it, but if yours does, you are in good company.</p></div>
-      <ul class="grid3" id="problemPhotos" style="list-style:none;padding:0"></ul>
-      <p class="lead" style="margin-inline:auto;text-align:center">One thing that sometimes helps is giving them a spot that is clearly theirs, placed where they already like to be.</p>
+  <!-- 2. GALLERY + PURCHASE -->
+  <section class="sec alt" id="buy" aria-labelledby="buyName" style="padding-block:2.5rem 3.5rem">
+    <div class="container shop">
+      <div class="gal" id="gallery" aria-label="Product photos">
+        <button type="button" class="main" id="galMain" aria-label="Enlarge product photo"></button>
+        <ul class="thumbs" id="thumbs"></ul>
+      </div>
+      <div class="panel" id="buyPanel">
+        <p class="edition" id="buyEdition"></p>
+        <h2 id="buyName"></h2>
+        <p class="price" id="buyPrice"></p>
+        <ul class="hl" id="buyHighlights"></ul>
+        <span class="lbl" id="variantLbl">Design</span>
+        <ul class="variants" id="variants" aria-labelledby="variantLbl"></ul>
+        <span class="lbl" id="qtyLbl">Quantity</span>
+        <div class="row"><div class="qty" role="group" aria-labelledby="qtyLbl"><button type="button" id="qtyMinus" aria-label="Decrease quantity">−</button><output id="qtyOut" aria-live="polite">1</output><button type="button" id="qtyPlus" aria-label="Increase quantity">+</button></div><span class="stock" id="stock"></span></div>
+        <button type="button" class="btn btn-primary btn-wide" id="addToCart" data-track="add_to_cart">Add to cart</button>
+        <div class="note" id="buyNote" hidden></div>
+        <ul class="ship" id="ship"></ul>
+        <div class="more-info">
+          <details id="dimsDetails"><summary>Dimensions &amp; fit</summary><table class="specs"><caption class="sr-only">Dimensions</caption><tbody id="dimsBody"></tbody></table></details>
+          <details id="careDetails"><summary>Materials &amp; care</summary><table class="specs"><caption class="sr-only">Materials and care</caption><tbody id="careBody"></tbody></table></details>
+        </div>
+        <div class="wait" id="waitlist" hidden>
+          <b>Hear first when ordering opens</b>
+          <form id="waitForm" novalidate><label for="waitEmail" class="sr-only">Email address</label><input id="waitEmail" type="email" placeholder="you@example.com" autocomplete="email" inputmode="email"><button type="submit" class="btn btn-ghost">Notify me</button></form>
+          <p class="msg" id="waitMsg" aria-live="polite"></p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- 3. PRODUCT -->
-  <section class="sec" id="product" aria-labelledby="productTitle">
+  <!-- 3. UPSELL -->
+  <section class="sec" id="upsell" aria-labelledby="upsTitle" style="padding-block:3rem">
     <div class="container">
-      <div class="head center"><p class="eyebrow">The Cat Cave</p><h2 class="h2" id="productTitle">Meet Their New Little Hideaway.</h2>
-        <p class="lead">An enclosed plush cave with a single front opening, a cushioned floor and plush trim around the entrance. The shell is black-and-white cow print with small ears, horns and a hanging pom-pom. That is what it is; no more, no less.</p></div>
-      <ul class="gallery" id="gallery"></ul>
-      <p class="disclose" id="galleryNote"></p>
+      <div class="head"><p class="eyebrow">Optional</p><h2 class="h2" id="upsTitle"></h2><p class="lead" id="upsCopy"></p></div>
+      <div class="ups" id="upsOptions" role="radiogroup" aria-labelledby="upsTitle"></div>
+      <div class="ups-act"><button type="button" class="btn btn-primary" id="upsAdd"></button><span class="fine" id="upsFine"></span></div>
     </div>
   </section>
 
-  <!-- 4. BENEFITS -->
-  <section class="sec alt" id="benefits" aria-labelledby="benefitsTitle">
+  <!-- 4. BENEFITS + FAQ -->
+  <section class="sec alt" id="why" aria-labelledby="whyTitle" style="padding-block:3rem 3.5rem">
     <div class="container">
-      <div class="head center"><p class="eyebrow">Why it might earn its spot</p><h2 class="h2" id="benefitsTitle">Made for Cozy Moments. Designed for Your Home.</h2></div>
+      <div class="head center"><p class="eyebrow">Why it might earn its spot</p><h2 class="h2" id="whyTitle">Made for Cozy Moments. Designed for Your Home.</h2></div>
       <div class="cards" id="benefitCards"></div>
-    </div>
-  </section>
-
-  <!-- 5. DEMONSTRATION -->
-  <section class="sec" id="demo" aria-labelledby="demoTitle">
-    <div class="container">
-      <div class="head center"><p class="eyebrow">Up close</p><h2 class="h2" id="demoTitle">See the Cat Cave Up Close.</h2>
-        <p class="lead">Exterior, entrance, interior cushion, a cat approaching the opening, and how much room is actually inside.</p></div>
-      <div class="video" id="demoVideo"></div>
-      <p class="disclose" id="demoNote"></p>
-    </div>
-  </section>
-
-  <!-- 6. OBJECTIONS -->
-  <section class="sec alt" id="objections" aria-labelledby="objTitle">
-    <div class="container">
-      <div class="head"><p class="eyebrow">Before you decide</p><h2 class="h2" id="objTitle">The Questions Cat Owners Ask First.</h2>
-        <p class="lead">Straight answers, and a clear "to be confirmed" wherever we do not have the information yet.</p></div>
-      <h3 style="margin-top:2.5rem;font-size:1.25rem">Introducing a new bed</h3>
-      <ol class="steps" id="introSteps"></ol>
-      <h3 style="margin-top:2.5rem;font-size:1.25rem">Measurements and materials</h3>
-      <table class="specs" id="specs"><caption class="sr-only">Product specifications</caption><tbody></tbody></table>
+      <div class="head center" style="margin-top:3rem"><h2 class="h2" id="faqTitle" style="font-size:1.75rem">Questions cat owners ask first</h2></div>
       <div class="faq" id="faq"></div>
     </div>
   </section>
 
-  <!-- 7. PURCHASE -->
-  <section class="sec" id="buy" aria-labelledby="buyTitle">
-    <div class="container">
-      <div class="head center"><p class="eyebrow">Choose yours</p><h2 class="h2" id="buyTitle">Find Their Favorite Little Hideaway.</h2></div>
-      <div class="buy">
-        <div class="ph" id="buyMedia"></div>
-        <div class="panel" id="buyPanel">
-          <h3 id="buyName"></h3>
-          <p class="price" id="buyPrice"></p>
-          <span class="lbl" id="variantLbl">Design</span>
-          <ul class="variants" id="variants" aria-labelledby="variantLbl"></ul>
-          <span class="lbl" id="qtyLbl">Quantity</span>
-          <div class="qty" role="group" aria-labelledby="qtyLbl"><button type="button" id="qtyMinus" aria-label="Decrease quantity">−</button><output id="qtyOut" aria-live="polite">1</output><button type="button" id="qtyPlus" aria-label="Increase quantity">+</button></div>
-          <p class="stock" id="stock"></p>
-          <button type="button" class="btn btn-primary btn-wide" id="addToCart" data-track="add_to_cart">Add to cart</button>
-          <div class="note" id="buyNote" hidden></div>
-          <ul class="reassure" id="reassure"></ul>
-          <div class="wait" id="waitlist" hidden>
-            <b>Hear first when ordering opens</b>
-            <form id="waitForm" novalidate><label for="waitEmail" class="sr-only">Email address</label><input id="waitEmail" type="email" placeholder="you@example.com" autocomplete="email" inputmode="email"><button type="submit" class="btn btn-ghost">Notify me</button></form>
-            <p class="msg" id="waitMsg" aria-live="polite"></p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 8. CONFIDENCE -->
-  <section class="sec alt" id="confidence" aria-labelledby="confTitle">
-    <div class="container">
-      <div class="head center"><p class="eyebrow">Know before you buy</p><h2 class="h2" id="confTitle">Everything We Can Tell You Today.</h2></div>
-      <div class="conf" id="confCards"></div>
-    </div>
-  </section>
-
-  <!-- 9. OFFER -->
-  <section class="sec" id="offer" aria-labelledby="offerTitle">
-    <div class="container">
-      <div class="head center"><p class="eyebrow">The offer</p><h2 class="h2" id="offerTitle">One Cave. One Clear Price.</h2>
-        <p class="lead" id="offerLead">Bundles, introductory pricing and extra designs are tested only once they are approved and real. Nothing here is invented.</p></div>
-      <div class="offer" id="offerCards"></div>
-    </div>
-  </section>
-
-  <!-- 10. FINAL CTA -->
-  <section class="sec dark final" id="final" aria-labelledby="finalTitle">
-    <div class="container">
-      <div class="head center"><p class="eyebrow">Ready when you are</p><h2 class="h2" id="finalTitle">Their Very Own Little Spot Is Waiting.</h2>
-        <p class="lead">Discover the Cat Cave collection and find a cozy corner that suits your cat and your home.</p>
-        <div class="ctas"><a class="btn btn-primary" href="#buy" id="finalCta" data-track="hero_cta" data-place="final">Shop the Cat Cave</a></div></div>
-    </div>
+  <!-- 5. FINAL CTA -->
+  <section class="sec dark final" id="final" aria-labelledby="finalTitle" style="padding-block:3.5rem">
+    <div class="container"><div class="head center"><h2 class="h2" id="finalTitle"></h2><p class="lead" id="finalCopy"></p><div class="ctas"><a class="btn btn-primary" href="#buy" id="finalCta" data-track="hero_cta" data-place="final"></a></div></div></div>
   </section>
 </main>
 
@@ -236,8 +198,12 @@
 
 <div class="bar" id="bar" aria-hidden="true"><div class="info"><b id="barName"></b><span id="barPrice"></span></div><a class="btn btn-primary" href="#buy" id="barCta" data-track="hero_cta" data-place="sticky">Shop the Cat Cave</a></div>
 
-<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
-  <div class="box"><button type="button" class="close" id="modalClose" aria-label="Close video"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button><h2 id="modalTitle" class="sr-only">Video</h2><div id="modalBody"></div></div>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-labelledby="lbTitle" hidden>
+  <div class="box">
+    <button type="button" class="close" id="lbClose" aria-label="Close"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <div class="stage" id="lbStage"><button type="button" class="nav prev" id="lbPrev" aria-label="Previous photo"><svg class="icon" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></svg></button><div id="lbMedia" style="height:100%"></div><button type="button" class="nav next" id="lbNext" aria-label="Next photo"><svg class="icon" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button></div>
+    <div class="meta"><b id="lbTitle"></b><span id="lbCount" aria-live="polite"></span></div>
+  </div>
 </div>
 <div class="consent" id="consent" role="region" aria-label="Cookie preferences"><span>We use cookies for ads measurement. Allow?</span><button type="button" class="btn btn-primary" id="consentYes">Allow</button><button type="button" class="btn btn-ghost" id="consentNo">No thanks</button></div>
 
@@ -301,81 +267,127 @@ var BASE = "{{BASE}}";
   window.urpickConsent = { grant: function () { $("consentYes").click(); }, deny: function () { $("consentNo").click(); } };
   loadPixels();
 
-  // ── Media helpers: a real <img>/<video> when a source exists; otherwise a labelled development placeholder ──
-  function media(el, m, extra) {
-    el.innerHTML = "";
-    if (m && m.src) { el.classList.remove("empty"); var img = document.createElement("img"); img.src = BASE + m.src; img.alt = m.alt || ""; img.loading = extra && extra.eager ? "eager" : "lazy"; img.decoding = "async"; el.appendChild(img); el.removeAttribute("role"); }
-    else { el.classList.add("empty"); el.setAttribute("role", "img"); el.setAttribute("aria-label", (m && m.alt ? m.alt : "Image") + " (placeholder, final photo pending)"); el.innerHTML = '<span class="dev">Placeholder</span><span class="lbl">' + esc(m ? m.label : "Image") + '<small>Final photo pending</small></span>'; }
-  }
-  function videoBlock(el, v, name) {
-    el.innerHTML = "";
-    if (v && v.src) {
-      el.classList.remove("empty");
-      var vid = document.createElement("video"); vid.src = BASE + v.src; if (v.poster) vid.poster = BASE + v.poster; vid.playsInline = true; vid.preload = "metadata"; vid.controls = false; vid.setAttribute("aria-label", v.title || "Video");
-      var play = document.createElement("button"); play.type = "button"; play.className = "play"; play.innerHTML = '<span><svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span><span class="sr-only">Play ' + esc(v.title) + '</span>';
-      play.addEventListener("click", function () { play.remove(); vid.controls = true; vid.muted = false; vid.play(); track("video_play", { video: name }); });
-      vid.addEventListener("ended", function () { track("video_complete", { video: name }); });
-      el.appendChild(vid); el.appendChild(play);
-    } else { el.classList.add("empty"); el.setAttribute("role", "img"); el.setAttribute("aria-label", (v && v.title ? v.title : "Video") + " (placeholder, footage pending)"); el.innerHTML = '<span class="dev">Placeholder</span><span class="lbl" style="font-size:.8125rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--taupe);text-align:center;padding:1rem">' + esc(v ? v.label : "Video") + '<small style="display:block;margin-top:.375rem;font-weight:500;letter-spacing:0;text-transform:none">Footage not supplied yet</small></span>'; }
-  }
-
-  // ── 1. Hero ──
+  // ── helpers ──
+  var tick = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg>';
+  function placeholder(label, small) { return '<span class="lbl">' + esc(label) + '<small>' + esc(small || "Final photo pending") + '</small></span>'; }
   var st = CONFIG.status, live = st === "live" && CONFIG.price != null;
   var priceText = live ? "$" + Number(CONFIG.price).toFixed(2) : "Price to be confirmed";
+  var S = CONFIG.specs || {}, tbc = '<span class="dev">To be confirmed</span>';
+
+  // ── 1. Hero: headline, copy and video follow the angle; everything else is shared ──
   $("heroEyebrow").textContent = angle.eyebrow; $("heroTitle").textContent = angle.headline; $("heroSub").textContent = angle.sub;
   $("heroPrice").innerHTML = live ? esc(priceText) + (CONFIG.compareAt ? ' <small><s>$' + Number(CONFIG.compareAt).toFixed(2) + '</s></small>' : "") : '<span>' + esc(priceText) + '</span><small>Ordering opens once price and stock are confirmed</small>';
-  $("heroHighlights").innerHTML = CONFIG.highlights.map(function (h) { return '<li><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg><span>' + esc(h) + '</span></li>'; }).join("");
-  $("heroFine").textContent = CONFIG.highlightsNote;
   document.querySelectorAll('[data-track="hero_cta"]').forEach(function (a) { a.textContent = ctaText; });
   if (st !== "live") { $("statusBar").hidden = false; $("statusBar").innerHTML = "<b>Preview.</b> " + esc(CONFIG.statusNote); }
-  document.title = CONFIG.name + " · " + CONFIG.brand;
+  document.title = CONFIG.displayName + " · " + CONFIG.brand;
+  var adv = $("adVideo"), v = CONFIG.media[angle.video], advVideo = null;
+  if (v && v.src) {
+    advVideo = document.createElement("video"); advVideo.src = BASE + v.src; if (v.poster) advVideo.poster = BASE + v.poster; advVideo.playsInline = true; advVideo.preload = "metadata"; advVideo.setAttribute("aria-label", v.title);
+    var play = document.createElement("button"); play.type = "button"; play.className = "play"; play.setAttribute("aria-label", "Play " + v.title); play.innerHTML = '<span><svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>';
+    var tag = document.createElement("span"); tag.className = "tag"; tag.textContent = v.tag || "Ad concept";
+    adv.appendChild(advVideo); adv.appendChild(play); adv.appendChild(tag);
+    function startAd() { if (play.parentNode) play.remove(); advVideo.controls = true; advVideo.muted = false; advVideo.play().catch(function () {}); }
+    play.addEventListener("click", startAd);
+    advVideo.addEventListener("play", function () { track("video_play", { video: angle.video }); }, { once: true });
+    advVideo.addEventListener("ended", function () { track("video_complete", { video: angle.video }); });
+    $("heroWatch").addEventListener("click", function () { track("video_open", { video: angle.video }); adv.scrollIntoView({ behavior: "smooth", block: "center" }); startAd(); });
+    if (v.caption) { $("adCaption").hidden = false; $("adCaption").textContent = v.caption; }
+  } else { adv.classList.add("empty"); adv.setAttribute("role", "img"); adv.setAttribute("aria-label", (v && v.title ? v.title : "Ad video") + " (placeholder, footage pending)"); adv.innerHTML = esc(v ? v.label : "Ad video") + "<br><small style='font-weight:500;text-transform:none;letter-spacing:0'>Footage not supplied yet</small>"; $("heroWatch").hidden = true; }
+  $("heroWatch").querySelector("span").textContent = (angleKey === "education" || angleKey === "product") ? "Watch the video" : "Watch Bruce’s Story";
 
-  // video modal (hero secondary action)
-  var heroVideo = CONFIG.media[angle.video];
-  $("heroWatch").textContent = ""; $("heroWatch").innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>' + (angleKey === "story" || angleKey === "problem" || angleKey === "ugc" ? "Watch Bruce’s Story" : "Watch the demo");
-  var lastFocus = null;
-  function openModal(v, name) {
-    lastFocus = document.activeElement; var body = $("modalBody"); body.innerHTML = "";
-    $("modalTitle").textContent = v.title || "Video";
-    $("modal").querySelector(".box").classList.toggle("portrait", !!v.portrait);
-    if (v.src) { var vid = document.createElement("video"); vid.src = BASE + v.src; if (v.poster) vid.poster = BASE + v.poster; vid.controls = true; vid.playsInline = true; vid.preload = "metadata"; vid.setAttribute("aria-label", v.title); body.appendChild(vid); var disc = document.createElement("p"); disc.className = "disc"; disc.innerHTML = '<span class="dev">Concept</span>' + esc(v.disclosure || ""); body.appendChild(disc); vid.addEventListener("play", function () { track("video_play", { video: name }); }, { once: true }); vid.addEventListener("ended", function () { track("video_complete", { video: name }); }); vid.play().catch(function () {}); }
-    else body.innerHTML = '<div class="empty"><div><span class="dev">Placeholder</span><h3 style="color:#fff;margin-top:.75rem">' + esc(v.title) + '</h3><p>' + esc(v.label) + '. Footage not supplied yet.</p><p>' + esc(v.disclosure || "") + '</p></div></div>';
-    $("modal").hidden = false; $("modal").classList.add("open"); document.body.style.overflow = "hidden"; $("modalClose").focus();
-    track("video_open", { video: name });
+  // ── 2. Gallery (shared by every angle) ──
+  var G = CONFIG.media.gallery, gi = 0;
+  function galleryMedia(el, g, big) {
+    el.innerHTML = "";
+    if (g.src) { var img = document.createElement("img"); img.src = BASE + g.src; img.alt = g.alt; img.loading = big ? "eager" : "lazy"; img.decoding = "async"; el.appendChild(img); }
+    else { var ph = document.createElement("div"); ph.className = "ph empty"; ph.style.height = "100%"; ph.setAttribute("role", "img"); ph.setAttribute("aria-label", g.alt + " (final photo pending)"); ph.innerHTML = placeholder(g.label); el.appendChild(ph); }
   }
-  function closeModal() { $("modal").classList.remove("open"); $("modal").hidden = true; $("modalBody").innerHTML = ""; document.body.style.overflow = ""; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
-  $("heroWatch").addEventListener("click", function () { openModal(heroVideo, angle.video); });
-  var heroPhoto = CONFIG.media[angle.media];
-  if (!(heroPhoto && heroPhoto.src) && heroVideo && heroVideo.src && heroVideo.poster) {
-    var hm = $("heroMedia"); hm.classList.remove("empty"); hm.classList.add("poster"); hm.removeAttribute("role"); hm.innerHTML = '<img src="' + esc(BASE + heroVideo.poster) + '" alt="' + esc(heroVideo.title) + ' (video still)" loading="eager" decoding="async"><button type="button" class="play" aria-label="Play ' + esc(heroVideo.title) + '"><span><svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></button><span class="tag">' + esc(heroVideo.label) + '</span>';
-    hm.querySelector(".play").addEventListener("click", function () { openModal(heroVideo, angle.video); });
-  } else media($("heroMedia"), heroPhoto, { eager: true });
-  $("modalClose").addEventListener("click", closeModal);
-  $("modal").addEventListener("click", function (e) { if (e.target === $("modal")) closeModal(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("modal").hidden) closeModal(); });
+  function renderMain() {
+    var g = G[gi]; galleryMedia($("galMain"), g, true);
+    $("galMain").insertAdjacentHTML("beforeend", '<span class="cap2">' + esc(g.label) + '</span><span class="zoom"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5M11 8v6M8 11h6"/></svg>Enlarge</span>');
+    $("galMain").setAttribute("aria-label", "Enlarge: " + g.label + (g.src ? "" : " (final photo pending)"));
+    Array.prototype.forEach.call($("thumbs").querySelectorAll("button"), function (b, i) { b.setAttribute("aria-pressed", String(i === gi)); });
+  }
+  $("thumbs").innerHTML = G.map(function (g, i) { return '<li><button type="button" data-i="' + i + '" aria-pressed="false" aria-label="' + esc(g.label) + (g.src ? "" : ", final photo pending") + '"><span class="t">' + (g.src ? '<img src="' + esc(BASE + g.src) + '" alt="" loading="lazy">' : (i + 1)) + '</span><span class="l">' + esc(g.label) + '</span></button></li>'; }).join("");
+  Array.prototype.forEach.call($("thumbs").querySelectorAll("button"), function (b) { b.addEventListener("click", function () { gi = +b.getAttribute("data-i"); renderMain(); track("product_detail_interaction", { detail: G[gi].label }); }); });
+  renderMain();
+  // lightbox
+  var lbLast = null, touchX = null;
+  function lbRender() { var g = G[gi]; galleryMedia($("lbMedia"), g, true); $("lbTitle").textContent = g.label + (g.src ? "" : " · final photo pending"); $("lbCount").textContent = (gi + 1) + " / " + G.length; }
+  function lbOpen() { lbLast = document.activeElement; $("lb").hidden = false; $("lb").classList.add("open"); document.body.style.overflow = "hidden"; lbRender(); $("lbClose").focus(); track("gallery_open", { detail: G[gi].label }); }
+  function lbClose() { $("lb").classList.remove("open"); $("lb").hidden = true; document.body.style.overflow = ""; renderMain(); if (lbLast && lbLast.focus) lbLast.focus(); }
+  function lbStep(d) { gi = (gi + d + G.length) % G.length; lbRender(); }
+  $("galMain").addEventListener("click", lbOpen); $("lbClose").addEventListener("click", lbClose);
+  $("lbPrev").addEventListener("click", function () { lbStep(-1); }); $("lbNext").addEventListener("click", function () { lbStep(1); });
+  $("lb").addEventListener("click", function (e) { if (e.target === $("lb")) lbClose(); });
+  document.addEventListener("keydown", function (e) { if ($("lb").hidden) return; if (e.key === "Escape") lbClose(); else if (e.key === "ArrowRight") lbStep(1); else if (e.key === "ArrowLeft") lbStep(-1); });
+  $("lbStage").addEventListener("touchstart", function (e) { touchX = e.touches[0].clientX; }, { passive: true });
+  $("lbStage").addEventListener("touchend", function (e) { if (touchX == null) return; var dx = e.changedTouches[0].clientX - touchX; touchX = null; if (Math.abs(dx) > 40) lbStep(dx < 0 ? 1 : -1); }, { passive: true });
 
-  // ── 2. Problem photos ──
-  $("problemPhotos").innerHTML = CONFIG.media.problem.map(function () { return '<li><div class="ph"></div></li>'; }).join("");
-  Array.prototype.forEach.call($("problemPhotos").querySelectorAll(".ph"), function (el, i) { media(el, CONFIG.media.problem[i]); });
+  // ── 2b. Purchase module (shared) ──
+  var confirmed = CONFIG.variants.filter(function (x) { return x.status === "hero" || x.available; }), unconfirmed = CONFIG.variants.length - confirmed.length;
+  var selected = confirmed[0] || CONFIG.variants[0], qty = 1;
+  $("buyEdition").textContent = CONFIG.edition; $("buyName").textContent = CONFIG.displayName;
+  $("buyPrice").innerHTML = live ? esc(priceText) + (CONFIG.compareAt ? '<small><s>$' + Number(CONFIG.compareAt).toFixed(2) + '</s></small>' : "") : esc(priceText) + '<small>not yet approved</small>';
+  $("buyHighlights").innerHTML = CONFIG.highlights.slice(0, 3).map(function (h) { return "<li>" + tick + "<span>" + esc(h) + "</span></li>"; }).join("");
+  function renderVariants() {
+    $("variants").innerHTML = confirmed.map(function (x) { return '<li><button type="button" data-id="' + esc(x.id) + '" aria-pressed="' + (x.id === selected.id) + '"><span class="sw' + (x.id === "cow-print" ? " cow" : "") + '" style="--sw:' + esc(x.hex) + '" aria-hidden="true"></span>' + esc(x.name) + '</button></li>'; }).join("") + (unconfirmed ? '<li class="more">' + unconfirmed + ' more design' + (unconfirmed > 1 ? "s" : "") + ' to be confirmed</li>' : "");
+    Array.prototype.forEach.call($("variants").querySelectorAll("button"), function (b) { b.addEventListener("click", function () { selected = confirmed.filter(function (x) { return x.id === b.getAttribute("data-id"); })[0]; renderVariants(); track("variant_select", { variant: selected.id }); }); });
+  }
+  renderVariants();
+  function setQty(n) { qty = Math.max(1, Math.min(10, n)); $("qtyOut").textContent = qty; Array.prototype.forEach.call(document.querySelectorAll('#upsOptions input'), function (r) { r.checked = (+r.value === qty); }); }
+  $("qtyMinus").addEventListener("click", function () { setQty(qty - 1); }); $("qtyPlus").addEventListener("click", function () { setQty(qty + 1); });
+  var add = $("addToCart");
+  function addToCart(n, source) {
+    var KEY = "eb_cart_v1", cart = { lines: [] }; try { cart = JSON.parse(localStorage.getItem(KEY) || "null") || cart; } catch (e) {}
+    var ex = cart.lines.filter(function (l) { return l.variantId === selected.variantId; })[0];
+    if (ex) ex.qty = Math.min(10, ex.qty + n); else cart.lines.push({ variantId: selected.variantId, productId: CONFIG.productId, title: CONFIG.displayName, color: selected.name, hex: selected.hex, price: CONFIG.price, qty: n });
+    try { localStorage.setItem(KEY, JSON.stringify({ lines: cart.lines })); } catch (e) {}
+    track("AddToCart", { variant: selected.id, quantity: n, value: CONFIG.price * n, source: source });
+  }
+  if (live && selected.available) {
+    $("stock").textContent = CONFIG.stock == null ? "" : CONFIG.stock > 0 ? "In stock" : "Out of stock";
+    add.disabled = !(CONFIG.stock == null || CONFIG.stock > 0);
+    add.addEventListener("click", function () { addToCart(qty, "module"); add.textContent = "Added · View cart"; add.addEventListener("click", function () { track("InitiateCheckout", { value: CONFIG.price * qty }); location.href = BASE + "/#cart"; }, { once: true }); });
+  } else {
+    add.disabled = true; add.setAttribute("aria-describedby", "buyNote"); $("stock").textContent = "Ordering not open yet";
+    $("buyNote").hidden = false; $("buyNote").innerHTML = "<b>Pending.</b> Price, stock and checkout are switched off until confirmed. Nothing can be ordered here yet and no payment is taken.";
+    $("waitlist").hidden = false;
+    $("waitForm").addEventListener("submit", function (e) {
+      e.preventDefault(); var em = $("waitEmail"), val = (em.value || "").trim().toLowerCase(), msg = $("waitMsg");
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(val)) { em.setAttribute("aria-invalid", "true"); msg.className = "msg err"; msg.textContent = "Please enter a valid email address."; em.focus(); return; }
+      em.removeAttribute("aria-invalid"); var rec = Object.assign({ email: val, product: CONFIG.productId, variant: selected.id, qty: qty, at: new Date().toISOString() }, attr);
+      try { var list = JSON.parse(localStorage.getItem("urpick_waitlist_v1") || "[]"); list.push(rec); localStorage.setItem("urpick_waitlist_v1", JSON.stringify(list)); } catch (err) {}
+      msg.className = "msg"; msg.textContent = "Saved on this device only. The email service is not connected yet, so nothing has been sent."; track("waitlist_signup", { variant: selected.id });
+    });
+  }
+  var ship = CONFIG.shipping, ret = CONFIG.returns;
+  $("ship").innerHTML = [esc(ship.delivery) + " · " + esc(ship.cost), esc(ret.window) + ' · <a href="' + esc(BASE + "/#shipping-returns") + '">draft policy</a>'].map(function (t) { return "<li>" + tick + "<span>" + t + "</span></li>"; }).join("");
+  $("dimsBody").innerHTML = [["External size", S.external], ["Usable interior", S.interior], ["Entrance", S.entrance], ["Weight", S.weight]].map(function (r) { return "<tr><th scope=\"row\">" + esc(r[0]) + "</th><td>" + (r[1] ? esc(r[1]) : tbc) + "</td></tr>"; }).join("");
+  $("careBody").innerHTML = [["Materials", S.materials], ["Construction", S.construction], ["Care", S.care], ["Safety", S.safety]].map(function (r) { return "<tr><th scope=\"row\">" + esc(r[0]) + "</th><td>" + (r[1] ? esc(r[1]) : tbc) + "</td></tr>"; }).join("");
+  $("dimsDetails").addEventListener("toggle", function () { if ($("dimsDetails").open) track("size_guide_open", {}); });
+  $("careDetails").addEventListener("toggle", function () { if ($("careDetails").open) track("product_detail_interaction", { detail: "care" }); });
 
-  // ── 3. Gallery ──
-  $("gallery").innerHTML = CONFIG.media.gallery.map(function () { return '<li><div class="ph"></div></li>'; }).join("");
-  Array.prototype.forEach.call($("gallery").querySelectorAll(".ph"), function (el, i) { media(el, CONFIG.media.gallery[i]); el.setAttribute("data-track", "gallery"); el.addEventListener("click", function () { track("product_detail_interaction", { detail: CONFIG.media.gallery[i].label }); }); });
-  var missingPhotos = CONFIG.media.gallery.filter(function (g) { return !g.src; }).length;
-  $("galleryNote").textContent = missingPhotos ? "Product photography is being shot from the supplier sample. " + missingPhotos + " of " + CONFIG.media.gallery.length + " views are placeholders in this preview." : "";
+  // ── 3. Upsell: one or two, same product, no invented bundle price ──
+  var U = CONFIG.upsell, upsSel = U.options[0];
+  $("upsTitle").textContent = U.heading; $("upsCopy").textContent = U.copy;
+  function upsPrice(o) { if (live && o.price != null) return "$" + Number(o.price).toFixed(2); if (live && o.qty === 1) return "$" + Number(CONFIG.price).toFixed(2); return "Price to be confirmed"; }
+  $("upsOptions").innerHTML = U.options.map(function (o, i) {
+    var pic = o.qty === 2 ? '<div class="pic two"><div class="ph empty"></div><div class="ph empty"></div></div>' : '<div class="pic"><div class="ph empty" style="height:100%"></div></div>';
+    return '<label class="opt"><input type="radio" name="ups" value="' + o.qty + '"' + (i === 0 ? " checked" : "") + '>' + pic + '<div><h3>' + esc(o.title) + '</h3><p class="p">' + esc(upsPrice(o)) + '<small>' + (o.qty === 2 ? "for two" : "each") + '</small></p><p class="n">' + esc(o.note) + '</p></div><span class="check" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="m5 12 4 4L19 7"/></svg></span></label>';
+  }).join("");
+  if (CONFIG.media.hero.src) Array.prototype.forEach.call($("upsOptions").querySelectorAll(".pic .ph"), function (ph) { ph.outerHTML = '<img src="' + esc(BASE + CONFIG.media.hero.src) + '" alt="">'; });
+  Array.prototype.forEach.call($("upsOptions").querySelectorAll("input"), function (r) { r.addEventListener("change", function () { upsSel = U.options.filter(function (o) { return o.qty === +r.value; })[0]; setQty(upsSel.qty); upsRender(); track("upsell_select", { option: upsSel.id }); }); });
+  function upsRender() {
+    var canBuy = live && selected.available && (upsSel.qty === 1 || U.configured);
+    $("upsAdd").textContent = upsSel.qty === 2 ? "Add two to cart" : "Add one to cart"; $("upsAdd").disabled = !canBuy;
+    $("upsFine").innerHTML = canBuy ? "" : (live ? '<span class="dev">Bundle checkout not configured</span>' : '<span class="dev">Pending price</span> Selecting an option sets the quantity in the purchase module above.');
+  }
+  $("upsAdd").addEventListener("click", function () { if ($("upsAdd").disabled) return; addToCart(upsSel.qty, "upsell"); $("upsAdd").textContent = "Added · View cart"; $("upsAdd").addEventListener("click", function () { track("InitiateCheckout", { value: CONFIG.price * upsSel.qty }); location.href = BASE + "/#cart"; }, { once: true }); });
+  upsRender();
 
-  // ── 4. Benefits ──
-  $("benefitCards").innerHTML = CONFIG.benefits.map(function (b, i) { return '<div class="card"><span class="n">' + (i + 1) + '</span><h3>' + esc(b.title) + '</h3><p>' + esc(b.text) + '</p></div>'; }).join("");
-
-  // ── 5. Demo ──
-  videoBlock($("demoVideo"), CONFIG.media.demoVideo, "demoVideo");
-  $("demoNote").textContent = CONFIG.media.demoVideo.disclosure;
-
-  // ── 6. Objections ──
-  $("introSteps").innerHTML = CONFIG.intro.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("");
-  var S = CONFIG.specs, tbc = '<span class="dev">To be confirmed by supplier</span>';
-  var rows = [["External size", S.external], ["Usable interior", S.interior], ["Entrance", S.entrance], ["Weight", S.weight], ["Materials", S.materials], ["Construction", S.construction], ["Care", S.care], ["Safety", S.safety]];
-  $("specs").querySelector("tbody").innerHTML = rows.map(function (r) { return "<tr><th scope=\"row\">" + esc(r[0]) + "</th><td>" + (r[1] ? esc(r[1]) : tbc) + "</td></tr>"; }).join("");
+  // ── 4. Benefits + FAQ (shared) ──
+  $("benefitCards").innerHTML = CONFIG.benefits.slice(0, 3).map(function (b) { return '<div class="card"><h3>' + esc(b.title) + '</h3><p>' + esc(b.text) + '</p></div>'; }).join("");
   $("faq").innerHTML = CONFIG.faq.map(function (f) {
     var body = esc(f.a);
     if (f.spec) body += S.external ? "<br><br><b>External:</b> " + esc(S.external) + " · <b>Interior:</b> " + esc(S.interior || "tbc") + " · <b>Entrance:</b> " + esc(S.entrance || "tbc") : "<br><br>" + tbc;
@@ -385,76 +397,16 @@ var BASE = "{{BASE}}";
   }).join("");
   Array.prototype.forEach.call($("faq").querySelectorAll("details"), function (d) { d.addEventListener("toggle", function () { if (d.open) track(d.getAttribute("data-id") === "fit" ? "size_guide_open" : "faq_expand", { faq: d.getAttribute("data-id") }); }); });
 
-  // ── 7. Purchase module ──
-  var selected = CONFIG.variants.filter(function (v) { return v.status === "hero"; })[0] || CONFIG.variants[0], qty = 1;
-  $("buyName").textContent = CONFIG.name;
-  function renderPrice() { $("buyPrice").innerHTML = live ? esc(priceText) + (CONFIG.compareAt ? '<small><s>$' + Number(CONFIG.compareAt).toFixed(2) + '</s></small>' : "") : esc(priceText) + '<small>not yet approved</small>'; }
-  function renderVariants() {
-    $("variants").innerHTML = CONFIG.variants.map(function (v) { var on = v.id === selected.id; return '<li><button type="button" data-id="' + esc(v.id) + '" aria-pressed="' + on + '"' + (v.status === "researched" ? ' disabled aria-describedby="variantNote"' : "") + '><span class="sw' + (v.id === "cow-print" ? " cow" : "") + '" style="--sw:' + esc(v.hex) + '" aria-hidden="true"></span>' + esc(v.name) + (v.status === "researched" ? ' <small>· ' + esc(v.note) + '</small>' : "") + '</button></li>'; }).join("");
-    Array.prototype.forEach.call($("variants").querySelectorAll("button:not([disabled])"), function (b) { b.addEventListener("click", function () { selected = CONFIG.variants.filter(function (v) { return v.id === b.getAttribute("data-id"); })[0]; renderVariants(); track("variant_select", { variant: selected.id }); }); });
-  }
-  renderVariants(); renderPrice();
-  media($("buyMedia"), CONFIG.media.hero);
-  $("qtyMinus").addEventListener("click", function () { qty = Math.max(1, qty - 1); $("qtyOut").textContent = qty; });
-  $("qtyPlus").addEventListener("click", function () { qty = Math.min(10, qty + 1); $("qtyOut").textContent = qty; });
-  var add = $("addToCart");
-  if (live && selected.available) {
-    $("stock").textContent = CONFIG.stock == null ? "" : CONFIG.stock > 0 ? "In stock" : "Out of stock";
-    add.disabled = !(CONFIG.stock == null || CONFIG.stock > 0);
-    add.addEventListener("click", function () {
-      // Shared local cart (same shape as the main site) until Shopify is connected
-      var KEY = "eb_cart_v1", cart = { lines: [] }; try { cart = JSON.parse(localStorage.getItem(KEY) || "null") || cart; } catch (e) {}
-      var ex = cart.lines.filter(function (l) { return l.variantId === selected.variantId; })[0];
-      if (ex) ex.qty = Math.min(10, ex.qty + qty); else cart.lines.push({ variantId: selected.variantId, productId: CONFIG.productId, title: CONFIG.name, color: selected.name, hex: selected.hex, price: CONFIG.price, qty: qty });
-      try { localStorage.setItem(KEY, JSON.stringify({ lines: cart.lines })); } catch (e) {}
-      track("AddToCart", { variant: selected.id, quantity: qty, value: CONFIG.price * qty });
-      add.textContent = "Added · View cart"; add.addEventListener("click", function () { track("InitiateCheckout", { value: CONFIG.price * qty }); location.href = BASE + "/#cart"; }, { once: true });
-    });
-  } else {
-    add.disabled = true; add.textContent = "Add to cart"; add.setAttribute("aria-describedby", "buyNote");
-    $("stock").textContent = "Ordering not open yet";
-    $("buyNote").hidden = false; $("buyNote").innerHTML = "<b>Preview state.</b> This is the real purchase module with the price, stock and checkout switched off until they are confirmed. Nothing can be ordered from this page yet, and no payment is taken.";
-    $("waitlist").hidden = false;
-    $("waitForm").addEventListener("submit", function (e) {
-      e.preventDefault(); var em = $("waitEmail"), v = (em.value || "").trim().toLowerCase(), msg = $("waitMsg");
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v)) { em.setAttribute("aria-invalid", "true"); msg.className = "msg err"; msg.textContent = "Please enter a valid email address."; em.focus(); return; }
-      em.removeAttribute("aria-invalid"); var rec = Object.assign({ email: v, product: CONFIG.productId, variant: selected.id, at: new Date().toISOString() }, attr);
-      try { var list = JSON.parse(localStorage.getItem("urpick_waitlist_v1") || "[]"); list.push(rec); localStorage.setItem("urpick_waitlist_v1", JSON.stringify(list)); } catch (err) {}
-      msg.className = "msg"; msg.textContent = "Saved on this device only. The email service is not connected yet, so nothing has been sent; it will be once it is."; track("waitlist_signup", { variant: selected.id });
-    });
-  }
-  var ship = CONFIG.shipping, ret = CONFIG.returns, tick = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg>';
-  $("reassure").innerHTML = [ship.delivery + (ship.draft ? " · draft policy" : ""), ship.cost, ret.window + (ret.draft ? " · draft policy" : ""), 'Questions: <a href="mailto:' + esc(CONFIG.support.email) + '">' + esc(CONFIG.support.email) + '</a>'].map(function (t) { return "<li>" + tick + "<span>" + t + "</span></li>"; }).join("");
-
-  // ── 8. Confidence ──
-  var conf = [
-    { h: "Reviews", p: "No reviews yet. Real customer reviews and photos appear here once collected, with permission. We never show ratings, counts or names we cannot verify." },
-    { h: "Measurements", p: S.external ? "External " + esc(S.external) + ", interior " + esc(S.interior) + ", entrance " + esc(S.entrance) + "." : "Published as soon as the supplier confirms them, with a guide to measuring your cat." },
-    { h: "Cleaning", p: S.care ? esc(S.care) : "The approved cleaning method is published exactly as confirmed." },
-    { h: "Shipping", p: esc(ship.regions) + ". " + esc(ship.processing) + " to process, then " + esc(ship.delivery.toLowerCase()) + ". " + esc(ship.cost) + "." },
-    { h: "Returns", p: esc(ret.window) + ". " + esc(ret.damaged) + '. <a href="' + esc(BASE + "/#shipping-returns") + '">Full draft policy</a>.' },
-    { h: "Support", p: 'Email <a href="mailto:' + esc(CONFIG.support.email) + '">' + esc(CONFIG.support.email) + '</a>. We read everything and reply as quickly as we can.' }
-  ];
-  $("confCards").innerHTML = conf.map(function (c) { return '<div class="card"><h3>' + esc(c.h) + '</h3><p>' + c.p + '</p></div>'; }).join("");
-
-  // ── 9. Offer ──
-  $("offerCards").innerHTML = [
-    '<div class="card"><h3>Single Cat Cave</h3><p class="price" style="font-family:var(--display);font-size:1.5rem;font-weight:600;color:var(--ink);margin-top:.5rem">' + esc(priceText) + '</p><p>Cow print, the design shown on this page.</p></div>',
-    '<div class="card off"><h3>Two-cave bundle</h3><p><span class="dev">Not configured</span></p><p>Tested only once a bundle price is approved.</p></div>',
-    '<div class="card off"><h3>Introduction guide</h3><p><span class="dev">Not configured</span></p><p>A simple cat-bed introduction guide may be included once written.</p></div>'
-  ].join("");
-
-  // footer
+  // ── 5. Final CTA + footer ──
+  $("finalTitle").textContent = CONFIG.final.headline; $("finalCopy").textContent = CONFIG.final.copy;
   $("footEmail").href = "mailto:" + CONFIG.support.email; $("footEmail").textContent = CONFIG.support.email;
   $("footLinks").innerHTML = [["Shipping & Returns", BASE + "/#shipping-returns"], ["Privacy Policy", BASE + "/#privacy"], ["Terms of Service", BASE + "/#terms"], ["TikTok", CONFIG.support.tiktok], ["Facebook", CONFIG.support.facebook], ["UrPick home", BASE + "/"]].map(function (l) { return '<li><a href="' + esc(l[1]) + '"' + (/^https?:/.test(l[1]) ? ' target="_blank" rel="noopener"' : "") + '>' + esc(l[0]) + '</a></li>'; }).join("");
 
-  // ── Sticky bar (below 1024px): after the hero, hidden while the purchase module is on screen ──
-  $("barName").textContent = CONFIG.shortName; $("barPrice").textContent = priceText; $("barCta").textContent = ctaText;
+  // ── Sticky bar (below 1024px): once the purchase module has scrolled out of view ──
+  $("barName").textContent = CONFIG.displayName; $("barPrice").textContent = priceText; $("barCta").textContent = ctaText;
   var queued = false;
-  function barUpdate() { queued = false; var hero = $("hero").getBoundingClientRect(), buy = $("buy").getBoundingClientRect(), show = window.innerWidth < 1024 && hero.bottom < 0 && !(buy.top < window.innerHeight && buy.bottom > 0); $("bar").classList.toggle("show", show); $("bar").setAttribute("aria-hidden", String(!show)); document.body.classList.toggle("bar-on", show); }
+  function barUpdate() { queued = false; var panel = $("buyPanel").getBoundingClientRect(), show = window.innerWidth < 1024 && panel.bottom < 0; $("bar").classList.toggle("show", show); $("bar").setAttribute("aria-hidden", String(!show)); document.body.classList.toggle("bar-on", show); }
   window.addEventListener("scroll", function () { if (!queued) { queued = true; requestAnimationFrame(barUpdate); } }, { passive: true }); window.addEventListener("resize", barUpdate); barUpdate();
-
-  // ── CTA clicks ──
   document.querySelectorAll('[data-track="hero_cta"]').forEach(function (a) { a.addEventListener("click", function () { track("hero_cta_click", { place: a.getAttribute("data-place") }); }); });
 
   // ── Funnel events on load ──

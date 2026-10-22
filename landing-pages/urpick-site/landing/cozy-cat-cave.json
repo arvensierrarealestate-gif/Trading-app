@@ -52,8 +52,8 @@
   ],
   "highlights": [
     "Enclosed cave with one front opening",
-    "Plush entrance trim and a cushioned interior",
-    "Cow-print shell with decorative ears, horns and a hanging pom-pom"
+    "Plush entrance trim, cushioned floor",
+    "Cow-print shell with ears, horns and a pom-pom"
   ],
   "highlightsNote": "From the product description. Materials, dimensions and care are confirmed with the supplier before launch.",
   "specs": {
@@ -144,7 +144,9 @@
       "portrait": true,
       "title": "Bruce Took Over the House",
       "label": "Ad 02 · storytelling concept",
-      "disclosure": "AI-generated advertising concept made with reference photos of Bruce and the product. Not a customer testimonial and not evidence of Bruce using the physical product."
+      "disclosure": "AI-generated advertising concept made with reference photos of Bruce and the product. Not a customer testimonial and not evidence of Bruce using the physical product.",
+      "caption": "",
+      "tag": "AI-generated ad concept"
     },
     "demoVideo": {
       "src": null,
@@ -159,7 +161,9 @@
       "portrait": true,
       "title": "Three cat beds later",
       "label": "Ad 01 · problem-first concept",
-      "disclosure": "AI-generated advertising concept. The cave shown in this concept is a white plush design, not the cow-print product sold on this page. Not a customer testimonial and not evidence of Bruce using the physical product."
+      "disclosure": "AI-generated advertising concept. The cave shown in this concept is a white plush design, not the cow-print product sold on this page. Not a customer testimonial and not evidence of Bruce using the physical product.",
+      "caption": "Concept video: the cave shown is a white plush sample. The product on this page is the cow-print edition.",
+      "tag": "AI-generated ad concept"
     }
   },
   "angles": {
@@ -214,42 +218,37 @@
   "benefits": [
     {
       "title": "A spot that is theirs",
-      "text": "An enclosed cave gives a cat somewhere to tuck in that is not your chair. Some cats take to a covered bed quickly, others take their time."
+      "text": "Somewhere to tuck in that is not your chair. Some cats take to a covered bed quickly; others take their time."
     },
     {
       "title": "Soft where it counts",
-      "text": "A cushioned floor and plush trim around the entrance. The interior cushion detail is confirmed with the supplier before launch."
+      "text": "Cushioned floor and plush trim around the entrance. Cushion details are confirmed with the supplier before launch."
     },
     {
       "title": "Looks like it belongs",
-      "text": "Black-and-white cow print with small ears, horns and a pom-pom. A pet bed you do not have to hide when guests come over."
-    },
-    {
-      "title": "Simple to live with",
-      "text": "Care instructions are published exactly as the supplier confirms them. We will not claim machine-washable until we know it is."
+      "text": "Cow print with small ears, horns and a pom-pom. A pet bed you do not have to hide when guests come over."
     }
-  ],
-  "intro": [
-    "Put it somewhere quiet, away from doors and foot traffic.",
-    "Leave it alone for a few days. Let your cat find it.",
-    "A familiar blanket or a treat inside can help, but do not place the cat in it.",
-    "Give it a couple of weeks before deciding."
   ],
   "faq": [
     {
-      "id": "use",
-      "q": "What if my cat doesn’t use it?",
-      "a": "Every cat has its own preferences, and no bed works for every cat. The best odds come from a quiet spot, a slow introduction and patience: see the four-step guide above. If it still is not working, our returns policy applies as published."
-    },
-    {
       "id": "fit",
       "q": "Will my cat fit?",
-      "a": "We publish the external size, the usable interior and the entrance measurements once the supplier confirms them, with a short guide for measuring your cat. Until then we do not claim a fit for any particular size of cat.",
+      "a": "External, interior and entrance measurements are published once the supplier confirms them, with a short guide to measuring your cat. Until then we do not claim a fit for any size of cat.",
       "spec": true
     },
     {
+      "id": "use",
+      "q": "What if my cat doesn’t use it?",
+      "a": "Every cat has its own preferences and no bed works for every cat. A quiet spot, a slow introduction and patience give the best odds. If it still is not working, the returns policy applies as published."
+    },
+    {
+      "id": "intro",
+      "q": "How do I introduce the bed?",
+      "a": "Put it somewhere quiet, away from doors and foot traffic. Leave it alone for a few days and let your cat find it. A familiar blanket or a treat inside can help; do not place the cat in it. Give it a couple of weeks before deciding."
+    },
+    {
       "id": "clean",
-      "q": "Is it easy to clean?",
+      "q": "How do I clean it?",
       "a": "The approved cleaning method is published here as soon as the supplier confirms it. We will not claim a removable cover or machine-washability before that.",
       "specKey": "care"
     },
@@ -260,9 +259,15 @@
       "specKey": "construction"
     },
     {
+      "id": "shipping",
+      "q": "How long does shipping take?",
+      "a": "Planned: 1–2 business days to process, then standard shipping of about 3–7 business days within the United States. Free on orders of $55 or more, $4.99 under that. Confirmed at launch; this is the draft policy.",
+      "link": "/#shipping-returns"
+    },
+    {
       "id": "return",
-      "q": "What if it isn’t suitable?",
-      "a": "Our draft returns policy allows returns within 30 days for unused items in original condition, and damaged or incorrect items reported within 7 days of delivery. The final policy is confirmed at launch; the full draft is on the Shipping & Returns page.",
+      "q": "What is the return policy?",
+      "a": "Draft policy: returns within 30 days for unused items in original condition; damaged or incorrect items reported within 7 days of delivery. The final policy is confirmed at launch.",
       "link": "/#shipping-returns"
     }
   ],
@@ -288,5 +293,33 @@
     "Customer service phone or hours, if any beyond email",
     "Authentic customer reviews and photos, with permission",
     "Final approved media: Bruce photos, product photography, product demonstration footage (Ad 01 and Ad 02 concept videos received 21 Oct; Ad 01 shows a white plush cave, not the cow print)"
-  ]
+  ],
+  "displayName": "UrPick Cozy Cat Cave",
+  "edition": "Cow Print Edition",
+  "upsell": {
+    "heading": "Make It Two Cozy Corners.",
+    "copy": "Have more than one cat, or want a cozy resting spot in another room? Explore adding a second Cat Cave.",
+    "options": [
+      {
+        "id": "one",
+        "title": "One Cat Cave",
+        "qty": 1,
+        "price": null,
+        "note": "Standard single-unit purchase."
+      },
+      {
+        "id": "two",
+        "title": "Two Cat Caves",
+        "qty": 2,
+        "price": null,
+        "note": "Two-unit bundle. Bundle price to be approved; no discount is claimed."
+      }
+    ],
+    "configured": false
+  },
+  "final": {
+    "headline": "Their Very Own Little Spot Is Waiting.",
+    "copy": "Give your cat a corner that is theirs and keep your chair.",
+    "cta": "Shop the Cat Cave"
+  }
 }
