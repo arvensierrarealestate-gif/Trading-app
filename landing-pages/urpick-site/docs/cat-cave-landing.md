@@ -16,28 +16,23 @@ Route: `/products/cozy-cat-cave` on the `urpick` Vercel project (live domain htt
 
 **Adding another product** = add `landing/<slug>.json` and run the build. The template stays shared.
 
-## B. Page architecture
+## B. Page architecture (simplified 22 Oct 2026)
 
 ```
-site/products/cozy-cat-cave/index.html   (generated)
+site/products/cozy-cat-cave/index.html   (generated from landing/template.html + landing/cozy-cat-cave.json)
 ├─ header        brand + "Shop the Cat Cave" (anchors to #buy); no site navigation
 ├─ status bar    shown while status != "live"
-├─ #hero         angle-driven eyebrow / headline / sub, price state, verified highlights, primary CTA, "Watch Bruce's Story" (modal), hero media
-├─ #problem      "You Bought the Bed. They Chose Your Chair." + three Bruce photo slots
-├─ #product      "Meet Their New Little Hideaway." + six-view gallery
-├─ #benefits     four benefit cards
-├─ #demo         "See the Cat Cave Up Close." video block + disclosure
-├─ #objections   introduction guide (4 steps), spec table, FAQ accordion (use / fit / clean / shape / return)
-├─ #buy          purchase module: variants, quantity, stock, Add to cart, reassurance, waitlist (preview state)
-├─ #confidence   reviews (none yet), measurements, cleaning, shipping, returns, support
-├─ #offer        single unit (price tbc); bundle and guide marked "not configured"
-├─ #final        "Their Very Own Little Spot Is Waiting." + CTA
+├─ 1 #hero       angle-driven eyebrow / headline / sub + price state + CTA + "Watch Bruce's Story"; the angle's ad video inline (poster, click-to-play, AI-concept tag; Ad 01 carries a one-line white-cave caption)
+├─ 2 #buy        gallery (featured image + six labelled thumbnails + lightbox with prev/next/close/keyboard/swipe) beside the compact purchase module (name, Cow Print Edition, price state, 3 highlights, confirmed design, quantity, Add to cart, shipping/returns summary, expandable Dimensions & fit and Materials & care, waitlist in preview)
+├─ 3 #upsell     "Make It Two Cozy Corners." one vs two, radio cards, sets the quantity; action disabled until price/bundle are configured
+├─ 4 #why        three benefit cards + seven-question FAQ (fit, use, introduce, clean, shape, shipping, returns)
+├─ 5 #final      closing headline + CTA to #buy
 ├─ footer        draft policies, privacy, terms, socials, support email, home
-├─ sticky bar    phones/tablets only, after the hero, hidden over #buy
-└─ modal         video player or labelled concept placeholder
+├─ sticky bar    phones/tablets only, once the purchase module has scrolled out of view; body padding so it covers nothing
+└─ lightbox      role=dialog, focus managed, Escape / arrows / swipe
 ```
 
-Script modules inside the template: campaign angle + CTA selection, attribution capture, analytics layer (`track()`), media/video helpers, section renderers, purchase module (preview or live), sticky bar, consent (only when `consentRequired` is true).
+Gallery, purchase module, upsell, benefits and FAQ are identical for every angle; only hero copy and the video change.
 
 ## C. Conversion rationale
 
@@ -106,10 +101,12 @@ Recommended first build: a Google Sheet with one row per day × campaign × angl
 
 ## H. Validation report
 
-Tested (locally, served from `site/` over HTTP; chromium at 1280, 768 and 390 px):
+Tested (locally, served from `site/` over HTTP; chromium at 1280, 768 and 390 px) — 121 checks after the 22 Oct simplification:
 - Route renders; clean URL with and without trailing slash; both base paths generated.
 - Angle switching for all five formats, invalid value falls back; CTA test variants; product facts unchanged across angles.
-- Conversion-order sections, single h1, semantic h2s, alt text, placeholder labels, keyboard reach, 44 px targets, no horizontal overflow, Escape closes the video modal, focus management.
+- Five-section order, single h1, alt text, 'Final photo pending' placeholders, keyboard reach, 44 px targets, no horizontal overflow, page height under 4000 px desktop / 6200 px phone.
+- Gallery: thumbnail switching, lightbox open/close, prev/next, arrow keys with wrap, swipe on touch widths, focus return.
+- Upsell: one/two selection drives quantity, nothing auto-added, action disabled with a 'Pending price' label, no bundle price or discount shown.
 - Preview purchase state: no invented price, add to cart disabled and explained, waitlist validation and local save with attribution, no payment path.
 - Analytics: PageView, ViewContent, engagement events, event ids, attribution on every event, no Purchase, no AddToCart in preview, no pixel scripts without IDs.
 - No fabricated proof strings (ratings, counts, guarantees, scarcity); AI ad concepts disclosed.
