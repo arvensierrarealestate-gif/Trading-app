@@ -32,7 +32,7 @@ site/products/cozy-cat-cave/index.html   (generated from landing/template.html +
 └─ lightbox      role=dialog, focus managed, Escape / arrows / swipe
 ```
 
-Gallery, purchase module, upsell, benefits and FAQ are the same component for every angle; the hero copy, the video and the **pre-selected design** follow the ad: `?angle=problem` (Ad 1) pre-selects the Green Dinosaur Edition, which is the cave shown in that video; `?angle=story` (Ad 2) pre-selects the Cow Print Edition. Both designs are selectable in the module, and the gallery, edition label, third highlight, upsell pictures and cart line follow the selected design. Gallery photos are stored per design (`media.gallery[].src` keyed by variant id); one supplier photo of the green dinosaur front view is in, everything else is a labelled placeholder.
+Gallery, purchase module, upsell, benefits and FAQ are the same component for every angle; the hero copy, the video and the **pre-selected design** follow the ad: `?angle=problem` (Ad 1) pre-selects the Green Dinosaur Edition, which is the cave shown in that video; `?angle=story` (Ad 2) pre-selects the Cow Print Edition. Both designs are selectable in the module, and the gallery, edition label, third highlight, upsell pictures and cart line follow the selected design. Gallery photos are stored per design (`media.gallery[].src` keyed by variant id); supplier front-view photos of both editions are in (`cat-cave-green-front.jpg`, `cat-cave-cow-front.jpg`); the other five views per edition are labelled placeholders.
 
 ## C. Conversion rationale
 

@@ -20,10 +20,11 @@
       "status": "hero",
       "available": false,
       "variantId": null,
-      "note": "Hero design",
+      "note": "Shown in Ad 2",
       "edition": "Cow Print Edition",
       "detail": "Cow-print shell with ears, horns and a pom-pom",
-      "image": null
+      "image": "/assets/photos/cat-cave-cow-front.jpg",
+      "thumb": "/assets/photos/cat-cave-cow-thumb.jpg"
     },
     {
       "id": "white-cat",
@@ -98,12 +99,14 @@
     "gallery": [
       {
         "label": "Front opening",
-        "alt": "Front view of the enclosed plush cat cave: round plush-trimmed opening, cushioned floor and hanging pom-pom",
+        "alt": "Front view of the enclosed plush cat cave: round plush-trimmed opening, cushioned floor, hanging pom-pom, ears and horns",
         "src": {
-          "green-dino": "/assets/photos/cat-cave-green-front.jpg"
+          "green-dino": "/assets/photos/cat-cave-green-front.jpg",
+          "cow-print": "/assets/photos/cat-cave-cow-front.jpg"
         },
         "thumb": {
-          "green-dino": "/assets/photos/cat-cave-green-thumb.jpg"
+          "green-dino": "/assets/photos/cat-cave-green-thumb.jpg",
+          "cow-print": "/assets/photos/cat-cave-cow-thumb.jpg"
         }
       },
       {
@@ -308,7 +311,7 @@
     "TikTok Pixel ID and Events API access token (server side)",
     "Customer service phone or hours, if any beyond email",
     "Authentic customer reviews and photos, with permission",
-    "Final approved media: Bruce photos; product photography for the cow-print edition (all six views) and the remaining five views of the green dinosaur edition; product demonstration footage"
+    "Final approved media: Bruce photos; the remaining five views (side, interior, cushion, details, relative size) for both the cow-print and green dinosaur editions; product demonstration footage"
   ],
   "displayName": "UrPick Cozy Cat Cave",
   "edition": "Cow Print Edition",
