@@ -128,9 +128,14 @@
         }
       },
       {
-        "src": {},
-        "alt": "The removable cushion",
-        "label": "Cushion"
+        "src": {
+          "cow-print": "/assets/photos/cat-cave-cow-cushion.jpg"
+        },
+        "alt": "Close-up of the cow-print cushion inside the cave, labelled approx. cushion diameter 14 in (35.5 cm)",
+        "label": "Cushion",
+        "thumb": {
+          "cow-print": "/assets/photos/cat-cave-cow-cushion-thumb.jpg"
+        }
       },
       {
         "src": {},
@@ -318,7 +323,7 @@
     "TikTok Pixel ID and Events API access token (server side)",
     "Customer service phone or hours, if any beyond email",
     "Authentic customer reviews and photos, with permission",
-    "Final approved media: Bruce photos; remaining views (cushion, details, relative size) for the cow-print edition and five views for the green dinosaur edition; product demonstration footage"
+    "Final approved media: Bruce photos; remaining views (details, relative size) for the cow-print edition and five views for the green dinosaur edition; product demonstration footage"
   ],
   "displayName": "UrPick Cozy Cat Cave",
   "edition": "Cow Print Edition",
