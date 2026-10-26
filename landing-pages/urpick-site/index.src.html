@@ -220,6 +220,7 @@
   .pdp-details .sizes { width: 100%; border-collapse: collapse; font-size: .8125rem; margin: .25rem 0 .5rem; } .pdp-details .sizes th, .pdp-details .sizes td { text-align: left; padding: .35rem .5rem .35rem 0; border-top: 1px solid rgba(31,42,36,.08); white-space: nowrap; } .pdp-details .sizes thead th { border-top: 0; font-size: .6875rem; letter-spacing: .08em; text-transform: uppercase; color: var(--taupe); }
   .pdp-details .tbc { display: inline-block; border: 1px dashed rgba(194,101,63,.7); border-radius: 999px; padding: .1rem .5rem; font-size: .6875rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--clay); } .pdp-details .fine { font-size: .75rem; color: var(--taupe); margin: 0 0 .5rem; }
   .pdp-story { margin-top: 1.25rem; } .pricebox b.pending { font-size: 1.375rem; }
+  .pswatches { display: flex; align-items: center; gap: .5rem; margin-top: .25rem; } .pswatches .psw { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(31,42,36,.2); background: var(--sw, #ccc); cursor: pointer; padding: 0; } .pswatches .psw.cow { background: repeating-linear-gradient(135deg, #1F1F1F 0 4px, #fff 4px 8px); } .pswatches .psw[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--sage-deep); } .pswatches .psw-name { font-size: .75rem; color: var(--taupe); margin-left: .25rem; }
   .addbtn[disabled], #buyBarAdd[disabled] { background: var(--sand-2); color: var(--taupe); box-shadow: none; cursor: not-allowed; transform: none; }
   .psil::before { content: ""; position: absolute; left: 50%; bottom: -4%; width: 70%; height: 9%; transform: translateX(-50%); border-radius: 50%; background: rgba(31,42,36,.1); }
   .psil span { position: relative; width: 100%; aspect-ratio: 1 / 1.05; border-radius: 18%; background: var(--sil, #7E9A86); display: grid; place-items: center; color: rgba(255,255,255,.88); font-weight: 600; font-size: clamp(.8rem, 2vw, 1.4rem); letter-spacing: .04em; box-shadow: inset 0 0 0 999px rgba(255,255,255,.12); transition: background .3s; }
@@ -1326,7 +1327,8 @@
   Object.keys(LANDING_PRODUCTS).forEach(function (slug) {
     var L = LANDING_PRODUCTS[slug], first = L.variants.filter(function (v) { return v.status === "hero" || v.available; })[0] || L.variants[0];
     var item = { id: L.productId, cat: L.category || "cats", need: L.need || "comfort-play", path: L.path || "rest", name: L.displayName, price: L.status === "live" ? L.price : null, available: false,
-      benefit: L.angles[L.defaultAngle].sub, sil: "#C9D6CB", image: first.image || null, landing: L, slug: slug };
+      benefit: L.angles[L.defaultAngle].sub, sil: "#C9D6CB", image: first.image || null, landing: L, slug: slug,
+      colors: L.variants.filter(function (v) { return v.status === "hero" || v.available; }).map(function (v) { return { id: v.id, name: v.name, edition: v.edition, hex: v.hex, pattern: v.id === "cow-print" ? "cow" : "", image: v.image || null }; }) };
     (CATALOG[item.cat] = CATALOG[item.cat] || []).unshift(item);
   });
   function allProducts() { return CATALOG.dogs.concat(CATALOG.cats, CATALOG.other); }
@@ -1481,7 +1483,23 @@
     var pr = document.createElement("p"); pr.className = "pprice"; pr.innerHTML = item.price == null ? "<span>Price to be confirmed</span>" : "<span>" + money(item.price) + "</span><small>" + (item.landing ? "" : "placeholder") + "</small>";
     var ben = document.createElement("p"); ben.className = "pben"; ben.textContent = item.benefit;
     var act = document.createElement("p"); act.className = "pact"; var a = document.createElement("a"); a.className = "btn btn-secondary"; a.href = "#product-" + item.id; a.textContent = "View product"; act.appendChild(a);
-    body.appendChild(h); body.appendChild(pr); body.appendChild(ben); body.appendChild(act); li.appendChild(img); li.appendChild(body); return li;
+    body.appendChild(h); body.appendChild(pr); body.appendChild(ben);
+    if (item.colors && item.colors.length > 1) {
+      var sw = document.createElement("div"); sw.className = "pswatches"; sw.setAttribute("role", "group"); sw.setAttribute("aria-label", "Colours");
+      var lbl = document.createElement("span"); lbl.className = "psw-name"; lbl.textContent = item.colors[0].edition || item.colors[0].name;
+      item.colors.forEach(function (col, i) {
+        var b = document.createElement("button"); b.type = "button"; b.className = "psw" + (col.pattern === "cow" ? " cow" : ""); b.style.setProperty("--sw", col.hex); b.setAttribute("aria-label", col.edition || col.name); b.setAttribute("aria-pressed", String(i === 0));
+        b.addEventListener("click", function () {
+          sw.querySelectorAll(".psw").forEach(function (x) { x.setAttribute("aria-pressed", "false"); }); b.setAttribute("aria-pressed", "true"); lbl.textContent = col.edition || col.name;
+          var ph = img.querySelector("img"); if (ph && col.image) { ph.src = col.image.replace(/^\//, ""); ph.alt = item.name + " \u2014 " + (col.edition || col.name); }
+          a.href = "#product-" + item.id + "--" + col.id;
+          if (window.dataLayer) window.dataLayer.push({ event: "card_variant_select", product: item.id, variant: col.id });
+        });
+        sw.appendChild(b);
+      });
+      sw.appendChild(lbl); body.appendChild(sw);
+    }
+    body.appendChild(act); li.appendChild(img); li.appendChild(body); return li;
   }
   function renderShopGrid() {
     var grid = document.getElementById("shopGrid"); grid.innerHTML = "";
@@ -1511,8 +1529,10 @@
     });
   })();
   function showProduct(id) {
-    var item = findProduct(id); if (!item) return false;
-    setProduct(item); return true;
+    var parts = id.split("--"), item = findProduct(parts[0]); if (!item) return false;
+    setProduct(item);
+    if (parts[1] && PRODUCT.landing) { var idx = PRODUCT.colors.map(function (c) { return c.id; }).indexOf(parts[1]); if (idx > -1) { colorIdx = idx; renderColors(); } }
+    return true;
   }
   window.addEventListener("hashchange", route); // initial route() runs after the cart is initialised (below)
 
