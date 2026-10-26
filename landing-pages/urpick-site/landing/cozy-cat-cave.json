@@ -118,9 +118,14 @@
         }
       },
       {
-        "src": {},
-        "alt": "Interior of the Cat Cave",
-        "label": "Interior"
+        "src": {
+          "cow-print": "/assets/photos/cat-cave-cow-interior.jpg"
+        },
+        "alt": "Looking into the cat cave: plush-lined walls, cow-print cushion on the floor and the hanging pom-pom",
+        "label": "Interior",
+        "thumb": {
+          "cow-print": "/assets/photos/cat-cave-cow-interior-thumb.jpg"
+        }
       },
       {
         "src": {},
@@ -313,7 +318,7 @@
     "TikTok Pixel ID and Events API access token (server side)",
     "Customer service phone or hours, if any beyond email",
     "Authentic customer reviews and photos, with permission",
-    "Final approved media: Bruce photos; remaining views (interior, cushion, details, relative size) for the cow-print edition and five views for the green dinosaur edition; product demonstration footage"
+    "Final approved media: Bruce photos; remaining views (cushion, details, relative size) for the cow-print edition and five views for the green dinosaur edition; product demonstration footage"
   ],
   "displayName": "UrPick Cozy Cat Cave",
   "edition": "Cow Print Edition",
