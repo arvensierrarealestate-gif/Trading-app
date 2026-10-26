@@ -226,6 +226,13 @@
   .shop .main.ph { aspect-ratio: 1; display: grid; place-items: center; background: linear-gradient(to bottom right, var(--sand), var(--sand-2)); }
   .ph.pmain::before { content: ""; position: absolute; inset: 0; opacity: .07; background-image: radial-gradient(circle at 1px 1px, #1F2A24 1px, transparent 0); background-size: 18px 18px; }
   .psil { position: relative; width: 56%; aspect-ratio: 1; display: grid; place-items: end center; }
+  .pcard .pimg.real::before { display: none; } .pcard .pimg img, .ph.pmain img.real { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .thumbs button img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; } .thumbs button { position: relative; overflow: hidden; } .thumbs button img + .t { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,.85); font-size: .625rem; padding: .25rem; }
+  .swatches button.cow { background: repeating-linear-gradient(135deg, #1F1F1F 0 4px, #fff 4px 8px) !important; }
+  .pdp-details .sizes { width: 100%; border-collapse: collapse; font-size: .8125rem; margin: .25rem 0 .5rem; } .pdp-details .sizes th, .pdp-details .sizes td { text-align: left; padding: .35rem .5rem .35rem 0; border-top: 1px solid rgba(31,42,36,.08); white-space: nowrap; } .pdp-details .sizes thead th { border-top: 0; font-size: .6875rem; letter-spacing: .08em; text-transform: uppercase; color: var(--taupe); }
+  .pdp-details .tbc { display: inline-block; border: 1px dashed rgba(194,101,63,.7); border-radius: 999px; padding: .1rem .5rem; font-size: .6875rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--clay); } .pdp-details .fine { font-size: .75rem; color: var(--taupe); margin: 0 0 .5rem; }
+  .pdp-story { margin-top: 1.25rem; } .pricebox b.pending { font-size: 1.375rem; }
+  .addbtn[disabled], #buyBarAdd[disabled] { background: var(--sand-2); color: var(--taupe); box-shadow: none; cursor: not-allowed; transform: none; }
   .psil::before { content: ""; position: absolute; left: 50%; bottom: -4%; width: 70%; height: 9%; transform: translateX(-50%); border-radius: 50%; background: rgba(31,42,36,.1); }
   .psil span { position: relative; width: 100%; aspect-ratio: 1 / 1.05; border-radius: 18%; background: var(--sil, #7E9A86); display: grid; place-items: center; color: rgba(255,255,255,.88); font-weight: 600; font-size: clamp(.8rem, 2vw, 1.4rem); letter-spacing: .04em; box-shadow: inset 0 0 0 999px rgba(255,255,255,.12); transition: background .3s; }
   .psil span::before { content: ""; position: absolute; top: 14%; left: 14%; right: 14%; height: 44%; border-radius: 14%; background: rgba(31,42,36,.12); }
@@ -408,26 +415,6 @@
 .photo-about-home{background-image:url('assets/photos/about-home.jpg')}
 .photo-bath-grooming{background-image:url('assets/photos/bath-grooming.jpg')}
 .photo-bowls-in-use{background-image:url('assets/photos/bowls-in-use.jpg')}
-.photo-cat-cave-cow-cushion-thumb{background-image:url('assets/photos/cat-cave-cow-cushion-thumb.jpg')}
-.photo-cat-cave-cow-cushion{background-image:url('assets/photos/cat-cave-cow-cushion.jpg')}
-.photo-cat-cave-cow-details-thumb{background-image:url('assets/photos/cat-cave-cow-details-thumb.jpg')}
-.photo-cat-cave-cow-details{background-image:url('assets/photos/cat-cave-cow-details.jpg')}
-.photo-cat-cave-cow-front{background-image:url('assets/photos/cat-cave-cow-front.jpg')}
-.photo-cat-cave-cow-interior-thumb{background-image:url('assets/photos/cat-cave-cow-interior-thumb.jpg')}
-.photo-cat-cave-cow-interior{background-image:url('assets/photos/cat-cave-cow-interior.jpg')}
-.photo-cat-cave-cow-side-thumb{background-image:url('assets/photos/cat-cave-cow-side-thumb.jpg')}
-.photo-cat-cave-cow-side{background-image:url('assets/photos/cat-cave-cow-side.jpg')}
-.photo-cat-cave-cow-size-thumb{background-image:url('assets/photos/cat-cave-cow-size-thumb.jpg')}
-.photo-cat-cave-cow-size{background-image:url('assets/photos/cat-cave-cow-size.jpg')}
-.photo-cat-cave-cow-thumb{background-image:url('assets/photos/cat-cave-cow-thumb.jpg')}
-.photo-cat-cave-green-details-thumb{background-image:url('assets/photos/cat-cave-green-details-thumb.jpg')}
-.photo-cat-cave-green-details{background-image:url('assets/photos/cat-cave-green-details.jpg')}
-.photo-cat-cave-green-front{background-image:url('assets/photos/cat-cave-green-front.jpg')}
-.photo-cat-cave-green-interior-thumb{background-image:url('assets/photos/cat-cave-green-interior-thumb.jpg')}
-.photo-cat-cave-green-interior{background-image:url('assets/photos/cat-cave-green-interior.jpg')}
-.photo-cat-cave-green-side-thumb{background-image:url('assets/photos/cat-cave-green-side-thumb.jpg')}
-.photo-cat-cave-green-side{background-image:url('assets/photos/cat-cave-green-side.jpg')}
-.photo-cat-cave-green-thumb{background-image:url('assets/photos/cat-cave-green-thumb.jpg')}
 .photo-cat-fluffy{background-image:url('assets/photos/cat-fluffy.jpg')}
 .photo-cat-tabby{background-image:url('assets/photos/cat-tabby.jpg')}
 .photo-dog-and-cat{background-image:url('assets/photos/dog-and-cat.jpg')}
@@ -628,7 +615,7 @@
       <button type="button" role="tab" id="tab-other" data-cat="other" aria-selected="false" aria-controls="shopPanel" tabindex="-1">Other Pets</button>
     </div>
     <div id="shopPanel" role="tabpanel" aria-labelledby="tab-dogs">
-      <p class="shop-ph">Placeholder products. Real names, photos and prices arrive with the supplier list.</p>
+      <p class="shop-ph">Real products appear as they are confirmed; bracketed placeholders hold the remaining spots until the supplier list arrives.</p>
       <ul class="pgrid" id="shopGrid"></ul>
       <p class="steps-cta"><a href="#collection-dogs" class="textlink" id="shopViewAll">View all dog products <span aria-hidden="true">→</span></a></p>
     </div>
@@ -827,6 +814,7 @@
       </div>
       <ul class="reassure" id="shopReassure"></ul>
       <div class="pdp-details" id="pdpDetails"></div>
+      <p class="pdp-story" id="pdpStory" hidden><a href="#" class="textlink">Watch Bruce’s story on the Cat Cave page <span aria-hidden="true">→</span></a></p>
       <p class="connect-note">Shopify not connected yet — cart runs locally. Add <code>VITE_SHOPIFY_DOMAIN</code> and <code>VITE_SHOPIFY_STOREFRONT_TOKEN</code> to <code>.env</code> to enable live checkout.</p>
     </div>
       </div>
@@ -850,7 +838,7 @@
         <label class="tsort">Sort<select id="sortSel" aria-label="Sort products"><option value="featured">Featured</option><option value="name">Name A–Z</option><option value="price-asc">Price, low to high</option><option value="price-desc">Price, high to low</option></select></label>
         <p class="tcount" id="collectionCount" aria-live="polite"></p>
       </div>
-      <p class="shop-ph">Placeholder products. Real names, photos and prices arrive with the supplier list.</p>
+      <p class="shop-ph">Real products appear as they are confirmed; bracketed placeholders hold the remaining spots until the supplier list arrives.</p>
       <ul class="pgrid" id="collectionGrid"></ul>
       <div class="coll-empty" id="collectionEmpty" hidden><p>No products match these filters.</p><button type="button" class="btn btn-secondary" id="collectionClear">Clear all</button></div>
     </div>
@@ -886,7 +874,7 @@
       <div class="need-paths" role="group" aria-label="Ways to solve it" id="needPaths"></div>
       <section class="need-block" aria-labelledby="needFeaturedTitle">
         <h2 id="needFeaturedTitle">Featured products</h2>
-        <p class="shop-ph">Placeholder products. Real names, photos and prices arrive with the supplier list.</p>
+        <p class="shop-ph">Real products appear as they are confirmed; bracketed placeholders hold the remaining spots until the supplier list arrives.</p>
         <ul class="pgrid" id="needGrid"></ul>
         <p class="need-empty" id="needEmpty" hidden>Nothing listed for this path yet. It fills in as products are confirmed.</p>
       </section>
@@ -1345,6 +1333,14 @@
     cats:  [["clean-home","surfaces"],["grooming","brushing"],["comfort-play","play"],["everyday-care","toileting"]].map(function (m, i) { var n = i + 1; return { id: "cat-" + n,   cat: "cats",  need: m[0], path: m[1], name: "[Cat product " + n + "]",       price: 0, available: false, benefit: "[One short benefit line — what this makes easier]", sil: ["#C98A6B","#7E9A86","#4A4F4C","#D9CDB8"][i] }; }),
     other: [["everyday-care","feeding"],["comfort-play","rest"],["travel","carriers"]].map(function (m, i)              { var n = i + 1; return { id: "other-" + n, cat: "other", need: m[0], path: m[1], name: "[Other pet product " + n + "]", price: 0, available: false, benefit: "[One short benefit line — what this makes easier]", sil: ["#D9CDB8","#4A4F4C","#7E9A86"][i] }; })
   };
+  // Real products come from landing/<slug>.json (the same data the landing pages use), so the site and the landing pages never disagree.
+  var LANDING_PRODUCTS = {"cozy-cat-cave": {"slug": "cozy-cat-cave", "route": "/products/cozy-cat-cave", "brand": "UrPick", "name": "Enclosed Plush Cat Cave", "shortName": "Cat Cave", "productId": "urpick-cat-cave", "status": "preview", "statusNote": "Preview build. Ordering opens once the supplier confirms price, stock and dimensions.", "currency": "USD", "price": null, "compareAt": null, "stock": null, "variants": [{"id": "cow-print", "name": "Cow print", "hex": "#1F1F1F", "hex2": "#FFFFFF", "status": "hero", "available": false, "variantId": null, "note": "Shown in Ad 2", "edition": "Cow Print Edition", "detail": "Cow-print shell with ears, horns and a pom-pom", "image": "/assets/photos/cat-cave-cow-front.jpg", "thumb": "/assets/photos/cat-cave-cow-thumb.jpg", "size": null}, {"id": "white-cat", "name": "White cat", "hex": "#F3F0EA", "status": "researched", "available": false, "variantId": null, "note": "Not yet confirmed", "size": null}, {"id": "yellow-dots", "name": "Yellow polka dot", "hex": "#E9C45C", "status": "researched", "available": false, "variantId": null, "note": "Not yet confirmed", "size": null}, {"id": "green-dino", "name": "Green dinosaur", "hex": "#7E9A86", "status": "hero", "available": false, "variantId": null, "note": "Shown in Ad 1", "image": "/assets/photos/cat-cave-green-front.jpg", "edition": "Green Dinosaur Edition", "detail": "Mint shell with dinosaur spikes and a pom-pom", "thumb": "/assets/photos/cat-cave-green-thumb.jpg", "size": null}], "highlights": ["Enclosed cave with one front opening", "Plush entrance trim, cushioned floor"], "highlightsNote": "From the product description. Materials, dimensions and care are confirmed with the supplier before launch.", "specs": {"external": null, "interior": "Measurements pending supplier confirmation.", "entrance": "Semi-enclosed opening with soft plush trim. Exact opening dimensions pending confirmation.", "weight": "Product weight pending supplier confirmation.", "materials": null, "construction": null, "care": null, "safety": null}, "shipping": {"summary": "Shipping options, costs, and delivery estimates will be confirmed before ordering opens."}, "returns": {"summary": "Proposed 30-day returns for unused items in their original condition. Full terms will be available before ordering opens."}, "support": {"email": "yourpick2025@gmail.com", "tiktok": "https://www.tiktok.com/@yourpick2025", "facebook": "https://www.facebook.com/profile.php?id=61585565952893"}, "media": {"hero": {"src": null, "alt": "The enclosed plush cat cave", "label": "Product photo"}, "gallery": [{"label": "Front opening", "alt": "Front view of the enclosed plush cat cave: round plush-trimmed opening, cushioned floor, hanging pom-pom, ears and horns", "src": {"green-dino": "/assets/photos/cat-cave-green-front.jpg", "cow-print": "/assets/photos/cat-cave-cow-front.jpg"}, "thumb": {"green-dino": "/assets/photos/cat-cave-green-thumb.jpg", "cow-print": "/assets/photos/cat-cave-cow-thumb.jpg"}}, {"src": {"cow-print": "/assets/photos/cat-cave-cow-side.jpg", "green-dino": "/assets/photos/cat-cave-green-side.jpg"}, "alt": "Side view of the cat cave showing its depth: plush-trimmed opening, ears, horns and the cushioned floor", "label": "Side profile", "thumb": {"cow-print": "/assets/photos/cat-cave-cow-side-thumb.jpg", "green-dino": "/assets/photos/cat-cave-green-side-thumb.jpg"}}, {"src": {"cow-print": "/assets/photos/cat-cave-cow-interior.jpg", "green-dino": "/assets/photos/cat-cave-green-interior.jpg"}, "alt": "Looking into the cat cave: plush-lined walls, cow-print cushion on the floor and the hanging pom-pom", "label": "Interior", "thumb": {"cow-print": "/assets/photos/cat-cave-cow-interior-thumb.jpg", "green-dino": "/assets/photos/cat-cave-green-interior-thumb.jpg"}}, {"src": {"cow-print": "/assets/photos/cat-cave-cow-cushion.jpg"}, "alt": "Close-up of the cow-print cushion inside the cave, labelled approx. cushion diameter 14 in (35.5 cm)", "label": "Cushion", "thumb": {"cow-print": "/assets/photos/cat-cave-cow-cushion-thumb.jpg"}}, {"src": {"cow-print": "/assets/photos/cat-cave-cow-details.jpg", "green-dino": "/assets/photos/cat-cave-green-details.jpg"}, "alt": "Close-up of the cow-print cave's details: plush horns, fabric ears, the hanging pom-pom and the plush entrance trim", "label": "Decorative details", "thumb": {"cow-print": "/assets/photos/cat-cave-cow-details-thumb.jpg", "green-dino": "/assets/photos/cat-cave-green-details-thumb.jpg"}}, {"src": {"cow-print": "/assets/photos/cat-cave-cow-size.jpg"}, "alt": "A cat sitting beside the cow-print cave on a rug, showing the cave's size relative to the cat", "label": "Relative size", "thumb": {"cow-print": "/assets/photos/cat-cave-cow-size-thumb.jpg"}}], "problem": [{"src": null, "alt": "Bruce stretched out on the owner's armchair", "label": "Bruce · the chair"}, {"src": null, "alt": "Bruce asleep on the couch cushions", "label": "Bruce · the couch"}, {"src": null, "alt": "Bruce sitting in a delivery box", "label": "Bruce · the box"}], "storyVideo": {"src": "/assets/video/ad02-story.mp4", "poster": "/assets/video/ad02-story-poster.jpg", "portrait": true, "title": "Bruce Took Over the House", "label": "Ad 02 · storytelling concept", "disclosure": "AI-generated advertising concept made with reference photos of Bruce and the product. Not a customer testimonial and not evidence of Bruce using the physical product.", "caption": "", "tag": "AI-generated ad concept"}, "demoVideo": {"src": null, "poster": null, "title": "See the Cat Cave up close", "label": "Product demonstration", "disclosure": "Real product footage is recorded once the sample arrives. Any concept visual shown before then is labelled as such."}, "problemVideo": {"src": "/assets/video/ad01-problem.mp4", "poster": "/assets/video/ad01-problem-poster.jpg", "portrait": true, "title": "Three cat beds later", "label": "Ad 01 · problem-first concept", "disclosure": "AI-generated advertising concept showing the green dinosaur edition. Not a customer testimonial and not evidence of Bruce using the physical product.", "caption": "", "tag": "AI-generated ad concept"}}, "angles": {"problem": {"format": "M01 Demonstration / problem-first", "eyebrow": "For the cat who owns your chair", "headline": "Your Cat Took Your Favorite Spot. Give Them One of Their Own.", "sub": "A cozy little hideaway for the cat who thinks every piece of furniture belongs to them.", "media": "hero", "video": "problemVideo", "variant": "green-dino"}, "story": {"format": "M04 Storytelling", "eyebrow": "Bruce took over the house", "headline": "I Pay the Mortgage. Bruce Owns the House.", "sub": "The chairs, the couch, the good blanket. This little cave is the one spot in the house that is actually his.", "media": "hero", "video": "storyVideo", "variant": "cow-print"}, "education": {"format": "M03 Educational", "eyebrow": "Choosing a bed your cat might actually use", "headline": "Which Bed Will Your Cat Actually Use?", "sub": "Size, placement and a slow introduction matter more than the price tag. Here is what to check before you buy an enclosed bed.", "media": "hero", "video": "demoVideo", "variant": "cow-print"}, "ugc": {"format": "M02 Testimonial / UGC", "eyebrow": "From cat owners, not from us", "headline": "What Cat Owners Say Once Their Cat Moves In.", "sub": "Real owner reviews and photos appear here as they are collected, with permission. Until then, here is everything we can verify about the Cat Cave.", "media": "hero", "video": "storyVideo", "variant": "cow-print"}, "product": {"format": "M05 Faceless / product", "eyebrow": "Cow Print Enclosed Plush Cat Cave", "headline": "An Enclosed Plush Cave With a Cow-Print Shell.", "sub": "One front opening, a cushioned interior and plush entrance trim. Dimensions, materials and care are listed below as they are confirmed.", "media": "hero", "video": "demoVideo", "variant": "cow-print"}}, "defaultAngle": "problem", "ctaTests": {"a": "Shop the Cat Cave", "b": "Find Their Cozy Corner", "c": "Choose Your Cat Cave"}, "defaultCta": "a", "benefits": [{"title": "A spot that is theirs", "text": "Somewhere to tuck in that is not your chair. Some cats take to a covered bed quickly; others take their time."}, {"title": "Soft where it counts", "text": "Cushioned floor and plush trim around the entrance. Cushion details are confirmed with the supplier before launch."}, {"title": "Looks like it belongs", "text": "Cow print with small ears, horns and a pom-pom. A pet bed you do not have to hide when guests come over."}], "faq": [{"id": "fit", "q": "Will my cat fit?", "a": "Four supplier-listed overall sizes (Small 32 × 30 × 28 cm up to Extra Large 48 × 45 × 38 cm) are in the Dimensions & fit panel above, in centimetres and inches. Usable interior and entrance measurements are pending supplier confirmation, so we do not claim a fit for any particular size of cat yet."}, {"id": "use", "q": "What if my cat doesn’t use it?", "a": "Every cat has its own preferences and no bed works for every cat. A quiet spot, a slow introduction and patience give the best odds. If it still is not working, the returns policy applies as published."}, {"id": "intro", "q": "How do I introduce the bed?", "a": "Put it somewhere quiet, away from doors and foot traffic. Leave it alone for a few days and let your cat find it. A familiar blanket or a treat inside can help; do not place the cat in it. Give it a couple of weeks before deciding."}, {"id": "clean", "q": "How do I clean it?", "a": "The approved cleaning method is published here as soon as the supplier confirms it. We will not claim a removable cover or machine-washability before that.", "specKey": "care"}, {"id": "shape", "q": "Will it hold its shape?", "a": "Construction and materials are listed here once confirmed, along with what we observe on the sample. No stability claims until then.", "specKey": "construction"}, {"id": "shipping", "q": "How long does shipping take?", "a": "Shipping options, costs, and delivery estimates will be confirmed before ordering opens.", "link": "/#shipping-returns"}, {"id": "return", "q": "What is the return policy?", "a": "Proposed 30-day returns for unused items in their original condition. Full terms will be available before ordering opens.", "link": "/#shipping-returns"}], "analytics": {"metaPixelId": "", "tiktokPixelId": "", "consentRequired": false, "debug": true}, "missing": ["Supplier-confirmed usable interior and entrance dimensions, weight; which of the four supplier sizes each edition is sold in", "Materials and construction", "Exact cleaning instructions", "Product safety details", "Selling price and any compare-at price", "Confirmed variants and Shopify variant IDs", "Inventory and stock status", "Fulfilment cost and shipping subsidy", "Final shipping options, costs and delivery estimates; final returns terms (30-day period is proposed)", "Checkout integration (Shopify domain and storefront token)", "Meta Pixel ID and Conversions API access token (server side)", "TikTok Pixel ID and Events API access token (server side)", "Customer service phone or hours, if any beyond email", "Authentic customer reviews and photos, with permission", "Final approved media: Bruce photos; two views (cushion, relative size) for the green dinosaur edition; product demonstration footage"], "displayName": "UrPick Cozy Cat Cave", "edition": "Cow Print Edition", "upsell": {"heading": "Make It Two Cozy Corners.", "copy": "Have more than one cat, or want a cozy resting spot in another room? Explore adding a second Cat Cave.", "options": [{"id": "one", "title": "One Cat Cave", "qty": 1, "price": null, "note": "Standard single-unit purchase."}, {"id": "two", "title": "Two Cat Caves", "qty": 2, "price": null, "note": "Two-unit bundle. Bundle price to be approved; no discount is claimed."}], "configured": false}, "final": {"headline": "Their Very Own Little Spot Is Waiting.", "copy": "Give your cat a corner that is theirs and keep your chair.", "cta": "Shop the Cat Cave"}, "sizes": [{"id": "s", "name": "Small", "cm": [32, 30, 28], "in": [12.6, 11.8, 11.0]}, {"id": "m", "name": "Medium", "cm": [35, 35, 31], "in": [13.8, 13.8, 12.2]}, {"id": "l", "name": "Large", "cm": [43, 40, 35], "in": [16.9, 15.7, 13.8]}, {"id": "xl", "name": "Extra Large", "cm": [48, 45, 38], "in": [18.9, 17.7, 15.0]}], "sizesNote": "Supplier-listed overall dimensions (length × width × height). Not usable interior measurements. Purchasable size options are confirmed with the product catalog; none is confirmed yet.", "fitTip": {"title": "Finding the right fit", "text": "Measure your cat's preferred resting position, curled up and stretched out, and compare it with the overall sizes above. Allow some room inside, since these are outer dimensions; usable interior measurements follow once the supplier confirms them."}}};
+  Object.keys(LANDING_PRODUCTS).forEach(function (slug) {
+    var L = LANDING_PRODUCTS[slug], first = L.variants.filter(function (v) { return v.status === "hero" || v.available; })[0] || L.variants[0];
+    var item = { id: L.productId, cat: L.category || "cats", need: L.need || "comfort-play", path: L.path || "rest", name: L.displayName, price: L.status === "live" ? L.price : null, available: false,
+      benefit: L.angles[L.defaultAngle].sub, sil: "#C9D6CB", image: first.image || null, landing: L, slug: slug };
+    (CATALOG[item.cat] = CATALOG[item.cat] || []).unshift(item);
+  });
   function allProducts() { return CATALOG.dogs.concat(CATALOG.cats, CATALOG.other); }
   // Shop by need: the problem first, then a few clear ways to solve it. Copy describes the problem area, never a product claim.
   var NEEDS = {
@@ -1490,10 +1486,11 @@
   function productCard(item) {
     var li = document.createElement("li"); li.className = "pcard";
     var img = document.createElement("div"); img.className = "pimg"; img.setAttribute("role", "img"); img.setAttribute("aria-label", "Product image placeholder");
-    var sil = document.createElement("div"); sil.className = "psil"; sil.style.setProperty("--sil", item.sil); var sp = document.createElement("span"); sp.textContent = "[ PRODUCT ]"; sil.appendChild(sp); img.appendChild(sil);
+    if (item.image) { var ph = document.createElement("img"); ph.src = item.image.replace(/^\//, ""); ph.alt = item.name; ph.loading = "lazy"; ph.decoding = "async"; img.appendChild(ph); img.setAttribute("aria-label", item.name); img.classList.add("real"); }
+    else { var sil = document.createElement("div"); sil.className = "psil"; sil.style.setProperty("--sil", item.sil); var sp = document.createElement("span"); sp.textContent = "[ PRODUCT ]"; sil.appendChild(sp); img.appendChild(sil); }
     var body = document.createElement("div"); body.className = "pbody";
     var h = document.createElement("h3"); h.textContent = item.name;
-    var pr = document.createElement("p"); pr.className = "pprice"; pr.innerHTML = "<span>" + money(item.price) + "</span><small>placeholder</small>";
+    var pr = document.createElement("p"); pr.className = "pprice"; pr.innerHTML = item.price == null ? "<span>Price to be confirmed</span>" : "<span>" + money(item.price) + "</span><small>" + (item.landing ? "" : "placeholder") + "</small>";
     var ben = document.createElement("p"); ben.className = "pben"; ben.textContent = item.benefit;
     var act = document.createElement("p"); act.className = "pact"; var a = document.createElement("a"); a.className = "btn btn-secondary"; a.href = "#product-" + item.id; a.textContent = "View product"; act.appendChild(a);
     body.appendChild(h); body.appendChild(pr); body.appendChild(ben); body.appendChild(act); li.appendChild(img); li.appendChild(body); return li;
@@ -1574,25 +1571,57 @@
   function money(n) { return new Intl.NumberFormat("en-US", { style: "currency", currency: PRODUCT.currency }).format(n); }
   var colorIdx = 0, imgIdx = 0, qty = 1;
   var shopSil = document.getElementById("shopSil"), shopMainCap = document.getElementById("shopMainCap"), shopThumbs = document.getElementById("shopThumbs");
+  var DEFAULT_COLORS = JSON.parse(JSON.stringify(PRODUCT.colors)), DEFAULT_GALLERY = JSON.parse(JSON.stringify(PRODUCT.gallery));
+  PRODUCT.landing = null;
+  function srcFor(g, key, variantId) { var v = g[key]; if (!v) return null; return typeof v === "string" ? v : (v[variantId] || null); }
+  function galleryFor(L, variantId) { return L.media.gallery.map(function (g) { return { note: g.label, src: srcFor(g, "src", variantId), thumb: srcFor(g, "thumb", variantId), alt: g.alt }; }); }
   function setProduct(item) {
     // Swap the detail page to a catalog item. Variant ids carry the product id so cart lines stay distinct per product.
-    PRODUCT.id = item.id; PRODUCT.cat = item.cat; PRODUCT.name = item.name; PRODUCT.price = item.price;
-    PRODUCT.colors.forEach(function (c, i) { c.variantId = "gid://shopify/ProductVariant/PLACEHOLDER_" + item.id + "_" + "ABCD".charAt(i); });
-    PRODUCT.colors[0].hex = item.sil; colorIdx = 0; imgIdx = 0; qty = 1;
+    PRODUCT.id = item.id; PRODUCT.cat = item.cat; PRODUCT.name = item.name; PRODUCT.price = item.price; PRODUCT.landing = item.landing || null;
+    colorIdx = 0; imgIdx = 0; qty = 1;
+    if (item.landing) {
+      var L = item.landing, confirmed = L.variants.filter(function (v) { return v.status === "hero" || v.available; });
+      PRODUCT.colors = confirmed.map(function (v) { return { name: v.name, edition: v.edition, hex: v.hex, pattern: v.id === "cow-print" ? "cow" : "", id: v.id, image: v.image || null, thumb: v.thumb || null, variantId: v.variantId || ("gid://shopify/ProductVariant/PLACEHOLDER_" + item.id + "_" + v.id) }; });
+      PRODUCT.gallery = galleryFor(L, PRODUCT.colors[0].id);
+    } else {
+      PRODUCT.colors = JSON.parse(JSON.stringify(DEFAULT_COLORS)); PRODUCT.gallery = JSON.parse(JSON.stringify(DEFAULT_GALLERY));
+      PRODUCT.colors.forEach(function (c, i) { c.variantId = "gid://shopify/ProductVariant/PLACEHOLDER_" + item.id + "_" + "ABCD".charAt(i); });
+      PRODUCT.colors[0].hex = item.sil;
+    }
     document.getElementById("shopName").textContent = PRODUCT.name;
-    document.getElementById("shopDesc").textContent = PRODUCT.shortDescription;
-    document.getElementById("shopPrice").textContent = money(PRODUCT.price);
+    document.getElementById("shopPrice").textContent = item.price == null ? "Price to be confirmed" : money(PRODUCT.price); document.getElementById("shopPrice").classList.toggle("pending", item.price == null);
+    document.getElementById("shopPriceNote").textContent = item.landing ? (item.price == null ? "Ordering opens once price and stock are confirmed" : "") : "PLACEHOLDER — price set in Shopify";
     document.getElementById("pdpEyebrow").textContent = CAT_NAMES[item.cat] + " \u00b7 " + NEEDS[item.need].name;
     document.getElementById("shopDesc").textContent = item.benefit;
     renderPdpDetails(item);
-    document.getElementById("buyBarName").textContent = item.name; document.getElementById("buyBarPrice").textContent = money(item.price);
+    document.getElementById("buyBarName").textContent = item.name; document.getElementById("buyBarPrice").textContent = item.price == null ? "Price to be confirmed" : money(item.price);
     document.getElementById("pdpCatName").textContent = CAT_NAMES[item.cat]; document.getElementById("pdpBack").href = "#collection-" + item.cat;
+    var pending = item.price == null; document.getElementById("addToCart").disabled = pending; document.getElementById("buyBarAdd").disabled = pending;
+    var cn = document.querySelector("#page-product .connect-note"); if (cn) cn.hidden = !!item.landing;
+    var story = document.getElementById("pdpStory"); if (story) { story.hidden = !item.landing; if (item.landing) { story.querySelector("a").href = "products/" + item.slug + "?angle=" + (item.landing.defaultAngle === "problem" ? "story" : item.landing.defaultAngle); } }
     if (typeof renderGallery === "function") { renderGallery(); renderColors(); }
   }
   function renderPdpDetails(item) {
     // Purchase information sits above; these blocks support the decision. Product-specific text is a bracket until the supplier spec exists.
     var box = document.getElementById("pdpDetails"); if (!box) return; box.innerHTML = "";
     var need = NEEDS[item.need], tbd = "[To be written from the supplier specification.]";
+    if (item.landing) {
+      var L = item.landing, S = L.specs || {}, tbc = '<span class="tbc">To be confirmed by supplier</span>', faqOf = function (id) { return (L.faq.filter(function (f) { return f.id === id; })[0] || {}).a || ""; };
+      var sizes = (L.sizes || []).map(function (z) { return "<tr><th scope=\"row\">" + z.name + "</th><td>" + z.cm.join(" × ") + " cm</td><td>" + z["in"].join(" × ") + " in</td></tr>"; }).join("");
+      [["What it solves", "Part of <a href=\"#need-" + item.need + "\">" + need.name + "</a>. " + L.benefits.map(function (b) { return "<b>" + b.title + ".</b> " + b.text; }).join("<br><br>")],
+       ["How it works", L.highlights.concat(L.variants.filter(function (v) { return v.status === "hero"; }).map(function (v) { return v.edition + ": " + v.detail.toLowerCase(); })).map(function (h) { return "\u2022 " + h; }).join("<br>")],
+       ["How to use it", faqOf("intro")],
+       ["What to expect", faqOf("use")],
+       ["Who it\u2019s for", "Cats who like an enclosed spot. Four supplier-listed overall sizes are in Dimensions &amp; fit below; which size each colour is sold in is confirmed with the catalog."],
+       ["What\u2019s included", tbc],
+       ["Dimensions &amp; fit", "<table class=\"sizes\"><thead><tr><th scope=\"col\">Size</th><th scope=\"col\">cm</th><th scope=\"col\">in</th></tr></thead><tbody>" + sizes + "</tbody></table><p class=\"fine\">" + (L.sizesNote || "") + "</p><p><b>Usable interior:</b> " + (S.interior || tbc) + "<br><b>Entrance:</b> " + (S.entrance || tbc) + "<br><b>Weight:</b> " + (S.weight || tbc) + "</p>" + (L.fitTip ? "<p><b>" + L.fitTip.title + ".</b> " + L.fitTip.text + "</p>" : "")],
+       ["Materials &amp; care", "<b>Materials:</b> " + (S.materials || tbc) + "<br><b>Construction:</b> " + (S.construction || tbc) + "<br><b>Care:</b> " + (S.care || tbc) + "<br><b>Safety:</b> " + (S.safety || tbc)],
+       ["Real customer results", "No customer results yet. Photos and reviews from real customers appear here once they exist; nothing is shown before then."],
+       ["Questions", L.faq.map(function (f) { return "<b>" + f.q + "</b> " + f.a; }).join("<br><br>")],
+       ["Shipping & Returns", L.shipping.summary + " " + L.returns.summary + " See <a href=\"#shipping-returns\">Shipping &amp; Returns</a>."]]
+      .forEach(function (d, i) { var det = document.createElement("details"); if (i === 0) det.open = true; det.innerHTML = "<summary>" + d[0] + "</summary><div class=\"dbody\">" + d[1] + "</div>"; box.appendChild(det); });
+      return;
+    }
     [["What it solves", "Part of <a href=\"#need-" + item.need + "\">" + need.name + "</a>: " + need.lead + " " + tbd],
      ["How it works", tbd], ["How to use it", tbd], ["What to expect", tbd], ["Who it\u2019s for", "[Pet type, size and age this suits, and who it does not.] " + tbd], ["What\u2019s included", tbd],
      ["Real customer results", "No customer results yet. Photos and reviews from real customers appear here once they exist; nothing is shown before then."],
@@ -1616,20 +1645,24 @@
   function fillReassure(ul) { ul.innerHTML = ""; PRODUCT.reassurance.forEach(function (r) { var li = document.createElement("li"); var b = document.createElement("b"); b.textContent = r.label; var sp = document.createElement("span"); sp.textContent = r.value; li.appendChild(b); li.appendChild(sp); ul.appendChild(li); }); }
   fillReassure(document.getElementById("shopReassure")); fillReassure(document.getElementById("checkoutReassure"));
   function renderGallery() {
-    shopMainCap.innerHTML = "<b>Photo · 1/1</b> — " + PRODUCT.gallery[imgIdx].note;
+    var g0 = PRODUCT.gallery[imgIdx], main = document.getElementById("shopMain"), old = main.querySelector("img.real"); if (old) old.remove();
+    if (g0.src) { var im = document.createElement("img"); im.className = "real"; im.src = g0.src.replace(/^\//, ""); im.alt = g0.alt || g0.note; im.decoding = "async"; main.insertBefore(im, shopMainCap); shopSil.hidden = true; main.setAttribute("aria-label", g0.alt || g0.note); shopMainCap.innerHTML = "<b>" + g0.note + "</b>" + (PRODUCT.colors[colorIdx].edition ? " — " + PRODUCT.colors[colorIdx].edition : ""); }
+    else { shopSil.hidden = false; main.setAttribute("aria-label", PRODUCT.landing ? g0.note + " (final photo pending)" : "Product image placeholder"); shopMainCap.innerHTML = PRODUCT.landing ? "<b>" + g0.note + "</b> — final photo pending" : "<b>Photo · 1/1</b> — " + g0.note; }
     shopThumbs.innerHTML = "";
     PRODUCT.gallery.forEach(function (g, i) {
-      var li = document.createElement("li"), b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", "Show image " + (i + 1)); b.setAttribute("aria-pressed", String(i === imgIdx));
+      var li = document.createElement("li"), b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", "Show image " + (i + 1) + ": " + g.note + (g.src ? "" : " (final photo pending)")); b.setAttribute("aria-pressed", String(i === imgIdx));
+      if (g.src) { var ti = document.createElement("img"); ti.src = (g.thumb || g.src).replace(/^\//, ""); ti.alt = ""; ti.loading = "lazy"; b.appendChild(ti); }
       var d = document.createElement("div"); d.className = "t"; d.textContent = g.note; b.appendChild(d); b.addEventListener("click", function () { imgIdx = i; renderGallery(); }); li.appendChild(b); shopThumbs.appendChild(li);
     });
   }
   function renderColors() {
-    var c = PRODUCT.colors[colorIdx]; document.getElementById("shopColorName").textContent = c.name; shopSil.style.setProperty("--sil", c.hex);
+    var c = PRODUCT.colors[colorIdx]; document.getElementById("shopColorName").textContent = c.edition || c.name; shopSil.style.setProperty("--sil", c.hex);
+    if (PRODUCT.landing) { PRODUCT.gallery = galleryFor(PRODUCT.landing, c.id); renderGallery(); }
     var wrap = document.getElementById("shopSwatches"); wrap.innerHTML = "";
-    PRODUCT.colors.forEach(function (col, i) { var b = document.createElement("button"); b.type = "button"; b.style.backgroundColor = col.hex; b.setAttribute("aria-label", col.name); b.setAttribute("aria-pressed", String(i === colorIdx)); b.addEventListener("click", function () { colorIdx = i; renderColors(); }); wrap.appendChild(b); });
+    PRODUCT.colors.forEach(function (col, i) { var b = document.createElement("button"); b.type = "button"; b.style.backgroundColor = col.hex; if (col.pattern === "cow") b.classList.add("cow"); b.setAttribute("aria-label", col.name); b.setAttribute("aria-pressed", String(i === colorIdx)); b.addEventListener("click", function () { colorIdx = i; renderColors(); }); wrap.appendChild(b); });
     renderAddLabel();
   }
-  function renderAddLabel() { document.getElementById("addToCart").textContent = "Add to Cart — " + money(PRODUCT.price * qty); document.getElementById("qtyOut").textContent = qty; }
+  function renderAddLabel() { document.getElementById("addToCart").textContent = PRODUCT.price == null ? "Add to Cart — price pending" : "Add to Cart — " + money(PRODUCT.price * qty); document.getElementById("qtyOut").textContent = qty; }
   document.getElementById("qtyMinus").addEventListener("click", function () { qty = Math.max(1, qty - 1); renderAddLabel(); });
   document.getElementById("qtyPlus").addEventListener("click", function () { qty = Math.min(10, qty + 1); renderAddLabel(); });
   renderGallery(); renderColors();
@@ -1651,7 +1684,8 @@
   function lineEl(l, removable) {
     var row = document.createElement("div"); row.className = "cart-line";
     var thumb = document.createElement("div"); thumb.className = "thumb"; thumb.setAttribute("aria-hidden", "true");
-    var sil = document.createElement("div"); sil.className = "psil"; sil.style.setProperty("--sil", l.hex || "#7E9A86"); sil.appendChild(document.createElement("span")); thumb.appendChild(sil);
+    if (l.image) { var ti = document.createElement("img"); ti.src = l.image.replace(/^\//, ""); ti.alt = ""; ti.style.cssText = "width:100%;height:100%;object-fit:cover"; thumb.appendChild(ti); }
+    else { var sil = document.createElement("div"); sil.className = "psil"; sil.style.setProperty("--sil", l.hex || "#7E9A86"); sil.appendChild(document.createElement("span")); thumb.appendChild(sil); }
     var info = document.createElement("div"); info.className = "info";
     var t = document.createElement("p"); t.className = "t"; t.textContent = l.title;
     var m = document.createElement("p"); m.className = "m"; m.textContent = "Color: " + l.color;
@@ -1708,7 +1742,8 @@
   var addBtn = document.getElementById("addToCart");
   addBtn.addEventListener("click", function () {
     var c = PRODUCT.colors[colorIdx]; var existing = cart.lines.filter(function (l) { return l.variantId === c.variantId; })[0];
-    if (existing) existing.qty = Math.min(10, existing.qty + qty); else cart.lines.push({ variantId: c.variantId, productId: PRODUCT.id, title: PRODUCT.name, color: c.name, hex: c.hex, price: PRODUCT.price, qty: qty });
+    if (PRODUCT.price == null) return;
+    if (existing) existing.qty = Math.min(10, existing.qty + qty); else cart.lines.push({ variantId: c.variantId, productId: PRODUCT.id, title: PRODUCT.name, color: c.edition || c.name, hex: c.hex, image: c.thumb || c.image || null, price: PRODUCT.price, qty: qty });
     saveCart(); renderCart(); renderCheckout(); renderCartPage();
     addBtn.textContent = "Added ✓"; setTimeout(renderAddLabel, 1800);
     if (window.dataLayer) window.dataLayer.push({ event: "add_to_cart", variant: c.variantId, qty: qty });

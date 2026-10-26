@@ -20,8 +20,15 @@ deploy = "--deploy" in sys.argv
 
 photos = sorted(glob.glob(os.path.join(ROOT, "assets", "photos", "*.jpg")))
 rules = []
+import json
+_landing_cfgs = {}
+for _cp in sorted(glob.glob(os.path.join(ROOT, "landing", "*.json"))):
+    _c = json.load(open(_cp, encoding="utf-8")); _landing_cfgs[_c["slug"]] = _c
+src = src.replace("{{LANDING_PRODUCTS_JSON}}", json.dumps(_landing_cfgs, ensure_ascii=False).replace("</", "<\\/"))
 for path in photos:
     name = os.path.splitext(os.path.basename(path))[0]
+    if name.startswith("cat-cave-"):   # product photos are referenced by <img src>, not as CSS backgrounds
+        continue
     if deploy:
         rules.append(f".photo-{name}{{background-image:url('assets/photos/{name}.jpg')}}")
     else:

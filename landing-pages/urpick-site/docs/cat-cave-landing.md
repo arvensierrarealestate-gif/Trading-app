@@ -14,7 +14,7 @@ Route: `/products/cozy-cat-cave` on the `urpick` Vercel project (live domain htt
 - `tools/test_landing.py` — 92 Playwright checks (desktop, tablet, phone).
 - The existing homepage, pages, cart and popup are untouched; the main suite (`tools/test_nav.py`, 359 checks) still passes.
 
-**Adding another product** = add `landing/<slug>.json` and run the build. The template stays shared.
+**Adding another product** = add `landing/<slug>.json` and run the build. The template stays shared, and the main website picks the product up automatically (catalog card, collection, need page, search and a rich product page) from the same file.
 
 ## B. Page architecture (simplified 22 Oct 2026)
 
