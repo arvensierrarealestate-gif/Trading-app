@@ -324,7 +324,7 @@ var BASE = "{{BASE}}";
     $("thumbs").innerHTML = G.map(function (g, i) { var src = srcFor(g, "src"), th = srcFor(g, "thumb") || src; return '<li><button type="button" data-i="' + i + '" aria-pressed="false" aria-label="' + esc(g.label) + (src ? "" : ", final photo pending") + '"><span class="t">' + (src ? '<img src="' + esc(BASE + th) + '" alt="" loading="lazy">' : (i + 1)) + '</span><span class="l">' + esc(g.label) + '</span></button></li>'; }).join("");
     Array.prototype.forEach.call($("thumbs").querySelectorAll("button"), function (b) { b.addEventListener("click", function () { gi = +b.getAttribute("data-i"); renderMain(); track("product_detail_interaction", { detail: G[gi].label }); }); });
     var have = G.filter(function (g) { return srcFor(g, "src"); }).length;
-    $("galNote").hidden = false; $("galNote").textContent = have ? have + " of " + G.length + " views photographed for the " + selected.edition + "; the rest follow once the sample arrives." : "Photography of the " + selected.edition + " follows once the sample arrives.";
+    $("galNote").hidden = false; $("galNote").textContent = have === G.length ? "All " + G.length + " views photographed for the " + selected.edition + "." : have ? have + " of " + G.length + " views photographed for the " + selected.edition + "; the rest follow once the sample arrives." : "Photography of the " + selected.edition + " follows once the sample arrives.";
   }
   function renderGallery() { renderThumbs(); renderMain(); }
   // lightbox
