@@ -78,16 +78,10 @@
     "safety": null
   },
   "shipping": {
-    "draft": true,
-    "processing": "1–2 business days (planned)",
-    "delivery": "Standard shipping, about 3–7 business days (planned)",
-    "cost": "Free on orders of $55 or more, $4.99 under that (planned)",
-    "regions": "United States at launch (planned)"
+    "summary": "Shipping options, costs, and delivery estimates will be confirmed before ordering opens."
   },
   "returns": {
-    "draft": true,
-    "window": "30 days, unused and in original condition (planned)",
-    "damaged": "Report damaged or incorrect items within 7 days of delivery (planned)"
+    "summary": "Proposed 30-day returns for unused items in their original condition. Full terms will be available before ordering opens."
   },
   "support": {
     "email": "yourpick2025@gmail.com",
@@ -283,13 +277,13 @@
     {
       "id": "shipping",
       "q": "How long does shipping take?",
-      "a": "Planned: 1–2 business days to process, then standard shipping of about 3–7 business days within the United States. Free on orders of $55 or more, $4.99 under that. Confirmed at launch; this is the draft policy.",
+      "a": "Shipping options, costs, and delivery estimates will be confirmed before ordering opens.",
       "link": "/#shipping-returns"
     },
     {
       "id": "return",
       "q": "What is the return policy?",
-      "a": "Draft policy: returns within 30 days for unused items in original condition; damaged or incorrect items reported within 7 days of delivery. The final policy is confirmed at launch.",
+      "a": "Proposed 30-day returns for unused items in their original condition. Full terms will be available before ordering opens.",
       "link": "/#shipping-returns"
     }
   ],
@@ -308,7 +302,7 @@
     "Confirmed variants and Shopify variant IDs",
     "Inventory and stock status",
     "Fulfilment cost and shipping subsidy",
-    "Final shipping policy and returns policy (drafts in use)",
+    "Final shipping options, costs and delivery estimates; final returns terms (30-day period is proposed)",
     "Checkout integration (Shopify domain and storefront token)",
     "Meta Pixel ID and Conversions API access token (server side)",
     "TikTok Pixel ID and Events API access token (server side)",

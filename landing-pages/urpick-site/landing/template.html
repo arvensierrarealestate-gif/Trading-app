@@ -376,7 +376,7 @@ var BASE = "{{BASE}}";
     });
   }
   var ship = CONFIG.shipping, ret = CONFIG.returns;
-  $("ship").innerHTML = [esc(ship.delivery) + " · " + esc(ship.cost), esc(ret.window) + ' · <a href="' + esc(BASE + "/#shipping-returns") + '">draft policy</a>'].map(function (t) { return "<li>" + tick + "<span>" + t + "</span></li>"; }).join("");
+  $("ship").innerHTML = [esc(ship.summary), esc(ret.summary) + ' <a href="' + esc(BASE + "/#shipping-returns") + '">Shipping &amp; Returns</a>'].map(function (t) { return "<li>" + tick + "<span>" + t + "</span></li>"; }).join("");
   // Dimensions & fit: external size follows the reference size the visitor picks (or a confirmed size for the edition); nothing here creates a purchasable variant
   var SZ = CONFIG.sizes || [], sizeSel = null;
   function sizeText(z) { return z.cm.join(" × ") + " cm · " + z["in"].join(" × ") + " in"; }
