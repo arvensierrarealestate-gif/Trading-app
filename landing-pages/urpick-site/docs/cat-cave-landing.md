@@ -23,7 +23,7 @@ site/products/cozy-cat-cave/index.html   (generated from landing/template.html +
 ├─ header        brand + "Shop the Cat Cave" (anchors to #buy); no site navigation
 ├─ status bar    shown while status != "live"
 ├─ 1 #hero       angle-driven eyebrow / headline / sub + price state + CTA + "Watch Bruce's Story"; the angle's ad video inline (poster, click-to-play, AI-concept tag; Ad 01 carries a one-line white-cave caption)
-├─ 2 #buy        gallery (featured image + six labelled thumbnails + lightbox with prev/next/close/keyboard/swipe) beside the compact purchase module (name, Cow Print Edition, price state, 3 highlights, confirmed design, quantity, Add to cart, shipping/returns summary, expandable Dimensions & fit and Materials & care, waitlist in preview)
+├─ 2 #buy        gallery (featured image + six labelled thumbnails + lightbox with prev/next/close/keyboard/swipe) beside the compact purchase module (name, Cow Print Edition, price state, 3 highlights, confirmed design, quantity, Add to cart, shipping/returns summary, expandable Dimensions & fit (four-row table, supplier size guide S/M/L/XL in cm and inches with a reference size selector that updates the External size row, fit tip) and Materials & care, waitlist in preview)
 ├─ 3 #upsell     "Make It Two Cozy Corners." one vs two, radio cards, sets the quantity; action disabled until price/bundle are configured
 ├─ 4 #why        three benefit cards + seven-question FAQ (fit, use, introduce, clean, shape, shipping, returns)
 ├─ 5 #final      closing headline + CTA to #buy
@@ -101,7 +101,7 @@ Recommended first build: a Google Sheet with one row per day × campaign × angl
 
 ## H. Validation report
 
-Tested (locally, served from `site/` over HTTP; chromium at 1280, 768 and 390 px) — 130 checks after the 22 Oct simplification and the per-ad design selection:
+Tested (locally, served from `site/` over HTTP; chromium at 1280, 768 and 390 px) — 137 checks after the size guide (26 Oct):
 - Route renders; clean URL with and without trailing slash; both base paths generated.
 - Angle switching for all five formats, invalid value falls back; CTA test variants; product facts unchanged across angles.
 - Five-section order, single h1, alt text, 'Final photo pending' placeholders, keyboard reach, 44 px targets, no horizontal overflow, page height under 4000 px desktop / 6200 px phone.
