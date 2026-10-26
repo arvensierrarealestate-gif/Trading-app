@@ -24,7 +24,8 @@
       "edition": "Cow Print Edition",
       "detail": "Cow-print shell with ears, horns and a pom-pom",
       "image": "/assets/photos/cat-cave-cow-front.jpg",
-      "thumb": "/assets/photos/cat-cave-cow-thumb.jpg"
+      "thumb": "/assets/photos/cat-cave-cow-thumb.jpg",
+      "size": null
     },
     {
       "id": "white-cat",
@@ -33,7 +34,8 @@
       "status": "researched",
       "available": false,
       "variantId": null,
-      "note": "Not yet confirmed"
+      "note": "Not yet confirmed",
+      "size": null
     },
     {
       "id": "yellow-dots",
@@ -42,7 +44,8 @@
       "status": "researched",
       "available": false,
       "variantId": null,
-      "note": "Not yet confirmed"
+      "note": "Not yet confirmed",
+      "size": null
     },
     {
       "id": "green-dino",
@@ -55,7 +58,8 @@
       "image": "/assets/photos/cat-cave-green-front.jpg",
       "edition": "Green Dinosaur Edition",
       "detail": "Mint shell with dinosaur spikes and a pom-pom",
-      "thumb": "/assets/photos/cat-cave-green-thumb.jpg"
+      "thumb": "/assets/photos/cat-cave-green-thumb.jpg",
+      "size": null
     }
   ],
   "highlights": [
@@ -65,9 +69,9 @@
   "highlightsNote": "From the product description. Materials, dimensions and care are confirmed with the supplier before launch.",
   "specs": {
     "external": null,
-    "interior": null,
-    "entrance": null,
-    "weight": null,
+    "interior": "Measurements pending supplier confirmation.",
+    "entrance": "Semi-enclosed opening with soft plush trim. Exact opening dimensions pending confirmation.",
+    "weight": "Product weight pending supplier confirmation.",
     "materials": null,
     "construction": null,
     "care": null,
@@ -252,8 +256,7 @@
     {
       "id": "fit",
       "q": "Will my cat fit?",
-      "a": "External, interior and entrance measurements are published once the supplier confirms them, with a short guide to measuring your cat. Until then we do not claim a fit for any size of cat.",
-      "spec": true
+      "a": "Four supplier-listed overall sizes (Small 32 × 30 × 28 cm up to Extra Large 48 × 45 × 38 cm) are in the Dimensions & fit panel above, in centimetres and inches. Usable interior and entrance measurements are pending supplier confirmation, so we do not claim a fit for any particular size of cat yet."
     },
     {
       "id": "use",
@@ -297,7 +300,7 @@
     "debug": true
   },
   "missing": [
-    "Supplier-confirmed dimensions (external, interior, entrance), weight",
+    "Supplier-confirmed usable interior and entrance dimensions, weight; which of the four supplier sizes each edition is sold in",
     "Materials and construction",
     "Exact cleaning instructions",
     "Product safety details",
@@ -340,5 +343,68 @@
     "headline": "Their Very Own Little Spot Is Waiting.",
     "copy": "Give your cat a corner that is theirs and keep your chair.",
     "cta": "Shop the Cat Cave"
+  },
+  "sizes": [
+    {
+      "id": "s",
+      "name": "Small",
+      "cm": [
+        32,
+        30,
+        28
+      ],
+      "in": [
+        12.6,
+        11.8,
+        11.0
+      ]
+    },
+    {
+      "id": "m",
+      "name": "Medium",
+      "cm": [
+        35,
+        35,
+        31
+      ],
+      "in": [
+        13.8,
+        13.8,
+        12.2
+      ]
+    },
+    {
+      "id": "l",
+      "name": "Large",
+      "cm": [
+        43,
+        40,
+        35
+      ],
+      "in": [
+        16.9,
+        15.7,
+        13.8
+      ]
+    },
+    {
+      "id": "xl",
+      "name": "Extra Large",
+      "cm": [
+        48,
+        45,
+        38
+      ],
+      "in": [
+        18.9,
+        17.7,
+        15.0
+      ]
+    }
+  ],
+  "sizesNote": "Supplier-listed overall dimensions (length × width × height). Not usable interior measurements. Purchasable size options are confirmed with the product catalog; none is confirmed yet.",
+  "fitTip": {
+    "title": "Finding the right fit",
+    "text": "Measure your cat's preferred resting position, curled up and stretched out, and compare it with the overall sizes above. Allow some room inside, since these are outer dimensions; usable interior measurements follow once the supplier confirms them."
   }
 }

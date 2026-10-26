@@ -74,7 +74,9 @@
   .note{margin-top:.875rem;border:1px dashed rgba(194,101,63,.6);background:rgba(239,230,216,.6);border-radius:12px;padding:.625rem .875rem;font-size:.8125rem;line-height:1.5;color:var(--ink)} .note b{color:var(--clay)}
   .ship{margin:1rem 0 0;padding:0;list-style:none;display:grid;gap:.375rem;font-size:.8125rem;color:var(--taupe)} .ship li{display:flex;gap:.5rem;align-items:flex-start} .ship .icon{flex:none;width:16px;height:16px;color:var(--sage);margin-top:.15rem} .ship a{color:var(--sage-deep);font-weight:600}
   .more-info{margin-top:1rem;border-top:1px solid rgba(31,42,36,.08)} .more-info details{border-bottom:1px solid rgba(31,42,36,.08)} .more-info summary{list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:48px;padding:.5rem 0;font-size:.9rem;font-weight:600;cursor:pointer} .more-info summary::-webkit-details-marker{display:none} .more-info summary::after{content:"+";font-size:1.25rem;color:var(--sage)} .more-info details[open] summary::after{content:"–"}
-  .specs{width:100%;border-collapse:collapse;font-size:.8125rem;margin-bottom:.75rem} .specs th,.specs td{text-align:left;padding:.4rem 0;vertical-align:top;border-top:1px solid rgba(31,42,36,.06)} .specs th{width:40%;font-weight:600;color:var(--ink);padding-right:.75rem} .specs td{color:var(--taupe)}
+  .specs{width:100%;border-collapse:collapse;font-size:.8125rem;margin-bottom:.75rem} .specs.sizes th[scope=col]{font-weight:600;color:var(--taupe);font-size:.6875rem;letter-spacing:.08em;text-transform:uppercase;border-top:0;padding-top:0} .specs.sizes td{white-space:nowrap} .specs.sizes tbody tr[aria-selected="true"] td,.specs.sizes tbody tr[aria-selected="true"] th{background:rgba(201,214,203,.35)}
+  .specs.sizes .pick{display:inline-flex;align-items:center;gap:.4rem;min-height:44px;padding:0 .25rem;border:0;background:transparent;font:inherit;font-weight:600;color:var(--sage-deep);cursor:pointer;border-radius:8px} .specs.sizes .pick::before{content:"";width:12px;height:12px;border-radius:50%;border:1.5px solid rgba(47,74,58,.5);background:#fff} .specs.sizes tr[aria-selected="true"] .pick::before{background:var(--sage-deep);box-shadow:inset 0 0 0 2px #fff}
+  .fine2{margin:0 0 .75rem;font-size:.75rem;line-height:1.5;color:var(--taupe)} .tip{margin:0 0 .75rem;padding:.75rem .875rem;border-radius:12px;background:var(--sand);font-size:.8125rem;line-height:1.55;color:var(--ink)} .tip b{display:block;margin-bottom:.2rem} .specs th,.specs td{text-align:left;padding:.4rem 0;vertical-align:top;border-top:1px solid rgba(31,42,36,.06)} .specs th{width:40%;font-weight:600;color:var(--ink);padding-right:.75rem} .specs td{color:var(--taupe)}
   .wait{margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(31,42,36,.08);font-size:.875rem} .wait form{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem} @media (min-width:480px){.wait form{flex-direction:row}} .wait input{flex:1;min-height:46px;border:1.5px solid rgba(31,42,36,.2);border-radius:999px;padding:0 1rem;font:inherit;background:#fff} .wait input[aria-invalid="true"]{border-color:var(--clay)} .wait .btn{min-height:46px;padding:.5rem 1.25rem} .wait .msg{margin-top:.5rem;font-size:.8125rem;color:var(--taupe)} .wait .msg.err{color:var(--clay)}
   .dev{display:inline-flex;align-items:center;gap:.375rem;border:1px dashed rgba(194,101,63,.7);border-radius:999px;padding:.2rem .625rem;font-size:.6875rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--clay);background:rgba(255,255,255,.7)} .dev::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--clay)}
   /* 3. upsell */
@@ -153,7 +155,13 @@
         <div class="note" id="buyNote" hidden></div>
         <ul class="ship" id="ship"></ul>
         <div class="more-info">
-          <details id="dimsDetails"><summary>Dimensions &amp; fit</summary><table class="specs"><caption class="sr-only">Dimensions</caption><tbody id="dimsBody"></tbody></table></details>
+          <details id="dimsDetails"><summary>Dimensions &amp; fit</summary>
+            <table class="specs"><caption class="sr-only">Dimensions</caption><tbody id="dimsBody"></tbody></table>
+            <p class="lbl" style="margin-top:.25rem" id="sizeLbl">Size guide · reference</p>
+            <table class="specs sizes" id="sizeTable" aria-labelledby="sizeLbl"><thead><tr><th scope="col">Size</th><th scope="col">cm</th><th scope="col">in</th></tr></thead><tbody></tbody></table>
+            <p class="fine2" id="sizesNote"></p>
+            <p class="tip" id="fitTip"></p>
+          </details>
           <details id="careDetails"><summary>Materials &amp; care</summary><table class="specs"><caption class="sr-only">Materials and care</caption><tbody id="careBody"></tbody></table></details>
         </div>
         <div class="wait" id="waitlist" hidden>
@@ -338,7 +346,7 @@ var BASE = "{{BASE}}";
   $("buyPrice").innerHTML = live ? esc(priceText) + (CONFIG.compareAt ? '<small><s>$' + Number(CONFIG.compareAt).toFixed(2) + '</s></small>' : "") : esc(priceText) + '<small>not yet approved</small>';
   function renderVariants() {
     $("variants").innerHTML = confirmed.map(function (x) { return '<li><button type="button" data-id="' + esc(x.id) + '" aria-pressed="' + (x.id === selected.id) + '"><span class="sw' + (x.id === "cow-print" ? " cow" : "") + '" style="--sw:' + esc(x.hex) + '" aria-hidden="true"></span>' + esc(x.name) + '</button></li>'; }).join("") + (unconfirmed ? '<li class="more">' + unconfirmed + ' more design' + (unconfirmed > 1 ? "s" : "") + ' to be confirmed</li>' : "");
-    Array.prototype.forEach.call($("variants").querySelectorAll("button"), function (b) { b.addEventListener("click", function () { selected = confirmed.filter(function (x) { return x.id === b.getAttribute("data-id"); })[0]; renderVariants(); renderEdition(); renderGallery(); renderUpsPics(); track("variant_select", { variant: selected.id }); }); });
+    Array.prototype.forEach.call($("variants").querySelectorAll("button"), function (b) { b.addEventListener("click", function () { selected = confirmed.filter(function (x) { return x.id === b.getAttribute("data-id"); })[0]; renderVariants(); renderEdition(); renderGallery(); renderUpsPics(); renderDims(); track("variant_select", { variant: selected.id }); }); });
   }
   renderVariants(); renderEdition(); renderGallery();
   function setQty(n) { qty = Math.max(1, Math.min(10, n)); $("qtyOut").textContent = qty; Array.prototype.forEach.call(document.querySelectorAll('#upsOptions input'), function (r) { r.checked = (+r.value === qty); }); }
@@ -369,7 +377,18 @@ var BASE = "{{BASE}}";
   }
   var ship = CONFIG.shipping, ret = CONFIG.returns;
   $("ship").innerHTML = [esc(ship.delivery) + " · " + esc(ship.cost), esc(ret.window) + ' · <a href="' + esc(BASE + "/#shipping-returns") + '">draft policy</a>'].map(function (t) { return "<li>" + tick + "<span>" + t + "</span></li>"; }).join("");
-  $("dimsBody").innerHTML = [["External size", S.external], ["Usable interior", S.interior], ["Entrance", S.entrance], ["Weight", S.weight]].map(function (r) { return "<tr><th scope=\"row\">" + esc(r[0]) + "</th><td>" + (r[1] ? esc(r[1]) : tbc) + "</td></tr>"; }).join("");
+  // Dimensions & fit: external size follows the reference size the visitor picks (or a confirmed size for the edition); nothing here creates a purchasable variant
+  var SZ = CONFIG.sizes || [], sizeSel = null;
+  function sizeText(z) { return z.cm.join(" × ") + " cm · " + z["in"].join(" × ") + " in"; }
+  function renderDims() {
+    var confirmedSize = selected.size ? SZ.filter(function (z) { return z.id === selected.size; })[0] : null, cur = confirmedSize || sizeSel;
+    var ext = cur ? '<b>' + esc(cur.name) + '</b> · ' + esc(sizeText(cur)) + (confirmedSize ? "" : ' <span class="fine2" style="display:inline">(reference)</span>') : '<span class="dev">Size confirmation pending</span> Select a size below to see its overall dimensions.';
+    $("dimsBody").innerHTML = [["External size", ext], ["Usable interior", S.interior ? esc(S.interior) : tbc], ["Entrance", S.entrance ? esc(S.entrance) : tbc], ["Weight", S.weight ? esc(S.weight) : tbc]].map(function (r) { return "<tr><th scope=\"row\">" + esc(r[0]) + "</th><td>" + r[1] + "</td></tr>"; }).join("");
+    $("sizeTable").querySelector("tbody").innerHTML = SZ.map(function (z) { var on = cur && cur.id === z.id; return '<tr data-id="' + esc(z.id) + '" aria-selected="' + !!on + '"><th scope="row"><button type="button" class="pick" aria-pressed="' + !!on + '">' + esc(z.name) + '</button></th><td>' + esc(z.cm.join(" × ")) + '</td><td>' + esc(z["in"].join(" × ")) + '</td></tr>'; }).join("");
+    Array.prototype.forEach.call($("sizeTable").querySelectorAll(".pick"), function (b) { b.addEventListener("click", function () { var id = b.closest("tr").getAttribute("data-id"); sizeSel = SZ.filter(function (z) { return z.id === id; })[0]; renderDims(); track("size_guide_select", { size: id }); }); });
+  }
+  renderDims();
+  $("sizesNote").textContent = CONFIG.sizesNote || ""; if (CONFIG.fitTip) $("fitTip").innerHTML = "<b>" + esc(CONFIG.fitTip.title) + "</b>" + esc(CONFIG.fitTip.text);
   $("careBody").innerHTML = [["Materials", S.materials], ["Construction", S.construction], ["Care", S.care], ["Safety", S.safety]].map(function (r) { return "<tr><th scope=\"row\">" + esc(r[0]) + "</th><td>" + (r[1] ? esc(r[1]) : tbc) + "</td></tr>"; }).join("");
   $("dimsDetails").addEventListener("toggle", function () { if ($("dimsDetails").open) track("size_guide_open", {}); });
   $("careDetails").addEventListener("toggle", function () { if ($("careDetails").open) track("product_detail_interaction", { detail: "care" }); });
