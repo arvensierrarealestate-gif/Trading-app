@@ -44,7 +44,7 @@ Gallery, purchase module, upsell, benefits and FAQ are the same component for ev
 | Benefits | Why it may be worth it | Benefit-first, each tied to a feature; cushion and care benefits flagged as pending confirmation. |
 | Demonstration | Perceived likelihood | Exterior → entrance → interior → approach → fit. Concept footage is disclosed as such. |
 | Objections | Removes doubt | The five researched objections, each answered honestly; specs table shows "to be confirmed" rather than numbers. |
-| Purchase | Effort and sacrifice | Real module (variants, quantity, stock, add to cart, shipping and returns beside the button). Preview state is labelled and offers a waitlist instead of a fake checkout. |
+| Purchase | Effort and sacrifice | Real module (variants, quantity, stock, add to cart, approved shipping and returns wording beside the button). Preview state is labelled and offers a waitlist instead of a fake checkout. |
 | Confidence | Trust | Everything we can tell you today, including that there are no reviews yet. |
 | Offer | Value framing | One clear price once approved; bundles and bonuses appear only when real. |
 | Final CTA | Purchase | Repeats the ask and routes straight to #buy, never to the homepage. |
