@@ -214,6 +214,13 @@
   .shop .main.ph { aspect-ratio: 1; display: grid; place-items: center; background: linear-gradient(to bottom right, var(--sand), var(--sand-2)); }
   .ph.pmain::before { content: ""; position: absolute; inset: 0; opacity: .07; background-image: radial-gradient(circle at 1px 1px, #1F2A24 1px, transparent 0); background-size: 18px 18px; }
   .psil { position: relative; width: 56%; aspect-ratio: 1; display: grid; place-items: end center; }
+  .pcard .pimg.real::before { display: none; } .pcard .pimg img, .ph.pmain img.real { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .thumbs button img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; } .thumbs button { position: relative; overflow: hidden; } .thumbs button img + .t { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,.85); font-size: .625rem; padding: .25rem; }
+  .swatches button.cow { background: repeating-linear-gradient(135deg, #1F1F1F 0 4px, #fff 4px 8px) !important; }
+  .pdp-details .sizes { width: 100%; border-collapse: collapse; font-size: .8125rem; margin: .25rem 0 .5rem; } .pdp-details .sizes th, .pdp-details .sizes td { text-align: left; padding: .35rem .5rem .35rem 0; border-top: 1px solid rgba(31,42,36,.08); white-space: nowrap; } .pdp-details .sizes thead th { border-top: 0; font-size: .6875rem; letter-spacing: .08em; text-transform: uppercase; color: var(--taupe); }
+  .pdp-details .tbc { display: inline-block; border: 1px dashed rgba(194,101,63,.7); border-radius: 999px; padding: .1rem .5rem; font-size: .6875rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--clay); } .pdp-details .fine { font-size: .75rem; color: var(--taupe); margin: 0 0 .5rem; }
+  .pdp-story { margin-top: 1.25rem; } .pricebox b.pending { font-size: 1.375rem; }
+  .addbtn[disabled], #buyBarAdd[disabled] { background: var(--sand-2); color: var(--taupe); box-shadow: none; cursor: not-allowed; transform: none; }
   .psil::before { content: ""; position: absolute; left: 50%; bottom: -4%; width: 70%; height: 9%; transform: translateX(-50%); border-radius: 50%; background: rgba(31,42,36,.1); }
   .psil span { position: relative; width: 100%; aspect-ratio: 1 / 1.05; border-radius: 18%; background: var(--sil, #7E9A86); display: grid; place-items: center; color: rgba(255,255,255,.88); font-weight: 600; font-size: clamp(.8rem, 2vw, 1.4rem); letter-spacing: .04em; box-shadow: inset 0 0 0 999px rgba(255,255,255,.12); transition: background .3s; }
   .psil span::before { content: ""; position: absolute; top: 14%; left: 14%; right: 14%; height: 44%; border-radius: 14%; background: rgba(31,42,36,.12); }
@@ -589,7 +596,7 @@
       <button type="button" role="tab" id="tab-other" data-cat="other" aria-selected="false" aria-controls="shopPanel" tabindex="-1">Other Pets</button>
     </div>
     <div id="shopPanel" role="tabpanel" aria-labelledby="tab-dogs">
-      <p class="shop-ph">Placeholder products. Real names, photos and prices arrive with the supplier list.</p>
+      <p class="shop-ph">Real products appear as they are confirmed; bracketed placeholders hold the remaining spots until the supplier list arrives.</p>
       <ul class="pgrid" id="shopGrid"></ul>
       <p class="steps-cta"><a href="#collection-dogs" class="textlink" id="shopViewAll">View all dog products <span aria-hidden="true">→</span></a></p>
     </div>
@@ -795,6 +802,7 @@
       </div>
       <ul class="reassure" id="shopReassure"></ul>
       <div class="pdp-details" id="pdpDetails"></div>
+      <p class="pdp-story" id="pdpStory" hidden><a href="#" class="textlink">Watch Bruce’s story on the Cat Cave page <span aria-hidden="true">→</span></a></p>
       <p class="connect-note">Shopify not connected yet — cart runs locally. Add <code>VITE_SHOPIFY_DOMAIN</code> and <code>VITE_SHOPIFY_STOREFRONT_TOKEN</code> to <code>.env</code> to enable live checkout.</p>
     </div>
       </div>
@@ -818,7 +826,7 @@
         <label class="tsort">Sort<select id="sortSel" aria-label="Sort products"><option value="featured">Featured</option><option value="name">Name A–Z</option><option value="price-asc">Price, low to high</option><option value="price-desc">Price, high to low</option></select></label>
         <p class="tcount" id="collectionCount" aria-live="polite"></p>
       </div>
-      <p class="shop-ph">Placeholder products. Real names, photos and prices arrive with the supplier list.</p>
+      <p class="shop-ph">Real products appear as they are confirmed; bracketed placeholders hold the remaining spots until the supplier list arrives.</p>
       <ul class="pgrid" id="collectionGrid"></ul>
       <div class="coll-empty" id="collectionEmpty" hidden><p>No products match these filters.</p><button type="button" class="btn btn-secondary" id="collectionClear">Clear all</button></div>
     </div>
@@ -854,7 +862,7 @@
       <div class="need-paths" role="group" aria-label="Ways to solve it" id="needPaths"></div>
       <section class="need-block" aria-labelledby="needFeaturedTitle">
         <h2 id="needFeaturedTitle">Featured products</h2>
-        <p class="shop-ph">Placeholder products. Real names, photos and prices arrive with the supplier list.</p>
+        <p class="shop-ph">Real products appear as they are confirmed; bracketed placeholders hold the remaining spots until the supplier list arrives.</p>
         <ul class="pgrid" id="needGrid"></ul>
         <p class="need-empty" id="needEmpty" hidden>Nothing listed for this path yet. It fills in as products are confirmed.</p>
       </section>
@@ -1313,6 +1321,14 @@
     cats:  [["clean-home","surfaces"],["grooming","brushing"],["comfort-play","play"],["everyday-care","toileting"]].map(function (m, i) { var n = i + 1; return { id: "cat-" + n,   cat: "cats",  need: m[0], path: m[1], name: "[Cat product " + n + "]",       price: 0, available: false, benefit: "[One short benefit line — what this makes easier]", sil: ["#C98A6B","#7E9A86","#4A4F4C","#D9CDB8"][i] }; }),
     other: [["everyday-care","feeding"],["comfort-play","rest"],["travel","carriers"]].map(function (m, i)              { var n = i + 1; return { id: "other-" + n, cat: "other", need: m[0], path: m[1], name: "[Other pet product " + n + "]", price: 0, available: false, benefit: "[One short benefit line — what this makes easier]", sil: ["#D9CDB8","#4A4F4C","#7E9A86"][i] }; })
   };
+  // Real products come from landing/<slug>.json (the same data the landing pages use), so the site and the landing pages never disagree.
+  var LANDING_PRODUCTS = {{LANDING_PRODUCTS_JSON}};
+  Object.keys(LANDING_PRODUCTS).forEach(function (slug) {
+    var L = LANDING_PRODUCTS[slug], first = L.variants.filter(function (v) { return v.status === "hero" || v.available; })[0] || L.variants[0];
+    var item = { id: L.productId, cat: L.category || "cats", need: L.need || "comfort-play", path: L.path || "rest", name: L.displayName, price: L.status === "live" ? L.price : null, available: false,
+      benefit: L.angles[L.defaultAngle].sub, sil: "#C9D6CB", image: first.image || null, landing: L, slug: slug };
+    (CATALOG[item.cat] = CATALOG[item.cat] || []).unshift(item);
+  });
   function allProducts() { return CATALOG.dogs.concat(CATALOG.cats, CATALOG.other); }
   // Shop by need: the problem first, then a few clear ways to solve it. Copy describes the problem area, never a product claim.
   var NEEDS = {
@@ -1458,10 +1474,11 @@
   function productCard(item) {
     var li = document.createElement("li"); li.className = "pcard";
     var img = document.createElement("div"); img.className = "pimg"; img.setAttribute("role", "img"); img.setAttribute("aria-label", "Product image placeholder");
-    var sil = document.createElement("div"); sil.className = "psil"; sil.style.setProperty("--sil", item.sil); var sp = document.createElement("span"); sp.textContent = "[ PRODUCT ]"; sil.appendChild(sp); img.appendChild(sil);
+    if (item.image) { var ph = document.createElement("img"); ph.src = item.image.replace(/^\//, ""); ph.alt = item.name; ph.loading = "lazy"; ph.decoding = "async"; img.appendChild(ph); img.setAttribute("aria-label", item.name); img.classList.add("real"); }
+    else { var sil = document.createElement("div"); sil.className = "psil"; sil.style.setProperty("--sil", item.sil); var sp = document.createElement("span"); sp.textContent = "[ PRODUCT ]"; sil.appendChild(sp); img.appendChild(sil); }
     var body = document.createElement("div"); body.className = "pbody";
     var h = document.createElement("h3"); h.textContent = item.name;
-    var pr = document.createElement("p"); pr.className = "pprice"; pr.innerHTML = "<span>" + money(item.price) + "</span><small>placeholder</small>";
+    var pr = document.createElement("p"); pr.className = "pprice"; pr.innerHTML = item.price == null ? "<span>Price to be confirmed</span>" : "<span>" + money(item.price) + "</span><small>" + (item.landing ? "" : "placeholder") + "</small>";
     var ben = document.createElement("p"); ben.className = "pben"; ben.textContent = item.benefit;
     var act = document.createElement("p"); act.className = "pact"; var a = document.createElement("a"); a.className = "btn btn-secondary"; a.href = "#product-" + item.id; a.textContent = "View product"; act.appendChild(a);
     body.appendChild(h); body.appendChild(pr); body.appendChild(ben); body.appendChild(act); li.appendChild(img); li.appendChild(body); return li;
@@ -1542,25 +1559,57 @@
   function money(n) { return new Intl.NumberFormat("en-US", { style: "currency", currency: PRODUCT.currency }).format(n); }
   var colorIdx = 0, imgIdx = 0, qty = 1;
   var shopSil = document.getElementById("shopSil"), shopMainCap = document.getElementById("shopMainCap"), shopThumbs = document.getElementById("shopThumbs");
+  var DEFAULT_COLORS = JSON.parse(JSON.stringify(PRODUCT.colors)), DEFAULT_GALLERY = JSON.parse(JSON.stringify(PRODUCT.gallery));
+  PRODUCT.landing = null;
+  function srcFor(g, key, variantId) { var v = g[key]; if (!v) return null; return typeof v === "string" ? v : (v[variantId] || null); }
+  function galleryFor(L, variantId) { return L.media.gallery.map(function (g) { return { note: g.label, src: srcFor(g, "src", variantId), thumb: srcFor(g, "thumb", variantId), alt: g.alt }; }); }
   function setProduct(item) {
     // Swap the detail page to a catalog item. Variant ids carry the product id so cart lines stay distinct per product.
-    PRODUCT.id = item.id; PRODUCT.cat = item.cat; PRODUCT.name = item.name; PRODUCT.price = item.price;
-    PRODUCT.colors.forEach(function (c, i) { c.variantId = "gid://shopify/ProductVariant/PLACEHOLDER_" + item.id + "_" + "ABCD".charAt(i); });
-    PRODUCT.colors[0].hex = item.sil; colorIdx = 0; imgIdx = 0; qty = 1;
+    PRODUCT.id = item.id; PRODUCT.cat = item.cat; PRODUCT.name = item.name; PRODUCT.price = item.price; PRODUCT.landing = item.landing || null;
+    colorIdx = 0; imgIdx = 0; qty = 1;
+    if (item.landing) {
+      var L = item.landing, confirmed = L.variants.filter(function (v) { return v.status === "hero" || v.available; });
+      PRODUCT.colors = confirmed.map(function (v) { return { name: v.name, edition: v.edition, hex: v.hex, pattern: v.id === "cow-print" ? "cow" : "", id: v.id, image: v.image || null, thumb: v.thumb || null, variantId: v.variantId || ("gid://shopify/ProductVariant/PLACEHOLDER_" + item.id + "_" + v.id) }; });
+      PRODUCT.gallery = galleryFor(L, PRODUCT.colors[0].id);
+    } else {
+      PRODUCT.colors = JSON.parse(JSON.stringify(DEFAULT_COLORS)); PRODUCT.gallery = JSON.parse(JSON.stringify(DEFAULT_GALLERY));
+      PRODUCT.colors.forEach(function (c, i) { c.variantId = "gid://shopify/ProductVariant/PLACEHOLDER_" + item.id + "_" + "ABCD".charAt(i); });
+      PRODUCT.colors[0].hex = item.sil;
+    }
     document.getElementById("shopName").textContent = PRODUCT.name;
-    document.getElementById("shopDesc").textContent = PRODUCT.shortDescription;
-    document.getElementById("shopPrice").textContent = money(PRODUCT.price);
+    document.getElementById("shopPrice").textContent = item.price == null ? "Price to be confirmed" : money(PRODUCT.price); document.getElementById("shopPrice").classList.toggle("pending", item.price == null);
+    document.getElementById("shopPriceNote").textContent = item.landing ? (item.price == null ? "Ordering opens once price and stock are confirmed" : "") : "PLACEHOLDER — price set in Shopify";
     document.getElementById("pdpEyebrow").textContent = CAT_NAMES[item.cat] + " \u00b7 " + NEEDS[item.need].name;
     document.getElementById("shopDesc").textContent = item.benefit;
     renderPdpDetails(item);
-    document.getElementById("buyBarName").textContent = item.name; document.getElementById("buyBarPrice").textContent = money(item.price);
+    document.getElementById("buyBarName").textContent = item.name; document.getElementById("buyBarPrice").textContent = item.price == null ? "Price to be confirmed" : money(item.price);
     document.getElementById("pdpCatName").textContent = CAT_NAMES[item.cat]; document.getElementById("pdpBack").href = "#collection-" + item.cat;
+    var pending = item.price == null; document.getElementById("addToCart").disabled = pending; document.getElementById("buyBarAdd").disabled = pending;
+    var cn = document.querySelector("#page-product .connect-note"); if (cn) cn.hidden = !!item.landing;
+    var story = document.getElementById("pdpStory"); if (story) { story.hidden = !item.landing; if (item.landing) { story.querySelector("a").href = "products/" + item.slug + "?angle=" + (item.landing.defaultAngle === "problem" ? "story" : item.landing.defaultAngle); } }
     if (typeof renderGallery === "function") { renderGallery(); renderColors(); }
   }
   function renderPdpDetails(item) {
     // Purchase information sits above; these blocks support the decision. Product-specific text is a bracket until the supplier spec exists.
     var box = document.getElementById("pdpDetails"); if (!box) return; box.innerHTML = "";
     var need = NEEDS[item.need], tbd = "[To be written from the supplier specification.]";
+    if (item.landing) {
+      var L = item.landing, S = L.specs || {}, tbc = '<span class="tbc">To be confirmed by supplier</span>', faqOf = function (id) { return (L.faq.filter(function (f) { return f.id === id; })[0] || {}).a || ""; };
+      var sizes = (L.sizes || []).map(function (z) { return "<tr><th scope=\"row\">" + z.name + "</th><td>" + z.cm.join(" × ") + " cm</td><td>" + z["in"].join(" × ") + " in</td></tr>"; }).join("");
+      [["What it solves", "Part of <a href=\"#need-" + item.need + "\">" + need.name + "</a>. " + L.benefits.map(function (b) { return "<b>" + b.title + ".</b> " + b.text; }).join("<br><br>")],
+       ["How it works", L.highlights.concat(L.variants.filter(function (v) { return v.status === "hero"; }).map(function (v) { return v.edition + ": " + v.detail.toLowerCase(); })).map(function (h) { return "\u2022 " + h; }).join("<br>")],
+       ["How to use it", faqOf("intro")],
+       ["What to expect", faqOf("use")],
+       ["Who it\u2019s for", "Cats who like an enclosed spot. Four supplier-listed overall sizes are in Dimensions &amp; fit below; which size each colour is sold in is confirmed with the catalog."],
+       ["What\u2019s included", tbc],
+       ["Dimensions &amp; fit", "<table class=\"sizes\"><thead><tr><th scope=\"col\">Size</th><th scope=\"col\">cm</th><th scope=\"col\">in</th></tr></thead><tbody>" + sizes + "</tbody></table><p class=\"fine\">" + (L.sizesNote || "") + "</p><p><b>Usable interior:</b> " + (S.interior || tbc) + "<br><b>Entrance:</b> " + (S.entrance || tbc) + "<br><b>Weight:</b> " + (S.weight || tbc) + "</p>" + (L.fitTip ? "<p><b>" + L.fitTip.title + ".</b> " + L.fitTip.text + "</p>" : "")],
+       ["Materials &amp; care", "<b>Materials:</b> " + (S.materials || tbc) + "<br><b>Construction:</b> " + (S.construction || tbc) + "<br><b>Care:</b> " + (S.care || tbc) + "<br><b>Safety:</b> " + (S.safety || tbc)],
+       ["Real customer results", "No customer results yet. Photos and reviews from real customers appear here once they exist; nothing is shown before then."],
+       ["Questions", L.faq.map(function (f) { return "<b>" + f.q + "</b> " + f.a; }).join("<br><br>")],
+       ["Shipping & Returns", L.shipping.summary + " " + L.returns.summary + " See <a href=\"#shipping-returns\">Shipping &amp; Returns</a>."]]
+      .forEach(function (d, i) { var det = document.createElement("details"); if (i === 0) det.open = true; det.innerHTML = "<summary>" + d[0] + "</summary><div class=\"dbody\">" + d[1] + "</div>"; box.appendChild(det); });
+      return;
+    }
     [["What it solves", "Part of <a href=\"#need-" + item.need + "\">" + need.name + "</a>: " + need.lead + " " + tbd],
      ["How it works", tbd], ["How to use it", tbd], ["What to expect", tbd], ["Who it\u2019s for", "[Pet type, size and age this suits, and who it does not.] " + tbd], ["What\u2019s included", tbd],
      ["Real customer results", "No customer results yet. Photos and reviews from real customers appear here once they exist; nothing is shown before then."],
@@ -1584,20 +1633,24 @@
   function fillReassure(ul) { ul.innerHTML = ""; PRODUCT.reassurance.forEach(function (r) { var li = document.createElement("li"); var b = document.createElement("b"); b.textContent = r.label; var sp = document.createElement("span"); sp.textContent = r.value; li.appendChild(b); li.appendChild(sp); ul.appendChild(li); }); }
   fillReassure(document.getElementById("shopReassure")); fillReassure(document.getElementById("checkoutReassure"));
   function renderGallery() {
-    shopMainCap.innerHTML = "<b>Photo · 1/1</b> — " + PRODUCT.gallery[imgIdx].note;
+    var g0 = PRODUCT.gallery[imgIdx], main = document.getElementById("shopMain"), old = main.querySelector("img.real"); if (old) old.remove();
+    if (g0.src) { var im = document.createElement("img"); im.className = "real"; im.src = g0.src.replace(/^\//, ""); im.alt = g0.alt || g0.note; im.decoding = "async"; main.insertBefore(im, shopMainCap); shopSil.hidden = true; main.setAttribute("aria-label", g0.alt || g0.note); shopMainCap.innerHTML = "<b>" + g0.note + "</b>" + (PRODUCT.colors[colorIdx].edition ? " — " + PRODUCT.colors[colorIdx].edition : ""); }
+    else { shopSil.hidden = false; main.setAttribute("aria-label", PRODUCT.landing ? g0.note + " (final photo pending)" : "Product image placeholder"); shopMainCap.innerHTML = PRODUCT.landing ? "<b>" + g0.note + "</b> — final photo pending" : "<b>Photo · 1/1</b> — " + g0.note; }
     shopThumbs.innerHTML = "";
     PRODUCT.gallery.forEach(function (g, i) {
-      var li = document.createElement("li"), b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", "Show image " + (i + 1)); b.setAttribute("aria-pressed", String(i === imgIdx));
+      var li = document.createElement("li"), b = document.createElement("button"); b.type = "button"; b.setAttribute("aria-label", "Show image " + (i + 1) + ": " + g.note + (g.src ? "" : " (final photo pending)")); b.setAttribute("aria-pressed", String(i === imgIdx));
+      if (g.src) { var ti = document.createElement("img"); ti.src = (g.thumb || g.src).replace(/^\//, ""); ti.alt = ""; ti.loading = "lazy"; b.appendChild(ti); }
       var d = document.createElement("div"); d.className = "t"; d.textContent = g.note; b.appendChild(d); b.addEventListener("click", function () { imgIdx = i; renderGallery(); }); li.appendChild(b); shopThumbs.appendChild(li);
     });
   }
   function renderColors() {
-    var c = PRODUCT.colors[colorIdx]; document.getElementById("shopColorName").textContent = c.name; shopSil.style.setProperty("--sil", c.hex);
+    var c = PRODUCT.colors[colorIdx]; document.getElementById("shopColorName").textContent = c.edition || c.name; shopSil.style.setProperty("--sil", c.hex);
+    if (PRODUCT.landing) { PRODUCT.gallery = galleryFor(PRODUCT.landing, c.id); renderGallery(); }
     var wrap = document.getElementById("shopSwatches"); wrap.innerHTML = "";
-    PRODUCT.colors.forEach(function (col, i) { var b = document.createElement("button"); b.type = "button"; b.style.backgroundColor = col.hex; b.setAttribute("aria-label", col.name); b.setAttribute("aria-pressed", String(i === colorIdx)); b.addEventListener("click", function () { colorIdx = i; renderColors(); }); wrap.appendChild(b); });
+    PRODUCT.colors.forEach(function (col, i) { var b = document.createElement("button"); b.type = "button"; b.style.backgroundColor = col.hex; if (col.pattern === "cow") b.classList.add("cow"); b.setAttribute("aria-label", col.name); b.setAttribute("aria-pressed", String(i === colorIdx)); b.addEventListener("click", function () { colorIdx = i; renderColors(); }); wrap.appendChild(b); });
     renderAddLabel();
   }
-  function renderAddLabel() { document.getElementById("addToCart").textContent = "Add to Cart — " + money(PRODUCT.price * qty); document.getElementById("qtyOut").textContent = qty; }
+  function renderAddLabel() { document.getElementById("addToCart").textContent = PRODUCT.price == null ? "Add to Cart — price pending" : "Add to Cart — " + money(PRODUCT.price * qty); document.getElementById("qtyOut").textContent = qty; }
   document.getElementById("qtyMinus").addEventListener("click", function () { qty = Math.max(1, qty - 1); renderAddLabel(); });
   document.getElementById("qtyPlus").addEventListener("click", function () { qty = Math.min(10, qty + 1); renderAddLabel(); });
   renderGallery(); renderColors();
@@ -1619,7 +1672,8 @@
   function lineEl(l, removable) {
     var row = document.createElement("div"); row.className = "cart-line";
     var thumb = document.createElement("div"); thumb.className = "thumb"; thumb.setAttribute("aria-hidden", "true");
-    var sil = document.createElement("div"); sil.className = "psil"; sil.style.setProperty("--sil", l.hex || "#7E9A86"); sil.appendChild(document.createElement("span")); thumb.appendChild(sil);
+    if (l.image) { var ti = document.createElement("img"); ti.src = l.image.replace(/^\//, ""); ti.alt = ""; ti.style.cssText = "width:100%;height:100%;object-fit:cover"; thumb.appendChild(ti); }
+    else { var sil = document.createElement("div"); sil.className = "psil"; sil.style.setProperty("--sil", l.hex || "#7E9A86"); sil.appendChild(document.createElement("span")); thumb.appendChild(sil); }
     var info = document.createElement("div"); info.className = "info";
     var t = document.createElement("p"); t.className = "t"; t.textContent = l.title;
     var m = document.createElement("p"); m.className = "m"; m.textContent = "Color: " + l.color;
@@ -1676,7 +1730,8 @@
   var addBtn = document.getElementById("addToCart");
   addBtn.addEventListener("click", function () {
     var c = PRODUCT.colors[colorIdx]; var existing = cart.lines.filter(function (l) { return l.variantId === c.variantId; })[0];
-    if (existing) existing.qty = Math.min(10, existing.qty + qty); else cart.lines.push({ variantId: c.variantId, productId: PRODUCT.id, title: PRODUCT.name, color: c.name, hex: c.hex, price: PRODUCT.price, qty: qty });
+    if (PRODUCT.price == null) return;
+    if (existing) existing.qty = Math.min(10, existing.qty + qty); else cart.lines.push({ variantId: c.variantId, productId: PRODUCT.id, title: PRODUCT.name, color: c.edition || c.name, hex: c.hex, image: c.thumb || c.image || null, price: PRODUCT.price, qty: qty });
     saveCart(); renderCart(); renderCheckout(); renderCartPage();
     addBtn.textContent = "Added ✓"; setTimeout(renderAddLabel, 1800);
     if (window.dataLayer) window.dataLayer.push({ event: "add_to_cart", variant: c.variantId, qty: qty });
