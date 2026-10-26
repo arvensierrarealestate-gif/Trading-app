@@ -138,9 +138,14 @@
         }
       },
       {
-        "src": {},
-        "alt": "Decorative ears, horns and pom-pom",
-        "label": "Decorative details"
+        "src": {
+          "cow-print": "/assets/photos/cat-cave-cow-details.jpg"
+        },
+        "alt": "Close-up of the cow-print cave's details: plush horns, fabric ears, the hanging pom-pom and the plush entrance trim",
+        "label": "Decorative details",
+        "thumb": {
+          "cow-print": "/assets/photos/cat-cave-cow-details-thumb.jpg"
+        }
       },
       {
         "src": {},
@@ -323,7 +328,7 @@
     "TikTok Pixel ID and Events API access token (server side)",
     "Customer service phone or hours, if any beyond email",
     "Authentic customer reviews and photos, with permission",
-    "Final approved media: Bruce photos; remaining views (details, relative size) for the cow-print edition and five views for the green dinosaur edition; product demonstration footage"
+    "Final approved media: Bruce photos; relative-size view for the cow-print edition and five views for the green dinosaur edition; product demonstration footage"
   ],
   "displayName": "UrPick Cozy Cat Cave",
   "edition": "Cow Print Edition",
