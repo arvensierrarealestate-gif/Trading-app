@@ -14,7 +14,7 @@ with sync_playwright() as p:
     for (w, h, label) in [(1280, 900, "desktop"), (768, 1024, "tablet"), (390, 844, "mobile")]:
         pg = b.new_page(viewport={"width": w, "height": h}); errs = []
         pg.on("pageerror", lambda e: errs.append(str(e)))
-        pg.add_init_script("localStorage.setItem('urpick_offer_v1', JSON.stringify({status:'dismissed', at: Date.now()}))")
+        pg.add_init_script("localStorage.setItem('urpick_offer_v1', JSON.stringify({status:'dismissed', at: Date.now()})); localStorage.setItem('urpick_placeholders', '1')")
         pg.goto("file://" + PAGE); pg.wait_for_timeout(500)
         desktop = label == "desktop"
         # no horizontal overflow
@@ -335,6 +335,18 @@ with sync_playwright() as p:
     ctx.close()
     ctx = b.new_context(viewport={"width": 1280, "height": 900}, reduced_motion="reduce"); pg = ctx.new_page()
     pg.add_init_script("localStorage.setItem('urpick_offer_v1', JSON.stringify({status:'dismissed', at: Date.now()}))"); pg.goto("file://" + PAGE); pg.wait_for_timeout(500)
+    check("[live] no placeholder products on the live site: Dogs tab shows Coming soon, View all hidden", pg.evaluate("document.querySelectorAll('#shopGrid .pcard').length === 0 && !!document.querySelector('#shopGrid .pcoming') && /Coming soon/.test(document.querySelector('#shopGrid .pcoming').textContent) && /Dog products are on the way/.test(document.querySelector('#shopGrid .pcoming').textContent) && document.getElementById('shopViewAll').parentElement.hidden && !/bracketed placeholders/.test(document.body.innerText)"))
+    pg.evaluate("document.getElementById('tab-other').click()"); pg.wait_for_timeout(200)
+    check("[live] Other pets tab shows Coming soon", pg.evaluate("/Products for other pets are on the way/.test(document.querySelector('#shopGrid .pcoming').textContent)"))
+    pg.evaluate("document.getElementById('tab-cats').click()"); pg.wait_for_timeout(200)
+    check("[live] Cats tab shows only the Cat Cave", pg.evaluate("document.querySelectorAll('#shopGrid .pcard').length === 1 && document.querySelector('#shopGrid h3').textContent === 'UrPick Cozy Cat Cave' && !document.getElementById('shopViewAll').parentElement.hidden"))
+    pg.goto("file://" + PAGE + "#collection-dogs"); pg.wait_for_timeout(500)
+    check("[live] Dogs collection says coming soon, no clear-filters button", pg.evaluate("document.querySelectorAll('#collectionGrid .pcard').length === 0 && !document.getElementById('collectionEmpty').hidden && /Coming soon/.test(document.getElementById('collectionEmpty').textContent) && document.getElementById('collectionClear').hidden && document.getElementById('collectionCount').textContent === '0 products'"))
+    pg.goto("file://" + PAGE + "#collection-all"); pg.wait_for_timeout(500)
+    check("[live] What made the cut lists only real products", pg.evaluate("document.querySelectorAll('#collectionGrid .pcard').length === 1"))
+    pg.goto("file://" + PAGE + "#product-dog-1"); pg.wait_for_timeout(500)
+    check("[live] a placeholder product link falls back to the homepage", pg.evaluate("!document.getElementById('main').hidden"))
+    pg.goto("file://" + PAGE); pg.wait_for_timeout(500)
     check("[desktop] reduced motion: ticker is static, one copy of the messages, centred", pg.evaluate("getComputedStyle(document.getElementById('ticker')).animationName === 'none' && Array.from(document.querySelectorAll('#ticker .ticker-set')).filter(e => e.offsetParent !== null).length === 1"))
     ctx.close()
     # not on routed pages

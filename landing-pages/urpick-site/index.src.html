@@ -220,6 +220,7 @@
   .pdp-details .sizes { width: 100%; border-collapse: collapse; font-size: .8125rem; margin: .25rem 0 .5rem; } .pdp-details .sizes th, .pdp-details .sizes td { text-align: left; padding: .35rem .5rem .35rem 0; border-top: 1px solid rgba(31,42,36,.08); white-space: nowrap; } .pdp-details .sizes thead th { border-top: 0; font-size: .6875rem; letter-spacing: .08em; text-transform: uppercase; color: var(--taupe); }
   .pdp-details .tbc { display: inline-block; border: 1px dashed rgba(194,101,63,.7); border-radius: 999px; padding: .1rem .5rem; font-size: .6875rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--clay); } .pdp-details .fine { font-size: .75rem; color: var(--taupe); margin: 0 0 .5rem; }
   .pdp-story { margin-top: 1.25rem; } .pricebox b.pending { font-size: 1.375rem; }
+  .pcoming { grid-column: 1 / -1; background: #fff; border-radius: var(--r-card); padding: 2.5rem 1.5rem; text-align: center; box-shadow: var(--shadow-card); } .pcoming h3 { font-size: 1.375rem; margin-top: .5rem; } .pcoming p { margin-top: .5rem; color: var(--taupe); font-size: .9375rem; max-width: 32rem; margin-inline: auto; } .pcoming .textlink { margin-top: .5rem; }
   .pswatches { display: flex; align-items: center; gap: .5rem; margin-top: .25rem; } .pswatches .psw { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(31,42,36,.2); background: var(--sw, #ccc); cursor: pointer; padding: 0; } .pswatches .psw.cow { background: repeating-linear-gradient(135deg, #1F1F1F 0 4px, #fff 4px 8px); } .pswatches .psw[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--sage-deep); } .pswatches .psw-name { font-size: .75rem; color: var(--taupe); margin-left: .25rem; }
   .addbtn[disabled], #buyBarAdd[disabled] { background: var(--sand-2); color: var(--taupe); box-shadow: none; cursor: not-allowed; transform: none; }
   .psil::before { content: ""; position: absolute; left: 50%; bottom: -4%; width: 70%; height: 9%; transform: translateX(-50%); border-radius: 50%; background: rgba(31,42,36,.1); }
@@ -597,7 +598,7 @@
       <button type="button" role="tab" id="tab-other" data-cat="other" aria-selected="false" aria-controls="shopPanel" tabindex="-1">Other Pets</button>
     </div>
     <div id="shopPanel" role="tabpanel" aria-labelledby="tab-dogs">
-      <p class="shop-ph">Real products appear as they are confirmed; bracketed placeholders hold the remaining spots until the supplier list arrives.</p>
+      <p class="shop-ph">Each product appears here only once it is confirmed.</p>
       <ul class="pgrid" id="shopGrid"></ul>
       <p class="steps-cta"><a href="#collection-dogs" class="textlink" id="shopViewAll">View all dog products <span aria-hidden="true">→</span></a></p>
     </div>
@@ -827,7 +828,7 @@
         <label class="tsort">Sort<select id="sortSel" aria-label="Sort products"><option value="featured">Featured</option><option value="name">Name A–Z</option><option value="price-asc">Price, low to high</option><option value="price-desc">Price, high to low</option></select></label>
         <p class="tcount" id="collectionCount" aria-live="polite"></p>
       </div>
-      <p class="shop-ph">Real products appear as they are confirmed; bracketed placeholders hold the remaining spots until the supplier list arrives.</p>
+      <p class="shop-ph">Each product appears here only once it is confirmed.</p>
       <ul class="pgrid" id="collectionGrid"></ul>
       <div class="coll-empty" id="collectionEmpty" hidden><p>No products match these filters.</p><button type="button" class="btn btn-secondary" id="collectionClear">Clear all</button></div>
     </div>
@@ -863,7 +864,7 @@
       <div class="need-paths" role="group" aria-label="Ways to solve it" id="needPaths"></div>
       <section class="need-block" aria-labelledby="needFeaturedTitle">
         <h2 id="needFeaturedTitle">Featured products</h2>
-        <p class="shop-ph">Real products appear as they are confirmed; bracketed placeholders hold the remaining spots until the supplier list arrives.</p>
+        <p class="shop-ph">Each product appears here only once it is confirmed.</p>
         <ul class="pgrid" id="needGrid"></ul>
         <p class="need-empty" id="needEmpty" hidden>Nothing listed for this path yet. It fills in as products are confirmed.</p>
       </section>
@@ -1331,6 +1332,9 @@
       colors: L.variants.filter(function (v) { return v.status === "hero" || v.available; }).map(function (v) { return { id: v.id, name: v.name, edition: v.edition, hex: v.hex, pattern: v.id === "cow-print" ? "cow" : "", image: v.image || null }; }) };
     (CATALOG[item.cat] = CATALOG[item.cat] || []).unshift(item);
   });
+  // Placeholder products are hidden on the live site; the test suite switches them on with localStorage "urpick_placeholders" = "1".
+  var SHOW_PLACEHOLDERS = (function () { try { return localStorage.getItem("urpick_placeholders") === "1"; } catch (e) { return false; } })();
+  if (!SHOW_PLACEHOLDERS) Object.keys(CATALOG).forEach(function (k) { CATALOG[k] = CATALOG[k].filter(function (x) { return !!x.landing; }); });
   function allProducts() { return CATALOG.dogs.concat(CATALOG.cats, CATALOG.other); }
   // Shop by need: the problem first, then a few clear ways to solve it. Copy describes the problem area, never a product claim.
   var NEEDS = {
@@ -1418,7 +1422,9 @@
   function renderCollection() {
     var items = applyFilters(collectionBase(collKey)), grid = document.getElementById("collectionGrid"); grid.innerHTML = "";
     items.forEach(function (it) { grid.appendChild(productCard(it)); });
-    document.getElementById("collectionEmpty").hidden = items.length > 0;
+    var base = collectionBase(collKey), empty = document.getElementById("collectionEmpty"); empty.hidden = items.length > 0;
+    empty.querySelector("p").textContent = base.length ? "No products match these filters." : "Coming soon. Nothing is confirmed for this range yet; we add each product only once it is. Leave your email on the homepage to hear first.";
+    document.getElementById("collectionClear").hidden = !base.length;
     document.getElementById("collectionCount").textContent = items.length + (items.length === 1 ? " product" : " products");
     var n = filterCount(); document.getElementById("filterCount").textContent = n ? String(n) : "";
     document.getElementById("sortSel").value = sortKey;
@@ -1501,10 +1507,16 @@
     }
     body.appendChild(act); li.appendChild(img); li.appendChild(body); return li;
   }
+  function comingSoon(cat) {
+    var li = document.createElement("li"); li.className = "pcoming"; li.setAttribute("role", "status");
+    li.innerHTML = '<p class="eyebrow">Coming soon</p><h3>' + (cat === "other" ? "Products for other pets" : CAT_NAMES[cat].replace(/s$/, "") + " products") + ' are on the way.</h3><p>We add each product here only once it is confirmed. Leave your email below to hear first.</p><p><a href="#newsletter" class="textlink">Join the list <span aria-hidden="true">→</span></a></p>';
+    return li;
+  }
   function renderShopGrid() {
     var grid = document.getElementById("shopGrid"); grid.innerHTML = "";
-    CATALOG[activeCat].slice(0, 3).forEach(function (item) { grid.appendChild(productCard(item)); });
-    var va = document.getElementById("shopViewAll"); va.href = "#collection-" + activeCat; va.innerHTML = "View all " + CAT_SINGULAR[activeCat] + " products <span aria-hidden=\"true\">→</span>";
+    var items = CATALOG[activeCat].slice(0, 3); items.forEach(function (item) { grid.appendChild(productCard(item)); });
+    if (!items.length) grid.appendChild(comingSoon(activeCat));
+    var va = document.getElementById("shopViewAll"); va.href = "#collection-" + activeCat; va.innerHTML = "View all " + CAT_SINGULAR[activeCat] + " products <span aria-hidden=\"true\">→</span>"; va.parentElement.hidden = !items.length;
     document.getElementById("shopPanel").setAttribute("aria-labelledby", "tab-" + activeCat);
   }
   function setCategory(cat) {
@@ -1674,7 +1686,7 @@
   document.getElementById("qtyMinus").addEventListener("click", function () { qty = Math.max(1, qty - 1); renderAddLabel(); });
   document.getElementById("qtyPlus").addEventListener("click", function () { qty = Math.min(10, qty + 1); renderAddLabel(); });
   renderGallery(); renderColors();
-  if (typeof CATALOG !== "undefined") setProduct(CATALOG.dogs[0]);
+  if (typeof CATALOG !== "undefined") { var firstItem = allProducts()[0]; if (firstItem) setProduct(firstItem); }
 
   // ── Cart (local; mirrors the template's CartProvider, key kept for continuity) ──
   var CART_KEY = "eb_cart_v1", cart = { lines: [] };
