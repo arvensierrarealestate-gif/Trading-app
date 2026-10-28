@@ -415,7 +415,7 @@
   <div class="ticker" id="ticker">
     <ul class="ticker-set" id="tickerSet">
       <li>Coming soon: thoughtfully designed essentials for everyday pet life</li>
-      <li>15% off your first order when you leave your email</li>
+      <li>10% off your first order when you leave your email</li>
       <li>Only the useful stuff makes the cut</li>
     </ul>
   </div>
@@ -446,19 +446,19 @@
     <button type="button" class="iconbtn offer-close" id="offerClose" aria-label="Close and continue to the site"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <div class="offer-side" aria-hidden="true">
       <p class="brand">UrPick</p>
-      <p class="big">15% off<small>Your first order</small></p>
+      <p class="big">10% off<small>Your first order</small></p>
       <p>Everyday essentials for pets and the people who love them.</p>
     </div>
     <div class="offer-main">
       <div class="offer-ask" id="offerAsk">
         <p class="eyebrow">Welcome to UrPick</p>
         <h2 id="offerTitle">A little something for your first pick.</h2>
-        <p class="sub">Enter your email and get 15% off your first order. We’ll show you your discount code straight away to use at checkout.</p>
+        <p class="sub">Enter your email and get 10% off your first order. We’ll show you your discount code straight away to use at checkout.</p>
         <form class="offer-form" id="offerForm" novalidate>
           <label for="offerEmail" style="position:absolute;left:-9999px">Email address</label>
           <input id="offerEmail" type="email" placeholder="Enter your email address" autocomplete="email" inputmode="email" required>
           <p class="offer-error" id="offerError" role="alert"></p>
-          <button type="submit" class="btn btn-primary" id="offerSubmit">Unlock my 15% off</button>
+          <button type="submit" class="btn btn-primary" id="offerSubmit">Unlock my 10% off</button>
         </form>
         <p class="offer-micro">Your code appears here as soon as you enter your email.</p>
         <p class="offer-consent">By entering your email you agree to receive UrPick emails about launch news and offers. You can unsubscribe at any time. See our <a href="#privacy">Privacy Policy</a>.</p>
@@ -466,7 +466,7 @@
       <div class="offer-done" id="offerDone" aria-live="polite">
         <p class="eyebrow">Welcome to UrPick</p>
         <h2 id="offerDoneTitle">You’re in!</h2>
-        <p class="sub" id="offerDoneBody">Your 15% first-order discount is ready. Shop normally and use this email at checkout. We’ll apply your discount automatically.</p>
+        <p class="sub" id="offerDoneBody">Your 10% first-order discount is ready. Shop normally and use this email at checkout. We’ll apply your discount automatically.</p>
         <div class="offer-code" id="offerCodeWrap" hidden><span class="lbl">Your code</span><code id="offerCode"></code><button type="button" class="copy" id="offerCopy" aria-label="Copy discount code">Copy</button></div>
         <span class="email" id="offerDoneEmail"></span>
         <div class="notice" id="offerDoneNotice" hidden></div>
@@ -1166,7 +1166,7 @@
 
 <!-- Promotion-reminder helper. Scripted answers only: it reminds visitors about the welcome offer and points them to the right page. It never pretends a person is replying. -->
 <div class="assist" id="assistRoot">
-  <div class="assist-teaser" id="assistTeaser" hidden role="status"><span id="assistTeaserText"><b>15% off</b> your first order is waiting. Tap for how it works.</span><button type="button" class="x" id="assistTeaserClose" aria-label="Dismiss this reminder"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="assist-teaser" id="assistTeaser" hidden role="status"><span id="assistTeaserText"><b>10% off</b> your first order is waiting. Tap for how it works.</span><button type="button" class="x" id="assistTeaserClose" aria-label="Dismiss this reminder"><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
   <section class="assist-panel" id="assistPanel" hidden role="dialog" aria-labelledby="assistTitle" aria-describedby="assistSub">
     <div class="assist-head">
       <span class="av" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/></svg></span>
@@ -1758,13 +1758,13 @@
   }
   wire("newsForm", "newsEmail", "newsOk");
 
-  // ── Welcome offer popup: 15% off the first order for a new visitor's email ──
+  // ── Welcome offer popup: 10% off the first order for a new visitor's email ──
   // The discount itself lives in the store (Shopify customer tag + automatic discount, one use per customer).
   // This popup only collects the email and asks WELCOME_OFFER.endpoint to register it. Until that endpoint
   // exists it says so plainly and never claims the discount is applied.
   var WELCOME_OFFER = {
     enabled: true,
-    percent: 15,
+    percent: 10,
     code: "Urpick15off",      // the discount code shown after signup; must exist in the store (one use per customer, first order)
     endpoint: "",            // e.g. "/api/welcome-offer" — POST {email, consent, source} -> {eligible: true|false, reason?}
     showAfterMs: 1200,       // delay before the popup appears on a first visit
@@ -1839,7 +1839,7 @@
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(addr)) { showError("Please enter a valid email address, like name@example.com."); return; }
       submit.disabled = true; submit.textContent = "One moment…";
       register(addr).then(function (res) {
-        submit.disabled = false; submit.textContent = "Unlock my 15% off";
+        submit.disabled = false; submit.textContent = "Unlock my 10% off";
         if (res.network) { showError("We couldn’t reach the server. Please check your connection and try again."); return; }
         if (!res.ok && !res.offline && res.reason) { showError(res.reason); return; }       // e.g. "This email has already used the first-order offer."
         save({ status: "signed", email: addr, consent: true, confirmed: !!res.ok, code: WELCOME_OFFER.code || null, at: Date.now() });
