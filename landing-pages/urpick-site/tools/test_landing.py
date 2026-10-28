@@ -105,7 +105,7 @@ with sync_playwright() as p:
         pg.close()
     pg = b.new_page(viewport={"width": 1280, "height": 900}); pg.add_init_script("localStorage.setItem('urpick_offer_v1', JSON.stringify({status:'dismissed', at: Date.now()}))")
     pg.goto(ORIGIN + "/"); pg.wait_for_timeout(600)
-    check("[site] homepage still renders with header nav and hero video", pg.evaluate("document.querySelectorAll('.hdr-nav a').length === 5 && !!document.querySelector('.hero video')"))
+    check("[site] homepage still renders with header nav and hero video", pg.evaluate("Array.from(document.querySelectorAll('.hdr-nav a')).map(a => a.textContent.trim()).join('|') === 'Shop by pet|About|Help' && !!document.querySelector('.hero video')"))
     pg.goto(ORIGIN + "/products/cozy-cat-cave"); pg.wait_for_timeout(500)
     check("[site] clean URL without trailing slash serves the landing page", pg.evaluate("document.title.indexOf('Cat Cave') > -1"))
     pg.close(); b.close()

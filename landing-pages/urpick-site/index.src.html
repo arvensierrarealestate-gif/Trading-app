@@ -426,9 +426,7 @@
     <button type="button" class="iconbtn menubtn" id="menuBtn" aria-expanded="false" aria-controls="navDrawer" aria-haspopup="dialog" aria-label="Open menu"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     <a href="#top" class="brand" aria-label="UrPick home">UrPick</a>
     <nav class="hdr-nav" aria-label="Primary">
-      <a href="#collection-all" data-nav="shop">Shop</a>
       <a href="#collection-cats" data-nav="pet">Shop by pet</a>
-      <a href="#shop-by-need" data-nav="need">Shop by need</a>
       <a href="#about" data-nav="about">About</a>
       <a href="#help" data-nav="help">Help</a>
     </nav>
@@ -529,23 +527,11 @@
     </div>
     <nav aria-label="Main" class="drawer-nav">
       <ul class="drawer-primary">
-        <li><a href="#collection-all" data-route="shop">Shop</a></li>
         <li class="drawer-group">
           <button type="button" class="drawer-toggle" id="productsToggle" aria-expanded="false" aria-controls="productsMenu" data-route="home">Shop by pet<svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
           <ul class="drawer-sub" id="productsMenu" hidden>
             <li><a href="#collection-cats" data-cat="cats">Cats</a></li>
             <li><a href="#collection-other" data-cat="other">Other Pets</a></li>
-          </ul>
-        </li>
-        <li class="drawer-group">
-          <button type="button" class="drawer-toggle" id="needsToggle" aria-expanded="false" aria-controls="needsMenu">Shop by need<svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
-          <ul class="drawer-sub" id="needsMenu" hidden>
-            <li><a href="#need-clean-home">Clean Home</a></li>
-            <li><a href="#need-better-walks">Better Walks</a></li>
-            <li><a href="#need-everyday-care">Everyday Care</a></li>
-            <li><a href="#need-grooming">Grooming</a></li>
-            <li><a href="#need-comfort-play">Comfort &amp; Play</a></li>
-            <li><a href="#need-travel">Travel</a></li>
           </ul>
         </li>
         <li><a href="#about" data-route="about">About</a></li>
@@ -602,16 +588,6 @@
       <ul class="pgrid" id="shopGrid"></ul>
       <p class="steps-cta"><a href="#collection-cats" class="textlink" id="shopViewAll">View all cat products <span aria-hidden="true">→</span></a></p>
     </div>
-  </div>
-</section>
-<section class="sec needs" id="shop-by-need-home">
-  <div class="container">
-    <div class="note"><b>SHOP BY NEED</b> — Second discovery path: the problem the customer wants solved. Six tiles from the NEEDS object; each opens a need landing page. No photos by design.</div>
-    <div class="head center">
-      <p class="eyebrow">Shop by need</p>
-      <h2 class="h2">What are you trying to solve?</h2>
-    </div>
-    <ul class="needgrid" id="needGridHome"></ul>
   </div>
 </section>
 <!-- HOW WE WORK -->
@@ -846,18 +822,9 @@
     </div>
   </section>
 
-  <section class="page" id="page-needs" aria-labelledby="needsTitle">
-    <div class="container wide">
-      <p class="eyebrow">Shop by need</p>
-      <h1 id="needsTitle">What are you trying to solve?</h1>
-      <p class="lead">Pick the problem, not the aisle. Each need has a few clear ways to solve it, and only the products that make the cut.</p>
-      <ul class="needgrid" id="needGridPage"></ul>
-    </div>
-  </section>
-
   <section class="page" id="page-need" aria-labelledby="needTitle">
     <div class="container wide">
-      <p class="eyebrow" id="needEyebrow">Shop by need</p>
+      <p class="eyebrow" id="needEyebrow">By need</p>
       <h1 id="needTitle"></h1>
       <p class="lead" id="needLead"></p>
       <div class="need-paths" role="group" aria-label="Ways to solve it" id="needPaths"></div>
@@ -890,7 +857,7 @@
       <p class="lead">Short, practical guides on the routines behind our products. We publish each one only when it is written and checked, so this list shows what is coming rather than filler.</p>
       <div class="draft"><b>In progress.</b> No guides are published yet. The topics below are planned; each will link to the products it relates to once it is live.</div>
       <ul class="guide-list" id="guideList"></ul>
-      <p class="back"><a href="#shop-by-need" class="btn btn-primary">Shop by need</a></p>
+      <p class="back"><a href="#collection-cats" class="btn btn-primary">Shop by pet</a></p>
     </div>
   </section>
 
@@ -1162,7 +1129,7 @@
           <p>We are not trying to fill a store with everything made for pets.</p>
           <p>Only the useful stuff should make the cut.</p>
         </div>
-        <p class="back"><a href="#collection-cats" class="btn btn-primary">Shop by pet</a> <a href="#shop-by-need" class="textlink">Shop by need <span aria-hidden="true">→</span></a></p>
+        <p class="back"><a href="#collection-cats" class="btn btn-primary">Shop by pet</a> <a href="#collection-all" class="textlink">What made the cut <span aria-hidden="true">→</span></a></p>
       </div>
     </div>
   </section>
@@ -1180,7 +1147,7 @@
     </div>
     <nav aria-label="Shop">
       <p>Shop</p>
-      <ul><li><a href="#collection-all">What made the cut</a></li><li><a href="#collection-cats">Cats</a></li><li><a href="#collection-other">Other Pets</a></li><li><a href="#shop-by-need">Shop by need</a></li></ul>
+      <ul><li><a href="#collection-all">What made the cut</a></li><li><a href="#collection-cats">Cats</a></li><li><a href="#collection-other">Other Pets</a></li></ul>
     </nav>
     <nav aria-label="Company">
       <p>Company</p>
@@ -1269,9 +1236,9 @@
   var productsToggle = document.getElementById("productsToggle"), productsMenu = document.getElementById("productsMenu");
   function setProductsOpen(open) { productsToggle.setAttribute("aria-expanded", open ? "true" : "false"); productsMenu.hidden = !open; }
   productsToggle.addEventListener("click", function () { setProductsOpen(productsMenu.hidden); });
-  [["needsToggle","needsMenu"],["helpToggle","helpMenu"]].forEach(function (pair) { var t = document.getElementById(pair[0]), m = document.getElementById(pair[1]); t.addEventListener("click", function () { var open = m.hidden; t.setAttribute("aria-expanded", open ? "true" : "false"); m.hidden = !open; }); });
+  [["helpToggle","helpMenu"]].forEach(function (pair) { var t = document.getElementById(pair[0]), m = document.getElementById(pair[1]); t.addEventListener("click", function () { var open = m.hidden; t.setAttribute("aria-expanded", open ? "true" : "false"); m.hidden = !open; }); });
   function setGroupOpen(toggleId, menuId, open) { var t = document.getElementById(toggleId), m = document.getElementById(menuId); t.setAttribute("aria-expanded", open ? "true" : "false"); m.hidden = !open; }
-  menuBtn.addEventListener("click", function () { if (drawerRoot.hidden) return; var h = location.hash || ""; if (/^#(products-|collection-(dogs|cats|other))/.test(h)) setProductsOpen(true); if (/^#(need-|shop-by-need|collection-(clean-home|better-walks|everyday-care|grooming|comfort-play|travel))/.test(h)) setGroupOpen("needsToggle", "needsMenu", true); if (/^#(help|contact|track-order|faq|shipping-returns|privacy|terms)$/.test(h)) setGroupOpen("helpToggle", "helpMenu", true); });
+  menuBtn.addEventListener("click", function () { if (drawerRoot.hidden) return; var h = location.hash || ""; if (/^#(products-|collection-(dogs|cats|other))/.test(h)) setProductsOpen(true); if (/^#(help|contact|track-order|faq|shipping-returns|privacy|terms)$/.test(h)) setGroupOpen("helpToggle", "helpMenu", true); });
 
   // ── Hash router: home is <main>; #contact, #track-order, #about are pages ──
   var ROUTES = { "contact": "page-contact", "track-order": "page-track", "about": "page-about", "checkout": "page-checkout", "shipping-returns": "page-shipping", "privacy": "page-privacy", "terms": "page-terms" };
@@ -1286,12 +1253,11 @@
     if (mColl && typeof showCollection === "function" && showCollection(mColl[1])) pageId = "page-collection";
     if (mNeed && typeof showNeed === "function" && showNeed(mNeed[1])) pageId = "page-need";
     if (hash === "cart") { pageId = "page-cart"; if (typeof renderCartPage === "function") renderCartPage(); }
-    if (hash === "shop-by-need") pageId = "page-needs";
     if (hash === "guide") pageId = "page-guide";
     if (hash === "help") pageId = "page-help";
     if (typeof setBuyBar === "function") setBuyBar(pageId === "page-product");
     // header nav: mark the section of the site we are in
-    var navKey = mColl ? (/^(dogs|cats|other)$/.test(mColl[1]) ? "pet" : mColl[1] === "all" ? "shop" : "need") : mNeed || hash === "shop-by-need" ? "need" : mProd ? "shop" : hash === "about" ? "about" : /^(help|contact|track-order|shipping-returns|privacy|terms)$/.test(hash) ? "help" : "";
+    var navKey = mColl ? (/^(dogs|cats|other)$/.test(mColl[1]) ? "pet" : mColl[1] === "all" ? "pet" : "need") : mNeed ? "need" : mProd ? "pet" : hash === "about" ? "about" : /^(help|contact|track-order|shipping-returns|privacy|terms)$/.test(hash) ? "help" : "";
     document.querySelectorAll(".hdr-nav a[data-nav]").forEach(function (a) { if (a.getAttribute("data-nav") === navKey) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     pageEls.forEach(function (p) { p.classList.toggle("active", p.id === pageId); });
     var wasOnPage = homeMain.hidden;
@@ -1299,7 +1265,7 @@
     var current = pageId ? hash : "home";
     document.querySelectorAll('.drawer-primary a[data-route]').forEach(function (a) { if (a.getAttribute("data-route") === current) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     var names = { "contact": "Contact", "track-order": "Track your order", "about": "About us", "checkout": "Checkout", "shipping-returns": "Shipping & Returns", "privacy": "Privacy Policy", "terms": "Terms of Service", "cart": "Your cart" };
-    var pageName = names[hash] || (mProd ? PRODUCT.name : mColl ? collectionTitle(mColl[1]) : mNeed ? NEEDS[mNeed[1]].name : hash === "shop-by-need" ? "Shop by need" : hash === "guide" ? "Pet Parent Guide" : hash === "help" ? "Help" : "");
+    var pageName = names[hash] || (mProd ? PRODUCT.name : mColl ? collectionTitle(mColl[1]) : mNeed ? NEEDS[mNeed[1]].name : hash === "guide" ? "Pet Parent Guide" : hash === "help" ? "Help" : "");
     document.title = pageId ? pageName + " · " + baseTitle : baseTitle;
     if (pageId === "page-checkout" && typeof renderCheckout === "function") renderCheckout();
     if (pageId) { window.scrollTo(0, 0); var h = document.getElementById(pageId).querySelector("h1"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } }
@@ -1413,7 +1379,7 @@
     if (key === "dogs" && !SHOW_PLACEHOLDERS) return false;
     if (key !== collKey) { filters = { pet: [], need: [], type: [], avail: [] }; } collKey = key;
     document.getElementById("collectionTitle").textContent = collectionTitle(key);
-    document.getElementById("collectionEyebrow").textContent = CAT_NAMES[key] ? "Shop by pet" : NEEDS[key] ? "Shop by need" : "Shop";
+    document.getElementById("collectionEyebrow").textContent = CAT_NAMES[key] ? "Shop by pet" : NEEDS[key] ? "By need" : "Shop";
     document.getElementById("collectionLead").textContent = key === "all" ? "Everything we carry, chosen for the everyday problems it solves." : CAT_NAMES[key] ? "Everything we will carry for " + (key === "other" ? "other pets" : key) + ". This list fills in as products are confirmed." : NEEDS[key].lead;
     var tabs = document.getElementById("collectionTabs"); tabs.hidden = !CAT_NAMES[key];
     tabs.querySelectorAll("a").forEach(function (a) { a.setAttribute("aria-selected", String(a.getAttribute("data-cat") === key)); });
@@ -1457,7 +1423,7 @@
   // ── Search: products, needs and pages. Opens as a dialog; Enter follows the first result. ──
   (function () {
     var root = document.getElementById("searchRoot"), dlg = document.getElementById("searchDialog"), input = document.getElementById("searchInput"), results = document.getElementById("searchResults"), btn = document.getElementById("searchBtn"), last = null, timer = null;
-    var PAGES = [["Shop by pet","#collection-cats","Shop"],["Shop by need","#shop-by-need","Shop"],["What made the cut","#collection-all","Shop"],["How we choose","#how-we-work","About"],["About UrPick","#about","About"],["Pet Parent Guide","#guide","Guide"],["Help centre","#help","Help"],["Contact","#contact","Help"],["Track your order","#track-order","Help"],["Shipping & Returns","#shipping-returns","Help"],["FAQ","#faq","Help"],["Privacy Policy","#privacy","Help"],["Terms of Service","#terms","Help"]];
+    var PAGES = [["Shop by pet","#collection-cats","Shop"],["What made the cut","#collection-all","Shop"],["How we choose","#how-we-work","About"],["About UrPick","#about","About"],["Pet Parent Guide","#guide","Guide"],["Help centre","#help","Help"],["Contact","#contact","Help"],["Track your order","#track-order","Help"],["Shipping & Returns","#shipping-returns","Help"],["FAQ","#faq","Help"],["Privacy Policy","#privacy","Help"],["Terms of Service","#terms","Help"]];
     function open() { clearTimeout(timer); last = document.activeElement; root.hidden = false; document.body.classList.add("cart-open"); requestAnimationFrame(function () { root.classList.add("open"); input.focus(); }); render(""); }
     function close() { if (root.hidden) return; root.classList.remove("open"); document.body.classList.remove("cart-open"); var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; timer = setTimeout(function () { root.hidden = true; input.value = ""; if (last && last.focus) last.focus({ preventScroll: true }); }, reduce ? 0 : 220); }
     function render(q) {
@@ -1465,9 +1431,9 @@
       var hits = [];
       if (q) {
         allProducts().forEach(function (x) { if ((x.name + " " + CAT_NAMES[x.cat] + " " + NEEDS[x.need].name).toLowerCase().indexOf(q) > -1) hits.push([x.name, "#product-" + x.id, CAT_NAMES[x.cat]]); });
-        NEED_ORDER.forEach(function (k) { if ((NEEDS[k].name + " " + NEEDS[k].lead).toLowerCase().indexOf(q) > -1) hits.push([NEEDS[k].name, "#need-" + k, "Shop by need"]); });
+        NEED_ORDER.forEach(function (k) { if ((NEEDS[k].name + " " + NEEDS[k].lead).toLowerCase().indexOf(q) > -1) hits.push([NEEDS[k].name, "#need-" + k, "Needs"]); });
         PAGES.forEach(function (pg) { if (pg[0].toLowerCase().indexOf(q) > -1) hits.push(pg); });
-      } else { hits = [["Shop by pet","#collection-cats","Shop"],["Shop by need","#shop-by-need","Shop"],["Shipping & Returns","#shipping-returns","Help"],["Contact","#contact","Help"]]; }
+      } else { hits = [["Shop by pet","#collection-cats","Shop"],["What made the cut","#collection-all","Shop"],["Shipping & Returns","#shipping-returns","Help"],["Contact","#contact","Help"]]; }
       if (!hits.length) { var li = document.createElement("li"); li.className = "none"; li.textContent = "Nothing found for \u201c" + q + "\u201d. Try a pet, a need, or a page name."; results.appendChild(li); return; }
       hits.slice(0, 8).forEach(function (h) { var li = document.createElement("li"), a = document.createElement("a"); a.href = h[1]; a.innerHTML = "<span>" + h[0] + "</span><small>" + h[2] + "</small>"; a.addEventListener("click", function () { close(); }); li.appendChild(a); results.appendChild(li); });
     }
@@ -1477,7 +1443,7 @@
     dlg.addEventListener("keydown", function (ev) { if (ev.key === "Escape") { ev.preventDefault(); close(); } });
     document.addEventListener("keydown", function (ev) { if (ev.key === "/" && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) && root.hidden) { ev.preventDefault(); open(); } });
   })();
-  renderNeedGrid("needGridHome"); renderNeedGrid("needGridPage"); renderGuide();
+  renderGuide();
   function findProduct(id) { for (var c in CATALOG) { var hit = CATALOG[c].filter(function (x) { return x.id === id; })[0]; if (hit) return hit; } return null; }
   function productCard(item) {
     var li = document.createElement("li"); li.className = "pcard";
@@ -1813,7 +1779,7 @@
     var lastFocus = null, hideTimer = null;
     function load() { try { return JSON.parse(localStorage.getItem(WELCOME_OFFER.storageKey) || "null"); } catch (e) { return null; } }
     function save(v) { try { localStorage.setItem(WELCOME_OFFER.storageKey, JSON.stringify(v)); } catch (e) {} }
-    function onHome() { return !/^#(contact|track-order|about|checkout|shipping-returns|privacy|terms|cart|help|guide|shop-by-need|product-.+|collection-.+|need-.+)$/.test(location.hash || ""); }
+    function onHome() { return !/^#(contact|track-order|about|checkout|shipping-returns|privacy|terms|cart|help|guide|product-.+|collection-.+|need-.+)$/.test(location.hash || ""); }
     function shouldShow() {
       var st = load();
       if (st && st.status === "signed") return false;                                   // already signed up: never again
@@ -1937,11 +1903,10 @@
         return '<span class="pct">' + pct + '% off</span>your first order. Leave your email and we show you your discount code straight away to use at checkout.<button type="button" class="btn btn-primary" data-act="offer">Unlock my ' + pct + '% off</button><span class="fine">First order only, one use per customer. We only email you about launch news and offers.</span>';
       } },
       pet: { label: "Shop by pet", answer: function () { return 'Who are you shopping for?' + links([["#collection-cats", "Cats"], ["#collection-other", "Other pets"]]); } },
-      need: { label: "Shop by need", answer: function () { return 'Pick the problem, not the aisle.' + links(NEED_ORDER.map(function (k) { return ["#need-" + k, NEEDS[k].name]; })); } },
       shipping: { label: "Shipping & returns", answer: function () { return 'Shipping options, costs, and delivery estimates will be confirmed before ordering opens. <b>Proposed 30-day returns</b> for unused items in their original condition; full terms will be available before ordering opens.' + links([["#shipping-returns", "Shipping & Returns"], ["#track-order", "Track an order"]]); } },
       human: { label: "Talk to a person", answer: function () { return 'Nobody can reply in this window yet; it only runs the scripted answers you see here. Email <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a> and a person will get back to you, or use the contact form.' + links([["#contact", "Contact form"], ["#faq", "FAQ"]]); } }
     };
-    var ORDER = ["offer", "pet", "need", "shipping", "human"];
+    var ORDER = ["offer", "pet", "shipping", "human"];
     function renderReplies() {
       replies.innerHTML = "";
       ORDER.forEach(function (k) { var b = document.createElement("button"); b.type = "button"; b.textContent = TOPICS[k].label; b.setAttribute("data-topic", k); b.addEventListener("click", function () { ask(k); }); replies.appendChild(b); });
