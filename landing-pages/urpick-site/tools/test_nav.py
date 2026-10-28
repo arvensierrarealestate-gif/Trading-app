@@ -6,8 +6,8 @@ results = []
 def check(name, ok, detail=""):
     results.append((name, bool(ok), detail)); print(("PASS" if ok else "FAIL"), name, detail)
 
-MENU = ["Shop", "Shop by pet", "Shop by need", "About", "Help", "Pet Parent Guide"]
-HDR = ["Shop", "Shop by pet", "Shop by need", "About", "Help"]
+MENU = ["Shop by pet", "About", "Help", "Pet Parent Guide"]
+HDR = ["Shop by pet", "About", "Help"]
 
 with sync_playwright() as p:
     b = p.chromium.launch(executable_path=CH, headless=True, args=["--no-sandbox"])
@@ -24,7 +24,7 @@ with sync_playwright() as p:
         logo = pg.locator("header.site .brand").bounding_box(); acts = pg.locator("header.site .hdr-actions").bounding_box(); mb = pg.locator("#menuBtn").bounding_box()
         hdr_links = pg.eval_on_selector_all(".hdr-nav a", "els => els.filter(e => e.offsetParent !== null).map(e => e.textContent.trim())")
         if desktop:
-            check(f"[{label}] header: brand left, SHOP / SHOP BY PET / SHOP BY NEED / ABOUT / HELP, search + cart right, hamburger hidden", mb is None and logo["x"] < 60 and hdr_links == HDR and acts["x"] + acts["width"] > w - 40, f"links={hdr_links} menu={mb}")
+            check(f"[{label}] header: brand left, SHOP BY PET / ABOUT / HELP (no Shop or Shop by need tabs), search + cart right, hamburger hidden", mb is None and logo["x"] < 60 and hdr_links == HDR and acts["x"] + acts["width"] > w - 40, f"links={hdr_links} menu={mb}")
             check(f"[{label}] header nav links are uppercase labels with 44px targets", pg.evaluate("Array.from(document.querySelectorAll('.hdr-nav a')).every(a => getComputedStyle(a).textTransform === 'uppercase' && a.getBoundingClientRect().height >= 44)"))
         else:
             logo_c = logo["x"] + logo["width"] / 2
@@ -41,19 +41,16 @@ with sync_playwright() as p:
             order = pg.eval_on_selector_all(".drawer-primary > li > a, .drawer-primary > li > button", "els => els.map(e => e.textContent.trim())")
             check(f"[{label}] menu order", order == MENU, str(order))
             check(f"[{label}] Shop by pet marked current on home", pg.get_attribute('#productsToggle', "aria-current") == "page")
-            check(f"[{label}] sub-menus closed by default", pg.evaluate("['productsMenu','needsMenu','helpMenu'].every(id => document.getElementById(id).hidden) && ['productsToggle','needsToggle','helpToggle'].every(id => document.getElementById(id).getAttribute('aria-expanded') === 'false')"))
+            check(f"[{label}] sub-menus closed by default", pg.evaluate("['productsMenu','helpMenu'].every(id => document.getElementById(id).hidden) && !document.getElementById('needsMenu') && !document.getElementById('needsToggle') && ['productsToggle','helpToggle'].every(id => document.getElementById(id).getAttribute('aria-expanded') === 'false')"))
             pg.click("#productsToggle"); pg.wait_for_timeout(150)
             subs = pg.eval_on_selector_all("#productsMenu a", "els => els.map(e => e.textContent.trim())")
             check(f"[{label}] Shop by pet opens with Cats / Other Pets (no Dogs range yet)", subs == ["Cats", "Other Pets"] and pg.get_attribute("#productsToggle", "aria-expanded") == "true", str(subs))
-            pg.click("#needsToggle"); pg.wait_for_timeout(150)
-            needs = pg.eval_on_selector_all("#needsMenu a", "els => els.map(e => e.textContent.trim())")
-            check(f"[{label}] Shop by need lists the six needs", needs == ["Clean Home", "Better Walks", "Everyday Care", "Grooming", "Comfort & Play", "Travel"], str(needs))
             pg.click("#helpToggle"); pg.wait_for_timeout(150)
             helps = pg.eval_on_selector_all("#helpMenu a", "els => els.map(e => e.textContent.trim())")
             check(f"[{label}] Help lists help hub, contact, tracking, FAQ, shipping", helps == ["Help centre", "Contact", "Track Your Order", "FAQ", "Shipping & Returns"], str(helps))
             tap = pg.evaluate("Math.min(...Array.from(document.querySelectorAll('.drawer-primary a, .drawer-primary button, .drawer-secondary a, .drawer-foot a, #drawerClose')).filter(e => e.offsetParent !== null).map(e => e.getBoundingClientRect().height))")
             check(f"[{label}] tap targets >= 44px", tap >= 44, f"min={tap}")
-            pg.click("#productsToggle"); pg.click("#needsToggle"); pg.click("#helpToggle"); pg.wait_for_timeout(150); pg.focus("#drawerClose")
+            pg.click("#productsToggle"); pg.click("#helpToggle"); pg.wait_for_timeout(150); pg.focus("#drawerClose")
             dw = pg.locator("#navDrawer").bounding_box(); check(f"[{label}] drawer fits viewport", dw["width"] <= w and dw["x"] >= 0, f"width={dw['width']:.0f}")
             if label == "mobile": pg.screenshot(path=f"{OUT}/drawer-mobile.png")
             pg.keyboard.press("Shift+Tab"); last_id = pg.evaluate("document.activeElement.textContent.trim()")
@@ -83,14 +80,14 @@ with sync_playwright() as p:
             pg.click("#menuBtn"); pg.wait_for_timeout(350)
             check(f"[{label}] drawer reopens with Shop by pet expanded and Cats marked current", pg.evaluate("!document.getElementById('productsMenu').hidden && document.querySelector('#productsMenu a[data-cat=cats]').getAttribute('aria-current') === 'page'"))
             pg.keyboard.press("Escape"); pg.wait_for_timeout(300)
-            pg.click("#menuBtn"); pg.wait_for_timeout(350); pg.click("#needsToggle"); pg.wait_for_timeout(150); pg.click('#needsMenu a[href="#need-grooming"]'); pg.wait_for_timeout(400)
-            check(f"[{label}] Shop by need > Grooming -> need page", pg.evaluate("document.getElementById('page-need').classList.contains('active') && document.getElementById('needTitle').textContent === 'Grooming'"))
+            pg.goto("file://" + PAGE + "#need-grooming"); pg.wait_for_timeout(400)
+            check(f"[{label}] a need deep link still opens its page", pg.evaluate("document.getElementById('page-need').classList.contains('active') && document.getElementById('needTitle').textContent === 'Grooming'"))
             pg.click("#menuBtn"); pg.wait_for_timeout(350)
-            check(f"[{label}] drawer reopens with Shop by need expanded", pg.evaluate("!document.getElementById('needsMenu').hidden"))
+            check(f"[{label}] drawer has no Shop by need group", pg.evaluate("!document.getElementById('needsMenu') && !/Shop by need/.test(document.getElementById('navDrawer').textContent)"))
             pg.keyboard.press("Escape"); pg.wait_for_timeout(300)
         # ── header nav on desktop ──
         if desktop:
-            for text, href, sel, key in [("Shop", "#collection-all", "#page-collection", "shop"), ("Shop by pet", "#collection-cats", "#page-collection", "pet"), ("Shop by need", "#shop-by-need", "#page-needs", "need"), ("About", "#about", "#page-about", "about"), ("Help", "#help", "#page-help", "help")]:
+            for text, href, sel, key in [("Shop by pet", "#collection-cats", "#page-collection", "pet"), ("About", "#about", "#page-about", "about"), ("Help", "#help", "#page-help", "help")]:
                 pg.click(f'.hdr-nav a[href="{href}"]'); pg.wait_for_timeout(400)
                 check(f"[{label}] header {text} -> page shown, marked current", pg.evaluate(f"document.querySelector('{sel}').classList.contains('active') && document.getElementById('main').hidden && document.querySelector('.hdr-nav a[aria-current=page]').getAttribute('data-nav') === '{key}' && document.querySelectorAll('.hdr-nav a[aria-current=page]').length === 1"))
             pg.screenshot(path=f"{OUT}/page-help.png")
@@ -100,6 +97,9 @@ with sync_playwright() as p:
             pg.goto("file://" + PAGE + "#track-order"); pg.wait_for_timeout(400); pg.screenshot(path=f"{OUT}/page-track-order.png")
             pg.goto("file://" + PAGE); pg.wait_for_timeout(400)
             check(f"[{label}] no header link current on the homepage", pg.evaluate("document.querySelectorAll('.hdr-nav a[aria-current]').length === 0"))
+            pg.goto("file://" + PAGE + "#collection-all"); pg.wait_for_timeout(400)
+            check(f"[{label}] What made the cut marks Shop by pet current (no Shop tab)", pg.evaluate("document.querySelector('#page-collection').classList.contains('active') && document.querySelectorAll('.hdr-nav a[aria-current=page]').length === 1 && document.querySelector('.hdr-nav a[aria-current=page]').getAttribute('data-nav') === 'pet' && !document.querySelector('.hdr-nav a[data-nav=shop]')"))
+            pg.goto("file://" + PAGE); pg.wait_for_timeout(300)
         # ── homepage: Shop by pet tabs ──
         pg.goto("file://" + PAGE); pg.wait_for_timeout(500)
         check(f"[{label}] Cats tab selected by default (no Dogs tab) with 3 cards + View all link", pg.evaluate("!document.getElementById('tab-dogs') && Array.from(document.querySelectorAll('#shop .cat-tabs [role=tab]')).map(b => b.textContent).join('|') === 'Cats|Other Pets' && document.getElementById('tab-cats').getAttribute('aria-selected') === 'true' && document.querySelectorAll('#shopGrid .pcard').length === 3 && document.querySelector('#shopGrid h3').textContent === 'UrPick Cozy Cat Cave' && document.querySelectorAll('#shopGrid .pcard').length === document.querySelectorAll('#shopGrid .pcard h3, #shopGrid .pcard .pprice, #shopGrid .pcard .pben, #shopGrid .pcard .pact a').length / 4 && document.getElementById('shopViewAll').getAttribute('href') === '#collection-cats' && /View all cat products/.test(document.getElementById('shopViewAll').textContent)"))
@@ -107,14 +107,14 @@ with sync_playwright() as p:
         pg.evaluate("document.getElementById('tab-other').click()"); pg.wait_for_timeout(200)   # in-page click: the test runner's own click scrolls the tab into view first
         check(f"[{label}] Other Pets tab swaps the cards in place and keeps the scroll position", pg.evaluate("document.getElementById('tab-other').getAttribute('aria-selected') === 'true' && document.getElementById('tab-cats').getAttribute('aria-selected') === 'false' && document.querySelector('#shopGrid h3').textContent === '[Other pet product 1]' && document.querySelectorAll('.pgrid:not([hidden]) .pcard').length === 3 && /other pet products/i.test(document.getElementById('shopViewAll').textContent)") and abs(pg.evaluate("scrollY") - y0) < 2, f"scroll {y0} -> {pg.evaluate('scrollY')}")
         pg.evaluate("document.getElementById('tab-cats').click()"); pg.wait_for_timeout(200)
-        # ── homepage: Shop by need, section order, claims, reviews hidden ──
-        check(f"[{label}] homepage Shop by need: six need cards linking to need pages", pg.evaluate("document.querySelectorAll('#needGridHome li a').length === 6 && Array.from(document.querySelectorAll('#needGridHome li a')).every(a => /^#need-[a-z-]+$/.test(a.getAttribute('href')) && a.querySelector('h3') && !/\\.\\./.test(a.textContent))"))
+        # ── homepage: no Shop by need section, section order, claims, reviews hidden ──
+        check(f"[{label}] homepage has no Shop by need section or link", pg.evaluate("!document.getElementById('shop-by-need-home') && !document.getElementById('needGridHome') && !document.querySelector('a[href=\"#shop-by-need\"]') && !/Shop by need/i.test(document.getElementById('main').textContent + document.querySelector('footer.site').textContent)"))
         order = pg.evaluate("Array.from(document.querySelectorAll('#main > section[id]')).map(s => s.id)")
-        check(f"[{label}] homepage order: hero, shop by pet, shop by need, how we choose, moments, why, customer experiences, faq, newsletter", order == ["top", "shop", "shop-by-need-home", "how-we-work", "moments", "why-urpick", "gallery", "faq", "newsletter"], str(order))
+        check(f"[{label}] homepage order: hero, shop by pet, how we choose, moments, why, customer experiences, faq, newsletter", order == ["top", "shop", "how-we-work", "moments", "why-urpick", "gallery", "faq", "newsletter"], str(order))
         check(f"[{label}] How we choose: four steps unchanged, CTA 'See what made the cut'", pg.evaluate("document.querySelectorAll('#how-we-work .step').length === 4 && /See what made the cut/.test(document.querySelector('#how-we-work .steps-cta a').textContent) && document.querySelector('#how-we-work .steps-cta a').getAttribute('href') === '#collection-all'"))
         check(f"[{label}] no 'tested at home' claims anywhere", pg.evaluate("!/tested (it )?at home|tested in (our|real) homes|if we haven.t tested it/i.test(document.body.innerText)"))
         check(f"[{label}] placeholder reviews hidden until real ones exist", pg.evaluate("document.getElementById('revList').hidden && document.querySelectorAll('#revList li').length === 0 && !/Jordan|Sam R\\.|Priya/.test(document.getElementById('gallery').innerText)"))
-        check(f"[{label}] homepage sections intact", pg.evaluate("['top','moments','how-we-work','why-urpick','gallery','shop','shop-by-need-home','faq','newsletter'].every(id => !!document.getElementById(id))"))
+        check(f"[{label}] homepage sections intact", pg.evaluate("['top','moments','how-we-work','why-urpick','gallery','shop','faq','newsletter'].every(id => !!document.getElementById(id))"))
         check(f"[{label}] newsletter with pet chips + one video", pg.evaluate("!!document.getElementById('newsForm') && document.querySelectorAll('#newsForm .chip').length === 3 && document.querySelectorAll('video[data-video]').length === 1"))
         check(f"[{label}] footer columns Shop / Company / Help", pg.evaluate("Array.from(document.querySelectorAll('footer.site nav')).map(n => n.getAttribute('aria-label')).join(',') === 'Shop,Company,Help'"))
         if desktop: pg.screenshot(path=f"{OUT}/home-desktop.png")
@@ -191,14 +191,13 @@ with sync_playwright() as p:
         check(f"[{label}] SORT by name orders the grid", pg.evaluate("(function(){var n=Array.from(document.querySelectorAll('#collectionGrid .pcard h3')).map(e => e.textContent); return n.length === 12 && n.every((x, i) => i === 0 || n[i-1].localeCompare(x) <= 0);})()"), str(names[:3]))
         pg.select_option("#sortSel", "featured"); pg.wait_for_timeout(100)
         pg.goto("file://" + PAGE + "#collection-grooming"); pg.wait_for_timeout(400)
-        check(f"[{label}] need collection page: Grooming", pg.evaluate("document.getElementById('page-collection').classList.contains('active') && document.getElementById('collectionTitle').textContent === 'Grooming' && document.getElementById('collectionEyebrow').textContent === 'Shop by need' && document.querySelectorAll('#collectionGrid .pcard').length === 2"))
+        check(f"[{label}] need collection page: Grooming", pg.evaluate("document.getElementById('page-collection').classList.contains('active') && document.getElementById('collectionTitle').textContent === 'Grooming' && document.getElementById('collectionEyebrow').textContent === 'By need' && document.querySelectorAll('#collectionGrid .pcard').length === 2"))
         pg.goto("file://" + PAGE + "#collection-nothing"); pg.wait_for_timeout(400)
         check(f"[{label}] unknown collection key falls back to the homepage", pg.evaluate("!document.getElementById('main').hidden"))
-        # ── Shop by need pages ──
+        # ── need pages (hub removed; deep links still work) ──
         pg.goto("file://" + PAGE + "#shop-by-need"); pg.wait_for_timeout(400)
-        check(f"[{label}] Shop by need hub: 'What are you trying to solve?' + six needs", pg.evaluate("document.getElementById('page-needs').classList.contains('active') && document.querySelectorAll('#needGridPage li a').length === 6"))
-        if desktop: pg.screenshot(path=f"{OUT}/shop-by-need-desktop.png")
-        pg.click('#needGridPage a[href="#need-clean-home"]'); pg.wait_for_timeout(400)
+        check(f"[{label}] the old Shop by need hub link falls back to the homepage", pg.evaluate("!document.getElementById('page-needs') && !document.getElementById('main').hidden"))
+        pg.goto("file://" + PAGE + "#need-clean-home"); pg.wait_for_timeout(400)
         check(f"[{label}] need page order: statement, paths, featured, how to choose, (proof hidden), FAQ, CTA", pg.evaluate("(function(){var ids=['needTitle','needLead','needPaths','needGrid','needChoose','needFaq','needShopAll']; var ys=ids.map(id => document.getElementById(id).getBoundingClientRect().top + scrollY); return document.getElementById('page-need').classList.contains('active') && document.getElementById('needTitle').textContent === 'Clean Home' && ys.every((y,i) => i===0 || y >= ys[i-1]) && document.getElementById('needProof').hidden && document.getElementById('needShopAll').getAttribute('href') === '#collection-clean-home' && document.getElementById('needLearn').getAttribute('href') === '#guide';})()"))
         check(f"[{label}] need paths LAUNDRY / SURFACES / PET CARE / LEARN", pg.evaluate("Array.from(document.querySelectorAll('#needPaths button')).map(b => b.textContent.trim()).join('|') === 'Laundry|Surfaces|Pet care|Learn' && document.querySelectorAll('#needGrid .pcard').length === 2 && document.querySelectorAll('#needChoose li').length >= 3 && document.querySelectorAll('#needFaq li').length >= 2"))
         pg.click('#needPaths button[data-path="laundry"]'); pg.wait_for_timeout(200)
@@ -223,7 +222,7 @@ with sync_playwright() as p:
         lb = pg.locator("#assistBtn").bounding_box()
         check(f"[{label}] helper launcher bottom-right, teaser not shown yet", lb and abs(lb["x"] + lb["width"] - w) < 40 and abs(lb["y"] + lb["height"] - h) < 40 and pg.evaluate("document.getElementById('assistTeaser').hidden"), str(lb))
         pg.click("#assistBtn"); pg.wait_for_timeout(350)
-        check(f"[{label}] helper opens: dialog, focus on close, says it is scripted, greeting + offer reminder, five options", pg.evaluate("!document.getElementById('assistPanel').hidden && document.getElementById('assistPanel').getAttribute('role') === 'dialog' && document.activeElement.id === 'assistClose' && /not live chat/.test(document.getElementById('assistSub').textContent) && document.querySelectorAll('#assistLog .msg.bot').length === 2 && /15% off your first order/.test(document.getElementById('assistLog').textContent) && Array.from(document.querySelectorAll('#assistReplies button')).map(b => b.textContent).join('|') === 'Tell me about the 15% offer|Shop by pet|Shop by need|Shipping & returns|Talk to a person' && document.getElementById('assistBtn').getAttribute('aria-expanded') === 'true'"))
+        check(f"[{label}] helper opens: dialog, focus on close, says it is scripted, greeting + offer reminder, four options", pg.evaluate("!document.getElementById('assistPanel').hidden && document.getElementById('assistPanel').getAttribute('role') === 'dialog' && document.activeElement.id === 'assistClose' && /not live chat/.test(document.getElementById('assistSub').textContent) && document.querySelectorAll('#assistLog .msg.bot').length === 2 && /15% off your first order/.test(document.getElementById('assistLog').textContent) && Array.from(document.querySelectorAll('#assistReplies button')).map(b => b.textContent).join('|') === 'Tell me about the 15% offer|Shop by pet|Shipping & returns|Talk to a person' && document.getElementById('assistBtn').getAttribute('aria-expanded') === 'true'"))
         check(f"[{label}] helper has no free-text input (nothing pretends to answer)", pg.evaluate("document.querySelectorAll('#assistPanel input, #assistPanel textarea').length === 0"))
         pb = pg.locator("#assistPanel").bounding_box(); check(f"[{label}] helper panel fits the viewport", pb["x"] >= 0 and pb["x"] + pb["width"] <= w + 1 and pb["y"] >= 0, str(pb))
         pg.click('#assistReplies button[data-topic="human"]'); pg.wait_for_timeout(200)
@@ -247,7 +246,7 @@ with sync_playwright() as p:
             check(f"[{label}] helper launcher sits above the sticky purchase bar", pg.evaluate("(function(){var a=document.getElementById('assistBtn').getBoundingClientRect(), b=document.getElementById('buyBar').getBoundingClientRect(); return document.getElementById('buyBar').classList.contains('show') && a.bottom <= b.top + 1;})()"))
             pg.screenshot(path=f"{OUT}/assist-buybar-mobile.png")
         if desktop:
-            pg.goto("file://" + PAGE); pg.wait_for_timeout(400); pg.click("#assistBtn"); pg.wait_for_timeout(350); pg.click('#assistReplies button[data-topic="need"]'); pg.wait_for_timeout(300); pg.screenshot(path=f"{OUT}/assist-desktop.png"); pg.keyboard.press("Escape"); pg.wait_for_timeout(300)
+            pg.goto("file://" + PAGE); pg.wait_for_timeout(400); pg.click("#assistBtn"); pg.wait_for_timeout(350); pg.click('#assistReplies button[data-topic="pet"]'); pg.wait_for_timeout(300); pg.screenshot(path=f"{OUT}/assist-desktop.png"); pg.keyboard.press("Escape"); pg.wait_for_timeout(300)
         # ── search ──
         pg.goto("file://" + PAGE); pg.wait_for_timeout(400)
         pg.click("#searchBtn"); pg.wait_for_timeout(300)
@@ -274,7 +273,7 @@ with sync_playwright() as p:
         pg.fill("#trackOrder", "1001"); pg.fill("#trackEmail", "t@example.com"); pg.click("#trackForm button[type=submit]")
         check(f"[{label}] track form -> not-connected notice", pg.evaluate("document.getElementById('trackStatus').classList.contains('show')"))
         pg.goto("file://" + PAGE + "#about"); pg.wait_for_timeout(300)
-        check(f"[{label}] About: why the brand exists, ends with Shop by pet + Shop by need", pg.evaluate("/The pet aisle is full. Your home does not need all of it./.test(document.getElementById('page-about').innerText) && /Only the useful stuff should make the cut./.test(document.getElementById('page-about').innerText) && document.querySelector('#page-about .btn-primary').getAttribute('href') === '#collection-cats' && document.querySelector('#page-about a[href=\"#shop-by-need\"]') !== null && document.querySelectorAll('#page-about .photo-about-home').length === 1"))
+        check(f"[{label}] About: why the brand exists, ends with Shop by pet + What made the cut", pg.evaluate("/The pet aisle is full. Your home does not need all of it./.test(document.getElementById('page-about').innerText) && /Only the useful stuff should make the cut./.test(document.getElementById('page-about').innerText) && document.querySelector('#page-about .btn-primary').getAttribute('href') === '#collection-cats' && document.querySelector('#page-about a[href=\"#collection-all\"]') !== null && document.querySelector('#page-about a[href=\"#shop-by-need\"]') === null && document.querySelectorAll('#page-about .photo-about-home').length === 1"))
         pg.goto("file://" + PAGE + "#faq"); pg.wait_for_timeout(1500)
         check(f"[{label}] home anchors still work", pg.evaluate("!document.getElementById('main').hidden && document.getElementById('faq').getBoundingClientRect().top < 120"))
         check(f"[{label}] no JavaScript errors", not errs, str(errs[:3]))
