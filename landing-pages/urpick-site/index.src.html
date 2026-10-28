@@ -425,7 +425,7 @@
     <a href="#top" class="brand" aria-label="UrPick home">UrPick</a>
     <nav class="hdr-nav" aria-label="Primary">
       <a href="#collection-all" data-nav="shop">Shop</a>
-      <a href="#collection-dogs" data-nav="pet">Shop by pet</a>
+      <a href="#collection-cats" data-nav="pet">Shop by pet</a>
       <a href="#shop-by-need" data-nav="need">Shop by need</a>
       <a href="#about" data-nav="about">About</a>
       <a href="#help" data-nav="help">Help</a>
@@ -531,7 +531,6 @@
         <li class="drawer-group">
           <button type="button" class="drawer-toggle" id="productsToggle" aria-expanded="false" aria-controls="productsMenu" data-route="home">Shop by pet<svg class="icon chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
           <ul class="drawer-sub" id="productsMenu" hidden>
-            <li><a href="#collection-dogs" data-cat="dogs">Dogs</a></li>
             <li><a href="#collection-cats" data-cat="cats">Cats</a></li>
             <li><a href="#collection-other" data-cat="other">Other Pets</a></li>
           </ul>
@@ -590,17 +589,16 @@
 
 <section class="sec shop" id="shop">
   <div class="container">
-    <div class="note"><b>SHOP BY PET</b> — Three tabs (Dogs default), 3 featured placeholder cards per tab from CATALOG in the script, a "View all" link to the category's collection page. No products exist yet: names, prices and benefit lines are bracketed placeholders until the supplier list arrives.</div>
+    <div class="note"><b>SHOP BY PET</b> — Two tabs (Cats default; the Dogs range is not offered yet), 3 featured placeholder cards per tab from CATALOG in the script, a "View all" link to the category's collection page. No products exist yet: names, prices and benefit lines are bracketed placeholders until the supplier list arrives.</div>
     <h2 class="cat-title">Shop by pet</h2>
     <div class="cat-tabs" role="tablist" aria-label="Shop by pet">
-      <button type="button" role="tab" id="tab-dogs" data-cat="dogs" aria-selected="true" aria-controls="shopPanel">Dogs</button>
       <button type="button" role="tab" id="tab-cats" data-cat="cats" aria-selected="false" aria-controls="shopPanel" tabindex="-1">Cats</button>
       <button type="button" role="tab" id="tab-other" data-cat="other" aria-selected="false" aria-controls="shopPanel" tabindex="-1">Other Pets</button>
     </div>
-    <div id="shopPanel" role="tabpanel" aria-labelledby="tab-dogs">
+    <div id="shopPanel" role="tabpanel" aria-labelledby="tab-cats">
       <p class="shop-ph">Each product appears here only once it is confirmed.</p>
       <ul class="pgrid" id="shopGrid"></ul>
-      <p class="steps-cta"><a href="#collection-dogs" class="textlink" id="shopViewAll">View all dog products <span aria-hidden="true">→</span></a></p>
+      <p class="steps-cta"><a href="#collection-cats" class="textlink" id="shopViewAll">View all cat products <span aria-hidden="true">→</span></a></p>
     </div>
   </div>
 </section>
@@ -777,7 +775,7 @@
 
   <section class="page" id="page-product" aria-labelledby="shopName">
     <div class="container wide pdp">
-      <p class="pdp-crumb"><a href="#shop" id="pdpBack">← Back to <span id="pdpCatName">Dogs</span></a></p>
+      <p class="pdp-crumb"><a href="#shop" id="pdpBack">← Back to <span id="pdpCatName">Cats</span></a></p>
       <div class="pdp-grid shop">
     <div class="media">
       <div class="note"><b>SHOP</b> — Template's product block as supplied: 1:1 gallery with four thumbnails, title, description, price, colour options, quantity, Add to Cart, reassurance row. All product data is placeholder and comes from the PRODUCT object in the script; the live values arrive from Shopify once the product exists in the store.</div>
@@ -785,7 +783,7 @@
       <ul class="thumbs" id="shopThumbs" aria-label="Product image thumbnails"></ul>
     </div>
     <div class="panel">
-      <p class="eyebrow" id="pdpEyebrow">Dogs</p>
+      <p class="eyebrow" id="pdpEyebrow">Cats</p>
       <h1 id="shopName"></h1>
       <p class="desc" id="shopDesc"></p>
       <p class="ratings-note" id="shopReviews">No reviews yet. Ratings appear here only from real, verified reviews.</p>
@@ -819,7 +817,6 @@
       <h1 id="collectionTitle">What made the cut</h1>
       <p class="lead" id="collectionLead"></p>
       <div class="cat-tabs coll-tabs" role="tablist" aria-label="Shop by pet" id="collectionTabs" hidden>
-        <a role="tab" href="#collection-dogs" data-cat="dogs">Dogs</a>
         <a role="tab" href="#collection-cats" data-cat="cats">Cats</a>
         <a role="tab" href="#collection-other" data-cat="other">Other Pets</a>
       </div>
@@ -1163,7 +1160,7 @@
           <p>We are not trying to fill a store with everything made for pets.</p>
           <p>Only the useful stuff should make the cut.</p>
         </div>
-        <p class="back"><a href="#collection-dogs" class="btn btn-primary">Shop by pet</a> <a href="#shop-by-need" class="textlink">Shop by need <span aria-hidden="true">→</span></a></p>
+        <p class="back"><a href="#collection-cats" class="btn btn-primary">Shop by pet</a> <a href="#shop-by-need" class="textlink">Shop by need <span aria-hidden="true">→</span></a></p>
       </div>
     </div>
   </section>
@@ -1181,7 +1178,7 @@
     </div>
     <nav aria-label="Shop">
       <p>Shop</p>
-      <ul><li><a href="#collection-all">What made the cut</a></li><li><a href="#collection-dogs">Dogs</a></li><li><a href="#collection-cats">Cats</a></li><li><a href="#collection-other">Other Pets</a></li><li><a href="#shop-by-need">Shop by need</a></li></ul>
+      <ul><li><a href="#collection-all">What made the cut</a></li><li><a href="#collection-cats">Cats</a></li><li><a href="#collection-other">Other Pets</a></li><li><a href="#shop-by-need">Shop by need</a></li></ul>
     </nav>
     <nav aria-label="Company">
       <p>Company</p>
@@ -1312,8 +1309,8 @@
     syncProductsMenu(current, activeCat);
   }
 
-  // ── Shop by pet: three tabs over one panel. Dogs is the default. Switching tabs never changes the scroll position. ──
-  var activeCat = "dogs";
+  // ── Shop by pet: tabs over one panel. Cats is the default; Dogs is not offered yet so it has no tab. Switching tabs never changes the scroll position. ──
+  var activeCat = "cats";
   var CAT_NAMES = { dogs: "Dogs", cats: "Cats", other: "Other Pets" };
   var CAT_SINGULAR = { dogs: "dog", cats: "cat", other: "other pet" };
   // Placeholder catalog: names, prices and benefit lines are brackets until the supplier list exists. ids are stable for routing (#product-<id>).
@@ -1411,6 +1408,7 @@
   function filterCount() { return filters.pet.length + filters.need.length + filters.type.length + filters.avail.length; }
   function showCollection(key) {
     if (!(key === "all" || CAT_NAMES[key] || NEEDS[key])) return false;
+    if (key === "dogs" && !SHOW_PLACEHOLDERS) return false;
     if (key !== collKey) { filters = { pet: [], need: [], type: [], avail: [] }; } collKey = key;
     document.getElementById("collectionTitle").textContent = collectionTitle(key);
     document.getElementById("collectionEyebrow").textContent = CAT_NAMES[key] ? "Shop by pet" : NEEDS[key] ? "Shop by need" : "Shop";
@@ -1457,7 +1455,7 @@
   // ── Search: products, needs and pages. Opens as a dialog; Enter follows the first result. ──
   (function () {
     var root = document.getElementById("searchRoot"), dlg = document.getElementById("searchDialog"), input = document.getElementById("searchInput"), results = document.getElementById("searchResults"), btn = document.getElementById("searchBtn"), last = null, timer = null;
-    var PAGES = [["Shop by pet","#collection-dogs","Shop"],["Shop by need","#shop-by-need","Shop"],["What made the cut","#collection-all","Shop"],["How we choose","#how-we-work","About"],["About UrPick","#about","About"],["Pet Parent Guide","#guide","Guide"],["Help centre","#help","Help"],["Contact","#contact","Help"],["Track your order","#track-order","Help"],["Shipping & Returns","#shipping-returns","Help"],["FAQ","#faq","Help"],["Privacy Policy","#privacy","Help"],["Terms of Service","#terms","Help"]];
+    var PAGES = [["Shop by pet","#collection-cats","Shop"],["Shop by need","#shop-by-need","Shop"],["What made the cut","#collection-all","Shop"],["How we choose","#how-we-work","About"],["About UrPick","#about","About"],["Pet Parent Guide","#guide","Guide"],["Help centre","#help","Help"],["Contact","#contact","Help"],["Track your order","#track-order","Help"],["Shipping & Returns","#shipping-returns","Help"],["FAQ","#faq","Help"],["Privacy Policy","#privacy","Help"],["Terms of Service","#terms","Help"]];
     function open() { clearTimeout(timer); last = document.activeElement; root.hidden = false; document.body.classList.add("cart-open"); requestAnimationFrame(function () { root.classList.add("open"); input.focus(); }); render(""); }
     function close() { if (root.hidden) return; root.classList.remove("open"); document.body.classList.remove("cart-open"); var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; timer = setTimeout(function () { root.hidden = true; input.value = ""; if (last && last.focus) last.focus({ preventScroll: true }); }, reduce ? 0 : 220); }
     function render(q) {
@@ -1467,7 +1465,7 @@
         allProducts().forEach(function (x) { if ((x.name + " " + CAT_NAMES[x.cat] + " " + NEEDS[x.need].name).toLowerCase().indexOf(q) > -1) hits.push([x.name, "#product-" + x.id, CAT_NAMES[x.cat]]); });
         NEED_ORDER.forEach(function (k) { if ((NEEDS[k].name + " " + NEEDS[k].lead).toLowerCase().indexOf(q) > -1) hits.push([NEEDS[k].name, "#need-" + k, "Shop by need"]); });
         PAGES.forEach(function (pg) { if (pg[0].toLowerCase().indexOf(q) > -1) hits.push(pg); });
-      } else { hits = [["Shop by pet","#collection-dogs","Shop"],["Shop by need","#shop-by-need","Shop"],["Shipping & Returns","#shipping-returns","Help"],["Contact","#contact","Help"]]; }
+      } else { hits = [["Shop by pet","#collection-cats","Shop"],["Shop by need","#shop-by-need","Shop"],["Shipping & Returns","#shipping-returns","Help"],["Contact","#contact","Help"]]; }
       if (!hits.length) { var li = document.createElement("li"); li.className = "none"; li.textContent = "Nothing found for \u201c" + q + "\u201d. Try a pet, a need, or a page name."; results.appendChild(li); return; }
       hits.slice(0, 8).forEach(function (h) { var li = document.createElement("li"), a = document.createElement("a"); a.href = h[1]; a.innerHTML = "<span>" + h[0] + "</span><small>" + h[2] + "</small>"; a.addEventListener("click", function () { close(); }); li.appendChild(a); results.appendChild(li); });
     }
@@ -1521,7 +1519,7 @@
   }
   function setCategory(cat) {
     var y = window.scrollY;
-    activeCat = CAT_NAMES[cat] ? cat : "dogs";
+    activeCat = (CAT_NAMES[cat] && document.getElementById("tab-" + cat)) ? cat : "cats";
     document.querySelectorAll('.cat-tabs [role="tab"]').forEach(function (b) { var on = b.getAttribute("data-cat") === activeCat; b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1; });
     renderShopGrid();
     syncProductsMenu(homeMain.hidden ? "" : "home", activeCat);
@@ -1587,7 +1585,7 @@
     ]
   };
   var SHOPIFY_CONNECTED = false; // true once VITE_SHOPIFY_DOMAIN + VITE_SHOPIFY_STOREFRONT_TOKEN are wired
-  PRODUCT.id = "dog-1"; PRODUCT.cat = "dogs";
+  PRODUCT.id = "cat-1"; PRODUCT.cat = "cats";
   function money(n) { return new Intl.NumberFormat("en-US", { style: "currency", currency: PRODUCT.currency }).format(n); }
   var colorIdx = 0, imgIdx = 0, qty = 1;
   var shopSil = document.getElementById("shopSil"), shopMainCap = document.getElementById("shopMainCap"), shopThumbs = document.getElementById("shopThumbs");
@@ -1770,7 +1768,7 @@
     openCart();
   });
   renderCart(); renderCheckout(); renderCartPage();
-  setCategory("dogs");
+  setCategory("cats");
   route();
 
   document.querySelectorAll("#faqList button").forEach(function (btn) {
@@ -1936,7 +1934,7 @@
         if (st && st.status === "signed") return st.code ? 'You already have your ' + pct + '% first-order code: <b>' + esc(st.code) + '</b>. Enter it in the discount field at checkout (saved for ' + esc(st.email) + ').' + links([["#collection-all", "Shop what made the cut"]]) : 'You already saved <b>' + esc(st.email) + '</b> for the ' + pct + '% first-order offer. ' + (st.confirmed ? 'It is applied automatically when you check out with that email.' : 'The store applies it at checkout once it is connected; nothing is applied yet.') + links([["#collection-all", "Shop what made the cut"]]);
         return '<span class="pct">' + pct + '% off</span>your first order. Leave your email and we show you your discount code straight away to use at checkout.<button type="button" class="btn btn-primary" data-act="offer">Unlock my ' + pct + '% off</button><span class="fine">First order only, one use per customer. We only email you about launch news and offers.</span>';
       } },
-      pet: { label: "Shop by pet", answer: function () { return 'Who are you shopping for?' + links([["#collection-dogs", "Dogs"], ["#collection-cats", "Cats"], ["#collection-other", "Other pets"]]); } },
+      pet: { label: "Shop by pet", answer: function () { return 'Who are you shopping for?' + links([["#collection-cats", "Cats"], ["#collection-other", "Other pets"]]); } },
       need: { label: "Shop by need", answer: function () { return 'Pick the problem, not the aisle.' + links(NEED_ORDER.map(function (k) { return ["#need-" + k, NEEDS[k].name]; })); } },
       shipping: { label: "Shipping & returns", answer: function () { return 'Shipping options, costs, and delivery estimates will be confirmed before ordering opens. <b>Proposed 30-day returns</b> for unused items in their original condition; full terms will be available before ordering opens.' + links([["#shipping-returns", "Shipping & Returns"], ["#track-order", "Track an order"]]); } },
       human: { label: "Talk to a person", answer: function () { return 'Nobody can reply in this window yet; it only runs the scripted answers you see here. Email <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a> and a person will get back to you, or use the contact form.' + links([["#contact", "Contact form"], ["#faq", "FAQ"]]); } }
