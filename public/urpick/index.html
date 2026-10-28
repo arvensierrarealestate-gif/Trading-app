@@ -211,6 +211,8 @@
   .shop, #shopPanel, .pgrid { overflow-anchor: none; } /* re-rendering the cards must not nudge the scroll position */
   .shop-ph { margin-top: 1.25rem; text-align: center; font-size: .8125rem; color: var(--taupe); }
   .pgrid { margin: 1.5rem 0 0; padding: 0; list-style: none; display: grid; gap: 1.25rem; } @media (min-width: 640px) { .pgrid { grid-template-columns: repeat(2, 1fr); } } @media (min-width: 1024px) { .pgrid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; } }
+  @media (min-width: 640px) { .pgrid.few { display: flex; flex-wrap: wrap; justify-content: center; } .pgrid.few > li { flex: 0 1 calc(50% - .625rem); } } @media (min-width: 1024px) { .pgrid.few > li { flex: 0 1 calc((100% - 3rem) / 3); } }
+  #shop .steps-cta { text-align: center; }
   .pcard { border-radius: var(--r-card); background: var(--white); box-shadow: var(--shadow-card), 0 0 0 1px rgba(31,42,36,.05); overflow: hidden; display: flex; flex-direction: column; transition: transform .2s; } @media (min-width: 1024px) { .pcard:hover { transform: translateY(-3px); } }
   .pcard .pimg { position: relative; aspect-ratio: 1; background: var(--sand); display: grid; place-items: center; } .pcard .pimg::before { content: ""; position: absolute; inset: 0; opacity: .07; background-image: radial-gradient(circle at 1px 1px, #1F2A24 1px, transparent 0); background-size: 18px 18px; } .pcard .psil { width: 48%; }
   .pcard .pbody { padding: 1.125rem 1.25rem 1.25rem; display: flex; flex-direction: column; gap: .375rem; flex: 1; }
@@ -1524,7 +1526,7 @@
   }
   function renderShopGrid() {
     var grid = document.getElementById("shopGrid"); grid.innerHTML = "";
-    var items = CATALOG[activeCat].slice(0, 3); items.forEach(function (item) { grid.appendChild(productCard(item)); });
+    var items = CATALOG[activeCat].slice(0, 3); items.forEach(function (item) { grid.appendChild(productCard(item)); }); grid.classList.toggle("few", items.length > 0 && items.length < 3);
     if (!items.length) grid.appendChild(comingSoon(activeCat));
     var va = document.getElementById("shopViewAll"); va.href = "#collection-" + activeCat; va.innerHTML = "View all " + CAT_SINGULAR[activeCat] + " products <span aria-hidden=\"true\">→</span>"; va.parentElement.hidden = !items.length;
     document.getElementById("shopPanel").setAttribute("aria-labelledby", "tab-" + activeCat);
