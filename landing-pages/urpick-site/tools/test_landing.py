@@ -61,6 +61,7 @@ with sync_playwright() as p:
         pg.select_option("#catUnit", "in"); pg.fill("#catLen", "20"); pg.evaluate("document.getElementById('sizeHelpForm').requestSubmit()"); pg.wait_for_timeout(150)
         check(f"[{label}] Which size? helper: inches accepted, no-match case stays honest", pg.evaluate("/None of the listed sizes/.test(document.getElementById('sizeHelpOut').textContent) && /50.8 cm/.test(document.getElementById('sizeHelpOut').textContent)"))
         pg.fill("#catLen", ""); pg.evaluate("document.getElementById('sizeHelpForm').requestSubmit()"); pg.wait_for_timeout(100)
+        check(f"[{label}] benefits heading uses the curator voice, no 'designed'", pg.evaluate("document.getElementById('whyTitle').textContent === 'Made for Cozy Moments. At Home in Yours.' && !/designed/i.test(document.getElementById('why').textContent)"))
         check(f"[{label}] Which size? helper: empty input asks for a number", pg.evaluate("/Enter your cat/.test(document.getElementById('sizeHelpOut').textContent)"))
         pg.select_option("#catUnit", "cm")
         if label == "mobile": sw = pg.evaluate("document.getElementById('sizeTable').scrollWidth <= document.getElementById('buyPanel').clientWidth"); check(f"[{label}] size table fits the phone width", sw)
