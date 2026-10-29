@@ -121,7 +121,7 @@ Not verified / not possible yet:
 ## I. Launch checklist
 
 Required before paid traffic:
-1. Supplier confirms dimensions, materials, construction, care and safety → fill `specs` in the JSON.
+1. Supplier confirmed external sizes (M/L/XL), materials and construction on 29 Oct 2026; still pending: usable interior, entrance opening, weight, cleaning instructions, material safety documentation, independent verification of the sizes → update `specs` in the JSON when they arrive.
 2. Approve selling price (and compare-at if any), stock → set `price`, `stock`, `status: "live"`.
 3. Product photography (six views + hero), Bruce photos (three), demo video → drop files in `assets/` and set `src` fields. Ad 01 and Ad 02 are in; decide whether Ad 01 (white cave) may run against the cow-print page or needs a cow-print re-render.
 4. Connect checkout (Shopify) and set variant IDs; verify Add to cart → cart → checkout end to end.
