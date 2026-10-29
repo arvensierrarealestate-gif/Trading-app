@@ -76,7 +76,7 @@
   .more-info{margin-top:1rem;border-top:1px solid rgba(31,42,36,.08)} .more-info details{border-bottom:1px solid rgba(31,42,36,.08)} .more-info summary{list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:48px;padding:.5rem 0;font-size:.9rem;font-weight:600;cursor:pointer} .more-info summary::-webkit-details-marker{display:none} .more-info summary::after{content:"+";font-size:1.25rem;color:var(--sage)} .more-info details[open] summary::after{content:"–"}
   .specs{width:100%;border-collapse:collapse;font-size:.8125rem;margin-bottom:.75rem} .specs.sizes th[scope=col]{font-weight:600;color:var(--taupe);font-size:.6875rem;letter-spacing:.08em;text-transform:uppercase;border-top:0;padding-top:0} .specs.sizes td{white-space:nowrap} .specs.sizes tbody tr[aria-selected="true"] td,.specs.sizes tbody tr[aria-selected="true"] th{background:rgba(201,214,203,.35)}
   .specs.sizes .pick{display:inline-flex;align-items:center;gap:.4rem;min-height:44px;padding:0 .25rem;border:0;background:transparent;font:inherit;font-weight:600;color:var(--sage-deep);cursor:pointer;border-radius:8px} .specs.sizes .pick::before{content:"";width:12px;height:12px;border-radius:50%;border:1.5px solid rgba(47,74,58,.5);background:#fff} .specs.sizes tr[aria-selected="true"] .pick::before{background:var(--sage-deep);box-shadow:inset 0 0 0 2px #fff}
-  .fine2{margin:0 0 .75rem;font-size:.75rem;line-height:1.5;color:var(--taupe)} .tip{margin:0 0 .75rem;padding:.75rem .875rem;border-radius:12px;background:var(--sand);font-size:.8125rem;line-height:1.55;color:var(--ink)} .tip b{display:block;margin-bottom:.2rem} .specs th,.specs td{text-align:left;padding:.4rem 0;vertical-align:top;border-top:1px solid rgba(31,42,36,.06)} .specs th{width:40%;font-weight:600;color:var(--ink);padding-right:.75rem} .specs td{color:var(--taupe)}
+  .fine2{margin:0 0 .75rem;font-size:.75rem;line-height:1.5;color:var(--taupe)} .sizehelp{margin:0 0 .75rem;padding:.75rem .875rem;border:1px dashed rgba(31,42,36,.18);border-radius:12px} .sizehelp label{display:block;font-size:.8125rem;line-height:1.45;margin-bottom:.5rem} .sizehelp .row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center} .sizehelp input{flex:1 1 6rem;min-width:0;min-height:44px;padding:0 .75rem;border:1.5px solid rgba(31,42,36,.2);border-radius:10px;font:inherit;font-size:1rem} .sizehelp select{min-height:44px;padding:0 .5rem;border:1.5px solid rgba(31,42,36,.2);border-radius:10px;font:inherit;background:#fff} .sizehelp .mini{min-height:44px;padding:0 1rem;border:0;border-radius:999px;background:var(--sage-deep);color:#fff;font:inherit;font-weight:600;cursor:pointer} .sizehelp .out{margin-top:.75rem;font-size:.8125rem;line-height:1.55} .sizehelp .out ul{margin:.35rem 0 .5rem;padding-left:1.1rem} .sizehelp .out .ok{color:var(--sage-deep);font-weight:600} .sizehelp .out .no{color:var(--taupe)} .sizehelp .out .fine2{margin:.5rem 0 0} .tip{margin:0 0 .75rem;padding:.75rem .875rem;border-radius:12px;background:var(--sand);font-size:.8125rem;line-height:1.55;color:var(--ink)} .tip b{display:block;margin-bottom:.2rem} .specs th,.specs td{text-align:left;padding:.4rem 0;vertical-align:top;border-top:1px solid rgba(31,42,36,.06)} .specs th{width:40%;font-weight:600;color:var(--ink);padding-right:.75rem} .specs td{color:var(--taupe)}
   .wait{margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(31,42,36,.08);font-size:.875rem} .wait form{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem} @media (min-width:480px){.wait form{flex-direction:row}} .wait input{flex:1;min-height:46px;border:1.5px solid rgba(31,42,36,.2);border-radius:999px;padding:0 1rem;font:inherit;background:#fff} .wait input[aria-invalid="true"]{border-color:var(--clay)} .wait .btn{min-height:46px;padding:.5rem 1.25rem} .wait .msg{margin-top:.5rem;font-size:.8125rem;color:var(--taupe)} .wait .msg.err{color:var(--clay)}
   .dev{display:inline-flex;align-items:center;gap:.375rem;border:1px dashed rgba(194,101,63,.7);border-radius:999px;padding:.2rem .625rem;font-size:.6875rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--clay);background:rgba(255,255,255,.7)} .dev::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--clay)}
   /* 3. upsell */
@@ -161,6 +161,14 @@
             <table class="specs sizes" id="sizeTable" aria-labelledby="sizeLbl"><thead><tr><th scope="col">Size</th><th scope="col">cm</th><th scope="col">in</th></tr></thead><tbody></tbody></table>
             <p class="fine2" id="sizesNote"></p>
             <p class="tip" id="fitTip"></p>
+            <div class="sizehelp" id="sizeHelp">
+              <p class="lbl" style="margin-top:.5rem" id="sizeHelpLbl">Which size? · reference helper</p>
+              <form id="sizeHelpForm" novalidate aria-labelledby="sizeHelpLbl">
+                <label for="catLen">Your cat's length, nose to base of tail (stretched out, tail not included)</label>
+                <div class="row"><input id="catLen" name="len" type="number" inputmode="decimal" min="10" max="120" step="0.5" placeholder="e.g. 40" required><select id="catUnit" name="unit" aria-label="Unit"><option value="cm">cm</option><option value="in">in</option></select><button type="submit" class="mini">Compare</button></div>
+              </form>
+              <div class="out" id="sizeHelpOut" role="status" aria-live="polite" hidden></div>
+            </div>
           </details>
           <details id="careDetails"><summary>Materials &amp; care</summary><table class="specs"><caption class="sr-only">Materials and care</caption><tbody id="careBody"></tbody></table></details>
         </div>
@@ -391,6 +399,18 @@ var BASE = "";
   $("sizesNote").textContent = CONFIG.sizesNote || ""; if (CONFIG.fitTip) $("fitTip").innerHTML = "<b>" + esc(CONFIG.fitTip.title) + "</b>" + esc(CONFIG.fitTip.text);
   $("careBody").innerHTML = [["Materials", S.materials], ["Construction", S.construction], ["Care", S.care], ["Safety", S.safety]].map(function (r) { return "<tr><th scope=\"row\">" + esc(r[0]) + "</th><td>" + (r[1] ? esc(r[1]) : tbc) + "</td></tr>"; }).join("");
   $("dimsDetails").addEventListener("toggle", function () { if ($("dimsDetails").open) track("size_guide_open", {}); });
+  // Which size? A scripted comparison of the cat's measured length with the supplier's EXTERNAL sizes. It never claims a fit: interior measurements are pending and the sizes are not independently verified.
+  $("sizeHelpForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var raw = parseFloat($("catLen").value), unit = $("catUnit").value, out = $("sizeHelpOut");
+    if (!(raw > 0)) { out.hidden = false; out.innerHTML = '<span class="no">Enter your cat\u2019s length first (a number in cm or in).</span>'; return; }
+    var cm = unit === "in" ? raw * 2.54 : raw, inch = unit === "in" ? raw : raw / 2.54;
+    var rows = SZ.map(function (z) { var ok = z.cm[0] >= cm; return '<li><span class="' + (ok ? "ok" : "no") + '">' + esc(z.name) + '</span> \u2014 ' + z.cm[0] + ' cm / ' + z["in"][0] + ' in long outside, ' + (ok ? 'at least as long as your cat' : 'shorter than your cat stretched out') + '</li>'; });
+    var fits = SZ.filter(function (z) { return z.cm[0] >= cm; }).map(function (z) { return z.name; });
+    var lead = fits.length ? 'Sizes at least as long on the outside as your cat (' + (Math.round(cm * 10) / 10) + ' cm / ' + (Math.round(inch * 10) / 10) + ' in): <b>' + esc(fits.join(", ")) + '</b>.' : 'None of the listed sizes is as long on the outside as your cat stretched out (' + (Math.round(cm * 10) / 10) + ' cm). Many cats curl up in a cave, so a size may still work, but we can\u2019t confirm that yet.';
+    out.hidden = false; out.innerHTML = lead + '<ul>' + rows.join("") + '</ul><p class="fine2">Reference only. These are the supplier\u2019s external dimensions, not yet independently verified; the usable interior is smaller and its measurements are pending. Which sizes each colour is sold in is still to be confirmed.</p>';
+    track("size_helper_compare", { length_cm: Math.round(cm), matches: fits.length });
+  });
   $("careDetails").addEventListener("toggle", function () { if ($("careDetails").open) track("product_detail_interaction", { detail: "care" }); });
 
   // ── 3. Upsell: one or two, same product, no invented bundle price ──

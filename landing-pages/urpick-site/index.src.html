@@ -235,6 +235,7 @@
   .thumbs button img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; } .thumbs button { position: relative; overflow: hidden; } .thumbs button img + .t { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,.85); font-size: .625rem; padding: .25rem; }
   .swatches button.cow { background: repeating-linear-gradient(135deg, #1F1F1F 0 4px, #fff 4px 8px) !important; }
   .pdp-details .sizes { width: 100%; border-collapse: collapse; font-size: .8125rem; margin: .25rem 0 .5rem; } .pdp-details .sizes th, .pdp-details .sizes td { text-align: left; padding: .35rem .5rem .35rem 0; border-top: 1px solid rgba(31,42,36,.08); white-space: nowrap; } .pdp-details .sizes thead th { border-top: 0; font-size: .6875rem; letter-spacing: .08em; text-transform: uppercase; color: var(--taupe); }
+  .pdp-details .sizehelp { margin: .75rem 0 .25rem; padding: .75rem .875rem; border: 1px dashed rgba(31,42,36,.18); border-radius: 12px; } .pdp-details .sizehelp label { display: block; font-size: .8125rem; line-height: 1.45; margin-bottom: .5rem; } .pdp-details .sizehelp .row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; } .pdp-details .sizehelp input { flex: 1 1 6rem; min-width: 0; min-height: 44px; padding: 0 .75rem; border: 1.5px solid rgba(31,42,36,.2); border-radius: 10px; font: inherit; font-size: 1rem; } .pdp-details .sizehelp select { min-height: 44px; padding: 0 .5rem; border: 1.5px solid rgba(31,42,36,.2); border-radius: 10px; font: inherit; background: #fff; } .pdp-details .sizehelp .btn { min-height: 44px; padding: 0 1rem; font-size: .875rem; } .pdp-details .sizehelp .out { margin-top: .75rem; font-size: .8125rem; line-height: 1.55; } .pdp-details .sizehelp .out ul { margin: .35rem 0 .5rem; padding-left: 1.1rem; } .pdp-details .sizehelp .out .ok { color: var(--sage-deep); font-weight: 600; } .pdp-details .sizehelp .out .no { color: var(--taupe); } .pdp-details .sizehelp .out .fine { margin: .5rem 0 0; }
   .pdp-details .tbc { display: inline-block; border: 1px dashed rgba(194,101,63,.7); border-radius: 999px; padding: .1rem .5rem; font-size: .6875rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--clay); } .pdp-details .fine { font-size: .75rem; color: var(--taupe); margin: 0 0 .5rem; }
   .pdp-story { margin-top: 1.25rem; } .pricebox b.pending { font-size: 1.375rem; }
   .pcoming { grid-column: 1 / -1; background: #fff; border-radius: var(--r-card); padding: 2.5rem 1.5rem; text-align: center; box-shadow: var(--shadow-card); } .pcoming h3 { font-size: 1.375rem; margin-top: .5rem; } .pcoming p { margin-top: .5rem; color: var(--taupe); font-size: .9375rem; max-width: 32rem; margin-inline: auto; } .pcoming .textlink { margin-top: .5rem; }
@@ -1618,12 +1619,13 @@
        ["What to expect", faqOf("use")],
        ["Who it\u2019s for", "Cats who like an enclosed spot. Three supplier-listed external sizes are in Dimensions &amp; fit below; which size each colour is sold in is confirmed with the catalog."],
        ["What\u2019s included", tbc],
-       ["Dimensions &amp; fit", "<table class=\"sizes\"><thead><tr><th scope=\"col\">Size</th><th scope=\"col\">cm</th><th scope=\"col\">in</th></tr></thead><tbody>" + sizes + "</tbody></table><p class=\"fine\">" + (L.sizesNote || "") + "</p><p><b>External size:</b> " + (S.external || tbc) + "<br><b>Usable interior:</b> " + (S.interior || tbc) + "<br><b>Entrance:</b> " + (S.entrance || tbc) + "<br><b>Weight:</b> " + (S.weight || tbc) + "</p>" + (L.fitTip ? "<p><b>" + L.fitTip.title + ".</b> " + L.fitTip.text + "</p>" : "")],
+       ["Dimensions &amp; fit", "<table class=\"sizes\"><thead><tr><th scope=\"col\">Size</th><th scope=\"col\">cm</th><th scope=\"col\">in</th></tr></thead><tbody>" + sizes + "</tbody></table><p class=\"fine\">" + (L.sizesNote || "") + "</p><p><b>External size:</b> " + (S.external || tbc) + "<br><b>Usable interior:</b> " + (S.interior || tbc) + "<br><b>Entrance:</b> " + (S.entrance || tbc) + "<br><b>Weight:</b> " + (S.weight || tbc) + "</p>" + (L.fitTip ? "<p><b>" + L.fitTip.title + ".</b> " + L.fitTip.text + "</p>" : "") + '<div class="sizehelp" id="pdpSizeHelp"><p class="fine" id="pdpSizeLbl"><b>Which size?</b> Reference helper</p><form id="pdpSizeForm" novalidate aria-labelledby="pdpSizeLbl"><label for="pdpCatLen">Your cat\u2019s length, nose to base of tail (stretched out, tail not included)</label><div class="row"><input id="pdpCatLen" type="number" inputmode="decimal" min="10" max="120" step="0.5" placeholder="e.g. 40" required><select id="pdpCatUnit" aria-label="Unit"><option value="cm">cm</option><option value="in">in</option></select><button type="submit" class="btn btn-secondary">Compare</button></div></form><div class="out" id="pdpSizeOut" role="status" aria-live="polite" hidden></div></div>'],
        ["Materials &amp; care", "<b>Materials:</b> " + (S.materials || tbc) + "<br><b>Construction:</b> " + (S.construction || tbc) + "<br><b>Care:</b> " + (S.care || tbc) + "<br><b>Safety:</b> " + (S.safety || tbc)],
        ["Real customer results", "No customer results yet. Photos and reviews from real customers appear here once they exist; nothing is shown before then."],
        ["Questions", L.faq.map(function (f) { return "<b>" + f.q + "</b> " + f.a; }).join("<br><br>")],
        ["Shipping & Returns", L.shipping.summary + " " + L.returns.summary + " See <a href=\"#shipping-returns\">Shipping &amp; Returns</a>."]]
       .forEach(function (d, i) { var det = document.createElement("details"); if (i === 0) det.open = true; det.innerHTML = "<summary>" + d[0] + "</summary><div class=\"dbody\">" + d[1] + "</div>"; box.appendChild(det); });
+      wireSizeHelp(L);
       return;
     }
     [["What it solves", "Part of <a href=\"#need-" + item.need + "\">" + need.name + "</a>: " + need.lead + " " + tbd],
@@ -1632,6 +1634,25 @@
      ["Questions", need.faq.map(function (f) { return "<b>" + f[0] + "</b> " + f[1]; }).join("<br><br>")],
      ["Shipping & Returns", "Shipping options, costs, and delivery estimates will be confirmed before ordering opens. Proposed 30-day returns for unused items in their original condition. Full terms will be available before ordering opens. See <a href=\"#shipping-returns\">Shipping &amp; Returns</a>."]]
     .forEach(function (d, i) { var det = document.createElement("details"); if (i === 0) det.open = true; det.innerHTML = "<summary>" + d[0] + "</summary><div class=\"dbody\">" + d[1].replace("Shipping & Returns page", '<a href="#shipping-returns">Shipping &amp; Returns page</a>') + "</div>"; box.appendChild(det); });
+  }
+  // Which size? Scripted comparison of the cat's measured length with the supplier's EXTERNAL sizes; never a fit claim (interior pending, sizes not independently verified).
+  function wireSizeHelp(L) {
+    var form = document.getElementById("pdpSizeForm"); if (!form) return;
+    var SZ = L.sizes || [];
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var raw = parseFloat(document.getElementById("pdpCatLen").value), unit = document.getElementById("pdpCatUnit").value, out = document.getElementById("pdpSizeOut");
+      if (!(raw > 0)) { out.hidden = false; out.innerHTML = '<span class="no">Enter your cat\u2019s length first (a number in cm or in).</span>'; return; }
+      var cm = unit === "in" ? raw * 2.54 : raw, inch = unit === "in" ? raw : raw / 2.54;
+      var fits = SZ.filter(function (z) { return z.cm[0] >= cm; }).map(function (z) { return z.name; });
+      var rows = SZ.map(function (z) { var ok = z.cm[0] >= cm; return '<li><span class="' + (ok ? "ok" : "no") + '">' + z.name + '</span> \u2014 ' + z.cm[0] + ' cm / ' + z["in"][0] + ' in long outside, ' + (ok ? 'at least as long as your cat' : 'shorter than your cat stretched out') + '</li>'; });
+      var lead = fits.length ? 'Sizes at least as long on the outside as your cat (' + (Math.round(cm * 10) / 10) + ' cm / ' + (Math.round(inch * 10) / 10) + ' in): <b>' + fits.join(", ") + '</b>.' : 'None of the listed sizes is as long on the outside as your cat stretched out (' + (Math.round(cm * 10) / 10) + ' cm). Many cats curl up in a cave, so a size may still work, but we can\u2019t confirm that yet.';
+      out.hidden = false; out.innerHTML = lead + '<ul>' + rows.join("") + '</ul><p class="fine">Reference only. These are the supplier\u2019s external dimensions, not yet independently verified; the usable interior is smaller and its measurements are pending. Which sizes each colour is sold in is still to be confirmed.</p>';
+      if (window.dataLayer) window.dataLayer.push({ event: "size_helper_compare", product: L.productId, length_cm: Math.round(cm), matches: fits.length });
+    });
+    // Arriving from the helper bubble's "Which size for my cat?": open the Dimensions & fit drawer and bring the helper into view.
+    var want = false; try { want = sessionStorage.getItem("urpick_open_size") === "1"; sessionStorage.removeItem("urpick_open_size"); } catch (e) {}
+    if (want) { var det = form.closest("details"); if (det) det.open = true; setTimeout(function () { form.scrollIntoView({ block: "center", behavior: "smooth" }); document.getElementById("pdpCatLen").focus({ preventScroll: true }); }, 350); }
   }
   var buyBarOn = false;
   function setBuyBar(on) { buyBarOn = on; var bar = document.getElementById("buyBar"); if (!on) { bar.classList.remove("show"); bar.hidden = true; document.body.classList.remove("buybar-on"); } else { bar.hidden = false; bar.classList.remove("show"); } }
@@ -1921,10 +1942,11 @@
         return '<span class="pct">' + pct + '% off</span>your first order. Leave your email and we show you your discount code straight away to use at checkout.<button type="button" class="btn btn-primary" data-act="offer">Unlock my ' + pct + '% off</button><span class="fine">First order only, one use per customer. We only email you about launch news and offers.</span>';
       } },
       pet: { label: "Shop by pet", answer: function () { return 'Who are you shopping for?' + links([["#collection-cats", "Cats"], ["#collection-other", "Other pets"]]); } },
+      size: { label: "Which size for my cat?", answer: function () { return 'Measure your cat from the tip of the nose to the base of the tail while they are stretched out (tail not included). The <b>Which size?</b> helper under Dimensions &amp; fit on the Cat Cave page compares that length with the three supplier-listed external sizes: Medium 35 cm, Large 43 cm and Extra Large 48 cm long. It is a reference, not a fit guarantee: the inside is smaller and interior measurements are still pending from the supplier.<button type="button" class="btn btn-primary" data-act="size">Open the size helper</button>'; } },
       shipping: { label: "Shipping & returns", answer: function () { return 'Shipping options, costs, and delivery estimates will be confirmed before ordering opens. <b>Proposed 30-day returns</b> for unused items in their original condition; full terms will be available before ordering opens.' + links([["#shipping-returns", "Shipping & Returns"], ["#track-order", "Track an order"]]); } },
       human: { label: "Talk to a person", answer: function () { return 'Nobody can reply in this window yet; it only runs the scripted answers you see here. Email <a href="mailto:yourpick2025@gmail.com">yourpick2025@gmail.com</a> and a person will get back to you, or use the contact form.' + links([["#contact", "Contact form"], ["#faq", "FAQ"]]); } }
     };
-    var ORDER = ["offer", "pet", "shipping", "human"];
+    var ORDER = ["offer", "pet", "size", "shipping", "human"];
     function renderReplies() {
       replies.innerHTML = "";
       ORDER.forEach(function (k) { var b = document.createElement("button"); b.type = "button"; b.textContent = TOPICS[k].label; b.setAttribute("data-topic", k); b.addEventListener("click", function () { ask(k); }); replies.appendChild(b); });
@@ -1933,6 +1955,7 @@
       say(esc(TOPICS[k].label), "me");
       var d = say(TOPICS[k].answer(), "bot");
       var act = d.querySelector('[data-act="offer"]'); if (act) act.addEventListener("click", function () { close(true); if (window.urpickOffer) window.urpickOffer.open(); });
+      var sz = d.querySelector('[data-act="size"]'); if (sz) sz.addEventListener("click", function () { try { sessionStorage.setItem("urpick_open_size", "1"); } catch (e) {} close(true); if ((location.hash || "").indexOf("#product-urpick-cat-cave") === 0) { var f = document.getElementById("pdpSizeForm"); if (f) { var det = f.closest("details"); if (det) det.open = true; f.scrollIntoView({ block: "center", behavior: "smooth" }); try { sessionStorage.removeItem("urpick_open_size"); } catch (e2) {} } } else location.hash = "#product-urpick-cat-cave"; });
       if (window.dataLayer) window.dataLayer.push({ event: "assistant_topic", topic: k });
     }
     function start(topic) {
