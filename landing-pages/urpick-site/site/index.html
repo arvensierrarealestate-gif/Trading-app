@@ -177,6 +177,8 @@
   /* why different */
   .why .container { display: grid; align-items: center; gap: 3rem; } @media (min-width: 1024px) { .why .container { grid-template-columns: 1fr 1fr; gap: 4rem; } }
   .why .sub { margin-top: 1.25rem; font-size: 1.125rem; color: var(--taupe); line-height: 1.7; }
+  .why .sub + .sub { margin-top: .875rem; } .why .why-cta { margin-top: 2rem; } .why .why-cta .btn { min-height: 48px; padding-inline: 1.75rem; }
+  .why-photo > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; } @media (max-width: 639px) { .why-photo .callout { font-size: .6875rem; padding: .3rem .6rem; } .why-photo .callout.c2 { top: 5%; } .why-photo .callout.c4 { display: none; } }
   .feats { margin-top: 2.5rem; display: grid; gap: 1.5rem; list-style: none; padding: 0; } @media (min-width: 640px) { .feats { grid-template-columns: 1fr 1fr; } }
   .feats li { display: flex; gap: 1rem; } .feats li > span { margin-top: .125rem; display: flex; height: 2rem; width: 2rem; flex: none; align-items: center; justify-content: center; border-radius: 999px; background: var(--sage-soft); color: var(--sage-deep); } .feats .icon { width: 1rem; height: 1rem; }
   .feats h3 { font-family: var(--body); font-size: 1rem; font-weight: 600; } .feats p { margin-top: .25rem; font-size: .875rem; color: var(--taupe); line-height: 1.6; }
@@ -656,22 +658,25 @@
 <section class="sec why" id="why-urpick">
   <div class="container">
     <div>
-      <p class="eyebrow">Why UrPick</p>
-      <h2 class="h2">Simple things, done properly.</h2>
-      <p class="sub">Most pet products are made for a category. Ours are made for a moment: the bath, the brush, the nail trim, the long afternoon. That changes what we leave out.</p>
+      <p class="eyebrow">A little space of their own</p>
+      <h2 class="h2">Because Even Cats Need a Little Privacy.</h2>
+      <p class="sub">The box they won't leave. The corner they've claimed. The spot under your bed. Cats have a way of finding their own little hideaways.</p>
+      <p class="sub">We get it. That's why we picked a cozy, enclosed cat cave that gives them a space to call their own.</p>
       <ul class="feats">
-        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Routine first</h3><p>Designed around what happens every week, not what sells on a shelf.</p></div></li>
-        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Dogs and cats</h3><p>Different animals, different habits. One idea is not shrunk to fit the other.</p></div></li>
-        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Nothing unnecessary</h3><p>Fewer parts, simpler care, less to go wrong.</p></div></li>
-        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Honest claims</h3><p>If we can't explain it clearly, we don't sell it.</p></div></li>
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Their Own Space</h3><p>A dedicated little hideaway for quiet moments.</p></div></li>
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Cozy &amp; Enclosed</h3><p>A covered retreat for curling up and resting.</p></div></li>
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Made for Cat Moments</h3><p>For the naps, hiding spots, and downtime they love.</p></div></li>
+        <li><span><svg class="icon" viewBox="0 0 24 24"><path d="M5 12.5 9.5 17 19 7"/></svg></span><div><h3>Fits Right Into Home</h3><p>A playful design that gives their favorite corner a little personality.</p></div></li>
       </ul>
+      <p class="why-cta"><a href="#product-urpick-cat-cave" class="btn btn-primary">Explore the Cat Cave</a></p>
     </div>
     <div>
-      <div class="callout-box photo-hero-family" role="img" aria-label="A golden retriever and two cats resting together on a rug in a bright living room">
-        <span class="callout" style="left:6%;top:14%"><i></i>Dogs &amp; cats</span>
-        <span class="callout" style="right:5%;top:26%"><i></i>Fewer parts</span>
-        <span class="callout" style="left:8%;bottom:22%"><i></i>Looked at closely</span>
-        <span class="callout" style="right:8%;bottom:10%"><i></i>Plain words</span>
+      <div class="callout-box why-photo">
+        <img src="assets/photos/cat-cave-cow-size.jpg" alt="A tabby cat sitting beside the UrPick Cozy Cat Cave in cow print on a living-room rug" loading="lazy" decoding="async" width="1000" height="1000">
+        <span class="callout" style="left:6%;top:6%"><i></i>Their Own Little Space</span>
+        <span class="callout c2" style="right:5%;top:14%"><i></i>Cozy &amp; Enclosed</span>
+        <span class="callout" style="left:6%;bottom:7%"><i></i>A Quiet Retreat</span>
+        <span class="callout c4" style="right:5%;bottom:4%"><i></i>Their Corner, Their Rules</span>
       </div>
     </div>
   </div>
