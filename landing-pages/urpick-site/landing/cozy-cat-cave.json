@@ -68,14 +68,14 @@
   ],
   "highlightsNote": "From the product description. Materials, dimensions and care are confirmed with the supplier before launch.",
   "specs": {
-    "external": null,
+    "external": "Available in three sizes: Medium 35 × 35 × 31 cm (13.8 × 13.8 × 12.2 in), Large 43 × 40 × 35 cm (16.9 × 15.7 × 13.8 in), Extra Large 48 × 45 × 38 cm (18.9 × 17.7 × 15.0 in).",
     "interior": "Measurements pending supplier confirmation.",
-    "entrance": "Semi-enclosed opening with soft plush trim. Exact opening dimensions pending confirmation.",
-    "weight": "Product weight pending supplier confirmation.",
-    "materials": null,
-    "construction": null,
-    "care": null,
-    "safety": null
+    "entrance": "Semi-enclosed entrance with plush trim. Exact opening dimensions pending confirmation.",
+    "weight": "Pending supplier confirmation.",
+    "materials": "Sponge and PP foam construction with an Oxford fabric bottom, according to supplier specifications.",
+    "construction": "Soft, semi-enclosed cat cave with an interior cushion. Collapsible design as described by the supplier.",
+    "care": "Cleaning instructions pending supplier confirmation.",
+    "safety": "Material safety documentation pending supplier confirmation."
   },
   "shipping": {
     "summary": "Shipping options, costs, and delivery estimates will be confirmed before ordering opens."
@@ -285,7 +285,7 @@
     {
       "id": "fit",
       "q": "Will my cat fit?",
-      "a": "Four supplier-listed overall sizes (Small 32 × 30 × 28 cm up to Extra Large 48 × 45 × 38 cm) are in the Dimensions & fit panel above, in centimetres and inches. Usable interior and entrance measurements are pending supplier confirmation, so we do not claim a fit for any particular size of cat yet."
+      "a": "Three supplier-listed external sizes (Medium 35 × 35 × 31 cm, Large 43 × 40 × 35 cm, Extra Large 48 × 45 × 38 cm) are in the Dimensions & fit panel above, in centimetres and inches. These dimensions have not yet been independently verified, and usable interior and entrance measurements are pending supplier confirmation, so we do not claim a fit for any particular size of cat yet."
     },
     {
       "id": "use",
@@ -300,7 +300,7 @@
     {
       "id": "clean",
       "q": "How do I clean it?",
-      "a": "The approved cleaning method is published here as soon as the supplier confirms it. We will not claim a removable cover or machine-washability before that.",
+      "a": "Cleaning instructions are pending supplier confirmation and will be published here as soon as we have them. We will not claim a removable cover or machine-washability before that.",
       "specKey": "care"
     },
     {
@@ -329,10 +329,9 @@
     "debug": true
   },
   "missing": [
-    "Supplier-confirmed usable interior and entrance dimensions, weight; which of the four supplier sizes each edition is sold in",
-    "Materials and construction",
+    "Supplier-confirmed usable interior and entrance dimensions, weight; independent verification of the external sizes; which of the three supplier sizes each edition is sold in",
     "Exact cleaning instructions",
-    "Product safety details",
+    "Material safety documentation",
     "Selling price and any compare-at price",
     "Confirmed variants and Shopify variant IDs",
     "Inventory and stock status",
@@ -374,20 +373,6 @@
     "cta": "Shop the Cat Cave"
   },
   "sizes": [
-    {
-      "id": "s",
-      "name": "Small",
-      "cm": [
-        32,
-        30,
-        28
-      ],
-      "in": [
-        12.6,
-        11.8,
-        11.0
-      ]
-    },
     {
       "id": "m",
       "name": "Medium",
@@ -431,9 +416,9 @@
       ]
     }
   ],
-  "sizesNote": "Supplier-listed overall dimensions (length × width × height). Not usable interior measurements. Purchasable size options are confirmed with the product catalog; none is confirmed yet.",
+  "sizesNote": "External size (length × width × height) in three supplier-listed sizes. Dimensions are provided by the supplier and have not yet been independently verified. Which sizes each colour is sold in is confirmed with the product catalog; none is confirmed yet.",
   "fitTip": {
     "title": "Finding the right fit",
-    "text": "Measure your cat's preferred resting position, curled up and stretched out, and compare it with the overall sizes above. Allow some room inside, since these are outer dimensions; usable interior measurements follow once the supplier confirms them."
+    "text": "Measure your cat's preferred resting position, curled up and stretched out, and compare it with the external sizes above. Allow some room inside, since these are outer dimensions; usable interior measurements follow once the supplier confirms them."
   }
 }
