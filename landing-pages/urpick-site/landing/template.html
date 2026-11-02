@@ -253,7 +253,7 @@ var BASE = "{{BASE}}";
   var A = CONFIG.analytics || {}, consentOk = !A.consentRequired, pixelsLoaded = false, queue = [];
   window.dataLayer = window.dataLayer || [];
   function eventId() { return "ev_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8); }
-  var STD = { PageView: 1, ViewContent: 1, AddToCart: 1, InitiateCheckout: 1 }; // Purchase is deliberately not fired from this page: it needs an order confirmation source
+  var STD = { PageView: 1, ViewContent: 1, AddToCart: 1, InitiateCheckout: 1, Lead: 1 }; // Lead = waitlist signup (TikTok name: SubmitForm) // Purchase is deliberately not fired from this page: it needs an order confirmation source
   function track(name, data) {
     data = data || {};
     var ev = Object.assign({ event: name, event_id: eventId(), angle: angleKey, cta_variant: ctaKey, product_id: CONFIG.productId, page: CONFIG.route }, attr, data);
@@ -266,7 +266,7 @@ var BASE = "{{BASE}}";
   function sendPixels(ev) {
     var p = { content_ids: [CONFIG.productId], content_name: CONFIG.name, content_type: "product", currency: CONFIG.currency }; if (ev.value != null) p.value = ev.value;
     if (window.fbq) { try { if (ev.event === "PageView") fbq("track", "PageView", {}, { eventID: ev.event_id }); else fbq("track", ev.event, p, { eventID: ev.event_id }); } catch (e) {} }
-    if (window.ttq) { try { if (ev.event === "PageView") ttq.page(); else ttq.track(ev.event, { contents: [{ content_id: CONFIG.productId, content_name: CONFIG.name, content_type: "product", quantity: ev.quantity || 1 }], currency: CONFIG.currency, value: ev.value }, { event_id: ev.event_id }); } catch (e) {} }
+    if (window.ttq) { try { if (ev.event === "PageView") ttq.page(); else ttq.track(ev.event === "Lead" ? "SubmitForm" : ev.event, { contents: [{ content_id: CONFIG.productId, content_name: CONFIG.name, content_type: "product", quantity: ev.quantity || 1 }], currency: CONFIG.currency, value: ev.value }, { event_id: ev.event_id }); } catch (e) {} }
   }
   function loadPixels() {
     if (pixelsLoaded || !consentOk) return;
@@ -380,7 +380,7 @@ var BASE = "{{BASE}}";
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(val)) { em.setAttribute("aria-invalid", "true"); msg.className = "msg err"; msg.textContent = "Please enter a valid email address."; em.focus(); return; }
       em.removeAttribute("aria-invalid"); var rec = Object.assign({ email: val, product: CONFIG.productId, variant: selected.id, qty: qty, at: new Date().toISOString() }, attr);
       try { var list = JSON.parse(localStorage.getItem("urpick_waitlist_v1") || "[]"); list.push(rec); localStorage.setItem("urpick_waitlist_v1", JSON.stringify(list)); } catch (err) {}
-      msg.className = "msg"; msg.textContent = "Saved on this device only. The email service is not connected yet, so nothing has been sent."; track("waitlist_signup", { variant: selected.id });
+      msg.className = "msg"; msg.textContent = "Saved on this device only. The email service is not connected yet, so nothing has been sent."; track("waitlist_signup", { variant: selected.id }); track("Lead", { variant: selected.id });
     });
   }
   var ship = CONFIG.shipping, ret = CONFIG.returns;
