@@ -1,0 +1,187 @@
+from __future__ import annotations
+
+import pandas as pd
+import streamlit as st
+
+from .. import db, deadlines, export, finance, pipeline
+from ..models import OPP_STATUSES, VERIFIED, ASSUMED
+from .common import get_conn, get_profile, BADGE, REC_BADGE, money
+
+RESULT_ICON = {"MET": "✅", "NOT_MET": "❌", "UNKNOWN": "❓", "NOT_APPLICABLE": "➖"}
+
+
+def render():
+    conn = get_conn()
+    opps = db.list_opportunities(conn)
+    if not opps:
+        st.title("Opportunity Detail")
+        st.info("No opportunities yet. Upload one first.")
+        return
+    ids = [o["id"] for o in opps]
+    default = st.session_state.get("selected_opp", ids[0])
+    idx = ids.index(default) if default in ids else 0
+    oid = st.selectbox("Opportunity", ids, index=idx, format_func=lambda i: f"#{i} · {next(o['title'] for o in opps if o['id'] == i)}")
+    st.session_state.selected_opp = oid
+    opp = db.get_opportunity(conn, oid)
+    profile, _ = get_profile()
+
+    st.title(opp["title"])
+    if opp["is_sample"]:
+        st.caption("SAMPLE RECORD - fictitious solicitation used for testing.")
+    top = st.columns(4)
+    top[0].metric("Qualification", f"{BADGE.get(opp['match_class'])} {opp['match_class'] or 'Not evaluated'}", f"score {opp['match_score'] or 0}")
+    top[1].metric("Recommendation", f"{REC_BADGE.get(opp['recommendation'])} {opp['recommendation'] or '—'}")
+    top[2].metric("Bid deadline", deadlines.format_local(opp["bid_deadline_utc"]), deadlines.urgency_bucket(opp["bid_deadline_utc"]))
+    top[3].metric("Contract value", money(opp["value_high"] or opp["value_low"]), opp["value_status"])
+
+    with st.expander("Facts and edits", expanded=True):
+        c1, c2, c3 = st.columns(3)
+        c1.write(f"**Number:** {opp['solicitation_number'] or 'Not found'}")
+        c1.write(f"**Agency:** {opp['agency'] or 'Not found'}")
+        c1.write(f"**Jurisdiction:** {opp['jurisdiction'] or 'Not found'}")
+        c2.write(f"**Industry:** {opp['industry']}")
+        c2.write(f"**Location:** {opp['location'] or 'Not found'}")
+        c2.write(f"**Duration:** {opp['contract_duration'] or 'Not found'}")
+        c3.write(f"**Source:** {opp['source_id']}")
+        if opp["source_url"]:
+            c3.markdown(f"[Source link]({opp['source_url']})")
+        c3.write(f"**First seen:** {opp['first_seen'][:10]} · **Last seen:** {opp['last_seen'][:10]}")
+        st.write(f"**Scope summary:** {opp['summary'] or 'Not found'}")
+        st.caption(f"Value note: {opp['value_note'] or '—'}")
+        with st.form("edit_opp"):
+            e1, e2, e3 = st.columns(3)
+            new_status = e1.selectbox("Bid status", OPP_STATUSES, index=OPP_STATUSES.index(opp["status"]) if opp["status"] in OPP_STATUSES else 0)
+            new_deadline = e2.text_input("Correct the deadline (local time)", value=opp["bid_deadline_local"] or "")
+            new_value = e3.text_input("Set contract value (your estimate)", value="" if opp["value_high"] is None else str(opp["value_high"]))
+            notes = st.text_area("Notes", value=opp["notes"] or "")
+            if st.form_submit_button("Save"):
+                upd = {"status": new_status, "notes": notes}
+                if new_deadline and new_deadline != (opp["bid_deadline_local"] or ""):
+                    dt = deadlines.parse_deadline(new_deadline)
+                    if dt:
+                        u, l, tz = deadlines.to_storage(dt)
+                        upd.update(bid_deadline_utc=u, bid_deadline_local=l, deadline_tz=tz, deadline_status="ASSUMED")
+                    else:
+                        st.error("Could not parse that deadline. Try 'December 4, 2026 2:00 PM'.")
+                if new_value and new_value != str(opp["value_high"] or ""):
+                    try:
+                        v = float(new_value.replace("$", "").replace(",", ""))
+                        upd.update(value_low=v, value_high=v, value_status=ASSUMED, value_note="User-entered estimate")
+                    except ValueError:
+                        st.error("Value must be a number.")
+                db.update_opportunity(conn, oid, **upd)
+                db.log(conn, "edit_opportunity", "opportunity", oid, upd, actor="user")
+                conn.commit()
+                st.success("Saved.")
+                st.rerun()
+
+    tabs = st.tabs(["Requirements (traceable)", "Qualification checks", "Cost & margin", "Documents & changes", "Partners"])
+
+    with tabs[0]:
+        reqs = db.list_requirements(conn, oid)
+        if reqs:
+            df = pd.DataFrame([{"Category": r["category"], "Mandatory": r["mandatory"], "Requirement": r["text"], "Value": r["value"],
+                                "Document": r["document"], "Page/Section": r["page_ref"], "Quote": r["quote"], "Confidence": r["confidence"],
+                                "Status": r["info_status"], "Extracted by": r["method"]} for r in reqs])
+            st.dataframe(df, use_container_width=True, hide_index=True)
+            st.download_button("Export requirements CSV", export.requirements_csv(conn, oid), f"requirements_{oid}.csv", "text/csv")
+        else:
+            st.info("No requirements extracted yet.")
+
+    with tabs[1]:
+        if st.button("Re-run qualification against current profile"):
+            res = pipeline.evaluate_opportunity(conn, oid, profile, actor="user")
+            conn.commit()
+            st.success(f"{res['match_class']} · {res['summary']}")
+            st.rerun()
+        ev = db.latest_evaluation(conn, oid)
+        if ev:
+            st.write(f"**{ev['match_class']}** (score {ev['score']}) evaluated {ev['created_at'][:16]} against profile `{ev['profile_version']}`. {ev['summary']}")
+            st.caption("Why: only VERIFIED profile facts satisfy a rule. UNKNOWN on any mandatory rule blocks Strong Match. Owner or affiliate experience never counts as entity experience.")
+            for c in ev["checks"]:
+                if not c["mandatory"] and c["result"] == "NOT_APPLICABLE":
+                    continue
+                with st.container(border=True):
+                    st.write(f"{RESULT_ICON.get(c['result'], '?')} **{c['result']}** · {c['category']} · {'mandatory' if c['mandatory'] else 'optional'}"
+                             + (f" · {c['document']} {c['page_ref']}" if c.get("page_ref") else ""))
+                    st.write(c["requirement"])
+                    st.caption(f"{c['explanation']} Profile fact status: {c['profile_fact_status']}.")
+                    if c.get("remedy"):
+                        st.write(f"→ To fix: {c['remedy']}" + (" (a subcontract/JV partner could cover this)" if c.get("partner_path") else ""))
+        else:
+            st.info("Not evaluated yet.")
+
+    with tabs[2]:
+        est = db.latest_cost_estimate(conn, oid)
+        assumptions = est["assumptions"] if est else finance.default_assumptions(pipeline.contract_value_of(opp), opp["value_status"])
+        st.caption("Every number below is an editable assumption (ASSUMED) unless marked VERIFIED. Nothing is inferred from the solicitation except a published value.")
+        with st.form("cost"):
+            new_a = {}
+            cols = st.columns(3)
+            for i, (k, a) in enumerate(assumptions.items()):
+                with cols[i % 3]:
+                    val = a.get("value")
+                    label = f"{k.replace('_', ' ')} ({a.get('unit', '')}) [{a.get('status')}]"
+                    nv = st.number_input(label, value=float(val) if val is not None else 0.0, help=a.get("note", ""), key=f"a_{k}")
+                    new_a[k] = dict(a, value=(None if (k == "contract_revenue" and nv == 0) else nv))
+            if new_a["contract_revenue"]["value"] is not None and new_a["contract_revenue"]["value"] != assumptions["contract_revenue"].get("value"):
+                new_a["contract_revenue"]["status"] = ASSUMED
+            if st.form_submit_button("Recalculate and save"):
+                out = pipeline.save_estimate(conn, oid, new_a, actor="user")
+                conn.commit()
+                st.success(f"Recommendation: {out['recommendation']} · " + " ".join(out["reasons"]))
+                st.rerun()
+        if est:
+            r = est["results"]
+            k = st.columns(4)
+            k[0].metric("Revenue", money(r["revenue"]), r["revenue_status"])
+            k[1].metric("Total cost (base)", money(r["total_cost_base"]), f"{money(r['total_cost_low'])} – {money(r['total_cost_high'])}")
+            k[2].metric("Gross margin", f"{r['gross_margin_pct']}%" if r["gross_margin_pct"] is not None else "n/a",
+                        f"{r.get('gross_margin_low_pct')}% to {r.get('gross_margin_high_pct')}%" if r["gross_margin_pct"] is not None else "needs revenue")
+            k[3].metric("Working capital needed", money(r["working_capital_needed"]), f"burn {money(r['monthly_burn'])}/mo")
+            st.write(f"Labor {money(r['labor_cost'])} · Bond premium {money(r['bond_cost'])} · Overhead {money(r['overhead'])} · Contingency {money(r['contingency'])} · Retainage held {money(r['retainage_held'])}")
+            st.write(f"**Recommendation: {est['recommendation']}**")
+        else:
+            st.info("No estimate saved yet. Enter assumptions above.")
+
+    with tabs[3]:
+        docs = db.list_documents(conn, oid)
+        if docs:
+            st.dataframe(pd.DataFrame([{"File": d["filename"], "Type": d["doc_type"], "Pages": d["page_count"], "Retrieved": d["retrieved_at"][:16],
+                                        "Extraction": d["extraction_method"], "SHA-256": d["sha256"][:16], "URL": d["source_url"]} for d in docs]), use_container_width=True, hide_index=True)
+        ch = db.list_change_events(conn, oid)
+        if ch:
+            st.subheader("Detected changes / amendments")
+            st.dataframe(pd.DataFrame([{"When": c["detected_at"][:16], "Field": c["field"], "Old": c["old_value"], "New": c["new_value"], "Acknowledged": bool(c["acknowledged"])} for c in ch]), use_container_width=True, hide_index=True)
+            if st.button("Acknowledge all changes"):
+                db.acknowledge_changes(conn, oid)
+                conn.commit()
+                st.rerun()
+        else:
+            st.caption("No amendments detected for this opportunity.")
+
+    with tabs[4]:
+        ev = db.latest_evaluation(conn, oid)
+        gaps = [c for c in (ev["checks"] if ev else []) if c.get("partner_path") and c["result"] in ("NOT_MET", "UNKNOWN")]
+        if gaps:
+            st.write("Gaps a subcontract, supplier or joint-venture partner could cover:")
+            for g in gaps:
+                st.write(f"- {g['category']}: {g['requirement'][:120]}")
+            st.caption("Even as a subcontractor you still need: your own insurance at the prime's required limits, applicable trade licenses, "
+                       "SDAT good standing, and often SBR/MBE paperwork if the prime counts you toward a goal.")
+        parts = db.list_partners(conn, oid)
+        if parts:
+            st.dataframe(pd.DataFrame([{"Name": p["name"], "Role": p["role"], "Industry": p["industry"], "Contact": p["contact"], "Notes": p["notes"], "Link": p["source_url"]} for p in parts]), use_container_width=True, hide_index=True)
+        with st.form("add_partner"):
+            st.write("Add a partner lead for this opportunity")
+            n = st.text_input("Name")
+            role = st.selectbox("Role", ["prime contractor", "subcontractor", "supplier", "joint venture", "mentor-protégé"])
+            ind = st.text_input("Industry", value=opp["industry"] or "")
+            contact = st.text_input("Contact")
+            url = st.text_input("Source URL")
+            note = st.text_area("Notes")
+            if st.form_submit_button("Add") and n:
+                db.add_partner(conn, n, role, ind, contact, url, note, oid)
+                db.log(conn, "add_partner", "partner", n, {"opportunity_id": oid}, actor="user")
+                conn.commit()
+                st.rerun()

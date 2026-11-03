@@ -1,0 +1,66 @@
+{
+  "_instructions": [
+    "Copy this file to data/company_profile.json and fill it in for the ONE legal entity that will submit bids.",
+    "Every fact has: value, status, source, verified_on, notes.",
+    "status must be one of VERIFIED (you hold the document), MISSING (needed, not on hand), ASSUMED (estimate), NOT_APPLICABLE.",
+    "Only VERIFIED facts count toward qualification. Owner or affiliate experience is context, never a qualification.",
+    "Never put EIN, tax IDs, passwords, bank or account numbers in this file."
+  ],
+  "profile_version": "2026-11-03.template",
+  "entity": {
+    "legal_name": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Exact name on SDAT record"},
+    "entity_type": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "LLC, Corporation, etc."},
+    "state_of_formation": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "formation_date": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "YYYY-MM-DD from Articles of Organization"},
+    "sdat_department_id": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Public SDAT ID (not EIN)"},
+    "good_standing": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "true/false from Maryland Business Express"},
+    "principal_address": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "City, State is enough"},
+    "naics_codes": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": "e.g. 236220, 561720"},
+    "owner_name": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}
+  },
+  "registrations": {
+    "emma_vendor": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "true once registered on emma.maryland.gov"},
+    "sam_uei": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "true once SAM.gov registration is active"},
+    "sbr_certified": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Maryland Small Business Reserve self-certification"},
+    "mbe_certified": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "MDOT MBE certification"},
+    "dbe_certified": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "local_business_licenses": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": "County/city business licenses held"}
+  },
+  "licenses": [
+    {"type": "MHIC", "number_on_file": false, "expires": "", "status": "MISSING", "source": "", "verified_on": "", "notes": "Maryland Home Improvement Commission"}
+  ],
+  "insurance": {
+    "general_liability": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "dollars"}, "aggregate": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "carrier": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "expires": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}},
+    "automobile_liability": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}},
+    "workers_compensation": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Required in MD once you have employees"}, "per_occurrence": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": "statutory"}},
+    "umbrella": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}},
+    "professional_liability": {"carried": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}},
+    "pollution_liability": {"carried": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}}
+  },
+  "bonding": {
+    "surety": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Surety company name"},
+    "single_project_limit": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "dollars, from surety letter"},
+    "aggregate_limit": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}
+  },
+  "experience": [
+    {"description": "", "industry": "Construction & Property Services", "performed_by": "contracting_entity", "client": "", "year": null, "value": null, "status": "MISSING", "source": "", "notes": "performed_by must be contracting_entity to count; owner / affiliate entries are context only"}
+  ],
+  "capabilities": {
+    "industries": {"value": [], "status": "ASSUMED", "source": "", "verified_on": "", "notes": "Which of the four industries you will bid"},
+    "services": {"value": [], "status": "ASSUMED", "source": "", "verified_on": "", "notes": "Specific services"},
+    "service_area_counties": {"value": [], "status": "ASSUMED", "source": "", "verified_on": "", "notes": "Maryland counties you will serve"},
+    "max_contract_value": {"value": null, "status": "ASSUMED", "source": "", "verified_on": "", "notes": "Largest contract you would take as prime"}
+  },
+  "resources": {
+    "employees_w2": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Headcount"},
+    "subcontractors": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": "Regular subs by trade"},
+    "equipment": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": "Vehicles, machinery"},
+    "facilities": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": "Warehouse, kitchen, office"}
+  },
+  "financial": {
+    "annual_revenue_range": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Range such as '100k-500k'; no exact figures needed"},
+    "working_capital_available": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Cash you can commit before first payment"},
+    "credit_line": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "statements_available": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "true if CPA-prepared statements exist"}
+  }
+}

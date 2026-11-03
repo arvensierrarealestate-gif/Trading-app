@@ -1,0 +1,62 @@
+{
+  "_notice": "SAMPLE DATA for a fictitious company. Used only so the dashboard and tests have something to show. Replace with data/company_profile.json.",
+  "profile_version": "sample-2026-11-03",
+  "entity": {
+    "legal_name": {"value": "Sample Maryland Services LLC", "status": "VERIFIED", "source": "sample_articles_of_organization.pdf", "verified_on": "2026-11-01", "notes": "fictitious"},
+    "entity_type": {"value": "LLC", "status": "VERIFIED", "source": "sample_articles_of_organization.pdf", "verified_on": "2026-11-01", "notes": ""},
+    "state_of_formation": {"value": "Maryland", "status": "VERIFIED", "source": "sample_articles_of_organization.pdf", "verified_on": "2026-11-01", "notes": ""},
+    "formation_date": {"value": "2021-03-15", "status": "VERIFIED", "source": "sample_articles_of_organization.pdf", "verified_on": "2026-11-01", "notes": ""},
+    "sdat_department_id": {"value": "W00000000", "status": "VERIFIED", "source": "sample SDAT printout", "verified_on": "2026-11-01", "notes": "fictitious"},
+    "good_standing": {"value": true, "status": "VERIFIED", "source": "sample certificate of status", "verified_on": "2026-11-01", "notes": ""},
+    "principal_address": {"value": "Silver Spring, MD", "status": "VERIFIED", "source": "sample SDAT printout", "verified_on": "2026-11-01", "notes": ""},
+    "naics_codes": {"value": ["236118", "561720", "238160"], "status": "ASSUMED", "source": "", "verified_on": "", "notes": "to confirm on SAM.gov"},
+    "owner_name": {"value": "Sample Owner", "status": "VERIFIED", "source": "sample operating agreement", "verified_on": "2026-11-01", "notes": ""}
+  },
+  "registrations": {
+    "emma_vendor": {"value": true, "status": "VERIFIED", "source": "sample eMMA confirmation email", "verified_on": "2026-11-01", "notes": ""},
+    "sam_uei": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "not registered"},
+    "sbr_certified": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "eligible to self-certify; not done"},
+    "mbe_certified": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "dbe_certified": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""},
+    "local_business_licenses": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": ""}
+  },
+  "licenses": [
+    {"type": "MHIC", "number_on_file": true, "expires": "2028-06-30", "status": "VERIFIED", "source": "sample_mhic_license.pdf", "verified_on": "2026-11-01", "notes": "fictitious"}
+  ],
+  "insurance": {
+    "general_liability": {"carried": {"value": true, "status": "VERIFIED", "source": "sample COI", "verified_on": "2026-11-01", "notes": ""}, "per_occurrence": {"value": 1000000, "status": "VERIFIED", "source": "sample COI", "verified_on": "2026-11-01", "notes": ""}, "aggregate": {"value": 2000000, "status": "VERIFIED", "source": "sample COI", "verified_on": "2026-11-01", "notes": ""}, "carrier": {"value": "Sample Mutual", "status": "VERIFIED", "source": "sample COI", "verified_on": "2026-11-01", "notes": ""}, "expires": {"value": "2027-05-01", "status": "VERIFIED", "source": "sample COI", "verified_on": "2026-11-01", "notes": ""}},
+    "automobile_liability": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "no commercial auto policy on file"}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}},
+    "workers_compensation": {"carried": {"value": true, "status": "VERIFIED", "source": "sample COI", "verified_on": "2026-11-01", "notes": ""}, "per_occurrence": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": "statutory"}},
+    "umbrella": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}},
+    "professional_liability": {"carried": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}},
+    "pollution_liability": {"carried": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}}
+  },
+  "bonding": {
+    "surety": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "no surety relationship yet"},
+    "single_project_limit": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "aggregate_limit": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}
+  },
+  "experience": [
+    {"description": "Interior renovation of two rowhouses (sample)", "industry": "Construction & Property Services", "performed_by": "contracting_entity", "client": "private owner", "year": 2024, "value": 180000, "status": "VERIFIED", "source": "sample signed contract + final invoice", "notes": "fictitious"},
+    {"description": "Office cleaning, 3 nights/week, 12 months (sample)", "industry": "Cleaning & Janitorial", "performed_by": "contracting_entity", "client": "private office", "year": 2025, "value": 36000, "status": "VERIFIED", "source": "sample service agreement", "notes": "fictitious"},
+    {"description": "Pharmacy operations management (owner's other company)", "industry": "Healthcare & Hospital Support", "performed_by": "owner", "client": "", "year": 2020, "value": null, "status": "VERIFIED", "source": "sample", "notes": "owner experience; context only"}
+  ],
+  "capabilities": {
+    "industries": {"value": ["Construction & Property Services", "Cleaning & Janitorial"], "status": "ASSUMED", "source": "", "verified_on": "", "notes": ""},
+    "services": {"value": ["interior renovation", "painting", "flooring", "janitorial"], "status": "ASSUMED", "source": "", "verified_on": "", "notes": ""},
+    "service_area_counties": {"value": ["Montgomery", "Prince George's", "Baltimore City"], "status": "ASSUMED", "source": "", "verified_on": "", "notes": ""},
+    "max_contract_value": {"value": 750000, "status": "ASSUMED", "source": "", "verified_on": "", "notes": ""}
+  },
+  "resources": {
+    "employees_w2": {"value": 3, "status": "VERIFIED", "source": "sample payroll summary", "verified_on": "2026-11-01", "notes": ""},
+    "subcontractors": {"value": ["electrical", "plumbing"], "status": "ASSUMED", "source": "", "verified_on": "", "notes": ""},
+    "equipment": {"value": ["1 cargo van", "floor scrubber"], "status": "ASSUMED", "source": "", "verified_on": "", "notes": ""},
+    "facilities": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": ""}
+  },
+  "financial": {
+    "annual_revenue_range": {"value": "100k-500k", "status": "ASSUMED", "source": "", "verified_on": "", "notes": ""},
+    "working_capital_available": {"value": 60000, "status": "ASSUMED", "source": "", "verified_on": "", "notes": ""},
+    "credit_line": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "statements_available": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}
+  }
+}

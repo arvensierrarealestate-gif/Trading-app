@@ -1,0 +1,42 @@
+{
+  "updated_at": "2026-11-03T00:00:00+00:00",
+  "_notes": [
+    "access_method values: manual_upload | email_notification | rss | public_page | api.",
+    "public_page sources are never fetched automatically until allowed_fetch is true AND you have read the site's terms of use.",
+    "url_verified false means the URL was written from general knowledge and must be confirmed in a browser before relying on it."
+  ],
+  "sources": [
+    {"id": "emma", "name": "eMaryland Marketplace Advantage (eMMA)", "jurisdiction": "State of Maryland", "type": "state", "url": "https://emma.maryland.gov", "url_verified": false,
+     "access_method": "manual_upload", "status": "primary", "allowed_fetch": false,
+     "notes": "Statewide portal used by state agencies, University System of Maryland and many counties. Public solicitation browsing without login; free vendor registration enables email notifications by commodity code. No documented public API."},
+    {"id": "emma_email", "name": "eMMA email notifications", "jurisdiction": "State of Maryland", "type": "state", "url": "https://emma.maryland.gov", "url_verified": false,
+     "access_method": "email_notification", "status": "awaiting_credentials", "allowed_fetch": true,
+     "notes": "Register as a vendor, subscribe to commodity codes for the four industries, then set IMAP_* in .env so the scanner can read the notification emails you receive."},
+    {"id": "baltimore_city", "name": "Baltimore City (CitiBuy)", "jurisdiction": "Baltimore City", "type": "city", "url": "https://www.baltimorecitibuy.org", "url_verified": false,
+     "access_method": "manual_upload", "status": "manual", "allowed_fetch": false, "notes": "City Bureau of Procurement portal."},
+    {"id": "baltimore_county", "name": "Baltimore County Purchasing", "jurisdiction": "Baltimore County", "type": "county", "url": "https://www.baltimorecountymd.gov/departments/budfin/purchasing", "url_verified": false,
+     "access_method": "manual_upload", "status": "manual", "allowed_fetch": false, "notes": ""},
+    {"id": "montgomery_county", "name": "Montgomery County Office of Procurement", "jurisdiction": "Montgomery County", "type": "county", "url": "https://www.montgomerycountymd.gov/PRO/", "url_verified": false,
+     "access_method": "manual_upload", "status": "manual", "allowed_fetch": false, "notes": "Has a Local Small Business Reserve (LSBR) program."},
+    {"id": "prince_georges_county", "name": "Prince George's County Office of Central Services", "jurisdiction": "Prince George's County", "type": "county", "url": "https://www.princegeorgescountymd.gov", "url_verified": false,
+     "access_method": "manual_upload", "status": "manual", "allowed_fetch": false, "notes": "County-based business preference programs may apply."},
+    {"id": "anne_arundel_county", "name": "Anne Arundel County Purchasing", "jurisdiction": "Anne Arundel County", "type": "county", "url": "https://www.aacounty.org", "url_verified": false,
+     "access_method": "manual_upload", "status": "manual", "allowed_fetch": false, "notes": ""},
+    {"id": "howard_county", "name": "Howard County Purchasing", "jurisdiction": "Howard County", "type": "county", "url": "https://www.howardcountymd.gov/purchasing", "url_verified": false,
+     "access_method": "manual_upload", "status": "manual", "allowed_fetch": false, "notes": ""},
+    {"id": "baltimore_city_schools", "name": "Baltimore City Public Schools Procurement", "jurisdiction": "Baltimore City", "type": "school_district", "url": "https://www.baltimorecityschools.org", "url_verified": false,
+     "access_method": "manual_upload", "status": "manual", "allowed_fetch": false, "notes": "Food service, custodial and facilities contracts."},
+    {"id": "mcps", "name": "Montgomery County Public Schools Procurement", "jurisdiction": "Montgomery County", "type": "school_district", "url": "https://www.montgomeryschoolsmd.org", "url_verified": false,
+     "access_method": "manual_upload", "status": "manual", "allowed_fetch": false, "notes": ""},
+    {"id": "pgcps", "name": "Prince George's County Public Schools Purchasing", "jurisdiction": "Prince George's County", "type": "school_district", "url": "https://www.pgcps.org", "url_verified": false,
+     "access_method": "manual_upload", "status": "manual", "allowed_fetch": false, "notes": ""},
+    {"id": "usm", "name": "University System of Maryland institutions", "jurisdiction": "State of Maryland", "type": "university", "url": "https://emma.maryland.gov", "url_verified": false,
+     "access_method": "manual_upload", "status": "manual", "allowed_fetch": false, "notes": "UMD, UMB, UMBC, Towson and others post on eMMA; some also maintain their own procurement pages."},
+    {"id": "umms", "name": "University of Maryland Medical System supplier portal", "jurisdiction": "State of Maryland", "type": "public_hospital", "url": "https://www.umms.org", "url_verified": false,
+     "access_method": "manual_upload", "status": "manual", "allowed_fetch": false, "notes": "Private non-profit system with public ties; supplier registration rather than public bids. Confirm process before relying on it."},
+    {"id": "md_dgs", "name": "Maryland Department of General Services", "jurisdiction": "State of Maryland", "type": "state", "url": "https://dgs.maryland.gov", "url_verified": false,
+     "access_method": "manual_upload", "status": "manual", "allowed_fetch": false, "notes": "Facilities maintenance and small construction for state buildings; solicitations appear on eMMA."},
+    {"id": "example_rss", "name": "Example RSS feed (disabled)", "jurisdiction": "n/a", "type": "test", "url": "", "url_verified": false,
+     "access_method": "rss", "status": "disabled", "feed_url": "", "allowed_fetch": true, "notes": "Template entry: set feed_url to a procurement RSS/Atom feed a site publishes for this purpose."}
+  ]
+}
