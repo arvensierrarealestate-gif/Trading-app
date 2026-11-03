@@ -16,7 +16,7 @@ def render():
     if parts:
         df = pd.DataFrame([{"ID": p["id"], "Name": p["name"], "Role": p["role"], "Industry": p["industry"], "Contact": p["contact"],
                             "Opportunity #": p["opportunity_id"], "Notes": p["notes"], "Link": p["source_url"], "Added": p["created_at"][:10]} for p in parts])
-        st.dataframe(df, use_container_width=True, hide_index=True)
+        st.dataframe(df, width="stretch", hide_index=True)
         rm = st.selectbox("Remove a partner", [None] + [p["id"] for p in parts], format_func=lambda i: "—" if i is None else f"#{i}")
         if rm and st.button("Remove"):
             db.delete_partner(conn, rm)

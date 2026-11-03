@@ -18,7 +18,7 @@ def render():
         state, reason = sources.source_readiness(s)
         rows.append({"Source": s["name"], "Jurisdiction": s["jurisdiction"], "Type": s["type"], "Access method": s["access_method"],
                      "Readiness": state, "Why": reason, "URL": s.get("url", ""), "URL verified": s.get("url_verified", False), "Notes": s.get("notes", "")})
-    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
     st.caption("URL verified = false means the address came from general knowledge; open it in a browser once and flip the flag in source_registry.json.")
 
     st.subheader("Run a scan now")
@@ -36,6 +36,6 @@ def render():
     st.subheader("Scan history")
     hist = db.list_scans(conn)
     if hist:
-        st.dataframe(pd.DataFrame(hist), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(hist), width="stretch", hide_index=True)
     else:
         st.caption("No scans yet.")

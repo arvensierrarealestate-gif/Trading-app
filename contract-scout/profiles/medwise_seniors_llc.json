@@ -1,0 +1,58 @@
+{
+  "_notice": "Built from documents in the owner's Google Drive on 2026-11-03. No EIN or account numbers stored.",
+  "profile_version": "medwise-2026-11-03",
+  "entity": {
+    "legal_name": {"value": "Medwise Seniors LLC", "status": "VERIFIED", "source": "Delaware Certificate of Formation filed 2026-08-25 (file no. 10746546)", "verified_on": "2026-11-03", "notes": ""},
+    "entity_type": {"value": "Limited Liability Company (Delaware)", "status": "VERIFIED", "source": "Delaware Certificate of Formation", "verified_on": "2026-11-03", "notes": "Form 2553 S-corporation election signed 2026-08-28"},
+    "state_of_formation": {"value": "Delaware", "status": "VERIFIED", "source": "Delaware Certificate of Formation", "verified_on": "2026-11-03", "notes": "NOT a Maryland entity. Must register with Maryland SDAT as a foreign LLC before doing business or bidding in Maryland."},
+    "formation_date": {"value": "2026-08-25", "status": "VERIFIED", "source": "Delaware Certificate of Formation", "verified_on": "2026-11-03", "notes": "About two months old"},
+    "sdat_department_id": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "No Maryland foreign registration found"},
+    "good_standing": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Delaware good standing presumed at formation; Maryland registration absent"},
+    "principal_address": {"value": "Registered agent: Northwest Registered Agent, Dover DE", "status": "VERIFIED", "source": "Delaware Certificate of Formation; operating agreement", "verified_on": "2026-11-03", "notes": "No Maryland business address on file"},
+    "naics_codes": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": "Name suggests senior/healthcare services; no code recorded"},
+    "owner_name": {"value": "Tiffany Smith (100% member per operating agreement)", "status": "VERIFIED", "source": "Single-member operating agreement (Northwest Registered Agent template)", "verified_on": "2026-11-03", "notes": "Agreement is an unsigned/undated template with the member name filled in"}
+  },
+  "registrations": {
+    "emma_vendor": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "sam_uei": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "sbr_certified": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "mbe_certified": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "dbe_certified": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "local_business_licenses": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": ""}
+  },
+  "licenses": [],
+  "insurance": {
+    "general_liability": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "No policy found"}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "aggregate": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "carrier": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "expires": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}},
+    "automobile_liability": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}},
+    "workers_compensation": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}},
+    "umbrella": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}},
+    "professional_liability": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Likely required for healthcare support services"}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}},
+    "pollution_liability": {"carried": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}}
+  },
+  "bonding": {
+    "surety": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "single_project_limit": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "aggregate_limit": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}
+  },
+  "experience": [
+    {"description": "Pharmacy and healthcare operations (owner's other companies)", "industry": "Healthcare & Hospital Support", "performed_by": "owner", "client": "", "year": 2015, "value": null, "status": "ASSUMED", "source": "Van Ness Pharmacy LLC valuation report 2022", "notes": "Owner experience; context only. The entity itself has no track record."}
+  ],
+  "capabilities": {
+    "industries": {"value": ["Healthcare & Hospital Support"], "status": "ASSUMED", "source": "", "verified_on": "", "notes": "Inferred from the name; owner to confirm"},
+    "services": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "service_area_counties": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "max_contract_value": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}
+  },
+  "resources": {
+    "employees_w2": {"value": 0, "status": "ASSUMED", "source": "", "verified_on": "", "notes": "Newly formed"},
+    "subcontractors": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "equipment": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "facilities": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": ""}
+  },
+  "financial": {
+    "annual_revenue_range": {"value": "0 (no operating history)", "status": "ASSUMED", "source": "", "verified_on": "", "notes": ""},
+    "working_capital_available": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "credit_line": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "statements_available": {"value": false, "status": "VERIFIED", "source": "Formed 2026-08-25; no fiscal year completed", "verified_on": "2026-11-03", "notes": ""}
+  }
+}

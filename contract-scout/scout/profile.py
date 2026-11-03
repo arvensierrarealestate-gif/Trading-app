@@ -16,11 +16,71 @@ REQUIRED_SECTIONS = ("entity", "registrations", "licenses", "insurance", "bondin
 FORBIDDEN_KEYS = ("ein", "tax_id", "ssn", "password", "api_key", "account_number", "routing_number")
 
 
+def list_profiles() -> list[dict]:
+    """All entity profiles available: data/profiles/*.json (yours) first, then profiles/*.json shipped with the app.
+
+    Returns [{id, name, path, origin}] sorted so user files win over shipped ones with the same id."""
+    found: dict[str, dict] = {}
+    for d, origin in ((config.PROFILES_DIR, "repo"), (config.USER_PROFILES_DIR, "user")):
+        if not Path(d).exists():
+            continue
+        for p in sorted(Path(d).glob("*.json")):
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+            except (OSError, json.JSONDecodeError):
+                continue
+            name = (data.get("entity", {}).get("legal_name", {}) or {}).get("value") or p.stem
+            found[p.stem] = {"id": p.stem, "name": name, "path": str(p), "origin": origin, "version": data.get("profile_version", "")}
+    if Path(config.PROFILE_PATH).exists():
+        found["company_profile"] = {"id": "company_profile", "name": "data/company_profile.json", "path": str(config.PROFILE_PATH), "origin": "user", "version": ""}
+    return sorted(found.values(), key=lambda x: (x["origin"] != "user", x["name"]))
+
+
+def get_active_profile_id() -> Optional[str]:
+    try:
+        return Path(config.ACTIVE_PROFILE_FILE).read_text(encoding="utf-8").strip() or None
+    except OSError:
+        return None
+
+
+def set_active_profile_id(profile_id: str) -> None:
+    Path(config.ACTIVE_PROFILE_FILE).parent.mkdir(parents=True, exist_ok=True)
+    Path(config.ACTIVE_PROFILE_FILE).write_text(profile_id, encoding="utf-8")
+
+
+def load_profile_by_id(profile_id: str) -> dict:
+    for p in list_profiles():
+        if p["id"] == profile_id:
+            with open(p["path"], "r", encoding="utf-8") as f:
+                return json.load(f)
+    raise FileNotFoundError(f"No profile with id '{profile_id}'")
+
+
 def load_profile(path: Optional[Path] = None) -> tuple[dict, str]:
-    """Return (profile, origin). origin is 'user', 'sample' or 'template'."""
-    candidates = [(path or config.PROFILE_PATH, "user"), (config.SAMPLE_PROFILE_PATH, "sample"), (config.TEMPLATE_PROFILE_PATH, "template")]
-    for p, origin in candidates:
-        if p and Path(p).exists():
+    """Return (profile, origin). origin is 'user', 'entity:<id>', 'sample' or 'template'.
+
+    Order: explicit path; the active entity profile (data/active_profile.txt); data/company_profile.json;
+    the first shipped entity profile; the sample; the blank template."""
+    if path and Path(path).exists():
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f), "user"
+    active = get_active_profile_id()
+    profiles = list_profiles()
+    if active:
+        for p in profiles:
+            if p["id"] == active:
+                with open(p["path"], "r", encoding="utf-8") as f:
+                    return json.load(f), f"entity:{p['id']}"
+    if Path(config.PROFILE_PATH).exists():
+        with open(config.PROFILE_PATH, "r", encoding="utf-8") as f:
+            return json.load(f), "user"
+    real = [p for p in profiles if p["id"] != "company_profile"]
+    if real:
+        with open(real[0]["path"], "r", encoding="utf-8") as f:
+            return json.load(f), f"entity:{real[0]['id']}"
+    for p, origin in ((config.SAMPLE_PROFILE_PATH, "sample"), (config.TEMPLATE_PROFILE_PATH, "template")):
+        if Path(p).exists():
             with open(p, "r", encoding="utf-8") as f:
                 return json.load(f), origin
     raise FileNotFoundError("No company profile found. Copy company_profile_template.json to data/company_profile.json.")

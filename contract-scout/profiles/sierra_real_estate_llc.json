@@ -1,0 +1,422 @@
+{
+  "_notice": "Built from documents in the owner's Google Drive and Gmail on 2026-11-03. No EIN, tax, bank or account numbers are stored here. Facts marked VERIFIED cite the document seen.",
+  "profile_version": "sre-2026-11-03",
+  "entity": {
+    "legal_name": {
+      "value": "Sierra Real Estate LLC",
+      "status": "VERIFIED",
+      "source": "SDAT Annual Report 2026 (SRE_TaxFiling_July2026.pdf, email 2026-07-16)",
+      "verified_on": "2026-11-03",
+      "notes": ""
+    },
+    "entity_type": {
+      "value": "Domestic Limited Liability Company",
+      "status": "VERIFIED",
+      "source": "SDAT Annual Report 2026",
+      "verified_on": "2026-11-03",
+      "notes": "Taxed as S corporation (Form 1120-S 2025); S election effective 2024-01-01"
+    },
+    "state_of_formation": {
+      "value": "Maryland",
+      "status": "VERIFIED",
+      "source": "SDAT Annual Report 2026",
+      "verified_on": "2026-11-03",
+      "notes": ""
+    },
+    "formation_date": {
+      "value": "2023-09-08",
+      "status": "VERIFIED",
+      "source": "SDAT Annual Report 2026, 'Date of Incorporation/Formation'",
+      "verified_on": "2026-11-03",
+      "notes": "Operating agreement is dated 2024-01-07"
+    },
+    "sdat_department_id": {
+      "value": "W24358616",
+      "status": "VERIFIED",
+      "source": "SDAT Annual Report 2026",
+      "verified_on": "2026-11-03",
+      "notes": "Public SDAT ID"
+    },
+    "good_standing": {
+      "value": null,
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": "2026 Annual Report was filed 2026-07-16, which is a good sign, but a Certificate of Status from Maryland Business Express has not been pulled. Do this before any bid."
+    },
+    "principal_address": {
+      "value": "Laurel, MD 20707 (Prince George's County)",
+      "status": "VERIFIED",
+      "source": "SDAT Annual Report 2026; COI 2025-06-20",
+      "verified_on": "2026-11-03",
+      "notes": ""
+    },
+    "naics_codes": {
+      "value": [
+        "531390"
+      ],
+      "status": "VERIFIED",
+      "source": "Form 1120-S 2025, business activity code",
+      "verified_on": "2026-11-03",
+      "notes": "531390 = other activities related to real estate. Construction/janitorial NAICS codes (236118, 238xxx, 561720) would need to be added on eMMA/SAM."
+    },
+    "owner_name": {
+      "value": "Tiffany Mia Smith (100% member per operating agreement)",
+      "status": "VERIFIED",
+      "source": "Operating Agreement sierra Real estate LLC.docx dated 2024-01-07",
+      "verified_on": "2026-11-03",
+      "notes": "IMPORTANT: the person signing bids must be an authorized signer of this LLC. Confirm who is authorized and whether the member list is current."
+    }
+  },
+  "registrations": {
+    "emma_vendor": {
+      "value": null,
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": "No eMMA registration email found in Gmail. Register at emma.maryland.gov (free)."
+    },
+    "sam_uei": {
+      "value": null,
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": "No SAM.gov record found in email."
+    },
+    "sbr_certified": {
+      "value": null,
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": "Likely eligible (0 employees reported, small revenue). Self-certify on eMMA."
+    },
+    "mbe_certified": {
+      "value": null,
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": "MDOT MBE certification not found. Ownership facts would decide eligibility."
+    },
+    "dbe_certified": {
+      "value": null,
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": ""
+    },
+    "local_business_licenses": {
+      "value": [],
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": ""
+    }
+  },
+  "licenses": [
+    {
+      "type": "MHIC",
+      "number_on_file": false,
+      "expires": "",
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": "The MHIC license PDF in Gmail (2026-07-06) is issued to TOTAL TRANSFORMATION SERVICES LLC, Bowie MD, license 05-135786, expires 2028-05-24. It is NOT in Sierra Real Estate LLC's name and cannot be used by this entity to bid. Sierra Real Estate LLC would need its own MHIC license or must subcontract home-improvement work to a licensed firm."
+    }
+  ],
+  "insurance": {
+    "general_liability": {
+      "carried": {
+        "value": true,
+        "status": "VERIFIED",
+        "source": "ACORD 25 COI dated 2025-06-20, Gray Insurance Group, policy with Diamond State Ins Co (Liberty Mutual)",
+        "verified_on": "2026-11-03",
+        "notes": "Policy period 2025-06-23 to 2026-06-23. EXPIRED unless renewed; renewal certificate not found. Ask Gray Insurance Group (commercial@grayinsurancegroup.com) for a current COI."
+      },
+      "per_occurrence": {
+        "value": 1000000,
+        "status": "VERIFIED",
+        "source": "ACORD 25 COI dated 2025-06-20",
+        "verified_on": "2026-11-03",
+        "notes": "Limit shown on the 2025 certificate; confirm on renewal"
+      },
+      "aggregate": {
+        "value": 1000000,
+        "status": "VERIFIED",
+        "source": "ACORD 25 COI dated 2025-06-20",
+        "verified_on": "2026-11-03",
+        "notes": "Certificate shows two 1,000,000 figures; aggregate assumed to be the second. Confirm with agent."
+      },
+      "carrier": {
+        "value": "Diamond State Insurance Co (Liberty Mutual group)",
+        "status": "VERIFIED",
+        "source": "ACORD 25 COI dated 2025-06-20",
+        "verified_on": "2026-11-03",
+        "notes": ""
+      },
+      "expires": {
+        "value": "2026-06-23",
+        "status": "VERIFIED",
+        "source": "ACORD 25 COI dated 2025-06-20",
+        "verified_on": "2026-11-03",
+        "notes": "Past date; renewal status unknown"
+      }
+    },
+    "automobile_liability": {
+      "carried": {
+        "value": null,
+        "status": "MISSING",
+        "source": "",
+        "verified_on": "",
+        "notes": "Not on the 2025 COI"
+      },
+      "per_occurrence": {
+        "value": null,
+        "status": "MISSING",
+        "source": "",
+        "verified_on": "",
+        "notes": ""
+      }
+    },
+    "workers_compensation": {
+      "carried": {
+        "value": null,
+        "status": "MISSING",
+        "source": "",
+        "verified_on": "",
+        "notes": "Not on the 2025 COI. SDAT report lists 0 workers; required once employees are hired."
+      },
+      "per_occurrence": {
+        "value": null,
+        "status": "NOT_APPLICABLE",
+        "source": "",
+        "verified_on": "",
+        "notes": "statutory"
+      }
+    },
+    "umbrella": {
+      "carried": {
+        "value": null,
+        "status": "MISSING",
+        "source": "",
+        "verified_on": "",
+        "notes": ""
+      },
+      "per_occurrence": {
+        "value": null,
+        "status": "MISSING",
+        "source": "",
+        "verified_on": "",
+        "notes": ""
+      }
+    },
+    "professional_liability": {
+      "carried": {
+        "value": null,
+        "status": "NOT_APPLICABLE",
+        "source": "",
+        "verified_on": "",
+        "notes": ""
+      },
+      "per_occurrence": {
+        "value": null,
+        "status": "NOT_APPLICABLE",
+        "source": "",
+        "verified_on": "",
+        "notes": ""
+      }
+    },
+    "pollution_liability": {
+      "carried": {
+        "value": null,
+        "status": "NOT_APPLICABLE",
+        "source": "",
+        "verified_on": "",
+        "notes": ""
+      },
+      "per_occurrence": {
+        "value": null,
+        "status": "NOT_APPLICABLE",
+        "source": "",
+        "verified_on": "",
+        "notes": ""
+      }
+    }
+  },
+  "bonding": {
+    "surety": {
+      "value": null,
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": "No surety relationship found. Gray Insurance Group may be able to refer one."
+    },
+    "single_project_limit": {
+      "value": null,
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": ""
+    },
+    "aggregate_limit": {
+      "value": null,
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": ""
+    }
+  },
+  "experience": [
+    {
+      "description": "Renovation of 4400 Bella Ave, Baltimore MD 21207 (entity-owned property; builder's risk policy, total insured value $236,000; financed by Anchor Loans)",
+      "industry": "Construction & Property Services",
+      "performed_by": "contracting_entity_as_owner",
+      "client": "own property, not a third-party contract",
+      "year": 2025,
+      "value": 236000,
+      "status": "ASSUMED",
+      "source": "Builder's risk line on ACORD 25 COI dated 2025-06-20",
+      "notes": "Shows renovation activity but NOT a contract performed for a client. Who performed the work (own crew vs hired contractor) is unverified, so it does not count toward a contractor-experience requirement until documented."
+    },
+    {
+      "description": "Total renovation of 313-315 N Howard St, Baltimore (affiliate: 313-315 N Howard LLC)",
+      "industry": "Construction & Property Services",
+      "performed_by": "affiliate",
+      "client": "",
+      "year": 2026,
+      "value": null,
+      "status": "ASSUMED",
+      "source": "313-315 N Howard LLC Contractor Proposal.docx (draft scope of work, 2026-09)",
+      "notes": "Affiliate project, in planning; context only"
+    },
+    {
+      "description": "Development of 1212-1218 4th St NW, Washington DC (affiliate: 1212-1216 4th Street LLC)",
+      "industry": "Construction & Property Services",
+      "performed_by": "affiliate",
+      "client": "",
+      "year": 2026,
+      "value": null,
+      "status": "ASSUMED",
+      "source": "Pre-construction services agreement with Harbor Builders (2020); insurance package 2026-10",
+      "notes": "Affiliate project; context only"
+    },
+    {
+      "description": "Pharmacy and healthcare operations (owner's other companies: Columbia Heights Pharmacy / Sierra Pharm Corp / Van Ness Pharmacy LLC)",
+      "industry": "Healthcare & Hospital Support",
+      "performed_by": "owner",
+      "client": "",
+      "year": 2015,
+      "value": null,
+      "status": "ASSUMED",
+      "source": "Van Ness Pharmacy LLC valuation report 2022; Sierra International Inc BOP policy 2015",
+      "notes": "Owner/affiliate experience; context only. Does not qualify Sierra Real Estate LLC."
+    }
+  ],
+  "capabilities": {
+    "industries": {
+      "value": [
+        "Construction & Property Services",
+        "Cleaning & Janitorial"
+      ],
+      "status": "ASSUMED",
+      "source": "",
+      "verified_on": "",
+      "notes": "Owner's stated interest; entity's recorded activity is real estate"
+    },
+    "services": {
+      "value": [
+        "residential rehabilitation",
+        "property maintenance",
+        "painting",
+        "flooring",
+        "janitorial"
+      ],
+      "status": "ASSUMED",
+      "source": "",
+      "verified_on": "",
+      "notes": ""
+    },
+    "service_area_counties": {
+      "value": [
+        "Prince George's",
+        "Montgomery",
+        "Howard",
+        "Anne Arundel",
+        "Baltimore City",
+        "Baltimore County"
+      ],
+      "status": "ASSUMED",
+      "source": "",
+      "verified_on": "",
+      "notes": ""
+    },
+    "max_contract_value": {
+      "value": 250000,
+      "status": "ASSUMED",
+      "source": "",
+      "verified_on": "",
+      "notes": "Placeholder given 2025 revenue under $100k and no bonding; edit"
+    }
+  },
+  "resources": {
+    "employees_w2": {
+      "value": 0,
+      "status": "VERIFIED",
+      "source": "SDAT Annual Report 2026, 'Workers affiliated with business: 0'",
+      "verified_on": "2026-11-03",
+      "notes": "No employees reported for 2026"
+    },
+    "subcontractors": {
+      "value": [
+        "Total Transformation Services LLC (MHIC 05-135786, exp. 2028-05-24) - hired contractor per invoices 2023-2026"
+      ],
+      "status": "ASSUMED",
+      "source": "Invoices and scheduling emails from Total Transformation Services, 2023-2026; MHIC license PDF emailed 2026-07-06",
+      "verified_on": "",
+      "notes": "A hired contractor, not an affiliate. Candidate subcontractor for work that needs an MHIC license. No written subcontract agreement found."
+    },
+    "equipment": {
+      "value": [],
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": ""
+    },
+    "facilities": {
+      "value": [],
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": ""
+    }
+  },
+  "financial": {
+    "annual_revenue_range": {
+      "value": "50k-100k",
+      "status": "VERIFIED",
+      "source": "2025 Profit & Loss prepared by Urban Tax & Accounting Services LLC",
+      "verified_on": "2026-11-03",
+      "notes": "Range only; exact figures intentionally not stored"
+    },
+    "working_capital_available": {
+      "value": null,
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": "Owner to state"
+    },
+    "credit_line": {
+      "value": null,
+      "status": "MISSING",
+      "source": "",
+      "verified_on": "",
+      "notes": ""
+    },
+    "statements_available": {
+      "value": true,
+      "status": "VERIFIED",
+      "source": "2025 P&L and balance sheet prepared by CPA firm (Urban Tax & Accounting Services LLC)",
+      "verified_on": "2026-11-03",
+      "notes": "Compiled, not audited"
+    }
+  }
+}

@@ -75,7 +75,7 @@ def render():
                 st.success("Saved.")
                 st.rerun()
 
-    tabs = st.tabs(["Requirements (traceable)", "Qualification checks", "Cost & margin", "Documents & changes", "Partners"])
+    tabs = st.tabs(["Requirements (traceable)", "Qualification checks", "Compare entities", "Cost & margin", "Documents & changes", "Partners"])
 
     with tabs[0]:
         reqs = db.list_requirements(conn, oid)
@@ -83,7 +83,7 @@ def render():
             df = pd.DataFrame([{"Category": r["category"], "Mandatory": r["mandatory"], "Requirement": r["text"], "Value": r["value"],
                                 "Document": r["document"], "Page/Section": r["page_ref"], "Quote": r["quote"], "Confidence": r["confidence"],
                                 "Status": r["info_status"], "Extracted by": r["method"]} for r in reqs])
-            st.dataframe(df, use_container_width=True, hide_index=True)
+            st.dataframe(df, width="stretch", hide_index=True)
             st.download_button("Export requirements CSV", export.requirements_csv(conn, oid), f"requirements_{oid}.csv", "text/csv")
         else:
             st.info("No requirements extracted yet.")
@@ -112,6 +112,18 @@ def render():
             st.info("Not evaluated yet.")
 
     with tabs[2]:
+        st.caption("The same solicitation scored against every entity profile on file. Nothing is saved; use the sidebar to switch the active entity.")
+        st.info("Read 'Unknown' as homework, not a pass. An entity with no verified facts can never do better than Conditional, "
+                "while a real entity can be Poor because a verified fact (an insurance limit, a formation date) falls short of the rule.", icon="ℹ️")
+        rows = sorted(pipeline.compare_entities(conn, oid), key=lambda r: (r["not_met"], -r["met"], r["unknown"]))
+        if rows:
+            st.dataframe(pd.DataFrame([{"Entity": r["entity"], "Qualification": f"{BADGE.get(r['match_class'])} {r['match_class']}", "Score": r["score"],
+                                        "Met": r["met"], "Unknown": r["unknown"], "Not met": r["not_met"], "Legally eligible": r["legally_eligible"],
+                                        "Partner path": r["partner_feasible"], "Top gap": r["top_gap"]} for r in rows]), width="stretch", hide_index=True)
+        else:
+            st.info("No entity profiles found in profiles/ or data/profiles/.")
+
+    with tabs[3]:
         est = db.latest_cost_estimate(conn, oid)
         assumptions = est["assumptions"] if est else finance.default_assumptions(pipeline.contract_value_of(opp), opp["value_status"])
         st.caption("Every number below is an editable assumption (ASSUMED) unless marked VERIFIED. Nothing is inferred from the solicitation except a published value.")
@@ -144,15 +156,15 @@ def render():
         else:
             st.info("No estimate saved yet. Enter assumptions above.")
 
-    with tabs[3]:
+    with tabs[4]:
         docs = db.list_documents(conn, oid)
         if docs:
             st.dataframe(pd.DataFrame([{"File": d["filename"], "Type": d["doc_type"], "Pages": d["page_count"], "Retrieved": d["retrieved_at"][:16],
-                                        "Extraction": d["extraction_method"], "SHA-256": d["sha256"][:16], "URL": d["source_url"]} for d in docs]), use_container_width=True, hide_index=True)
+                                        "Extraction": d["extraction_method"], "SHA-256": d["sha256"][:16], "URL": d["source_url"]} for d in docs]), width="stretch", hide_index=True)
         ch = db.list_change_events(conn, oid)
         if ch:
             st.subheader("Detected changes / amendments")
-            st.dataframe(pd.DataFrame([{"When": c["detected_at"][:16], "Field": c["field"], "Old": c["old_value"], "New": c["new_value"], "Acknowledged": bool(c["acknowledged"])} for c in ch]), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame([{"When": c["detected_at"][:16], "Field": c["field"], "Old": c["old_value"], "New": c["new_value"], "Acknowledged": bool(c["acknowledged"])} for c in ch]), width="stretch", hide_index=True)
             if st.button("Acknowledge all changes"):
                 db.acknowledge_changes(conn, oid)
                 conn.commit()
@@ -160,7 +172,7 @@ def render():
         else:
             st.caption("No amendments detected for this opportunity.")
 
-    with tabs[4]:
+    with tabs[5]:
         ev = db.latest_evaluation(conn, oid)
         gaps = [c for c in (ev["checks"] if ev else []) if c.get("partner_path") and c["result"] in ("NOT_MET", "UNKNOWN")]
         if gaps:
@@ -171,7 +183,7 @@ def render():
                        "SDAT good standing, and often SBR/MBE paperwork if the prime counts you toward a goal.")
         parts = db.list_partners(conn, oid)
         if parts:
-            st.dataframe(pd.DataFrame([{"Name": p["name"], "Role": p["role"], "Industry": p["industry"], "Contact": p["contact"], "Notes": p["notes"], "Link": p["source_url"]} for p in parts]), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame([{"Name": p["name"], "Role": p["role"], "Industry": p["industry"], "Contact": p["contact"], "Notes": p["notes"], "Link": p["source_url"]} for p in parts]), width="stretch", hide_index=True)
         with st.form("add_partner"):
             st.write("Add a partner lead for this opportunity")
             n = st.text_input("Name")

@@ -97,3 +97,12 @@ def test_every_check_is_traceable(profile):
     res = eligibility.evaluate(FULL, profile, industry="Cleaning & Janitorial", contract_value=100000)
     for c in res["checks"]:
         assert c["explanation"] and c["category"] and c["result"] in ("MET", "NOT_MET", "UNKNOWN", "NOT_APPLICABLE")
+
+
+def test_foreign_entity_without_sdat_registration_is_flagged(profile):
+    p = copy.deepcopy(profile)
+    p["entity"]["state_of_formation"]["value"] = "Delaware"
+    p["entity"]["sdat_department_id"]["status"] = "MISSING"
+    res = eligibility.evaluate(FULL, p, industry="Cleaning & Janitorial", contract_value=100000)
+    assert any("foreign LLC" in c["requirement"] for c in res["checks"])
+    assert res["match_class"] == CONDITIONAL

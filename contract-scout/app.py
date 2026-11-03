@@ -7,6 +7,7 @@ from __future__ import annotations
 import streamlit as st
 
 from scout import config
+from scout.ui.common import entity_picker
 from scout.ui import dashboard, upload, detail, profile_page, sources_page, partners_page, alerts_page, audit_page
 
 st.set_page_config(page_title="Maryland Contract Scout", page_icon="📋", layout="wide")
@@ -26,4 +27,5 @@ st.session_state.pages = pages
 nav = st.navigation(list(pages.values()))
 with st.sidebar:
     st.markdown("**Maryland Contract Scout** · private · never submits bids")
+entity_picker()
 nav.run()

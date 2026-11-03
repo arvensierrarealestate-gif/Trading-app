@@ -49,9 +49,21 @@ Your browser opens at <http://localhost:8501>. If it does not, paste that addres
 
 The seed script creates two **fictitious** sample solicitations (a janitorial IFB and a school roof replacement) so every page has data. Delete them from the detail page, or hide them with the "Hide sample records" filter, once you upload real documents.
 
+## Entity profiles (which company is bidding)
+
+Three profiles ship in `profiles/`, built from the owner's documents on 2026-11-03:
+
+| File | Entity | What the documents show |
+|---|---|---|
+| `sierra_real_estate_llc.json` | Sierra Real Estate LLC (Maryland, formed 2023-09-08, SDAT W24358616) | General liability $1M on a 2025 certificate (renewal not found), 0 employees, 2025 revenue in the 50k to 100k range, no eMMA/SAM/SBR, no bonding. The MHIC license on file belongs to a hired contractor, not this entity. |
+| `medwise_seniors_llc.json` | Medwise Seniors LLC (Delaware, formed 2026-08-25) | No Maryland registration, insurance, licenses or history. |
+| `new_maryland_entity.json` | Hypothetical new Maryland LLC | Everything MISSING, to show what a fresh entity would need. |
+
+Pick the bidding entity in the sidebar. The **Compare entities** tab on each opportunity scores the same solicitation against all three. To edit a profile without touching the shipped file, save it from the profile page; the copy lands in `data/profiles/` and overrides the shipped one.
+
 ## Using it with real Maryland solicitations
 
-1. Copy `company_profile_template.json` to `data/company_profile.json` and fill it in for the one legal entity that will bid. Mark a fact VERIFIED only when you hold the document. The profile page validates and saves it.
+1. Review the active entity profile on the **Company profile** page. Mark a fact VERIFIED only when you hold the document. Fields that are MISSING (eMMA registration, good standing certificate, current insurance certificate, bonding) are exactly what keeps real opportunities at Conditional.
 2. Browse eMMA (<https://emma.maryland.gov>) or a county portal, download the solicitation PDF and attachments, and drop them on the **Upload** page. Amendments go to the same page; the app matches them to the existing record and logs what changed.
 3. Open the **Opportunity detail** page: review requirements with page references, the qualification checks with reasons, and enter cost assumptions.
 4. Set the bid status as you work (New → Under Review → Preparing Bid → Submitted → Awarded/Lost/Rejected).

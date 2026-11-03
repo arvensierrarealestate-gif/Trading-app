@@ -5,16 +5,19 @@ import json
 import streamlit as st
 
 from .. import config
-from ..profile import load_profile, save_profile, validate_profile, completeness, missing_facts
+from ..profile import load_profile, save_profile, validate_profile, completeness, missing_facts, list_profiles
 from .common import get_conn
 
 
 def render():
     st.title("Company Profile & Verified Qualifications")
     profile, origin = load_profile()
-    st.write(f"Loaded from: **{origin}** ({config.PROFILE_PATH if origin == 'user' else ('examples/company_profile.sample.json' if origin == 'sample' else 'company_profile_template.json')})")
-    if origin != "user":
-        st.warning("This is not your company. Save your own profile below (it is written to data/company_profile.json, which is git-ignored).")
+    st.write(f"Active profile: **{origin}**. Switch entities in the sidebar.")
+    allp = [p for p in list_profiles() if p["id"] != "company_profile"]
+    if allp:
+        st.dataframe([{"Entity": p["name"], "File": p["path"], "Source": "your copy (data/profiles)" if p["origin"] == "user" else "shipped with app (profiles/)", "Version": p["version"]} for p in allp], width="stretch", hide_index=True)
+    if origin in ("sample", "template"):
+        st.warning("This is not your company. Put an entity profile in profiles/ or data/profiles/.")
     comp = completeness(profile)
     c = st.columns(5)
     c[0].metric("Verified facts", comp["VERIFIED"])
@@ -55,11 +58,13 @@ def render():
             st.write(probs or ["OK: no problems found."])
         except json.JSONDecodeError as exc:
             st.error(f"Invalid JSON: {exc}")
-    if col2.button("Save as my profile", type="primary"):
+    if col2.button("Save a copy to data/profiles (overrides the shipped file)", type="primary"):
         try:
             data = json.loads(txt)
             data.pop("_notice", None)
-            path = save_profile(data)
+            pid = origin.split(":", 1)[1] if origin.startswith("entity:") else "company_profile"
+            target = config.USER_PROFILES_DIR / f"{pid}.json" if pid != "company_profile" else config.PROFILE_PATH
+            path = save_profile(data, target)
             conn = get_conn()
             from .. import db
             db.log(conn, "save_profile", "profile", str(path), {"version": data.get("profile_version")}, actor="user")

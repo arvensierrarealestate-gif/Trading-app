@@ -84,3 +84,54 @@ def test_csv_export(conn):
     assert "solicitation_number" in csv.splitlines()[0] and ",Z," in csv
     db.replace_requirements(conn, oid, None, [{"category": "insurance", "text": "GL", "page_ref": "p. 2"}])
     assert "p. 2" in export.requirements_csv(conn, oid)
+
+
+def test_shipped_entity_profiles_are_valid_and_free_of_secrets():
+    import re
+    from pathlib import Path
+    files = sorted((prof.config.PROFILES_DIR).glob("*.json"))
+    assert len(files) >= 3
+    for f in files:
+        data = json.load(open(f, encoding="utf-8"))
+        errs = [x for x in prof.validate_profile(data) if x.startswith("ERROR")]
+        assert not errs, (f.name, errs)
+        raw = f.read_text(encoding="utf-8")
+        assert not re.search(r"\b\d{2}-\d{7}\b", raw), f"{f.name} looks like it contains an EIN"
+        assert not re.search(r"\b\d{3}-\d{2}-\d{4}\b", raw), f"{f.name} looks like it contains an SSN"
+
+
+def test_list_profiles_and_active_switch(tmp_path, monkeypatch):
+    monkeypatch.setattr(prof.config, "ACTIVE_PROFILE_FILE", tmp_path / "active.txt")
+    monkeypatch.setattr(prof.config, "USER_PROFILES_DIR", tmp_path / "profiles")
+    ids = [p["id"] for p in prof.list_profiles()]
+    assert "sierra_real_estate_llc" in ids and "medwise_seniors_llc" in ids and "new_maryland_entity" in ids
+    prof.set_active_profile_id("medwise_seniors_llc")
+    p, origin = prof.load_profile()
+    assert origin == "entity:medwise_seniors_llc" and p["entity"]["state_of_formation"]["value"] == "Delaware"
+    # user copy overrides shipped file with the same id
+    (tmp_path / "profiles").mkdir()
+    override = dict(p, profile_version="user-override")
+    json.dump(override, open(tmp_path / "profiles" / "medwise_seniors_llc.json", "w"))
+    p2, origin2 = prof.load_profile()
+    assert p2["profile_version"] == "user-override" and origin2 == "entity:medwise_seniors_llc"
+
+
+def test_mhic_license_is_not_credited_to_sierra():
+    from scout import eligibility
+    p = prof.load_profile_by_id("sierra_real_estate_llc")
+    out = eligibility.check_license({"category": "license", "text": "Bidders must hold a current MHIC license", "mandatory": True, "page_ref": "p. 1", "document": "d"}, p)
+    assert out.result == "UNKNOWN" and out.profile_fact_status == "MISSING"
+
+
+def test_compare_entities(conn):
+    from scout import pipeline
+    oid = db.insert_opportunity(conn, "CMP|A", solicitation_number="CMP", title="Janitorial", agency="A", industry="Cleaning & Janitorial", value_low=100000, value_high=100000)
+    db.replace_requirements(conn, oid, None, [
+        {"category": "insurance", "text": "General liability $1,000,000 per occurrence", "value": "1000000", "mandatory": True},
+        {"category": "eligibility", "text": "Must be registered on eMMA", "mandatory": True},
+    ])
+    rows = pipeline.compare_entities(conn, oid)
+    names = {r["entity"] for r in rows}
+    assert "Sierra Real Estate LLC" in names and "Medwise Seniors LLC" in names
+    sre = next(r for r in rows if r["entity"] == "Sierra Real Estate LLC")
+    assert sre["met"] >= 1 and sre["match_class"] == "Conditional Match"

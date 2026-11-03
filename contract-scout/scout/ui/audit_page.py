@@ -14,6 +14,6 @@ def render():
     rows = db.list_audit(conn, limit=500)
     if rows:
         st.dataframe(pd.DataFrame([{"Time (UTC)": r["ts"], "Actor": r["actor"], "Action": r["action"], "Entity": r["entity"], "ID": r["entity_id"], "Details": r["details_json"]} for r in rows]),
-                     use_container_width=True, hide_index=True)
+                     width="stretch", hide_index=True)
     else:
         st.info("No activity yet.")

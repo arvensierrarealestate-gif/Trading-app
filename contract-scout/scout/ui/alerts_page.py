@@ -18,7 +18,7 @@ def render():
         rows.append({"Opportunity": o["title"], "Deadline (local)": deadlines.format_local(o["bid_deadline_utc"]), "Urgency": deadlines.urgency_bucket(o["bid_deadline_utc"]),
                      "Status": o["status"], "Qualification": o["match_class"] or "Not evaluated"})
     if rows:
-        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
     c1, c2 = st.columns(2)
     if c1.button("Generate alerts now"):
         created = alerts.generate_alerts(conn)
@@ -34,10 +34,10 @@ def render():
     st.subheader("Alert log")
     al = db.list_alerts(conn)
     if al:
-        st.dataframe(pd.DataFrame([{"When": a["created_at"][:16], "Kind": a["kind"], "Message": a["message"], "Sent": a["sent_at"] or "", "Channel": a["channel"] or ""} for a in al]), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame([{"When": a["created_at"][:16], "Kind": a["kind"], "Message": a["message"], "Sent": a["sent_at"] or "", "Channel": a["channel"] or ""} for a in al]), width="stretch", hide_index=True)
     st.subheader("Unacknowledged changes")
     ch = db.list_change_events(conn, unacknowledged_only=True)
     if ch:
-        st.dataframe(pd.DataFrame(ch), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(ch), width="stretch", hide_index=True)
     else:
         st.caption("None.")

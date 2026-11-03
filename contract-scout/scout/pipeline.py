@@ -5,7 +5,7 @@ from typing import Optional
 
 from . import db, eligibility, finance
 from .models import VERIFIED
-from .profile import load_profile
+from .profile import load_profile, list_profiles, load_profile_by_id
 
 
 def contract_value_of(opp: dict) -> Optional[float]:
@@ -66,3 +66,20 @@ def evaluate_all(conn, profile: Optional[dict] = None) -> int:
         evaluate_opportunity(conn, opp["id"], profile)
         n += 1
     return n
+
+
+def compare_entities(conn, opp_id: int) -> list[dict]:
+    """Evaluate one opportunity against every available entity profile without persisting anything."""
+    opp = db.get_opportunity(conn, opp_id)
+    reqs = db.list_requirements(conn, opp_id)
+    out = []
+    for p in list_profiles():
+        if p["id"] == "company_profile":
+            continue
+        prof = load_profile_by_id(p["id"])
+        res = eligibility.evaluate(reqs, prof, industry=opp.get("industry"), contract_value=contract_value_of(opp))
+        out.append({"profile_id": p["id"], "entity": p["name"], "match_class": res["match_class"], "score": res["score"],
+                    "met": len(res["met"]), "unknown": len(res["conditions"]), "not_met": len(res["blockers"]),
+                    "legally_eligible": res["legally_eligible"], "partner_feasible": res["partner_feasible"],
+                    "top_gap": (res["blockers"] or res["conditions"] or [{}])[0].get("requirement", "")[:90]})
+    return out

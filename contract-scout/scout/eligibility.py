@@ -209,6 +209,13 @@ def evaluate(requirements: list[dict], profile: dict, industry: Optional[str] = 
         checks.insert(0, CheckOutcome(category="eligibility", requirement="Contracting entity exists and is in good standing", result=UNKNOWN if gs.status != VERIFIED else NOT_MET,
                                       mandatory=True, explanation="Legal entity identity or good standing is not verified in the profile.",
                                       profile_fact_status=MISSING, remedy="Record SDAT entity details and good-standing status."))
+    # foreign (non-Maryland) entity must be registered with SDAT before doing business in Maryland
+    sof = fact(profile, "entity.state_of_formation")
+    sdat = fact(profile, "entity.sdat_department_id")
+    if sof.status == VERIFIED and str(sof.value or "").strip().lower() not in ("maryland", "md") and sdat.status != VERIFIED:
+        checks.insert(0, CheckOutcome(category="eligibility", requirement=f"Entity formed in {sof.value} must be registered with Maryland SDAT as a foreign LLC to do business in Maryland",
+                                      result=UNKNOWN, mandatory=True, explanation="No Maryland SDAT department ID on file for this out-of-state entity.",
+                                      profile_fact_status=MISSING, remedy="File a foreign LLC registration with Maryland SDAT and record the department ID."))
     mandatory = [c for c in checks if c.mandatory and c.result != NOT_APPLICABLE]
     blockers = [c for c in mandatory if c.result == NOT_MET]
     unknowns = [c for c in mandatory if c.result == UNKNOWN]

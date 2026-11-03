@@ -22,6 +22,9 @@ EXPORT_DIR = DATA_DIR / "exports"
 DB_PATH = Path(os.getenv("SCOUT_DB_PATH", DATA_DIR / "scout.db"))
 PROFILE_PATH = Path(os.getenv("SCOUT_PROFILE_PATH", DATA_DIR / "company_profile.json"))
 SAMPLE_PROFILE_PATH = ROOT / "examples" / "company_profile.sample.json"
+PROFILES_DIR = Path(os.getenv("SCOUT_PROFILES_DIR", ROOT / "profiles"))
+USER_PROFILES_DIR = DATA_DIR / "profiles"
+ACTIVE_PROFILE_FILE = DATA_DIR / "active_profile.txt"
 TEMPLATE_PROFILE_PATH = ROOT / "company_profile_template.json"
 SOURCE_REGISTRY_PATH = ROOT / "source_registry.json"
 

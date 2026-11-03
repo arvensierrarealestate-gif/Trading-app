@@ -18,8 +18,12 @@ Legend: [x] done and tested · [~] coded, awaiting credentials or real-world tes
 - [x] Alerts: deadline windows, new, strong match, amendment; digest dry-run to data/outbox
 - [x] Seed script with two fictitious solicitations
 - [x] pytest suite
+- [x] Multi-entity profiles (profiles/ + data/profiles override), sidebar entity picker, Compare entities tab
+- [x] Real profiles for Sierra Real Estate LLC and Medwise Seniors LLC built from SDAT, formation, COI, P&L and license documents
 
 ## Stage 2 - Permitted automated intake
+- [ ] You: pull a Certificate of Status for Sierra Real Estate LLC from Maryland Business Express and a current COI from Gray Insurance Group; record both in the profile
+- [ ] You: confirm who is the authorized signer for Sierra Real Estate LLC (operating agreement lists Tiffany Mia Smith as 100% member)
 - [ ] You: register the bidding entity on eMMA and subscribe to commodity codes for the four industries
 - [ ] You: create an inbox/app password for notifications; set IMAP_* in .env
 - [~] IMAP notification reader (coded, untested against a live inbox)
@@ -35,7 +39,6 @@ Legend: [x] done and tested · [~] coded, awaiting credentials or real-world tes
 - [ ] Prevailing/living wage lookup to pre-fill labor rate assumptions
 - [ ] Bond premium and insurance quote tracking per opportunity
 - [ ] Award/bid-tabulation capture for partner research
-- [ ] Multi-entity profiles (choose bidding entity per opportunity)
 
 ## Stage 4 - Testing against real solicitations
 - [ ] Upload 10 real eMMA solicitations across the four industries; compare extracted requirements against a manual read; log misses

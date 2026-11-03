@@ -71,7 +71,7 @@ def render():
         st.info("No opportunities match these filters. Upload a solicitation on the **Upload** page or run `python scripts/seed_sample_data.py` for sample records.")
         return
     df = pd.DataFrame(rows)
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(df, width="stretch", hide_index=True)
     st.download_button("Export filtered table to CSV (Google Sheets-ready)", export.opportunities_csv(conn), "opportunities.csv", "text/csv")
 
     st.subheader("Open an opportunity")
