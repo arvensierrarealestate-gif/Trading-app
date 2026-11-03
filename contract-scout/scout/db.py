@@ -298,10 +298,20 @@ def replace_requirements(conn, opportunity_id: int, document_id: Optional[int], 
 
 
 def list_requirements(conn, opportunity_id: int) -> list[dict]:
-    rows = _rows(conn.execute("SELECT * FROM requirements WHERE opportunity_id=? ORDER BY category, id", (opportunity_id,)))
+    """Requirements for an opportunity. When an amendment re-states a clause already on file,
+    the newest copy wins so re-issued documents do not double-count open items."""
+    rows = _rows(conn.execute("SELECT * FROM requirements WHERE opportunity_id=? ORDER BY id DESC", (opportunity_id,)))
+    seen: set[tuple[str, str]] = set()
+    out = []
     for r in rows:
+        key = (r["category"], (r["text"] or "")[:120].lower())
+        if key in seen:
+            continue
+        seen.add(key)
         r["mandatory"] = bool(r["mandatory"])
-    return rows
+        out.append(r)
+    out.sort(key=lambda r: (r["category"], r["id"]))
+    return out
 
 
 # ---- evaluations & costs -----------------------------------------------------

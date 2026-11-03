@@ -72,3 +72,11 @@ def test_alerts_generation_idempotent_and_digest(conn, profile, tmp_path, monkey
     assert out["channel"].startswith("dry_run") and out["alerts"] == 3
     assert not db.list_alerts(conn, unsent_only=True)
     assert list((tmp_path / "outbox").glob("digest_*.txt"))
+
+
+def test_reissued_document_does_not_double_count_requirements(conn, profile):
+    r1 = intake.ingest_document(conn, "jan.txt", _txt(JANITORIAL_PAGES), prefer_claude=False)
+    n1 = len(db.list_requirements(conn, r1["opportunity_id"]))
+    amended = [p.replace("December 4, 2026 at 2:00 PM", "December 11, 2026 at 2:00 PM") for p in JANITORIAL_PAGES]
+    intake.ingest_document(conn, "jan_amend1.txt", _txt(amended), prefer_claude=False)
+    assert len(db.list_requirements(conn, r1["opportunity_id"])) == n1
