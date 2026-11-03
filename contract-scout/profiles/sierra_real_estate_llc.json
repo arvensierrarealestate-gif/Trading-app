@@ -1,6 +1,6 @@
 {
   "_notice": "Built from documents in the owner's Google Drive and Gmail on 2026-11-03. No EIN, tax, bank or account numbers are stored here. Facts marked VERIFIED cite the document seen.",
-  "profile_version": "sre-2026-11-03",
+  "profile_version": "sre-2026-11-03b",
   "entity": {
     "legal_name": {
       "value": "Sierra Real Estate LLC",
@@ -65,7 +65,14 @@
       "status": "VERIFIED",
       "source": "Operating Agreement sierra Real estate LLC.docx dated 2024-01-07",
       "verified_on": "2026-11-03",
-      "notes": "IMPORTANT: the person signing bids must be an authorized signer of this LLC. Confirm who is authorized and whether the member list is current."
+      "notes": "Confirmed by owner on 2026-11-03: Tiffany Smith is the authorized signer for bids and contracts."
+    },
+    "authorized_signer": {
+      "value": "Tiffany Mia Smith, Member",
+      "status": "VERIFIED",
+      "source": "Operating agreement dated 2024-01-07 (100% member); owner confirmation 2026-11-03",
+      "verified_on": "2026-11-03",
+      "notes": "Bid affidavits and contracts must be signed by this person. eMMA and SAM.gov accounts should list her as the authorized representative."
     }
   },
   "registrations": {
