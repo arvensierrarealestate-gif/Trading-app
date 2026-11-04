@@ -23,6 +23,10 @@ Everything runs locally with SQLite. No account is required to try it with the f
 
 ## Quick start (10 minutes)
 
+**Easiest way on Windows:** double-click `start_scout.bat` in the `contract-scout` folder. It creates the Python environment, installs packages on first run, loads the sample data, starts the app and opens your browser. Keep the window open while you use the app. On a Mac, double-click `start_scout.command`.
+
+**Manual way:**
+
 You need Python 3.11 or newer. Open a terminal in this folder.
 
 ```bash
