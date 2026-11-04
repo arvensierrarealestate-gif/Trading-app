@@ -1,6 +1,6 @@
 {
   "_notice": "Built from documents in the owner's Google Drive and Gmail on 2026-11-03. No EIN, tax, bank or account numbers are stored here. Facts marked VERIFIED cite the document seen.",
-  "profile_version": "sre-2026-11-04",
+  "profile_version": "sre-2026-11-04b",
   "entity": {
     "legal_name": {
       "value": "Sierra Real Estate LLC",
@@ -274,15 +274,15 @@
   },
   "experience": [
     {
-      "description": "Renovation of 4400 Bella Ave, Baltimore MD 21207 (entity-owned property; builder's risk policy, total insured value $236,000; financed by Anchor Loans)",
+      "description": "Acquisition and renovation of 4400 Belle Ave, Baltimore MD 21207: bought at foreclosure auction 2025-01-16 for $156,000, settled 2025-07-03, financed by Anchor Loans with a $70,000 construction line of credit; builder's risk policy TIV $236,000; debris-removal labor receipts on file",
       "industry": "Construction & Property Services",
       "performed_by": "contracting_entity_as_owner",
       "client": "own property, not a third-party contract",
       "year": 2025,
       "value": 236000,
-      "status": "ASSUMED",
-      "source": "Builder's risk line on ACORD 25 COI dated 2025-06-20",
-      "notes": "Shows renovation activity but NOT a contract performed for a client. Who performed the work (own crew vs hired contractor) is unverified, so it does not count toward a contractor-experience requirement until documented."
+      "status": "VERIFIED",
+      "source": "Drive folder '4400 Belle Ave' (auction memorandum 2025-01-16, HUD-1 settlement 2025-07-03, Anchor Loans statements Oct/Nov 2025, labor receipt 2025-05-14); ACORD COI 2025-06-20",
+      "notes": "VERIFIED that the entity owns and is renovating the property as owner-developer. Still NOT a contract performed for a client, and the crews/contractors who did the work are not documented, so it does not satisfy a contractor-experience requirement. It does support 'relevant project experience' narratives and shows the entity has managed a financed rehab."
     },
     {
       "description": "Total renovation of 313-315 N Howard St, Baltimore (affiliate: 313-315 N Howard LLC)",
@@ -416,11 +416,11 @@
       "notes": "Owner to state"
     },
     "credit_line": {
-      "value": null,
-      "status": "MISSING",
-      "source": "",
-      "verified_on": "",
-      "notes": ""
+      "value": "Construction line of credit $70,000 (Anchor Loans, hard-money lender, note rate 10.375%, maturity 2026-08-01) tied to 4400 Belle Ave",
+      "status": "VERIFIED",
+      "source": "Anchor Loans borrower statements, Oct and Nov 2025",
+      "verified_on": "2026-11-04",
+      "notes": "Project loan, not a general bank line of credit. Status after the 2026-08-01 maturity is unknown. Agencies asking for a 'bank line of credit' will not count this."
     },
     "statements_available": {
       "value": true,
