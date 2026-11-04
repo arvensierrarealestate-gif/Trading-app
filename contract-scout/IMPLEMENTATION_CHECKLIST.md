@@ -18,6 +18,7 @@ Legend: [x] done and tested · [~] coded, awaiting credentials or real-world tes
 - [x] Alerts: deadline windows, new, strong match, amendment; digest dry-run to data/outbox
 - [x] Seed script with two fictitious solicitations
 - [x] pytest suite
+- [x] Six industry tags (added Hospitality & Lodging, Sanitation & Waste) and a "can do" digest section driven by the entity profile
 - [x] Multi-entity profiles (profiles/ + data/profiles override), sidebar entity picker, Compare entities tab
 - [x] Real profiles for Sierra Real Estate LLC and Medwise Seniors LLC built from SDAT, formation, COI, P&L and license documents
 

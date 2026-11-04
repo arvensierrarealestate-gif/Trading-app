@@ -16,7 +16,7 @@ It never submits bids, never scrapes portals that forbid it, and never stores EI
 | 6. Cost, margin & working capital estimator | Working | Editable assumptions, low/base/high band, working-capital need, Pursue / Investigate / Reject logic. Never invents a contract value. |
 | 7. Subcontractor & partner tracker | Working (manual) | Record primes/subs/suppliers; detail page lists which gaps a partner could cover and which rules still apply to you. Automated award mining not built. |
 | 8. Opportunity dashboard | Working | Filters by industry, qualification, recommendation, status, deadline window, margin. CSV export. |
-| 9. Deadline & change alerts | Working (dry run) | 3/7/14-day deadline alerts, new/strong-match alerts, amendment detection. Email sends when SMTP is configured; otherwise digest files land in `data/outbox/`. |
+| 9. Deadline & change alerts | Working (dry run) | The digest leads with **Opportunities you can do**: live deadline, industry in the entity's can-do list, Strong or Conditional Match, not rejected. Then 3/7/14-day deadline alerts, new/strong-match alerts, amendment detection. Email sends when SMTP is configured; otherwise digest files land in `data/outbox/`. |
 | 10. Audit log & test suite | Working | Every action logged. `pytest` suite covers extraction, engine, finance, dedupe, deadlines, alerts. |
 
 Everything runs locally with SQLite. No account is required to try it with the fictitious sample solicitations.

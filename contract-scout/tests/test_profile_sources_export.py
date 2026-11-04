@@ -135,3 +135,8 @@ def test_compare_entities(conn):
     assert "Sierra Real Estate LLC" in names and "Medwise Seniors LLC" in names
     sre = next(r for r in rows if r["entity"] == "Sierra Real Estate LLC")
     assert sre["met"] >= 1 and sre["match_class"] == "Conditional Match"
+
+
+def test_new_industries_classify():
+    assert classify_industry("hotel housekeeping and laundry services for the conference center") == "Hospitality & Lodging"
+    assert classify_industry("refuse collection, recycling and pest control for county parks") == "Sanitation & Waste"

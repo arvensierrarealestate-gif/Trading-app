@@ -12,7 +12,8 @@ from pathlib import Path
 from typing import Optional
 
 from . import config, db, deadlines
-from .models import STRONG, utcnow_iso
+from .models import STRONG, CONDITIONAL, REJECT, DEFAULT_CAN_DO_INDUSTRIES, utcnow_iso
+from .profile import load_profile, fact
 
 DEADLINE_WINDOWS = (3, 7, 14)
 
@@ -55,8 +56,51 @@ def generate_alerts(conn, now: Optional[datetime] = None) -> list[dict]:
     return created
 
 
-def build_digest(conn, dashboard_url: str = "http://localhost:8501") -> str:
-    """Plain-text digest of unsent alerts plus a snapshot of urgent items."""
+def can_do_industries(profile: Optional[dict] = None) -> tuple[str, ...]:
+    """Industries the active entity says it can serve; falls back to the owner's default list."""
+    if profile is None:
+        try:
+            profile, _ = load_profile()
+        except FileNotFoundError:
+            return DEFAULT_CAN_DO_INDUSTRIES
+    f = fact(profile, "capabilities.industries")
+    vals = tuple(f.value) if isinstance(f.value, list) and f.value else ()
+    return vals or DEFAULT_CAN_DO_INDUSTRIES
+
+
+def doable_opportunities(conn, profile: Optional[dict] = None, now: Optional[datetime] = None) -> list[dict]:
+    """Opportunities worth your attention: in a can-do industry, deadline not passed, evaluated as
+    Strong, or Conditional with a partner path, and not recommended for rejection."""
+    inds = set(can_do_industries(profile))
+    out = []
+    for o in db.list_opportunities(conn):
+        if o["industry"] not in inds:
+            continue
+        d = deadlines.days_until(o["bid_deadline_utc"], now)
+        if d is not None and d < 0:
+            continue
+        if o["status"] in ("Rejected", "Lost", "Awarded", "Submitted"):
+            continue
+        if o["recommendation"] == REJECT:
+            continue
+        ev = db.latest_evaluation(conn, o["id"])
+        if not ev:
+            continue
+        if ev["match_class"] == STRONG:
+            why = "Strong Match"
+        elif ev["match_class"] == CONDITIONAL:
+            open_items = [c for c in ev["checks"] if c["mandatory"] and c["result"] in ("UNKNOWN", "NOT_MET")]
+            why = f"Conditional Match, {len(open_items)} item(s) to resolve"
+        else:
+            continue
+        gaps = [c["requirement"][:60] for c in ev["checks"] if c["mandatory"] and c["result"] in ("UNKNOWN", "NOT_MET")][:3]
+        out.append({"opportunity": o, "why": why, "gaps": gaps, "days_left": d})
+    out.sort(key=lambda x: (x["why"] != "Strong Match", x["days_left"] if x["days_left"] is not None else 9999))
+    return out
+
+
+def build_digest(conn, dashboard_url: str = "http://localhost:8501", profile: Optional[dict] = None) -> str:
+    """Plain-text digest: the doable list first, then alerts and housekeeping."""
     unsent = db.list_alerts(conn, unsent_only=True)
     opps = db.list_opportunities(conn)
     lines = [f"Maryland Contract Scout digest - {datetime.now(config.LOCAL_TZ).strftime('%a %b %d, %Y %I:%M %p %Z')}", ""]
@@ -65,6 +109,12 @@ def build_digest(conn, dashboard_url: str = "http://localhost:8501") -> str:
             lines.append(title)
             lines.extend(f"  - {i}" for i in items)
             lines.append("")
+    doable = doable_opportunities(conn, profile)
+    section("OPPORTUNITIES YOU CAN DO (" + ", ".join(can_do_industries(profile)) + ")",
+            [f"{x['opportunity']['title']} [{x['opportunity']['industry']}] due {deadlines.format_local(x['opportunity']['bid_deadline_utc'])} "
+             f"- {x['why']}" + (f"; resolve: {'; '.join(x['gaps'])}" if x['gaps'] else "") for x in doable])
+    if not doable:
+        lines += ["OPPORTUNITIES YOU CAN DO", "  - None yet. Everything on file is either outside your industries, past deadline, or Poor Match.", ""]
     section("NEW OPPORTUNITIES", [a["message"] for a in unsent if a["kind"] == "new"])
     section("STRONG MATCHES", [a["message"] for a in unsent if a["kind"] == "strong_match"])
     section("DEADLINES APPROACHING", [a["message"] for a in unsent if a["kind"].startswith("deadline")])

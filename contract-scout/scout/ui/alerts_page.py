@@ -12,6 +12,15 @@ def render():
     conn = get_conn()
     st.write("Email: " + ("**SMTP configured** → digests will send to " + ", ".join(config.ALERT_TO) if config.smtp_available()
                           else "**not configured** → digests are written to `data/outbox/` as a dry run. Set SMTP_HOST, SMTP_USER, SMTP_PASSWORD, ALERT_TO in .env."))
+    st.subheader("Opportunities you can do")
+    doable = alerts.doable_opportunities(conn)
+    if doable:
+        st.dataframe(pd.DataFrame([{"Opportunity": x["opportunity"]["title"], "Industry": x["opportunity"]["industry"], "Why": x["why"],
+                                    "Deadline": deadlines.format_local(x["opportunity"]["bid_deadline_utc"]), "Days left": round(x["days_left"], 1) if x["days_left"] is not None else None,
+                                    "Resolve first": "; ".join(x["gaps"])} for x in doable]), width="stretch", hide_index=True)
+    else:
+        st.caption("None yet: nothing on file is both in a can-do industry and at least a Conditional Match with a live deadline.")
+    st.caption("Can-do industries come from the active entity's profile (capabilities.industries): " + ", ".join(alerts.can_do_industries()))
     st.subheader("Deadline board")
     rows = []
     for o in db.list_opportunities(conn):

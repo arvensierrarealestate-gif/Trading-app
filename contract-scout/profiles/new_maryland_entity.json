@@ -281,7 +281,9 @@
         "Construction & Property Services",
         "Cleaning & Janitorial",
         "Food & Catering",
-        "Healthcare & Hospital Support"
+        "Healthcare & Hospital Support",
+        "Hospitality & Lodging",
+        "Sanitation & Waste"
       ],
       "status": "ASSUMED",
       "source": "",

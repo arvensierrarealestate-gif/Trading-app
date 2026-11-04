@@ -71,10 +71,24 @@ INDUSTRIES = {
     ],
     "Healthcare & Hospital Support": [
         "hospital", "healthcare", "health care", "medical supplies", "environmental services",
-        "patient transport", "laundry", "linen", "sterile", "clinic", "nursing", "pharmac",
-        "ppe", "durable medical",
+        "patient transport", "sterile", "clinic", "nursing", "pharmac",
+        "ppe", "durable medical", "medical waste", "biohazard",
+    ],
+    "Hospitality & Lodging": [
+        "hospitality", "hotel", "lodging", "housekeeping", "laundry", "linen", "banquet",
+        "conference services", "event services", "concierge", "front desk", "dormitory",
+        "guest services", "shelter operations", "residential facility", "room attendant",
+    ],
+    "Sanitation & Waste": [
+        "sanitation", "sanitary", "waste", "refuse", "trash", "recycling", "pest control",
+        "extermination", "portable toilet", "restroom", "disinfection", "hygiene",
+        "litter", "street sweeping", "grease trap", "septic", "hazardous materials",
     ],
 }
+
+# Industries the owner has said are "can do" by default; profile capabilities override this.
+DEFAULT_CAN_DO_INDUSTRIES = ("Construction & Property Services", "Cleaning & Janitorial", "Food & Catering",
+                             "Healthcare & Hospital Support", "Hospitality & Lodging", "Sanitation & Waste")
 
 
 def classify_industry(text: str) -> str:

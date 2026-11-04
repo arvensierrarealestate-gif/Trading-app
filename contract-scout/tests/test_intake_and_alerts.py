@@ -80,3 +80,20 @@ def test_reissued_document_does_not_double_count_requirements(conn, profile):
     amended = [p.replace("December 4, 2026 at 2:00 PM", "December 11, 2026 at 2:00 PM") for p in JANITORIAL_PAGES]
     intake.ingest_document(conn, "jan_amend1.txt", _txt(amended), prefer_claude=False)
     assert len(db.list_requirements(conn, r1["opportunity_id"])) == n1
+
+
+def test_doable_list_filters_by_industry_deadline_and_match(conn, profile):
+    soon = (datetime.now(timezone.utc) + timedelta(days=10)).isoformat()
+    past = (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()
+    a = db.insert_opportunity(conn, "D1|A", solicitation_number="D1", title="Hotel housekeeping", agency="A", industry="Hospitality & Lodging", bid_deadline_utc=soon)
+    db.add_evaluation(conn, a, "v", "Strong Match", 100, [], "ok"); db.update_opportunity(conn, a, match_class="Strong Match", recommendation="Pursue")
+    b = db.insert_opportunity(conn, "D2|A", solicitation_number="D2", title="IT consulting", agency="A", industry="Other / Unclassified", bid_deadline_utc=soon)
+    db.add_evaluation(conn, b, "v", "Strong Match", 100, [], "ok"); db.update_opportunity(conn, b, match_class="Strong Match")
+    c = db.insert_opportunity(conn, "D3|A", solicitation_number="D3", title="Old sanitation job", agency="A", industry="Sanitation & Waste", bid_deadline_utc=past)
+    db.add_evaluation(conn, c, "v", "Strong Match", 100, [], "ok"); db.update_opportunity(conn, c, match_class="Strong Match")
+    d = db.insert_opportunity(conn, "D4|A", solicitation_number="D4", title="Poor roof", agency="A", industry="Construction & Property Services", bid_deadline_utc=soon)
+    db.add_evaluation(conn, d, "v", "Poor Match", 0, [], "no"); db.update_opportunity(conn, d, match_class="Poor Match", recommendation="Reject")
+    titles = [x["opportunity"]["title"] for x in alerts.doable_opportunities(conn, profile={"capabilities": {"industries": {"value": ["Hospitality & Lodging", "Sanitation & Waste", "Construction & Property Services"], "status": "ASSUMED"}}})]
+    assert titles == ["Hotel housekeeping"]
+    body = alerts.build_digest(conn, profile={"capabilities": {"industries": {"value": ["Hospitality & Lodging"], "status": "ASSUMED"}}})
+    assert body.startswith("Maryland Contract Scout digest") and "OPPORTUNITIES YOU CAN DO" in body and "Hotel housekeeping" in body

@@ -1,6 +1,6 @@
 {
   "_notice": "Built from documents in the owner's Google Drive and Gmail on 2026-11-03. No EIN, tax, bank or account numbers are stored here. Facts marked VERIFIED cite the document seen.",
-  "profile_version": "sre-2026-11-03b",
+  "profile_version": "sre-2026-11-04",
   "entity": {
     "legal_name": {
       "value": "Sierra Real Estate LLC",
@@ -322,12 +322,16 @@
     "industries": {
       "value": [
         "Construction & Property Services",
-        "Cleaning & Janitorial"
+        "Cleaning & Janitorial",
+        "Sanitation & Waste",
+        "Hospitality & Lodging",
+        "Food & Catering",
+        "Healthcare & Hospital Support"
       ],
       "status": "ASSUMED",
-      "source": "",
+      "source": "Owner statement 2026-11-04: review everything and send what we can do, including hospitality and sanitary work",
       "verified_on": "",
-      "notes": "Owner's stated interest; entity's recorded activity is real estate"
+      "notes": "Breadth of interest, not a record of capability. Entity's recorded activity is real estate."
     },
     "services": {
       "value": [
