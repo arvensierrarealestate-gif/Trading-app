@@ -25,6 +25,20 @@ if errorlevel 1 (
   ".venv\Scripts\python.exe" -m pip install --quiet -r requirements.txt
 )
 
+if not exist ".env" (
+  copy /y ".env.example" ".env" >nul
+)
+findstr /b /c:"ANTHROPIC_API_KEY=sk-ant" ".env" >nul 2>nul
+if errorlevel 1 (
+  echo.
+  echo No Anthropic API key found in .env.
+  echo Paste your key now, starting with sk-ant-, then press Enter. Press Enter alone to skip and keep the offline reader.
+  set /p SCOUT_KEY=Key: 
+  if defined SCOUT_KEY (
+    ".venv\Scripts\python.exe" -c "import re,sys,pathlib;p=pathlib.Path('.env');t=p.read_text(encoding='utf-8');k=sys.argv[1].strip().strip('\"').strip(\"'\");t=re.sub(r'^ANTHROPIC_API_KEY=.*$', 'ANTHROPIC_API_KEY='+k, t, count=1, flags=re.M) if re.search(r'^ANTHROPIC_API_KEY=', t, re.M) else t+'\nANTHROPIC_API_KEY='+k+'\n';p.write_text(t,encoding='utf-8');print('Key saved to .env')" "%SCOUT_KEY%"
+  )
+)
+
 if not exist "data\scout.db" (
   echo Loading the two fictitious sample solicitations...
   ".venv\Scripts\python.exe" scripts\seed_sample_data.py
