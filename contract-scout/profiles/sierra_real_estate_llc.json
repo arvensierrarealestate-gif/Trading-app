@@ -1,6 +1,6 @@
 {
   "_notice": "Built from documents in the owner's Google Drive and Gmail on 2026-11-03. No EIN, tax, bank or account numbers are stored here. Facts marked VERIFIED cite the document seen.",
-  "profile_version": "sre-2026-11-04b",
+  "profile_version": "sre-2026-11-04c",
   "entity": {
     "legal_name": {
       "value": "Sierra Real Estate LLC",
@@ -281,8 +281,8 @@
       "year": 2025,
       "value": 236000,
       "status": "VERIFIED",
-      "source": "Drive folder '4400 Belle Ave' (auction memorandum 2025-01-16, HUD-1 settlement 2025-07-03, Anchor Loans statements Oct/Nov 2025, labor receipt 2025-05-14); ACORD COI 2025-06-20",
-      "notes": "VERIFIED that the entity owns and is renovating the property as owner-developer. Still NOT a contract performed for a client, and the crews/contractors who did the work are not documented, so it does not satisfy a contractor-experience requirement. It does support 'relevant project experience' narratives and shows the entity has managed a financed rehab."
+      "source": "Drive folder '4400 Belle Ave' (auction memorandum 2025-01-16, HUD-1 settlement 2025-07-03, Anchor Loans statements Oct/Nov 2025, labor receipt 2025-05-14); ACORD COI 2025-06-20; Drive folder of 13 'before' photos (kitchen, baths, bedrooms, living areas, exterior) plus an 'After photos' archive (33 MB zip, not inspected)",
+      "notes": "VERIFIED that the entity owns and is renovating the property as owner-developer, and before/after photo documentation exists for a full interior renovation (dated kitchen, drop ceiling, paneling and worn flooring in the before set). Still NOT a contract performed for a client, and the crews/contractors who did the work are not documented, so it does not satisfy a contractor-experience requirement. Usable as a project narrative with photos in a bid package."
     },
     {
       "description": "Total renovation of 313-315 N Howard St, Baltimore (affiliate: 313-315 N Howard LLC)",
