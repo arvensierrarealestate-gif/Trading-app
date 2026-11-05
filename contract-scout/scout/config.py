@@ -9,10 +9,28 @@ import os
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
 
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
+# A value in the project's .env always wins over an empty or stale variable inherited from the shell.
+for _k, _v in (dotenv_values(ROOT / ".env") or {}).items():
+    if _v is not None and str(_v).strip():
+        os.environ[_k] = str(_v).strip()
+
+
+def env_file_has_key(name: str = "ANTHROPIC_API_KEY") -> str:
+    """Diagnostic only: 'present', 'empty', 'absent' or 'no file'. Never returns the value."""
+    p = ROOT / ".env"
+    if not p.exists():
+        return "no file"
+    try:
+        vals = dotenv_values(p) or {}
+    except Exception as exc:  # pragma: no cover
+        return f"unreadable ({exc})"
+    if name not in vals:
+        return "absent"
+    return "present" if (vals.get(name) or "").strip() else "empty"
 
 DATA_DIR = Path(os.getenv("SCOUT_DATA_DIR", ROOT / "data"))
 UPLOAD_DIR = DATA_DIR / "uploads"

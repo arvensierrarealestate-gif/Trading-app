@@ -67,4 +67,4 @@ def capability_banner():
         env_path = config.ROOT / ".env"
         key = os.getenv("ANTHROPIC_API_KEY", "")
         masked = (key[:7] + "..." + f" ({len(key)} characters)") if key else "not set"
-        st.code(f"Program folder : {config.ROOT}\n.env file      : {'found' if env_path.exists() else 'NOT FOUND'} at {env_path}\nAPI key seen   : {masked}\nData folder    : {config.DATA_DIR}", language="text")
+        st.code(f"Program folder : {config.ROOT}\n.env file      : {'found' if env_path.exists() else 'NOT FOUND'} at {env_path}\nKey line in file: {config.env_file_has_key()}\nAPI key seen   : {masked}\nData folder    : {config.DATA_DIR}", language="text")
