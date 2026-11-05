@@ -69,7 +69,9 @@ IMAP_SENDER_FILTER = os.getenv("IMAP_SENDER_FILTER", "emma")
 
 
 def anthropic_available() -> bool:
-    return bool(os.getenv("ANTHROPIC_API_KEY") or os.getenv("ANTHROPIC_AUTH_TOKEN"))
+    """True only when a plausible key or token is present, not just any non-empty text."""
+    key = (os.getenv("ANTHROPIC_API_KEY") or "").strip()
+    return key.startswith("sk-ant-") or bool((os.getenv("ANTHROPIC_AUTH_TOKEN") or "").strip())
 
 
 def smtp_available() -> bool:
