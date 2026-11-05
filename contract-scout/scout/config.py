@@ -65,7 +65,9 @@ IMAP_HOST = os.getenv("IMAP_HOST", "")
 IMAP_USER = os.getenv("IMAP_USER", "")
 IMAP_PASSWORD = os.getenv("IMAP_PASSWORD", "")
 IMAP_FOLDER = os.getenv("IMAP_FOLDER", "INBOX")
-IMAP_SENDER_FILTER = os.getenv("IMAP_SENDER_FILTER", "emma")
+IMAP_SENDER_FILTER = os.getenv("IMAP_SENDER_FILTER", "emma,opengov,bidnet,planetbids,ariba")
+IMAP_SINCE_DAYS = int(os.getenv("IMAP_SINCE_DAYS", "14"))
+DASHBOARD_URL = os.getenv("SCOUT_DASHBOARD_URL", "http://localhost:8501")
 
 
 def anthropic_available() -> bool:

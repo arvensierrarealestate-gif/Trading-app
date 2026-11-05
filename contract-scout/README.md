@@ -9,7 +9,7 @@ It never submits bids, never scrapes portals that forbid it, and never stores EI
 | Module | State | Notes |
 |---|---|---|
 | 1. Company profile & verified qualifications | Working | JSON profile; every fact is VERIFIED / MISSING / ASSUMED / NOT_APPLICABLE with a source. Sensitive keys are rejected. |
-| 2. Source registry & scanner | Partly working | Registry of 15 Maryland sources. Manual upload works. RSS/Atom feed reader and eMMA email (IMAP) reader are coded but untested until you supply a feed or inbox credentials. Portal pages are never fetched automatically. |
+| 2. Source registry & scanner | Working (needs credentials) | Registry of 19 Maryland sources with their mechanisms. Inbox intake pipeline: parses notices, ingests attachments, downloads linked files from allowed portal hosts only, creates leads, evaluates, de-duplicates by message ID. Tested with simulated emails; live IMAP needs your inbox credentials. Portal pages are never scraped. |
 | 3. Solicitation document reader | Working (two engines) | PDF/DOCX/TXT extraction with page markers. **Claude** structured extraction when `ANTHROPIC_API_KEY` is set (not yet exercised in this environment). **Offline heuristic** reader otherwise, labelled low confidence. |
 | 4. Eligibility & compliance engine | Working | Classifies Strong / Conditional / Poor with a traceable check per requirement. Unknown mandatory items block Strong Match. Owner/affiliate experience never counts. |
 | 5. Insurance & bonding analysis | Working | Compares stated limits and bond percentages with verified profile limits; computes bond size from contract value. |
@@ -86,15 +86,25 @@ Pick the bidding entity in the sidebar. The **Compare entities** tab on each opp
 
 Put secrets in `.env` (see `.env.example`). The file is git-ignored.
 
-## Scheduled scans
+## Automated intake and scheduled scans
 
-Once a source is ready (RSS or IMAP), run the scanner on a schedule:
+The intake pipeline turns notification emails into scored opportunities:
+
+1. Register the bidding entity on eMMA (and on Baltimore County OpenGov, BidNet, SPEED) and point their notices at one inbox you own.
+2. Put that inbox's IMAP details in `.env` (`IMAP_HOST`, `IMAP_USER`, `IMAP_PASSWORD`; Gmail needs an app password). `IMAP_SENDER_FILTER` lists the senders to read.
+3. Run one scan by hand to confirm:
 
 ```bash
 python scripts/run_scan.py
 ```
 
-Linux/macOS cron example (weekdays 7:30 AM): `30 7 * * 1-5 cd /path/to/contract-scout && .venv/bin/python scripts/run_scan.py >> data/scan.log 2>&1`. On Windows use Task Scheduler with the same command.
+Each scan reads new notices (read-only, each message handled once), ingests attached PDF/DOCX files, downloads directly linked files only from the portal hosts listed in `scout/inbox.py` or `SCOUT_ALLOWED_FILE_HOSTS`, creates a lead from the email text when there is no file, evaluates everything against the active entity, refreshes alerts, and sends the digest (or writes it to `data/outbox/` without SMTP). Digest lines link straight to the opportunity in the dashboard.
+
+**Schedule it on Windows:** double-click `schedule_scan.bat` once. It creates a task that runs `run_scan.bat` weekdays at 7:30 AM and logs to `data\scan.log`. The computer must be on. Remove with `schtasks /delete /tn "Maryland Contract Scout scan" /f`.
+
+**Mac/Linux cron:** `30 7 * * 1-5 cd /path/to/contract-scout && .venv/bin/python scripts/run_scan.py >> data/scan.log 2>&1`
+
+**No inbox yet?** Forward a notification email to yourself, save it as a `.eml` file, and drop it on the Sources & scans page. The same pipeline runs on it.
 
 ## Rules the code enforces
 

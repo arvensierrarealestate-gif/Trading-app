@@ -18,6 +18,12 @@ def render():
         st.info("No opportunities yet. Upload one first.")
         return
     ids = [o["id"] for o in opps]
+    try:
+        qp = st.query_params.get("opp")
+        if qp and int(qp) in ids:
+            st.session_state.selected_opp = int(qp)
+    except (TypeError, ValueError):
+        pass
     default = st.session_state.get("selected_opp", ids[0])
     idx = ids.index(default) if default in ids else 0
     oid = st.selectbox("Opportunity", ids, index=idx, format_func=lambda i: f"#{i} · {next(o['title'] for o in opps if o['id'] == i)}")

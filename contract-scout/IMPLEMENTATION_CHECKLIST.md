@@ -27,15 +27,15 @@ Legend: [x] done and tested · [~] coded, awaiting credentials or real-world tes
 - [ ] You: confirm who is the authorized signer for Sierra Real Estate LLC (operating agreement lists Tiffany Mia Smith as 100% member)
 - [ ] You: register the bidding entity on eMMA and subscribe to commodity codes for the four industries
 - [ ] You: create an inbox/app password for notifications; set IMAP_* in .env
-- [~] IMAP notification reader (coded, untested against a live inbox)
+- [x] Inbox intake pipeline (parse, attachments, allowed-host downloads, leads, evaluate, de-dup) tested with simulated emails; [~] live IMAP read awaits credentials
 - [~] RSS/Atom feed reader (coded, untested; no Maryland feed configured yet)
 - [ ] Confirm each portal's terms of use; flip `allowed_fetch` only where permitted; implement per-source link lister where allowed
 - [~] Source registry researched 2026-11-05: 19 sources, portals and mechanisms documented in docs/maryland_procurement_notes.md; state sites could not be opened from the build environment, so confirm once in a browser
-- [ ] Attachment download from links in notification emails (only when the link is a direct public file)
+- [x] Attachment download from links in notification emails, restricted to an allowlist of portal hosts and direct PDF/DOCX links
 
 ## Stage 3 - Scheduling, alerts, finance depth
 - [x] Bid-package checklist per opportunity (standard forms + document items + profile gaps)
-- [~] run_scan.py scheduled via cron / Task Scheduler
+- [x] run_scan.py + run_scan.bat + schedule_scan.bat (Windows Task Scheduler, weekdays 7:30 AM); cron line documented
 - [~] SMTP email digest (coded; needs SMTP_* credentials to test)
 - [ ] Google Sheets sync (service account) as alternative to CSV export
 - [ ] Prevailing/living wage lookup to pre-fill labor rate assumptions

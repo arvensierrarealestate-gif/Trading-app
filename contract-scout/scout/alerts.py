@@ -47,7 +47,7 @@ def generate_alerts(conn, now: Optional[datetime] = None) -> list[dict]:
         opp = db.get_opportunity(conn, ch["opportunity_id"])
         if not opp:
             continue
-        msg = f"Amendment/change on {opp['title']}: {ch['field']} changed from '{ch['old_value']}' to '{ch['new_value']}'."
+        msg = f"Amendment/change on {opp['title']}: {ch['field']} changed from '{ch['old_value']}' to '{ch['new_value']}'. -> {config.DASHBOARD_URL}/detail?opp={opp['id']}"
         aid = db.add_alert(conn, "amendment", msg, opp["id"], f"change:{ch['id']}")
         if aid:
             created.append({"id": aid, "kind": "amendment", "message": msg})
@@ -112,7 +112,7 @@ def build_digest(conn, dashboard_url: str = "http://localhost:8501", profile: Op
     doable = doable_opportunities(conn, profile)
     section("OPPORTUNITIES YOU CAN DO (" + ", ".join(can_do_industries(profile)) + ")",
             [f"{x['opportunity']['title']} [{x['opportunity']['industry']}] due {deadlines.format_local(x['opportunity']['bid_deadline_utc'])} "
-             f"- {x['why']}" + (f"; resolve: {'; '.join(x['gaps'])}" if x['gaps'] else "") for x in doable])
+             f"- {x['why']}" + (f"; resolve: {'; '.join(x['gaps'])}" if x['gaps'] else "") + f"  -> {dashboard_url}/detail?opp={x['opportunity']['id']}" for x in doable])
     if not doable:
         lines += ["OPPORTUNITIES YOU CAN DO", "  - None yet. Everything on file is either outside your industries, past deadline, or Poor Match.", ""]
     section("NEW OPPORTUNITIES", [a["message"] for a in unsent if a["kind"] == "new"])

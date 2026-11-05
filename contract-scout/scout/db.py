@@ -144,6 +144,14 @@ CREATE TABLE IF NOT EXISTS checklist_items (
     created_at TEXT NOT NULL,
     updated_at TEXT
 );
+CREATE TABLE IF NOT EXISTS processed_emails (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    message_id TEXT UNIQUE NOT NULL,
+    uid TEXT,
+    opportunity_id INTEGER,
+    subject TEXT,
+    processed_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS audit_log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     ts TEXT NOT NULL,
@@ -477,3 +485,20 @@ def set_checklist_done(conn, item_id: int, done: bool) -> None:
 
 def clear_checklist(conn, opportunity_id: int) -> None:
     conn.execute("DELETE FROM checklist_items WHERE opportunity_id=?", (opportunity_id,))
+
+
+# ---- inbox intake ---------------------------------------------------------------
+def email_processed(conn, message_id: str) -> bool:
+    return conn.execute("SELECT 1 FROM processed_emails WHERE message_id=?", (message_id,)).fetchone() is not None
+
+
+def mark_email_processed(conn, message_id: str, uid: str, opportunity_id: Optional[int], subject: str) -> None:
+    conn.execute("INSERT OR IGNORE INTO processed_emails (message_id, uid, opportunity_id, subject, processed_at) VALUES (?,?,?,?,?)",
+                 (message_id, uid, opportunity_id, subject, utcnow_iso()))
+
+
+def inbox_stats(conn) -> dict:
+    n = conn.execute("SELECT COUNT(*) FROM processed_emails").fetchone()[0]
+    last = conn.execute("SELECT MAX(processed_at) FROM processed_emails").fetchone()[0]
+    last_scan = _row(conn.execute("SELECT * FROM scan_runs WHERE source_id='inbox' ORDER BY id DESC LIMIT 1"))
+    return {"processed_emails": n, "last_processed": last, "last_scan": last_scan}
