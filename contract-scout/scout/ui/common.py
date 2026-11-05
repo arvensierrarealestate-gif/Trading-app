@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 import streamlit as st
 
 from .. import config, db
@@ -61,3 +63,8 @@ def capability_banner():
             icon = "🟢" if state.startswith(("working", "configured")) else "🟠"
             st.write(f"{icon} **{name}**: {state}")
         st.caption("Manual upload, SQLite storage, compliance engine, cost estimator, CSV export and the audit log run fully offline.")
+        st.markdown("**Setup diagnostics** (safe to screenshot; the key is never shown)")
+        env_path = config.ROOT / ".env"
+        key = os.getenv("ANTHROPIC_API_KEY", "")
+        masked = (key[:7] + "..." + f" ({len(key)} characters)") if key else "not set"
+        st.code(f"Program folder : {config.ROOT}\n.env file      : {'found' if env_path.exists() else 'NOT FOUND'} at {env_path}\nAPI key seen   : {masked}\nData folder    : {config.DATA_DIR}", language="text")
