@@ -145,9 +145,11 @@ def heuristic_extract(full_text: str, filename: str = "") -> dict:
                 if not m:
                     continue
                 key = (cat, rx.pattern, m.group(0)[:40].lower())
-                if key in seen:
+                if key in seen or (cat == "meeting" and ("meeting", sent[:80]) in seen):
                     continue
                 seen.add(key)
+                if cat == "meeting":
+                    seen.add(("meeting", sent[:80]))
                 value = None
                 groups = [g for g in m.groups() if g]
                 if cat == "insurance" and m.lastindex and m.lastindex >= 2:

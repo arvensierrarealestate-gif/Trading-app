@@ -133,6 +133,17 @@ CREATE TABLE IF NOT EXISTS scan_runs (
     items_updated INTEGER DEFAULT 0,
     notes TEXT
 );
+CREATE TABLE IF NOT EXISTS checklist_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    opportunity_id INTEGER NOT NULL REFERENCES opportunities(id) ON DELETE CASCADE,
+    text TEXT NOT NULL,
+    stage TEXT NOT NULL,
+    source TEXT,
+    note TEXT,
+    done INTEGER DEFAULT 0,
+    created_at TEXT NOT NULL,
+    updated_at TEXT
+);
 CREATE TABLE IF NOT EXISTS audit_log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     ts TEXT NOT NULL,
@@ -301,15 +312,14 @@ def list_requirements(conn, opportunity_id: int) -> list[dict]:
     """Requirements for an opportunity. When an amendment re-states a clause already on file,
     the newest copy wins so re-issued documents do not double-count open items."""
     rows = _rows(conn.execute("SELECT * FROM requirements WHERE opportunity_id=? ORDER BY id DESC", (opportunity_id,)))
-    seen: set[tuple[str, str]] = set()
-    out = []
+    kept: dict[tuple[str, str], dict] = {}
     for r in rows:
-        key = (r["category"], (r["text"] or "")[:120].lower())
-        if key in seen:
-            continue
-        seen.add(key)
         r["mandatory"] = bool(r["mandatory"])
-        out.append(r)
+        key = (r["category"], (r["text"] or "")[:120].lower())
+        prev = kept.get(key)
+        if prev is None or (r["mandatory"] and not prev["mandatory"]):
+            kept[key] = r
+    out = list(kept.values())
     out.sort(key=lambda r: (r["category"], r["id"]))
     return out
 
@@ -445,3 +455,25 @@ def counts(conn) -> dict:
     out["unsent_alerts"] = conn.execute("SELECT COUNT(*) FROM alerts WHERE sent_at IS NULL").fetchone()[0]
     out["unacknowledged_changes"] = conn.execute("SELECT COUNT(*) FROM change_events WHERE acknowledged=0").fetchone()[0]
     return out
+
+
+# ---- bid checklist -------------------------------------------------------------
+def add_checklist_item(conn, opportunity_id: int, text: str, stage: str, source: str = "", note: str = "") -> int:
+    cur = conn.execute("INSERT INTO checklist_items (opportunity_id, text, stage, source, note, created_at) VALUES (?,?,?,?,?,?)",
+                       (opportunity_id, text, stage, source, note, utcnow_iso()))
+    return int(cur.lastrowid)
+
+
+def list_checklist(conn, opportunity_id: int) -> list[dict]:
+    rows = _rows(conn.execute("SELECT * FROM checklist_items WHERE opportunity_id=? ORDER BY id", (opportunity_id,)))
+    for r in rows:
+        r["done"] = bool(r["done"])
+    return rows
+
+
+def set_checklist_done(conn, item_id: int, done: bool) -> None:
+    conn.execute("UPDATE checklist_items SET done=?, updated_at=? WHERE id=?", (1 if done else 0, utcnow_iso(), item_id))
+
+
+def clear_checklist(conn, opportunity_id: int) -> None:
+    conn.execute("DELETE FROM checklist_items WHERE opportunity_id=?", (opportunity_id,))

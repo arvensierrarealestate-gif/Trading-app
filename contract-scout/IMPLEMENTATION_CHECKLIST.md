@@ -30,10 +30,11 @@ Legend: [x] done and tested · [~] coded, awaiting credentials or real-world tes
 - [~] IMAP notification reader (coded, untested against a live inbox)
 - [~] RSS/Atom feed reader (coded, untested; no Maryland feed configured yet)
 - [ ] Confirm each portal's terms of use; flip `allowed_fetch` only where permitted; implement per-source link lister where allowed
-- [ ] Verify every URL in source_registry.json and set `url_verified: true`
+- [~] Source registry researched 2026-11-05: 19 sources, portals and mechanisms documented in docs/maryland_procurement_notes.md; state sites could not be opened from the build environment, so confirm once in a browser
 - [ ] Attachment download from links in notification emails (only when the link is a direct public file)
 
 ## Stage 3 - Scheduling, alerts, finance depth
+- [x] Bid-package checklist per opportunity (standard forms + document items + profile gaps)
 - [~] run_scan.py scheduled via cron / Task Scheduler
 - [~] SMTP email digest (coded; needs SMTP_* credentials to test)
 - [ ] Google Sheets sync (service account) as alternative to CSV export

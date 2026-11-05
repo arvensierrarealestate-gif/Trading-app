@@ -3,7 +3,7 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from .. import db, deadlines, export, finance, pipeline
+from .. import db, deadlines, export, finance, pipeline, checklist
 from ..models import OPP_STATUSES, VERIFIED, ASSUMED
 from .common import get_conn, get_profile, BADGE, REC_BADGE, money
 
@@ -75,7 +75,7 @@ def render():
                 st.success("Saved.")
                 st.rerun()
 
-    tabs = st.tabs(["Requirements (traceable)", "Qualification checks", "Compare entities", "Cost & margin", "Documents & changes", "Partners"])
+    tabs = st.tabs(["Requirements (traceable)", "Qualification checks", "Compare entities", "Cost & margin", "Documents & changes", "Partners", "Bid checklist"])
 
     with tabs[0]:
         reqs = db.list_requirements(conn, oid)
@@ -195,5 +195,38 @@ def render():
             if st.form_submit_button("Add") and n:
                 db.add_partner(conn, n, role, ind, contact, url, note, oid)
                 db.log(conn, "add_partner", "partner", n, {"opportunity_id": oid}, actor="user")
+                conn.commit()
+                st.rerun()
+
+    with tabs[6]:
+        st.caption("Built from the standard Maryland forms, the submission items the reader found (with page references), and your open qualification gaps. "
+                   "Tick items as you complete them; ticks are saved. The solicitation's own attachment table always controls.")
+        c1, c2 = st.columns([1, 3])
+        if c1.button("Build / refresh checklist"):
+            ev = db.latest_evaluation(conn, oid)
+            items = checklist.build_items(opp, db.list_requirements(conn, oid), ev)
+            n = checklist.sync(conn, oid, items)
+            db.log(conn, "build_checklist", "opportunity", oid, {"items": n}, actor="user")
+            conn.commit()
+            st.rerun()
+        rows = db.list_checklist(conn, oid)
+        if not rows:
+            st.info("No checklist yet. Click Build / refresh checklist.")
+        else:
+            done = sum(1 for r in rows if r["done"])
+            st.progress(done / len(rows), text=f"{done} of {len(rows)} items done")
+            for stage in checklist.STAGES:
+                group = [r for r in rows if r["stage"] == stage]
+                if not group:
+                    continue
+                st.markdown(f"**{checklist.STAGE_LABELS[stage]}**")
+                for r in group:
+                    val = st.checkbox(f"{r['text']}  \n:gray[{r['source']}{(' · ' + r['note']) if r.get('note') else ''}]", value=r["done"], key=f"ck_{r['id']}")
+                    if val != r["done"]:
+                        db.set_checklist_done(conn, r["id"], val)
+                        conn.commit()
+            st.download_button("Download checklist (Markdown)", checklist.as_markdown(opp, rows), f"bid_checklist_{oid}.md", "text/markdown")
+            if c2.button("Clear and rebuild from scratch"):
+                db.clear_checklist(conn, oid)
                 conn.commit()
                 st.rerun()
