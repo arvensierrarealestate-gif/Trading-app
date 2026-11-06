@@ -8,7 +8,7 @@ import streamlit as st
 
 from scout import config
 from scout.ui.common import entity_picker
-from scout.ui import dashboard, upload, detail, profile_page, sources_page, partners_page, alerts_page, audit_page, ranking, requirements_page, financial_page, subcontracting_page, matching_page
+from scout.ui import dashboard, upload, detail, profile_page, sources_page, partners_page, alerts_page, audit_page, ranking, requirements_page, financial_page, subcontracting_page, matching_page, system_check
 
 st.set_page_config(page_title="Maryland Contract Scout", page_icon="📋", layout="wide")
 config.ensure_dirs()
@@ -27,11 +27,12 @@ pages = {
     "profile": st.Page(profile_page.render, title="Business Profiles (Optional)", icon="🗂️", url_path="profile"),
     "partners": st.Page(partners_page.render, title="Partners", icon="👥", url_path="partners"),
     "audit": st.Page(audit_page.render, title="Audit log", icon="🧾", url_path="audit"),
+    "check": st.Page(system_check.render, title="System Check & Tests", icon="🧪", url_path="check"),
 }
 st.session_state.pages = pages
 nav = st.navigation({"Analyze": [pages[k] for k in ("dashboard", "detail", "ranking", "financial", "requirements", "subcontracting")],
                      "Match & notify": [pages[k] for k in ("matching", "alerts")],
-                     "Data & setup": [pages[k] for k in ("upload", "sources", "profile", "partners", "audit")]})
+                     "Data & setup": [pages[k] for k in ("upload", "sources", "profile", "partners", "audit", "check")]})
 with st.sidebar:
     st.markdown("**MD & DC Contract Scout v2.1** · private · never submits bids")
 entity_picker()

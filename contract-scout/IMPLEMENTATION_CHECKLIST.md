@@ -34,6 +34,8 @@ Legend: [x] done and tested · [~] coded, awaiting credentials or real-world tes
 - [x] Dashboard restructured into the eight sections with the requested filters
 - [x] 15-field email report cards for top High/Moderate contracts
 - [x] DC transparency portal; opt-in public-listing watcher (robots.txt honored; untested live)
+- [x] System Check & Tests page: one-click Claude reader test, IMAP login test, SMTP test email, public-listing dry run with in-app URL/terms settings, scheduled-task status, run-full-scan button; TESTING_GUIDE.md written
+- [x] Public-listing watcher settings editable in the app and saved to data/source_overrides.json (listing parser unit-tested)
 - [ ] Test against real Maryland and DC solicitations (needs documents from the live portals)
 
 ## Stage 1b - Objective review 2026-11-06

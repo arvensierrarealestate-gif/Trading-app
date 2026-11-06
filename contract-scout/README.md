@@ -9,6 +9,8 @@ A private web application that discovers, analyzes, ranks and reports Maryland a
 - **New pages:** Opportunity Discovery (with filters for rating, value, deadline, experience years, licensing difficulty, capital requirement, subcontracting), Contract Analysis, Opportunity Ranking, Financial Evaluation (conservative, base, optimistic), Qualification Requirements, Subcontracting Opportunities, Optional Business Matching, Notifications.
 - **Email reports** carry a 15-field opportunity card for the top High and Moderate contracts.
 - **Sources:** DC Contracts and Procurement Transparency Portal added; an opt-in public-listing watcher (honors robots.txt, off until you confirm a site's terms).
+- **System Check & Tests page** with one-click tests for the Claude reader, inbox login, email delivery, public-listing dry runs and the scheduled task; see `TESTING_GUIDE.md`.
+- Source settings (listing URLs, terms confirmation) are saved in `data/source_overrides.json`, so app updates never overwrite them.
 - Existing data is preserved; new columns are added by migration on first start, and the launcher backs up the database before every launch.
 
 A private web application that reads Maryland and Washington, DC government solicitations, compares every stated requirement with your company's **verified** qualifications, estimates whether the job can be profitable, and ranks opportunities on a dashboard.

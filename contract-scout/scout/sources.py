@@ -25,11 +25,45 @@ from .models import utcnow_iso
 USER_AGENT = "MarylandContractScout/0.1 (private research tool; contact owner)"
 
 
+OVERRIDES_FILE = "source_overrides.json"
+
+
+def _overrides_path() -> Path:
+    return Path(config.DATA_DIR) / OVERRIDES_FILE
+
+
+def load_overrides() -> dict:
+    p = _overrides_path()
+    if not p.exists():
+        return {}
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
+
+
+def save_source_override(source_id: str, **fields) -> dict:
+    """Persist per-source settings (listing_url, allowed_fetch, feed_url, notes) in data/, so app updates never overwrite them."""
+    ov = load_overrides()
+    cur = ov.get(source_id, {})
+    cur.update({k: v for k, v in fields.items() if v is not None})
+    ov[source_id] = cur
+    _overrides_path().parent.mkdir(parents=True, exist_ok=True)
+    _overrides_path().write_text(json.dumps(ov, indent=2), encoding="utf-8")
+    return cur
+
+
 def load_registry(path: Optional[Path] = None) -> list[dict]:
     p = Path(path or config.SOURCE_REGISTRY_PATH)
     with open(p, "r", encoding="utf-8") as f:
         data = json.load(f)
-    return data.get("sources", [])
+    ov = load_overrides()
+    out = []
+    for src in data.get("sources", []):
+        merged = dict(src)
+        merged.update(ov.get(src["id"], {}))
+        out.append(merged)
+    return out
 
 
 def save_registry(sources: list[dict], path: Optional[Path] = None) -> None:
@@ -108,13 +142,17 @@ def robots_allows(url: str, user_agent: str = "MarylandContractScout", timeout: 
 def fetch_public_listing(listing_url: str, timeout: int = 30) -> list[dict]:
     """Read ONE public listing page (no crawling, no login) and return solicitation-looking links.
 
-    Used only for sources whose terms the owner has confirmed. Rate: one page per scan. Untested against live portals
-    from the build environment; expect to tune the link filter per portal."""
+    Used only for sources whose terms the owner has confirmed. Rate: one page per scan."""
     if not robots_allows(listing_url):
         raise RuntimeError("robots.txt does not allow automated access to this page")
     req = Request(listing_url, headers={"User-Agent": USER_AGENT})
     with urlopen(req, timeout=timeout) as resp:
         html = resp.read(2_000_000).decode("utf-8", errors="replace")
+    return parse_listing_html(html, listing_url)
+
+
+def parse_listing_html(html: str, listing_url: str) -> list[dict]:
+    """Extract solicitation-looking links from a listing page's HTML (pure function, unit-tested)."""
     from html.parser import HTMLParser
     from urllib.parse import urljoin
 
@@ -146,7 +184,7 @@ def fetch_public_listing(listing_url: str, timeout: int = 30) -> list[dict]:
     for href, text in parser.links:
         if len(text) < 12 or href in seen:
             continue
-        if re.search(r"\b(ifb|rfp|rfq|rfi|bid|solicitation|proposal|quote)\b", text + " " + href, re.I):
+        if re.search(r"\b(ifb|rfp|rfq|rfi|bids?|solicitations?|proposals?|quotes?)\b", text + " " + href, re.I):
             seen.add(href)
             out.append({"title": text[:200], "link": href, "published": "", "summary": ""})
     return out[:200]
