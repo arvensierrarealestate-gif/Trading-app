@@ -36,7 +36,10 @@ def render():
     if opp["is_sample"]:
         st.caption("SAMPLE RECORD - fictitious solicitation used for testing.")
     top = st.columns(4)
-    top[0].metric("Qualification", f"{BADGE.get(opp['match_class'])} {opp['match_class'] or 'Not evaluated'}", f"score {opp['match_score'] or 0}")
+    if opp.get("match_class"):
+        top[0].metric("Business match", f"{BADGE.get(opp['match_class'])} {opp['match_class']}", f"score {opp['match_score'] or 0}")
+    else:
+        top[0].metric("Opportunity potential", opp.get("opportunity_potential") or "Not analyzed", f"{opp.get('potential_score') or 0}/100")
     top[1].metric("Recommendation", f"{REC_BADGE.get(opp['recommendation'])} {opp['recommendation'] or '—'}")
     top[2].metric("Bid deadline", deadlines.format_local(opp["bid_deadline_utc"]), deadlines.urgency_bucket(opp["bid_deadline_utc"]))
     top[3].metric("Contract value", money(opp["value_high"] or opp["value_low"]), opp["value_status"])
