@@ -31,6 +31,9 @@ Legend: [x] done and tested · [~] coded, awaiting credentials or real-world tes
 - [ ] You: DC OCP eSourcing registration and DC DGS OpenGov account for the pharmacy entity; CBE certification application
 - [ ] You: upload current DC pharmacy license, immunization certifications, Erie COI for the pharmacy entity
 
+- [x] Set-aside and award-basis extracted per solicitation and used in the commercial score
+- [x] One-click stage changes from the recommendation card; scan log viewer on Sources page
+
 ## Stage 2 - Permitted automated intake
 - [ ] You: pull a Certificate of Status for Sierra Real Estate LLC from Maryland Business Express and a current COI from Gray Insurance Group; record both in the profile
 - [ ] You: confirm who is the authorized signer for Sierra Real Estate LLC (operating agreement lists Tiffany Mia Smith as 100% member)
@@ -46,8 +49,8 @@ Legend: [x] done and tested · [~] coded, awaiting credentials or real-world tes
 - [x] Bid-package checklist per opportunity (standard forms + document items + profile gaps)
 - [x] run_scan.py + run_scan.bat + schedule_scan.bat (Windows Task Scheduler, weekdays 7:30 AM); cron line documented
 - [~] SMTP email digest (coded; needs SMTP_* credentials to test)
-- [ ] Google Sheets sync (service account) as alternative to CSV export
-- [ ] Prevailing/living wage lookup to pre-fill labor rate assumptions
+- [x] CSV snapshot, .ics deadline calendar and DB backups on every scan; [ ] Google Sheets live sync (service account) still optional
+- [x] Living/minimum wage floors by place of performance seed the labor rate (MD tiers, Montgomery, PG, DC); prevailing-wage construction flagged (wage determinations still come from the solicitation)
 - [ ] Bond premium and insurance quote tracking per opportunity
 - [ ] Award/bid-tabulation capture for partner research
 

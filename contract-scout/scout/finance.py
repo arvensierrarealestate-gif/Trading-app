@@ -34,8 +34,15 @@ DEFAULT_ASSUMPTIONS: dict[str, dict[str, Any]] = {
 }
 
 
-def default_assumptions(contract_value: Optional[float] = None, value_status: str = MISSING, bond_required: bool = True) -> dict:
+def default_assumptions(contract_value: Optional[float] = None, value_status: str = MISSING, bond_required: bool = True, opp: Optional[dict] = None) -> dict:
     a = {k: dict(v) for k, v in DEFAULT_ASSUMPTIONS.items()}
+    if opp:
+        from .wages import wage_floor
+        ctype = "construction" if (opp.get("industry") or "").startswith("Construction") else "service"
+        wf = wage_floor(opp.get("jurisdiction"), opp.get("location"), opp.get("agency"), ctype)
+        # start labor at the legal floor plus a modest premium; the solicitation's wage determination controls
+        a["labor_rate"]["value"] = round(wf["rate"] * 1.15, 2)
+        a["labor_rate"]["note"] = f"Seeded from {wf['basis']} ${wf['rate']:.2f}/h plus 15% ({wf['source']}). {wf['note']}"
     if contract_value is not None:
         a["contract_revenue"]["value"] = float(contract_value)
         a["contract_revenue"]["status"] = value_status if value_status in (VERIFIED, ASSUMED) else ASSUMED

@@ -49,7 +49,7 @@ def _recommendation_for(conn, opp: dict, eval_result: dict) -> str:
     if est:
         rec, _ = finance.recommend(eval_result["match_class"], est["results"], est["assumptions"], eval_result.get("legally_eligible", True))
         return rec
-    assumptions = finance.default_assumptions(contract_value_of(opp), opp.get("value_status") or "MISSING")
+    assumptions = finance.default_assumptions(contract_value_of(opp), opp.get("value_status") or "MISSING", opp=opp)
     results = finance.estimate(assumptions)
     rec, _ = finance.recommend(eval_result["match_class"], results, assumptions, eval_result.get("legally_eligible", True))
     return rec

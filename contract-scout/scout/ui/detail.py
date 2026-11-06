@@ -58,6 +58,20 @@ def render():
         with st.expander("How the commercial score was built"):
             for pcs in card["commercial_parts"]:
                 st.write(f"- **{pcs['component']}**: {pcs['points']} / {pcs['max']} — {pcs['why']}")
+        q1, q2, q3, q4 = st.columns(4)
+        def _set_status(new):
+            db.update_opportunity(conn, oid, status=new)
+            db.log(conn, "set_status", "opportunity", oid, {"status": new}, actor="user")
+            conn.commit()
+            st.rerun()
+        if q1.button("Mark Under Review"):
+            _set_status("Under Review")
+        if q2.button("Mark Qualified"):
+            _set_status("Qualified")
+        if q3.button("Preparing Bid"):
+            _set_status("Preparing Bid")
+        if q4.button("Reject this one"):
+            _set_status("Rejected")
         st.caption("Entity comparison and qualification reasons are on the tabs below. Nothing here submits a bid.")
 
     with st.expander("Facts and edits", expanded=False):
@@ -68,6 +82,7 @@ def render():
         c2.write(f"**Industry:** {opp['industry']}")
         c2.write(f"**Location:** {opp['location'] or 'Not found'}")
         c2.write(f"**Duration:** {opp['contract_duration'] or 'Not found'}")
+        c2.write(f"**Set-aside:** {opp.get('set_aside') or 'not read'} · **Award basis:** {opp.get('award_basis') or 'not read'}")
         c3.write(f"**Source:** {opp['source_id']}")
         if opp["source_url"]:
             c3.markdown(f"[Source link]({opp['source_url']})")
@@ -151,7 +166,10 @@ def render():
 
     with tabs[3]:
         est = db.latest_cost_estimate(conn, oid)
-        assumptions = est["assumptions"] if est else finance.default_assumptions(pipeline.contract_value_of(opp), opp["value_status"])
+        assumptions = est["assumptions"] if est else finance.default_assumptions(pipeline.contract_value_of(opp), opp["value_status"], opp=opp)
+        from ..wages import wage_floor, RESEARCHED_ON
+        wf = wage_floor(opp.get("jurisdiction"), opp.get("location"), opp.get("agency"), "construction" if (opp.get("industry") or "").startswith("Construction") else "service")
+        st.info(f"Wage floor for this location: ${wf['rate']:.2f}/hour ({wf['basis']}; researched {RESEARCHED_ON}). {wf['note']}", icon="💵")
         st.caption("Every number below is an editable assumption (ASSUMED) unless marked VERIFIED. Nothing is inferred from the solicitation except a published value.")
         with st.form("cost"):
             new_a = {}

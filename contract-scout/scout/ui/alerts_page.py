@@ -3,7 +3,7 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from .. import config, db, alerts, deadlines
+from .. import config, db, alerts, deadlines, calendar_export
 from .common import get_conn
 
 
@@ -21,6 +21,8 @@ def render():
     else:
         st.caption("None yet: nothing on file is both in a can-do industry and at least a Conditional Match with a live deadline.")
     st.caption("Can-do industries come from the active entity's profile (capabilities.industries): " + ", ".join(alerts.can_do_industries()))
+    st.download_button("Download deadlines calendar (.ics for Google/Outlook)", calendar_export.build_ics(conn, config.DASHBOARD_URL), "contract_scout_deadlines.ics", "text/calendar")
+    st.caption("Import the .ics file into Google Calendar (Settings > Import) to get bid-due and pre-bid meeting reminders. The scheduled scan refreshes data/exports/deadlines.ics daily.")
     st.subheader("Deadline board")
     rows = []
     for o in db.list_opportunities(conn):

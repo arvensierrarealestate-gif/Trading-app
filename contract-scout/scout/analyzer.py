@@ -199,7 +199,24 @@ def heuristic_extract(full_text: str, filename: str = "") -> dict:
         for sent in _sentences(ptext):
             if re.search(r"\b(scope of work|contractor shall provide|services include|the work consists)\b", sent, re.I):
                 scope_sents.append(sent)
+    low = full_text.lower()
+    set_aside = "none stated"
+    for pat, label in ((r"small business reserve|\bsbr\b", "Small Business Reserve"), (r"certified business enterprise|\bcbe\b", "CBE"),
+                       (r"\bvsbe\b|veteran-owned small business", "VSBE goal"), (r"\bmbe\b|minority business enterprise", "MBE goal")):
+        m2 = re.search(pat, low)
+        if m2:
+            pct = re.search(r"(\d{1,3})\s?%", low[m2.start():m2.start() + 160])
+            set_aside = label + (f" {pct.group(1)}%" if pct and "goal" in label else "")
+            break
+    if re.search(r"\b(lowest responsive|lowest responsible|low bid|lowest price|invitation for bids?|\bifb\b)", low):
+        award_basis = "lowest price"
+    elif re.search(r"\b(best value|technical evaluation|evaluation criteria|request for proposals?|\brfp\b)", low):
+        award_basis = "best value"
+    else:
+        award_basis = "not stated"
     return {
+        "set_aside": set_aside,
+        "award_basis": award_basis,
         "solicitation_number": _field(sol_num, sol_page, 0.5 if sol_num else 0.0),
         "title": _field(title, 1 if title else None, 0.4 if title else 0.0),
         "agency": _field(agency, agency_page, 0.45 if agency else 0.0),

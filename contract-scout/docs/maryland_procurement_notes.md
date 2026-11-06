@@ -75,3 +75,13 @@ From attachment indexes and submission checklists in state RFPs/IFBs. The solici
 - **CBE (Certified Business Enterprise)**, run by DSLBD: principal office must be physically in DC; size tested on 5-year average gross receipts against SBA standards; up to 45 business days to certify; gives evaluation preference points on RFPs and access to set-asides. The pharmacy entity's principal office is in DC, so it is the natural CBE candidate.
 - **DC Health**: pharmacy, immunization and vaccine-administration services are solicited through OCP; grant RFAs are separate. Pharmacies may enroll in the Vaccines for Children program.
 - No DC-wide RSS feed was found; intake relies on eSourcing and OpenGov notification emails.
+
+## Wage floors used by the cost estimator (researched 2026-11-06; re-verify yearly)
+| Place of performance | Floor used | Source |
+|---|---|---|
+| Maryland State contracts, Tier 1 counties (Anne Arundel, Baltimore City, Baltimore County, Howard, Montgomery, Prince George's) | $17.54/h from 2026-09-29 | Maryland Dept. of Labor, Living Wage for State Service Contracts |
+| Maryland State contracts, Tier 2 (all other counties) | $15.00/h (State minimum wage) | same |
+| Montgomery County, large employers (51+) | $18.00/h from 2026-07-01 (mid/small tiers vary by source; verify) | Montgomery County minimum wage notice |
+| Prince George's County contracts | $17.70/h county living wage | Bloomberg Tax report; confirm with the county |
+| Washington, DC contracts and assistance of $100,000+ | $18.40/h from 2026-07-01 (also DC minimum wage) | DC DOES 2026 Notice of Living Wage Increase |
+| Public construction | Prevailing wage by trade and county from the solicitation's wage determination (Maryland Dept. of Labor) | flagged, not priced |

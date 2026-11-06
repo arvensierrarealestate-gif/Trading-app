@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from scout import config, db, sources, alerts, pipeline, inbox  # noqa: E402
+from scout import config, db, sources, alerts, pipeline, inbox, maintenance  # noqa: E402
 from scout.profile import load_profile  # noqa: E402
 
 
@@ -41,6 +41,8 @@ def main() -> int:
         created = alerts.generate_alerts(conn)
         out = alerts.send_digest(conn, dashboard_url=config.DASHBOARD_URL)
         print(f"evaluated {n} opportunities; alerts created={len(created)}; digest sent via {out['channel']}")
+        snap = maintenance.snapshot(conn, config.DASHBOARD_URL)
+        print(f"snapshot: csv={snap['csv']} ics={snap['ics']} backup={snap['backup']}")
     return 0
 
 

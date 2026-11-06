@@ -70,7 +70,7 @@ def score(opp: dict, evaluation: Optional[dict], estimate: Optional[dict], can_d
 
     # 5. Access advantage (10): small procurement, set-aside the entity holds, DC CBE
     checks = (evaluation or {}).get("checks", [])
-    text = " ".join(c.get("requirement", "") for c in checks).lower()
+    text = " ".join(c.get("requirement", "") for c in checks).lower() + " " + (opp.get("set_aside") or "").lower()
     sbr = "small business reserve" in text or " sbr" in text
     cbe = "certified business enterprise" in text or " cbe" in text
     if value is not None and value <= SMALL_PROCUREMENT_MAX and (opp.get("jurisdiction") or "Maryland") == "Maryland":
@@ -96,6 +96,13 @@ def score(opp: dict, evaluation: Optional[dict], estimate: Optional[dict], can_d
         why += f"; {risk_hits} risk clause(s) such as liquidated damages or prevailing wage"
     add("Risk and bonding", pts, 10, why)
 
+    # award basis: a young entity competes better on price than on past-performance scoring
+    ab = (opp.get("award_basis") or "").lower()
+    exp_gap = any(c.get("category") == "experience" and c.get("result") in ("NOT_MET", "UNKNOWN") for c in checks)
+    if ab == "best value" and exp_gap:
+        add("Award basis", -4, 0, "Best-value award with unverified experience: technical scoring will favour incumbents")
+    elif ab == "lowest price":
+        add("Award basis", 0, 0, "Lowest-price award: price competitiveness decides")
     total = round(sum(p["points"] for p in parts), 1)
     mc = (evaluation or {}).get("match_class")
     if mc == POOR:

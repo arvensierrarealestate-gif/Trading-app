@@ -73,6 +73,7 @@ def ingest_document(conn, filename: str, data: bytes, *, source_id: str = "manua
             if new is not None and str(old) != str(new):
                 changes.append({"field": f, "old": old, "new": new})
         db.update_opportunity(conn, opp_id, last_seen=utcnow_iso(), bid_deadline_local=dl_local or existing["bid_deadline_local"],
+                              set_aside=extraction.get("set_aside") or existing.get("set_aside"), award_basis=extraction.get("award_basis") or existing.get("award_basis"),
                               deadline_tz=dl_tz or existing["deadline_tz"], deadline_status=VERIFIED if (dl_utc or existing["bid_deadline_utc"]) else MISSING,
                               value_status=value_status if value_low is not None else existing["value_status"], value_note=value_note or existing["value_note"], **new_vals)
         if doc_type == "solicitation" and changes:
@@ -89,6 +90,7 @@ def ingest_document(conn, filename: str, data: bytes, *, source_id: str = "manua
             summary=extraction.get("scope_summary", ""), contract_duration=duration, value_low=value_low, value_high=value_high,
             value_status=value_status, value_note=value_note, bid_deadline_utc=dl_utc, bid_deadline_local=dl_local, deadline_tz=dl_tz,
             deadline_status=VERIFIED if dl_utc else MISSING, is_sample=1 if is_sample else 0,
+            set_aside=extraction.get("set_aside"), award_basis=extraction.get("award_basis"),
         )
         created = True
     doc_id = db.add_document(conn, opp_id, filename, doc.sha256, doc_type=doc_type, page_count=doc.page_count, char_count=doc.char_count,

@@ -3,7 +3,7 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from .. import db, sources, config, inbox, alerts
+from .. import db, sources, config, inbox, alerts, maintenance
 from .common import get_conn
 
 
@@ -61,6 +61,8 @@ def render():
                 conn.commit()
                 st.write(f"**{s['id']}** → {r['status']} {r.get('reason', '')} · new leads: {r.get('new', 0)}")
 
+    with st.expander("Scheduled scan log (data/scan.log)"):
+        st.code(maintenance.scan_log_tail(), language="text")
     st.subheader("Scan history")
     hist = db.list_scans(conn)
     if hist:

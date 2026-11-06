@@ -50,6 +50,8 @@ SOLICITATION_SCHEMA = {
             "additionalProperties": False,
         },
         "scope_summary": {"type": "string"},
+        "set_aside": {"type": "string", "description": "Set-aside or preference program stated, e.g. 'Small Business Reserve', 'MBE goal 29%', 'CBE set-aside', 'VSBE goal', or 'none stated'"},
+        "award_basis": {"type": "string", "enum": ["lowest price", "best value", "not stated"], "description": "How award is decided"},
         "requirements": {"type": "array", "items": REQUIREMENT},
         "not_found": {
             "type": "array",
@@ -58,7 +60,7 @@ SOLICITATION_SCHEMA = {
         },
     },
     "required": ["solicitation_number", "title", "agency", "location", "contract_duration",
-                 "bid_deadline_text", "estimated_value", "scope_summary", "requirements", "not_found"],
+                 "bid_deadline_text", "estimated_value", "scope_summary", "set_aside", "award_basis", "requirements", "not_found"],
     "additionalProperties": False,
 }
 
@@ -72,5 +74,7 @@ Rules:
 - For experience, put the stated number of years or projects in 'value'.
 - If a category (eligibility, experience, license, insurance, bond, financial, staffing, equipment, meeting, submission, risk) is not addressed anywhere, list it in not_found. Do not invent a requirement for it.
 - If the estimated contract value is not stated, set low and high to null and say so in text.
+- State the set-aside or preference program exactly as written (SBR, MBE goal and percentage, CBE, VSBE, local preference) or 'none stated'.
+- award_basis is 'lowest price' for IFB/low-bid awards, 'best value' for RFPs with technical scoring, else 'not stated'.
 - Confidence is 0 to 1 and reflects how explicit the document is.
 Return JSON only, matching the schema."""

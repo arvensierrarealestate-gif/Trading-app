@@ -19,6 +19,8 @@ It never submits bids, never scrapes portals that forbid it, and never stores EI
 | 7. Subcontractor & partner tracker | Working (manual) | Record primes/subs/suppliers; detail page lists which gaps a partner could cover and which rules still apply to you. Automated award mining not built. |
 | 8. Opportunity dashboard | Working | Filters by industry, qualification, recommendation, status, deadline window, margin. CSV export. |
 | 9. Deadline & change alerts | Working (dry run) | The digest leads with **Opportunities you can do**: live deadline, industry in the entity's can-do list, Strong or Conditional Match, not rejected. Then 3/7/14-day deadline alerts, new/strong-match alerts, amendment detection. Email sends when SMTP is configured; otherwise digest files land in `data/outbox/`. |
+| Wage floors | Working | Labor-rate assumptions seed from the Maryland Living Wage tier, county minimum wages, or the DC Living Wage for the place of performance, with sources; prevailing-wage construction is flagged. |
+| Calendar, snapshots, backups | Working | Every scan writes `data/exports/opportunities_latest.csv`, `data/exports/deadlines.ics` (bid-due and pre-bid meeting reminders for Google/Outlook) and a database backup (14 kept). |
 | Bid-package checklist | Working | Per-opportunity checklist built from standard Maryland forms, the submission items the reader found (page refs), and open qualification gaps; ticks saved; Markdown export. |
 | 10. Audit log & test suite | Working | Every action logged. `pytest` suite covers extraction, engine, finance, dedupe, deadlines, alerts. |
 

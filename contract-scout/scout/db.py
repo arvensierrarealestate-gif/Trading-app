@@ -180,7 +180,7 @@ def connect(db_path: Optional[Path] = None) -> sqlite3.Connection:
 
 def _migrate(conn) -> None:
     cols = {r[1] for r in conn.execute("PRAGMA table_info(opportunities)").fetchall()}
-    for name, ddl in (("commercial_score", "REAL"), ("commercial_reasons", "TEXT"), ("recommended_entity", "TEXT")):
+    for name, ddl in (("commercial_score", "REAL"), ("commercial_reasons", "TEXT"), ("recommended_entity", "TEXT"), ("set_aside", "TEXT"), ("award_basis", "TEXT")):
         if name not in cols:
             conn.execute(f"ALTER TABLE opportunities ADD COLUMN {name} {ddl}")
 
@@ -220,7 +220,7 @@ def list_audit(conn, limit: int = 200) -> list[dict]:
 OPP_FIELDS = (
     "solicitation_number", "title", "agency", "jurisdiction", "industry", "location", "source_id",
     "source_url", "summary", "contract_duration", "value_low", "value_high", "value_status",
-    "value_note", "bid_deadline_utc", "bid_deadline_local", "deadline_tz", "deadline_status", "notes", "is_sample",
+    "value_note", "bid_deadline_utc", "bid_deadline_local", "deadline_tz", "deadline_status", "notes", "is_sample", "set_aside", "award_basis",
 )
 
 
