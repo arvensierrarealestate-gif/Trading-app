@@ -51,6 +51,10 @@ def source_readiness(src: dict) -> tuple[str, str]:
         if src.get("allowed_fetch") is True:
             return "ready", "Owner confirmed terms permit automated access."
         return "blocked", "Automated fetch disabled until terms of use are confirmed. Use manual upload."
+    if method == "public_listing":
+        if src.get("allowed_fetch") is True and src.get("listing_url"):
+            return "ready", "Owner confirmed the site's terms permit read-only automated access; robots.txt is checked on every run."
+        return "blocked", "Public-listing watcher is off until you read the site's terms and set allowed_fetch to true."
     if method == "api":
         return ("ready", "API configured.") if src.get("api_url") else ("blocked", "No API endpoint documented.")
     return "blocked", f"Unknown access method '{method}'."
@@ -84,6 +88,68 @@ def parse_feed(raw: bytes) -> list[dict]:
             "summary": re.sub(r"<[^>]+>", " ", it.findtext("atom:summary", default="", namespaces=ns) or "").strip(),
         })
     return items
+
+
+def robots_allows(url: str, user_agent: str = "MarylandContractScout", timeout: int = 15) -> bool:
+    """Honor robots.txt. Any failure to read it is treated as 'not allowed'."""
+    from urllib import robotparser
+    from urllib.parse import urlparse
+    p = urlparse(url)
+    rp = robotparser.RobotFileParser()
+    try:
+        req = Request(f"{p.scheme}://{p.netloc}/robots.txt", headers={"User-Agent": USER_AGENT})
+        with urlopen(req, timeout=timeout) as resp:
+            rp.parse(resp.read().decode("utf-8", errors="replace").splitlines())
+    except Exception:
+        return False
+    return rp.can_fetch(user_agent, url)
+
+
+def fetch_public_listing(listing_url: str, timeout: int = 30) -> list[dict]:
+    """Read ONE public listing page (no crawling, no login) and return solicitation-looking links.
+
+    Used only for sources whose terms the owner has confirmed. Rate: one page per scan. Untested against live portals
+    from the build environment; expect to tune the link filter per portal."""
+    if not robots_allows(listing_url):
+        raise RuntimeError("robots.txt does not allow automated access to this page")
+    req = Request(listing_url, headers={"User-Agent": USER_AGENT})
+    with urlopen(req, timeout=timeout) as resp:
+        html = resp.read(2_000_000).decode("utf-8", errors="replace")
+    from html.parser import HTMLParser
+    from urllib.parse import urljoin
+
+    class _Links(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.links: list[tuple[str, str]] = []
+            self._href = None
+            self._buf = ""
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "a":
+                self._href = dict(attrs).get("href")
+                self._buf = ""
+
+        def handle_data(self, data):
+            if self._href is not None:
+                self._buf += data
+
+        def handle_endtag(self, tag):
+            if tag == "a" and self._href:
+                self.links.append((urljoin(listing_url, self._href), re.sub(r"\s+", " ", self._buf).strip()))
+                self._href = None
+
+    parser = _Links()
+    parser.feed(html)
+    out = []
+    seen = set()
+    for href, text in parser.links:
+        if len(text) < 12 or href in seen:
+            continue
+        if re.search(r"\b(ifb|rfp|rfq|rfi|bid|solicitation|proposal|quote)\b", text + " " + href, re.I):
+            seen.add(href)
+            out.append({"title": text[:200], "link": href, "published": "", "summary": ""})
+    return out[:200]
 
 
 def fetch_notification_emails(limit: int = 50) -> list[dict]:
@@ -129,6 +195,8 @@ def scan_source(conn, src: dict) -> dict:
         elif src["access_method"] == "email_notification":
             items = [{"title": e["subject"], "link": e["links"][0] if e["links"] else "", "summary": e["body"][:500], "published": e["date"],
                       "solicitation_number": e["solicitation_number"]} for e in fetch_notification_emails()]
+        elif src["access_method"] == "public_listing":
+            items = fetch_public_listing(src["listing_url"])
         else:
             items = []
     except Exception as exc:  # network / parse errors are reported, never hidden

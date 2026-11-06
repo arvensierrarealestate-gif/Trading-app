@@ -43,7 +43,9 @@ def test_normalize_and_classify():
     assert classify_industry("roof replacement and hvac") == "Construction & Property Services"
     assert classify_industry("nightly janitorial custodial cleaning") == "Cleaning & Janitorial"
     assert classify_industry("school cafeteria meal service") == "Food & Catering"
-    assert classify_industry("hospital environmental services linen") == "Healthcare & Hospital Support"
+    assert classify_industry("hospital environmental services linen") == "Cleaning & Janitorial"
+    assert classify_industry("patient transport and medical supplies for the hospital") == "Healthcare & Hospital Support"
+    assert classify_industry("widget calibration", ai_hint="Metrology services") == "Other: Metrology services"
 
 
 def test_source_registry_readiness():

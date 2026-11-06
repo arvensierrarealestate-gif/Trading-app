@@ -16,7 +16,7 @@ REQUIREMENT = {
     "properties": {
         "category": {"type": "string", "enum": [
             "eligibility", "experience", "license", "insurance", "bond", "financial",
-            "staffing", "equipment", "meeting", "submission", "risk", "scope"]},
+            "staffing", "equipment", "meeting", "submission", "risk", "subcontracting", "preference", "restriction", "scope"]},
         "text": {"type": "string", "description": "Plain-English statement of the requirement"},
         "mandatory": {"type": "boolean"},
         "value": {"type": ["string", "null"], "description": "Numeric or literal detail, e.g. '1000000', '5 years', '5%'"},
@@ -50,6 +50,11 @@ SOLICITATION_SCHEMA = {
             "additionalProperties": False,
         },
         "scope_summary": {"type": "string"},
+        "industry": {"type": "string", "description": "Best industry label for the work, e.g. 'Cleaning & Janitorial', 'Construction & Property Services', 'Food & Catering', 'Pharmacy & Immunization', 'Hospitality & Lodging', 'Sanitation & Waste', 'Healthcare & Hospital Support', or a short new label if none fits"},
+        "services_requested": {"type": "array", "items": {"type": "string"}, "description": "Concrete services or products requested, 3-10 short items"},
+        "subcontracting_allowed": {"type": "string", "enum": ["yes", "no", "limited", "not stated"]},
+        "joint_venture_allowed": {"type": "string", "enum": ["yes", "no", "not stated"]},
+        "open_to_new_businesses": {"type": "string", "enum": ["yes", "no", "unclear"], "description": "'no' only if the document requires a minimum operating history or mandatory past performance that a new business cannot meet"},
         "set_aside": {"type": "string", "description": "Set-aside or preference program stated, e.g. 'Small Business Reserve', 'MBE goal 29%', 'CBE set-aside', 'VSBE goal', or 'none stated'"},
         "award_basis": {"type": "string", "enum": ["lowest price", "best value", "not stated"], "description": "How award is decided"},
         "requirements": {"type": "array", "items": REQUIREMENT},
@@ -60,7 +65,8 @@ SOLICITATION_SCHEMA = {
         },
     },
     "required": ["solicitation_number", "title", "agency", "location", "contract_duration",
-                 "bid_deadline_text", "estimated_value", "scope_summary", "set_aside", "award_basis", "requirements", "not_found"],
+                 "bid_deadline_text", "estimated_value", "scope_summary", "industry", "services_requested", "subcontracting_allowed",
+                 "joint_venture_allowed", "open_to_new_businesses", "set_aside", "award_basis", "requirements", "not_found"],
     "additionalProperties": False,
 }
 
@@ -76,5 +82,7 @@ Rules:
 - If the estimated contract value is not stated, set low and high to null and say so in text.
 - State the set-aside or preference program exactly as written (SBR, MBE goal and percentage, CBE, VSBE, local preference) or 'none stated'.
 - award_basis is 'lowest price' for IFB/low-bid awards, 'best value' for RFPs with technical scoring, else 'not stated'.
+- Use category 'subcontracting' for any clause on subcontracting, joint ventures, teaming or self-performance percentages; 'preference' for desirable-but-not-required qualifications and evaluation preferences (mark mandatory=false); 'restriction' for clauses limiting who may bid (certified-only, local-only, incumbent-only).
+- Separate mandatory requirements (shall/must) from preferred ones (should/preferred/desirable/points awarded).
 - Confidence is 0 to 1 and reflects how explicit the document is.
 Return JSON only, matching the schema."""

@@ -1,4 +1,15 @@
-# Maryland & DC Government Contract Scout Bot
+# Maryland & DC Government Contract Intelligence Bot (v2.1)
+
+A private web application that discovers, analyzes, ranks and reports Maryland and Washington, DC government contracting opportunities **independently of any specific company**. It answers: what is available, what is requested, what is required, how hard it is to qualify, what kinds of businesses could do the work, what the financial opportunity and risks are, and whether subcontracting is possible. Comparing a contract with a specific business is an optional, separate step.
+
+## What changed in v2.1
+- **General Contract Analysis is the default.** No business profile is needed. Every contract gets the ten entry-barrier questions answered with evidence, an entry-barrier rating, the business types that could perform it, and a 100-point opportunity score (industry relevance and accessibility 25, profitability 20, entry barriers 20, operational feasibility 15, financial exposure 10, competition and deadline readiness 10) with High, Moderate, Low or **Requires investigation**. Missing information lowers the score and never raises it.
+- **Business matching is optional.** The sidebar selector is now *Business Profile (Optional)* with the default *General Contract Analysis — No Business Selected*. Strong, Conditional and Poor Match appear only when a business is selected.
+- **Richer extraction.** Services requested, subcontracting and joint-venture provisions, preferred versus mandatory qualifications, eligibility restrictions, set-aside and award basis, AI-suggested industry for work outside the tracked list.
+- **New pages:** Opportunity Discovery (with filters for rating, value, deadline, experience years, licensing difficulty, capital requirement, subcontracting), Contract Analysis, Opportunity Ranking, Financial Evaluation (conservative, base, optimistic), Qualification Requirements, Subcontracting Opportunities, Optional Business Matching, Notifications.
+- **Email reports** carry a 15-field opportunity card for the top High and Moderate contracts.
+- **Sources:** DC Contracts and Procurement Transparency Portal added; an opt-in public-listing watcher (honors robots.txt, off until you confirm a site's terms).
+- Existing data is preserved; new columns are added by migration on first start, and the launcher backs up the database before every launch.
 
 A private web application that reads Maryland and Washington, DC government solicitations, compares every stated requirement with your company's **verified** qualifications, estimates whether the job can be profitable, and ranks opportunities on a dashboard.
 

@@ -6,6 +6,7 @@ import streamlit as st
 
 from .. import config, db
 from ..profile import load_profile, list_profiles, get_active_profile_id, set_active_profile_id
+from ..models import NO_BUSINESS, NO_BUSINESS_LABEL
 
 BADGE = {"Strong Match": "🟢", "Conditional Match": "🟡", "Poor Match": "🔴", None: "⚪", "": "⚪"}
 REC_BADGE = {"Pursue": "✅", "Investigate Further": "🔎", "Reject": "⛔", None: "—", "": "—"}
@@ -20,26 +21,28 @@ def get_conn():
 
 
 def entity_picker():
-    """Sidebar control: choose which legal entity evaluations run against."""
+    """Sidebar control: Business Profile (Optional). Default is general analysis with no business selected."""
     profiles = [p for p in list_profiles() if p["id"] != "company_profile"]
-    if not profiles:
-        return
-    ids = [p["id"] for p in profiles]
-    current = get_active_profile_id()
+    ids = [NO_BUSINESS] + [p["id"] for p in profiles]
+    names = {NO_BUSINESS: NO_BUSINESS_LABEL, **{p["id"]: p["name"] for p in profiles}}
+    current = get_active_profile_id() or NO_BUSINESS
     idx = ids.index(current) if current in ids else 0
     with st.sidebar:
-        choice = st.selectbox("Bidding entity", ids, index=idx, format_func=lambda i: next(p["name"] for p in profiles if p["id"] == i), key="entity_picker")
+        choice = st.selectbox("Business Profile (Optional)", ids, index=idx, format_func=lambda i: names.get(i, i), key="entity_picker",
+                              help="Leave on general analysis to evaluate contracts on their own terms. Pick a business to add eligibility matching.")
     if choice != current:
         set_active_profile_id(choice)
         st.rerun()
 
 
-def get_profile() -> tuple[dict, str]:
+def get_profile() -> tuple:
     profile, origin = load_profile()
-    if origin in ("sample", "template"):
-        st.warning(f"Using the **{origin}** company profile. Real evaluations need an entity profile in `profiles/` or `data/profiles/`.", icon="⚠️")
-    elif origin.startswith("entity:"):
-        st.caption(f"Evaluating as **{profile.get('entity', {}).get('legal_name', {}).get('value', origin)}** (profile version {profile.get('profile_version', '')}). Change the entity in the sidebar.")
+    if profile is None:
+        st.caption("Mode: **General Contract Analysis** (no business selected). Pick a Business Profile in the sidebar to add eligibility matching.")
+    elif origin == "sample":
+        st.warning("Using the **sample** company profile (fictitious).", icon="⚠️")
+    else:
+        st.caption(f"Business mode: **{profile.get('entity', {}).get('legal_name', {}).get('value', origin)}** (profile version {profile.get('profile_version', '')}). Switch back to general analysis in the sidebar.")
     return profile, origin
 
 

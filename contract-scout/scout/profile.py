@@ -57,33 +57,39 @@ def load_profile_by_id(profile_id: str) -> dict:
     raise FileNotFoundError(f"No profile with id '{profile_id}'")
 
 
-def load_profile(path: Optional[Path] = None) -> tuple[dict, str]:
-    """Return (profile, origin). origin is 'user', 'entity:<id>', 'sample' or 'template'.
+def load_profile(path: Optional[Path] = None) -> tuple[Optional[dict], str]:
+    """Return (profile, origin). origin is 'none' (general analysis, the default), 'user', 'entity:<id>', 'sample' or 'template'.
 
-    Order: explicit path; the active entity profile (data/active_profile.txt); data/company_profile.json;
-    the first shipped entity profile; the sample; the blank template."""
+    Order: explicit path; the active selection in data/active_profile.txt ('none' = no business); when nothing was ever
+    selected the app runs in general mode and returns (None, 'none')."""
     if path and Path(path).exists():
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f), "user"
     active = get_active_profile_id()
     profiles = list_profiles()
+    if not active or active == "none":
+        return None, "none"
     if active:
         for p in profiles:
             if p["id"] == active:
                 with open(p["path"], "r", encoding="utf-8") as f:
                     return json.load(f), f"entity:{p['id']}"
-    if Path(config.PROFILE_PATH).exists():
+    if active == "company_profile" and Path(config.PROFILE_PATH).exists():
         with open(config.PROFILE_PATH, "r", encoding="utf-8") as f:
             return json.load(f), "user"
-    real = [p for p in profiles if p["id"] != "company_profile"]
-    if real:
-        with open(real[0]["path"], "r", encoding="utf-8") as f:
-            return json.load(f), f"entity:{real[0]['id']}"
-    for p, origin in ((config.SAMPLE_PROFILE_PATH, "sample"), (config.TEMPLATE_PROFILE_PATH, "template")):
-        if Path(p).exists():
-            with open(p, "r", encoding="utf-8") as f:
-                return json.load(f), origin
-    raise FileNotFoundError("No company profile found. Copy company_profile_template.json to data/company_profile.json.")
+    if active == "sample" and Path(config.SAMPLE_PROFILE_PATH).exists():
+        with open(config.SAMPLE_PROFILE_PATH, "r", encoding="utf-8") as f:
+            return json.load(f), "sample"
+    return None, "none"
+
+
+def load_profile_or_sample() -> tuple[dict, str]:
+    """For scripts/tests that need some profile: the active one, else the shipped sample."""
+    p, origin = load_profile()
+    if p is not None:
+        return p, origin
+    with open(config.SAMPLE_PROFILE_PATH, "r", encoding="utf-8") as f:
+        return json.load(f), "sample"
 
 
 def save_profile(profile: dict, path: Optional[Path] = None) -> Path:

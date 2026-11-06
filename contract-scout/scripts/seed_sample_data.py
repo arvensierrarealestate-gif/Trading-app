@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from scout import config, db, intake, pipeline, alerts, finance  # noqa: E402
-from scout.profile import load_profile  # noqa: E402
+from scout.profile import load_profile_or_sample as load_profile  # noqa: E402
 
 
 def main(prefer_claude: bool = False) -> None:

@@ -97,9 +97,15 @@ def estimate(assumptions: dict) -> dict:
         "working_capital_needed": round(working_capital, 2),
         "retainage_held": round(retainage, 2),
         "inputs_all_assumed": all(v.get("status") != VERIFIED for k, v in a.items() if k != "contract_revenue"),
+        "scenarios": {"conservative": {"cost": round(high_cost, 2)}, "base": {"cost": round(total, 2)}, "optimistic": {"cost": round(low_cost, 2)}},
+        "reliable": rev is not None and rev > 0 and total > 0,
+        "reliability_note": ("Published value and cost assumptions present" if (rev and total > 0 and revenue_status == VERIFIED)
+                             else "Revenue is an assumption" if (rev and total > 0) else "Revenue or cost inputs missing: profitability not assessable"),
     }
     if rev is not None and rev > 0:
         gp = rev - total
+        for name, cost in (("conservative", high_cost), ("base", total), ("optimistic", low_cost)):
+            out["scenarios"][name].update({"gross_profit": round(rev - cost, 2), "margin_pct": round(100.0 * (rev - cost) / rev, 1)})
         out.update({
             "gross_profit_base": round(gp, 2),
             "gross_profit_low": round(rev - high_cost, 2),

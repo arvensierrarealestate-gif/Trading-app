@@ -87,6 +87,12 @@ _RULES: list[tuple[str, re.Pattern, bool]] = [
     ("staffing", re.compile(r"\b(background check|fingerprint|CJIS|drug[- ]free|key personnel|project manager shall|site supervisor)\b", re.I), True),
     ("equipment", re.compile(r"\b(contractor shall (furnish|provide) all (equipment|vehicles|tools))\b", re.I), True),
     ("risk", re.compile(r"\b(liquidated damages|prevailing wage|living wage|Davis-Bacon|termination for convenience|retainage)\b", re.I), True),
+    ("subcontracting", re.compile(r"\b(may not subcontract|shall not subcontract|no subcontracting|subcontracting is prohibited)\b", re.I), True),
+    ("subcontracting", re.compile(r"\b(subcontract(?:or|ing|ed)?s?|self-perform(?:ed|ance)?|teaming (?:agreement|arrangement)s?)\b", re.I), False),
+    ("subcontracting", re.compile(r"\b(joint ventures?|JV partners?)\b", re.I), False),
+    ("preference", re.compile(r"\b(preferred|desirable|desired qualifications?|highly desirable|points? (?:will be|shall be|may be) (?:awarded|given)|evaluation preference|local preference)\b", re.I), False),
+    ("restriction", re.compile(r"\b(only (?:certified|registered|licensed|local|SBR-certified|CBE)[^.]{0,60}(?:eligible|may bid|may submit|will be considered)|restricted to|limited to (?:certified|firms|vendors|businesses))\b", re.I), True),
+    ("restriction", re.compile(r"\b(incumbent|existing contractor only|pre-qualified (?:bidders|vendors) only|prequalified (?:bidders|vendors) only)\b", re.I), True),
 ]
 
 _SOL_NUM_RE = re.compile(
@@ -167,7 +173,9 @@ def heuristic_extract(full_text: str, filename: str = "") -> dict:
                         value = f"{n} years"
                 elif cat == "eligibility" and "MBE" in m.group(0).upper() and m.lastindex and m.lastindex >= 2 and str(m.group(2)).isdigit():
                     value = f"{m.group(2)}%"
-                is_mandatory = mandatory and (bool(re.search(r"\b(shall|must|required|mandatory|minimum|only .{0,40}eligible)\b", sent, re.I)) or cat in ("insurance", "bond", "eligibility", "license"))
+                is_mandatory = mandatory and (bool(re.search(r"\b(shall|must|required|mandatory|minimum|only .{0,40}eligible)\b", sent, re.I)) or cat in ("insurance", "bond", "eligibility", "license", "restriction"))
+                if cat in ("preference",) or (cat == "subcontracting" and not mandatory):
+                    is_mandatory = False
                 reqs.append({
                     "category": cat,
                     "text": sent if len(sent) < 300 else sent[:297] + "...",
@@ -214,7 +222,30 @@ def heuristic_extract(full_text: str, filename: str = "") -> dict:
         award_basis = "best value"
     else:
         award_basis = "not stated"
+    def _flag(yes_pat, no_pat):
+        if re.search(no_pat, low):
+            return "no"
+        if re.search(yes_pat, low):
+            return "yes"
+        return "not stated"
+    subc = _flag(r"\bsubcontract", r"\b(may not subcontract|shall not subcontract|no subcontracting|subcontracting is prohibited)")
+    if subc == "yes" and re.search(r"self-perform[^.]{0,40}\d{1,3}\s?%", low):
+        subc = "limited"
+    jv = _flag(r"\bjoint venture", r"\bjoint ventures? (?:are|is) not (?:permitted|allowed)")
+    years_req = any(r["category"] == "experience" and r["mandatory"] and re.search(r"\d+\s*years", r.get("value") or "") for r in reqs)
+    open_new = "no" if years_req else ("unclear" if any(r["category"] == "experience" and r["mandatory"] for r in reqs) else "yes")
+    services = []
+    for sent in scope_sents[:6]:
+        for piece in re.split(r",|;| and ", sent):
+            piece = piece.strip(" .")
+            if 8 < len(piece) < 70 and not piece.lower().startswith(("the contractor", "services include", "scope of work")):
+                services.append(piece)
     return {
+        "industry": "",
+        "services_requested": services[:10],
+        "subcontracting_allowed": subc,
+        "joint_venture_allowed": jv,
+        "open_to_new_businesses": open_new,
         "set_aside": set_aside,
         "award_basis": award_basis,
         "solicitation_number": _field(sol_num, sol_page, 0.5 if sol_num else 0.0),

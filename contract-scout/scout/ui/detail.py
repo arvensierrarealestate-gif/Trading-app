@@ -32,6 +32,7 @@ def render():
     profile, _ = get_profile()
 
     st.title(opp["title"])
+    st.caption("Contract Analysis: requirements, deadlines, scope, documents, restrictions, and the company-independent opportunity assessment.")
     if opp["is_sample"]:
         st.caption("SAMPLE RECORD - fictitious solicitation used for testing.")
     top = st.columns(4)
@@ -42,20 +43,32 @@ def render():
 
     card = recommend.build_card(conn, oid, profile, config.DASHBOARD_URL)
     with st.container(border=True):
-        st.markdown(f"### Recommendation: {REC_BADGE.get(card['recommendation'])} {card['recommendation']}")
-        r1, r2, r3 = st.columns(3)
-        r1.metric("Recommended entity", card["recommended_entity"] or "n/a", card["entity_match"] or "")
-        r2.metric("Commercial score", f"{card['commercial_score']}/100")
-        r3.metric("Jurisdiction", card["jurisdiction"] or "Maryland")
-        if card["why_it_matches"]:
-            st.markdown("**Why it fits:** " + " · ".join(card["why_it_matches"][:4]))
-        if card["missing"]:
-            st.markdown("**Missing or unverified:** " + " · ".join(card["missing"][:6]))
-        if card["partner_path"]:
-            st.markdown("**Subcontractor / partner path:** " + " · ".join(card["partner_path"][:4]))
+        st.markdown(f"### {card.get('potential') or 'Not analyzed'} opportunity potential · {card['commercial_score'] if card['commercial_score'] is not None else '—'}/100 · Recommendation: {card['recommendation']}")
+        r1, r2, r3, r4 = st.columns(4)
+        r1.metric("Entry barrier", (card.get("entry_barrier") or "unknown").title())
+        r2.metric("Jurisdiction", card["jurisdiction"] or "Maryland")
+        r3.metric("Subcontracting", "feasible" if card.get("subcontract_feasible") else "restricted / unknown")
+        r4.metric("Business match", f"{card['recommended_entity'] or '—'}", card["entity_match"] or ("select a business" if not card.get("business_mode") else ""))
+        if card.get("services"):
+            st.markdown("**Services requested:** " + "; ".join(card["services"][:8]))
+        if card.get("business_types"):
+            st.markdown("**Business types that could perform this:** " + ", ".join(card["business_types"]))
+        if card.get("promising"):
+            st.markdown("**Why it looks promising:** " + " · ".join(card["promising"]))
+        if card.get("barriers"):
+            st.markdown("**Barriers to bidding:** " + " · ".join(card["barriers"]))
+        if card.get("missing_info"):
+            st.warning("Information gaps: " + ", ".join(card["missing_info"]) + ". The score cannot be high until these are known.")
+        if card.get("business_mode"):
+            if card["why_it_matches"]:
+                st.markdown("**Why it fits the selected business:** " + " · ".join(card["why_it_matches"][:4]))
+            if card["missing"]:
+                st.markdown("**Missing or unverified for this business:** " + " · ".join(card["missing"][:6]))
+            if card["partner_path"]:
+                st.markdown("**Subcontractor / partner path:** " + " · ".join(card["partner_path"][:4]))
         if card["immediate_actions"]:
             st.markdown("**Do first:** " + " · ".join(card["immediate_actions"][:5]))
-        with st.expander("How the commercial score was built"):
+        with st.expander("How the opportunity score was built"):
             for pcs in card["commercial_parts"]:
                 st.write(f"- **{pcs['component']}**: {pcs['points']} / {pcs['max']} — {pcs['why']}")
         q1, q2, q3, q4 = st.columns(4)
@@ -116,7 +129,7 @@ def render():
                 st.success("Saved.")
                 st.rerun()
 
-    tabs = st.tabs(["Requirements (traceable)", "Qualification checks", "Compare entities", "Cost & margin", "Documents & changes", "Partners", "Bid checklist"])
+    tabs = st.tabs(["Requirements (traceable)", "Business qualification checks", "Compare entities", "Cost & margin", "Documents & changes", "Partners", "Bid checklist", "General analysis"])
 
     with tabs[0]:
         reqs = db.list_requirements(conn, oid)
@@ -130,12 +143,14 @@ def render():
             st.info("No requirements extracted yet.")
 
     with tabs[1]:
-        if st.button("Re-run qualification against current profile"):
-            res = pipeline.evaluate_opportunity(conn, oid, profile, actor="user")
+        if profile is None:
+            st.info("No business selected. Pick a Business Profile in the sidebar to run Strong / Conditional / Poor matching; the General analysis tab needs no business.")
+        if st.button("Re-run analysis" + (" and business matching" if profile is not None else "")):
+            res = pipeline.evaluate_opportunity(conn, oid, profile, actor="user", use_active_profile=False)
             conn.commit()
-            st.success(f"{res['match_class']} · {res['summary']}")
+            st.success(f"{res['match_class'] or 'General analysis'} · {res['summary']}")
             st.rerun()
-        ev = db.latest_evaluation(conn, oid)
+        ev = db.latest_evaluation(conn, oid) if (profile is not None and opp.get("match_class")) else None
         if ev:
             st.write(f"**{ev['match_class']}** (score {ev['score']}) evaluated {ev['created_at'][:16]} against profile `{ev['profile_version']}`. {ev['summary']}")
             st.caption("Why: only VERIFIED profile facts satisfy a rule. UNKNOWN on any mandatory rule blocks Strong Match. Owner or affiliate experience never counts as entity experience.")
@@ -274,3 +289,15 @@ def render():
                 db.clear_checklist(conn, oid)
                 conn.commit()
                 st.rerun()
+
+    with tabs[7]:
+        st.caption("Company-independent analysis of this contract: the ten entry-barrier questions, each with evidence from the documents.")
+        for a in card.get("barrier_answers", []):
+            icon = {"low": "🟢", "medium": "🟡", "high": "🔴", "unknown": "⚪"}.get(a["barrier"], "⚪")
+            st.write(f"{icon} **{a['question']}** {a['answer']}  \n:gray[evidence: {a['evidence']}{(' · ' + a['note']) if a.get('note') else ''}]")
+        st.write(f"**Set-aside:** {card.get('set_aside') or 'none stated'} · **Award basis:** {card.get('award_basis') or 'not stated'}")
+        if card.get("financial"):
+            f = card["financial"]
+            st.write(f"**Financial reliability:** {f.get('reliability_note')}")
+            if f.get("scenarios") and f["scenarios"].get("base", {}).get("margin_pct") is not None:
+                st.write(f"Scenarios: conservative {f['scenarios']['conservative'].get('margin_pct')}% · base {f['scenarios']['base'].get('margin_pct')}% · optimistic {f['scenarios']['optimistic'].get('margin_pct')}%")

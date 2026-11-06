@@ -180,7 +180,9 @@ def connect(db_path: Optional[Path] = None) -> sqlite3.Connection:
 
 def _migrate(conn) -> None:
     cols = {r[1] for r in conn.execute("PRAGMA table_info(opportunities)").fetchall()}
-    for name, ddl in (("commercial_score", "REAL"), ("commercial_reasons", "TEXT"), ("recommended_entity", "TEXT"), ("set_aside", "TEXT"), ("award_basis", "TEXT")):
+    for name, ddl in (("commercial_score", "REAL"), ("commercial_reasons", "TEXT"), ("recommended_entity", "TEXT"), ("set_aside", "TEXT"), ("award_basis", "TEXT"),
+                      ("services_requested", "TEXT"), ("subcontracting_allowed", "TEXT"), ("joint_venture_allowed", "TEXT"), ("open_to_new_businesses", "TEXT"),
+                      ("opportunity_potential", "TEXT"), ("potential_score", "REAL"), ("potential_reasons", "TEXT"), ("barriers_json", "TEXT")):
         if name not in cols:
             conn.execute(f"ALTER TABLE opportunities ADD COLUMN {name} {ddl}")
 
@@ -221,6 +223,8 @@ OPP_FIELDS = (
     "solicitation_number", "title", "agency", "jurisdiction", "industry", "location", "source_id",
     "source_url", "summary", "contract_duration", "value_low", "value_high", "value_status",
     "value_note", "bid_deadline_utc", "bid_deadline_local", "deadline_tz", "deadline_status", "notes", "is_sample", "set_aside", "award_basis",
+    "services_requested", "subcontracting_allowed", "joint_venture_allowed", "open_to_new_businesses",
+    "opportunity_potential", "potential_score", "potential_reasons", "barriers_json",
 )
 
 
@@ -467,6 +471,8 @@ def counts(conn) -> dict:
     out["total"] = conn.execute("SELECT COUNT(*) FROM opportunities").fetchone()[0]
     for mc in ("Strong Match", "Conditional Match", "Poor Match"):
         out[mc] = conn.execute("SELECT COUNT(*) FROM opportunities WHERE match_class=?", (mc,)).fetchone()[0]
+    for pot in ("High", "Moderate", "Low", "Requires investigation"):
+        out[pot] = conn.execute("SELECT COUNT(*) FROM opportunities WHERE opportunity_potential=?", (pot,)).fetchone()[0]
     out["unclassified"] = conn.execute("SELECT COUNT(*) FROM opportunities WHERE match_class IS NULL").fetchone()[0]
     out["unsent_alerts"] = conn.execute("SELECT COUNT(*) FROM alerts WHERE sent_at IS NULL").fetchone()[0]
     out["unacknowledged_changes"] = conn.execute("SELECT COUNT(*) FROM change_events WHERE acknowledged=0").fetchone()[0]

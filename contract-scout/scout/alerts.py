@@ -5,6 +5,7 @@ the content can be reviewed before any email goes out.
 """
 from __future__ import annotations
 
+import json
 import smtplib
 from datetime import datetime, timezone
 from email.message import EmailMessage
@@ -57,12 +58,14 @@ def generate_alerts(conn, now: Optional[datetime] = None) -> list[dict]:
 
 
 def can_do_industries(profile: Optional[dict] = None) -> tuple[str, ...]:
-    """Industries the active entity says it can serve; falls back to the owner's default list."""
+    """Industries in focus: the selected business's list, else the system's tracked industries."""
     if profile is None:
         try:
             profile, _ = load_profile()
         except FileNotFoundError:
-            return DEFAULT_CAN_DO_INDUSTRIES
+            profile = None
+    if profile is None:
+        return DEFAULT_CAN_DO_INDUSTRIES
     f = fact(profile, "capabilities.industries")
     vals = tuple(f.value) if isinstance(f.value, list) and f.value else ()
     return vals or DEFAULT_CAN_DO_INDUSTRIES
@@ -83,19 +86,26 @@ def doable_opportunities(conn, profile: Optional[dict] = None, now: Optional[dat
             continue
         if o["recommendation"] == REJECT:
             continue
-        ev = db.latest_evaluation(conn, o["id"])
-        if not ev:
-            continue
-        if ev["match_class"] == STRONG:
-            why = "Strong Match"
-        elif ev["match_class"] == CONDITIONAL:
+        pot = o.get("opportunity_potential")
+        if o.get("match_class"):   # business mode
+            ev = db.latest_evaluation(conn, o["id"])
+            if not ev or ev["match_class"] not in (STRONG, CONDITIONAL):
+                continue
             open_items = [c for c in ev["checks"] if c["mandatory"] and c["result"] in ("UNKNOWN", "NOT_MET")]
-            why = f"Conditional Match, {len(open_items)} item(s) to resolve"
-        else:
-            continue
-        gaps = [c["requirement"][:60] for c in ev["checks"] if c["mandatory"] and c["result"] in ("UNKNOWN", "NOT_MET")][:3]
-        out.append({"opportunity": o, "why": why, "gaps": gaps, "days_left": d, "commercial_score": o.get("commercial_score"), "entity": o.get("recommended_entity")})
-    out.sort(key=lambda x: (x["why"] != "Strong Match", -(x["commercial_score"] or 0), x["days_left"] if x["days_left"] is not None else 9999))
+            why = "Strong Match" if ev["match_class"] == STRONG else f"Conditional Match, {len(open_items)} item(s) to resolve"
+            gaps = [c["requirement"][:60] for c in open_items][:3]
+        else:                      # general mode
+            if pot not in ("High", "Moderate"):
+                continue
+            why = f"{pot} opportunity potential"
+            try:
+                access = json.loads(o.get("barriers_json") or "{}")
+            except json.JSONDecodeError:
+                access = {}
+            gaps = [a["question"].rstrip("?") + ": " + a["answer"][:50] for a in access.get("answers", []) if a.get("barrier") in ("high", "unknown")][:3]
+        out.append({"opportunity": o, "why": why, "gaps": gaps, "days_left": d, "commercial_score": o.get("potential_score") or o.get("commercial_score"),
+                    "entity": o.get("recommended_entity"), "potential": pot})
+    out.sort(key=lambda x: (0 if (x["why"] == "Strong Match" or x["potential"] == "High") else 1, -(x["commercial_score"] or 0), x["days_left"] if x["days_left"] is not None else 9999))
     return out
 
 
@@ -114,7 +124,16 @@ def build_digest(conn, dashboard_url: str = "http://localhost:8501", profile: Op
             [f"{x['opportunity']['title']} [{x['opportunity']['industry']}] due {deadlines.format_local(x['opportunity']['bid_deadline_utc'])} "
              f"- {x['why']}; score {x['commercial_score'] if x['commercial_score'] is not None else 'n/a'}/100; entity: {x['entity'] or 'n/a'}" + (f"; resolve: {'; '.join(x['gaps'])}" if x['gaps'] else "") + f"  -> {dashboard_url}/detail?opp={x['opportunity']['id']}" for x in doable])
     if not doable:
-        lines += ["OPPORTUNITIES YOU CAN DO", "  - None yet. Everything on file is either outside your industries, past deadline, or Poor Match.", ""]
+        lines += ["OPPORTUNITIES YOU CAN DO", "  - None yet. Everything on file is either outside the tracked industries, past deadline, low potential, or Poor Match.", ""]
+    else:
+        from . import recommend
+        lines.append("DETAILED REPORTS (top " + str(min(5, len(doable))) + ")")
+        for x in doable[:5]:
+            try:
+                lines.append(recommend.card_text(recommend.build_card(conn, x["opportunity"]["id"], profile, dashboard_url)))
+            except Exception as exc:  # a broken card must not kill the digest
+                lines.append(f"  (report unavailable for #{x['opportunity']['id']}: {exc})")
+            lines.append("")
     section("NEW OPPORTUNITIES", [a["message"] for a in unsent if a["kind"] == "new"])
     section("STRONG MATCHES", [a["message"] for a in unsent if a["kind"] == "strong_match"])
     section("DEADLINES APPROACHING", [a["message"] for a in unsent if a["kind"].startswith("deadline")])

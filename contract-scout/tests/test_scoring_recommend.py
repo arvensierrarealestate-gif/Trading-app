@@ -47,7 +47,7 @@ def test_evaluation_stores_score_and_entity_and_card(conn):
     assert card["recommended_entity"] and card["commercial_parts"] and card["dashboard_link"].endswith(f"opp={opp['id']}")
     assert card["immediate_actions"] and card["recommendation"] in ("Pursue", "Investigate Further", "Reject")
     txt = recommend.card_text(card)
-    assert "Recommended entity" in txt and "Commercial score" in txt
+    assert "Opportunity score" in txt and "Business match" in txt and "15. Official solicitation" in txt
 
 
 def test_cancellation_notice_marks_opportunity_and_alerts(conn, profile):

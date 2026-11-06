@@ -22,6 +22,20 @@ Legend: [x] done and tested · [~] coded, awaiting credentials or real-world tes
 - [x] Multi-entity profiles (profiles/ + data/profiles override), sidebar entity picker, Compare entities tab
 - [x] Real profiles for Sierra Real Estate LLC and Medwise Seniors LLC built from SDAT, formation, COI, P&L and license documents
 
+## v2.1 - Company-independent intelligence (2026-11-06)
+- [x] Inspected and backed up (launcher backs up data/scout.db before each start; migrations add columns)
+- [x] Company-specific dependencies removed from the primary pipeline; general analysis always runs
+- [x] Business profiles optional (selector default: General Contract Analysis — No Business Selected)
+- [x] Industry keyword maps expanded for the five groups; AI industry hint; subcontracting / preference / restriction categories
+- [x] Extraction: services requested, subcontracting and JV flags, open-to-new-businesses, set-aside, award basis
+- [x] Ten entry-barrier questions with evidence; business types; mandatory vs preferred
+- [x] 100-point opportunity model with High / Moderate / Low / Requires investigation and explanations
+- [x] Financial scenarios (conservative, base, optimistic) with reliability flag
+- [x] Dashboard restructured into the eight sections with the requested filters
+- [x] 15-field email report cards for top High/Moderate contracts
+- [x] DC transparency portal; opt-in public-listing watcher (robots.txt honored; untested live)
+- [ ] Test against real Maryland and DC solicitations (needs documents from the live portals)
+
 ## Stage 1b - Objective review 2026-11-06
 - [x] Washington, DC sources (OCP eSourcing, DGS OpenGov, DC Health, DCPS, DC Housing Authority, DC Water) with jurisdiction tagging
 - [x] Pharmacy & Immunization industry and the pharmacy entity profile (Sierra International Pharmaceutical Corporation)

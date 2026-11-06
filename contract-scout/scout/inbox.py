@@ -226,7 +226,7 @@ def process_notice(conn, notice: Notice, profile: Optional[dict] = None, prefer_
             db.replace_requirements(conn, oid, doc_id, ext.get("requirements", []))
     if report["opportunity_id"]:
         try:
-            pipeline.evaluate_opportunity(conn, report["opportunity_id"], profile, actor=actor)
+            pipeline.evaluate_opportunity(conn, report["opportunity_id"], profile, actor=actor, use_active_profile=profile is None)
         except Exception as exc:
             report["errors"].append(f"evaluate: {exc}")
     db.mark_email_processed(conn, notice.message_id, notice.uid, report["opportunity_id"], notice.subject)

@@ -6,6 +6,7 @@ seeder and (later) automated sources.
 from __future__ import annotations
 
 import difflib
+import json
 from typing import Any, Optional
 
 from . import db, documents, analyzer, deadlines
@@ -58,7 +59,7 @@ def ingest_document(conn, filename: str, data: bytes, *, source_id: str = "manua
     value_note = ev.get("text", "")
     if ev.get("page_ref"):
         value_note += f" ({ev['page_ref']})"
-    industry = overrides.get("industry") or classify_industry(" ".join([title or "", extraction.get("scope_summary", ""), doc.text[:5000]]))
+    industry = overrides.get("industry") or classify_industry(" ".join([title or "", extraction.get("scope_summary", ""), doc.text[:5000]]), ai_hint=extraction.get("industry"))
 
     existing, reason = find_duplicate(conn, sol, agency, title)
     changes: list[dict] = []
@@ -74,6 +75,10 @@ def ingest_document(conn, filename: str, data: bytes, *, source_id: str = "manua
                 changes.append({"field": f, "old": old, "new": new})
         db.update_opportunity(conn, opp_id, last_seen=utcnow_iso(), bid_deadline_local=dl_local or existing["bid_deadline_local"],
                               set_aside=extraction.get("set_aside") or existing.get("set_aside"), award_basis=extraction.get("award_basis") or existing.get("award_basis"),
+                              services_requested=json.dumps(extraction.get("services_requested") or json.loads(existing.get("services_requested") or "[]")),
+                              subcontracting_allowed=extraction.get("subcontracting_allowed") or existing.get("subcontracting_allowed"),
+                              joint_venture_allowed=extraction.get("joint_venture_allowed") or existing.get("joint_venture_allowed"),
+                              open_to_new_businesses=extraction.get("open_to_new_businesses") or existing.get("open_to_new_businesses"),
                               deadline_tz=dl_tz or existing["deadline_tz"], deadline_status=VERIFIED if (dl_utc or existing["bid_deadline_utc"]) else MISSING,
                               value_status=value_status if value_low is not None else existing["value_status"], value_note=value_note or existing["value_note"], **new_vals)
         if doc_type == "solicitation" and changes:
@@ -91,6 +96,8 @@ def ingest_document(conn, filename: str, data: bytes, *, source_id: str = "manua
             value_status=value_status, value_note=value_note, bid_deadline_utc=dl_utc, bid_deadline_local=dl_local, deadline_tz=dl_tz,
             deadline_status=VERIFIED if dl_utc else MISSING, is_sample=1 if is_sample else 0,
             set_aside=extraction.get("set_aside"), award_basis=extraction.get("award_basis"),
+            services_requested=json.dumps(extraction.get("services_requested") or []), subcontracting_allowed=extraction.get("subcontracting_allowed"),
+            joint_venture_allowed=extraction.get("joint_venture_allowed"), open_to_new_businesses=extraction.get("open_to_new_businesses"),
         )
         created = True
     doc_id = db.add_document(conn, opp_id, filename, doc.sha256, doc_type=doc_type, page_count=doc.page_count, char_count=doc.char_count,

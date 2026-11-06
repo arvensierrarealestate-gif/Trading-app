@@ -23,7 +23,11 @@ MATCH_CLASSES = (STRONG, CONDITIONAL, POOR)
 PURSUE = "Pursue"
 INVESTIGATE = "Investigate Further"
 REJECT = "Reject"
-RECOMMENDATIONS = (PURSUE, INVESTIGATE, REJECT)
+WORTH_BIDDING = "Worth bidding"
+LOW_PRIORITY = "Low priority"
+RECOMMENDATIONS = (PURSUE, INVESTIGATE, REJECT, WORTH_BIDDING, LOW_PRIORITY)
+NO_BUSINESS = "none"
+NO_BUSINESS_LABEL = "General Contract Analysis — No Business Selected"
 
 # ---- Pipeline status of an opportunity ------------------------------------
 OPP_STATUSES = ("New", "Under Review", "Qualified", "Preparing Bid", "Submitted", "Awarded", "Lost", "Rejected", "Cancelled")
@@ -47,6 +51,9 @@ REQ_CATEGORIES = (
     "meeting",         # pre-bid meetings, site visits (mandatory or optional)
     "submission",      # required forms, affidavits, format, delivery method
     "risk",            # liquidated damages, prevailing wage, termination, restrictions
+    "subcontracting",  # subcontracting, joint venture, teaming and self-performance rules
+    "preference",      # preferred (not mandatory) qualifications and evaluation preferences
+    "restriction",     # eligibility restrictions: certified-only, geographic, incumbent-only
     "scope",           # scope of work items
 )
 # Categories where a solicitation almost always has a rule. If we find nothing,
@@ -56,38 +63,41 @@ CORE_MANDATORY_CATEGORIES = ("eligibility", "experience", "license", "insurance"
 # ---- Industries and keyword map (used only to tag, never to decide) -------
 INDUSTRIES = {
     "Construction & Property Services": [
-        "construction", "renovation", "rehabilitation", "roof", "hvac", "plumbing",
-        "electrical", "painting", "flooring", "demolition", "landscap", "tree",
-        "property maintenance", "mowing", "snow removal", "carpentry", "masonry",
-        "general contractor", "mhic", "building repair",
+        "construction", "renovation", "rehabilitation", "rehab", "remodel", "roof", "hvac", "plumbing",
+        "electrical", "painting", "flooring", "carpet", "tile", "demolition", "landscap", "groundskeeping", "grounds maintenance",
+        "tree", "mowing", "snow removal", "property maintenance", "building maintenance", "facility maintenance",
+        "facilities management", "facility management", "handyman", "repairs", "carpentry", "masonry", "drywall",
+        "general contractor", "mhic", "building repair", "window replacement", "door replacement", "fencing", "paving",
     ],
     "Cleaning & Janitorial": [
-        "janitorial", "custodial", "cleaning", "sanitation", "floor care", "housekeeping",
-        "disinfect", "window washing", "carpet cleaning", "waste removal",
+        "janitorial", "custodial", "cleaning", "office cleaning", "housekeeping services", "floor care", "carpet cleaning",
+        "window washing", "disinfect", "environmental services", "school sanitation", "hospital sanitation",
+        "cleaning supplies", "janitorial supplies", "sanitary supplies", "paper products", "restroom supplies",
+    ],
+    "Sanitation & Waste": [
+        "sanitation", "sanitary", "waste management", "waste", "refuse", "trash", "recycling", "pest control",
+        "extermination", "portable toilet", "restroom sanitation", "hygiene", "litter", "street sweeping",
+        "grease trap", "septic", "hazardous materials", "medical waste", "biohazard", "dumpster",
     ],
     "Food & Catering": [
-        "food service", "catering", "meal", "cafeteria", "food supply", "food distribution",
-        "produce", "grocery", "nutrition", "kitchen", "dietary", "vending",
+        "food service", "catering", "meal", "packaged meals", "cafeteria", "food supply", "food distribution",
+        "food delivery", "produce", "grocery", "nutrition", "kitchen", "dietary", "vending", "school lunch",
+        "breakfast program", "meal preparation", "hospital meals", "senior meals", "congregate meals",
     ],
     "Healthcare & Hospital Support": [
-        "hospital", "healthcare", "health care", "medical supplies", "environmental services",
-        "patient transport", "sterile", "clinic", "nursing",
-        "ppe", "durable medical", "medical waste", "biohazard",
-    ],
-    "Hospitality & Lodging": [
-        "hospitality", "hotel", "lodging", "housekeeping", "laundry", "linen", "banquet",
-        "conference services", "event services", "concierge", "front desk", "dormitory",
-        "guest services", "shelter operations", "residential facility", "room attendant",
+        "hospital", "healthcare", "health care", "medical supplies", "healthcare supplies", "patient transport",
+        "sterile", "clinic", "nursing", "ppe", "durable medical", "nonclinical", "non-clinical", "medical equipment",
+        "health support", "home health", "patient services",
     ],
     "Pharmacy & Immunization": [
         "pharmacy", "pharmacist", "pharmaceutical", "prescription", "immunization", "vaccine", "vaccination",
-        "flu shot", "medication therapy", "340b", "dispensing", "medication management", "point-of-care testing",
-        "naloxone", "long-term care pharmacy", "drug supply", "pharmacy services",
+        "flu shot", "medication therapy", "340b", "dispensing", "medication management", "medication distribution",
+        "point-of-care testing", "naloxone", "long-term care pharmacy", "drug supply", "pharmacy services", "pharmacy support",
     ],
-    "Sanitation & Waste": [
-        "sanitation", "sanitary", "waste", "refuse", "trash", "recycling", "pest control",
-        "extermination", "portable toilet", "restroom", "disinfection", "hygiene",
-        "litter", "street sweeping", "grease trap", "septic", "hazardous materials",
+    "Hospitality & Lodging": [
+        "hospitality", "hotel", "lodging", "housekeeping", "laundry", "linen", "banquet", "conference services",
+        "conference support", "event management", "event services", "event staffing", "concierge", "front desk",
+        "dormitory", "guest services", "shelter operations", "residential facility", "room attendant", "audio visual",
     ],
 }
 
@@ -107,14 +117,24 @@ def classify_jurisdiction(*texts: str) -> str:
     return "Maryland"
 
 
-def classify_industry(text: str) -> str:
-    """Tag an opportunity with the industry whose keywords appear most often."""
+def classify_industry(text: str, ai_hint: Optional[str] = None) -> str:
+    """Tag an opportunity with the industry whose keywords appear most often.
+
+    `ai_hint` is a free-text industry from the AI reader; if it names a known industry that wins,
+    otherwise it is kept as 'Other: <hint>' so new industries are never forced into the fixed list."""
+    if ai_hint:
+        h = ai_hint.strip().lower()
+        for name in INDUSTRIES:
+            if name.lower() == h or name.split(" & ")[0].lower() in h:
+                return name
     t = (text or "").lower()
     best, best_hits = "Other / Unclassified", 0
     for name, words in INDUSTRIES.items():
         hits = sum(t.count(w) for w in words)
         if hits > best_hits:
             best, best_hits = name, hits
+    if best == "Other / Unclassified" and ai_hint and ai_hint.strip():
+        return f"Other: {ai_hint.strip()[:40]}"
     return best
 
 

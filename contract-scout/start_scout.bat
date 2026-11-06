@@ -39,6 +39,12 @@ if "%SCOUT_KEY%"=="" goto keyok
 ".venv\Scripts\python.exe" scripts\set_api_key.py "%SCOUT_KEY%"
 :keyok
 
+if exist "data\scout.db" (
+  if not exist "data\backups" mkdir "data\backups"
+  for /f "tokens=1-3 delims=/ " %%a in ("%date%") do set D=%%c-%%a-%%b
+  copy /y "data\scout.db" "data\backups\scout_launch_%D%.db" >nul
+)
+
 if not exist "data\scout.db" (
   echo Loading the two fictitious sample solicitations...
   ".venv\Scripts\python.exe" scripts\seed_sample_data.py

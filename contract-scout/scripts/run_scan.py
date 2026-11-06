@@ -23,7 +23,7 @@ def main() -> int:
     stamp = datetime.now(config.LOCAL_TZ).strftime("%Y-%m-%d %H:%M %Z")
     print(f"=== Maryland Contract Scout scan {stamp} ===")
     profile, origin = load_profile()
-    print(f"entity profile: {origin}")
+    print(f"business profile: {origin if profile else 'none (general contract analysis)'}")
     with db.session() as conn:
         if config.imap_available():
             r = inbox.run_inbox_intake(conn, profile=profile)
@@ -34,10 +34,10 @@ def main() -> int:
         else:
             print("inbox: skipped (set IMAP_HOST / IMAP_USER / IMAP_PASSWORD in .env)")
         for src in sources.load_registry():
-            if src.get("access_method") in ("rss", "api") and sources.source_readiness(src)[0] == "ready":
+            if src.get("access_method") in ("rss", "api", "public_listing") and sources.source_readiness(src)[0] == "ready":
                 r = sources.scan_source(conn, src)
                 print(f"{src['id']:>24}: {r['status']} {r.get('reason', '')} new={r.get('new', 0)}")
-        n = pipeline.evaluate_all(conn, profile)
+        n = pipeline.evaluate_all(conn, profile, use_active_profile=False)
         created = alerts.generate_alerts(conn)
         out = alerts.send_digest(conn, dashboard_url=config.DASHBOARD_URL)
         print(f"evaluated {n} opportunities; alerts created={len(created)}; digest sent via {out['channel']}")

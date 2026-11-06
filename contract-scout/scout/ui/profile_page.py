@@ -10,14 +10,20 @@ from .common import get_conn
 
 
 def render():
-    st.title("Company Profile & Verified Qualifications")
+    st.title("Business Profiles (Optional)")
+    st.write("Profiles are optional. General contract analysis never needs one; add or select a business only to get Strong / Conditional / Poor matching against verified facts.")
     profile, origin = load_profile()
-    st.write(f"Active profile: **{origin}**. Switch entities in the sidebar.")
+    st.write(f"Active selection: **{'none (general analysis)' if profile is None else origin}**. Switch in the sidebar.")
     allp = [p for p in list_profiles() if p["id"] != "company_profile"]
     if allp:
         st.dataframe([{"Entity": p["name"], "File": p["path"], "Source": "your copy (data/profiles)" if p["origin"] == "user" else "shipped with app (profiles/)", "Version": p["version"]} for p in allp], width="stretch", hide_index=True)
-    if origin in ("sample", "template"):
-        st.warning("This is not your company. Put an entity profile in profiles/ or data/profiles/.")
+    if profile is None:
+        st.info("Showing the blank template below for reference. Select a business in the sidebar to view or edit its profile.")
+        from ..profile import load_profile_or_sample
+        import json as _json
+        with open(config.TEMPLATE_PROFILE_PATH, "r", encoding="utf-8") as f:
+            profile = _json.load(f)
+        origin = "template"
     comp = completeness(profile)
     c = st.columns(5)
     c[0].metric("Verified facts", comp["VERIFIED"])

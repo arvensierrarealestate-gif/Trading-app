@@ -1,11 +1,12 @@
 {
-  "updated_at": "2026-11-06T00:00:00+00:00",
+  "updated_at": "2026-11-06T12:00:00+00:00",
   "_notes": [
     "access_method values: manual_upload | email_notification | rss | public_page | api.",
     "public_page sources are never fetched automatically until allowed_fetch is true AND you have read the site's terms of use.",
     "url_verified false means the URL was written from general knowledge and must be confirmed in a browser before relying on it.",
     "Research pass 2026-11-05: URLs marked url_verified true come from official pages surfaced by web search; portals were not opened from this environment (state sites were not reachable), so confirm once in a browser.",
-    "DC sources added 2026-11-06 from web research: OCP eSourcing (notices need registration), DGS OpenGov (free, Follow for amendments), DC Health and DCPS buy through OCP. CBE certification (principal office in DC) gives evaluation preference."
+    "DC sources added 2026-11-06 from web research: OCP eSourcing (notices need registration), DGS OpenGov (free, Follow for amendments), DC Health and DCPS buy through OCP. CBE certification (principal office in DC) gives evaluation preference.",
+    "v2.1 (2026-11-06): public_listing access method added, gated by allowed_fetch + robots.txt; DC transparency portal added."
   ],
   "sources": [
     {
@@ -332,6 +333,44 @@
       "status": "manual",
       "allowed_fetch": false,
       "notes": "Independent authority; facilities and sanitation-adjacent work. Verify portal URL in a browser."
+    },
+    {
+      "id": "dc_transparency_portal",
+      "name": "DC Contracts and Procurement Transparency Portal",
+      "jurisdiction": "Washington, DC",
+      "type": "city",
+      "url": "https://contracts.ocp.dc.gov",
+      "url_verified": false,
+      "access_method": "manual_upload",
+      "status": "manual",
+      "allowed_fetch": false,
+      "notes": "OCP's public transparency portal for contracts and solicitations (linked from OCP resources). Useful for award history and prime-contractor research; verify URL and terms in a browser."
+    },
+    {
+      "id": "emma_public_listing",
+      "name": "eMMA public solicitations listing (watcher, off by default)",
+      "jurisdiction": "State of Maryland",
+      "type": "state",
+      "url": "https://emma.maryland.gov",
+      "url_verified": false,
+      "access_method": "public_listing",
+      "status": "blocked",
+      "allowed_fetch": false,
+      "listing_url": "",
+      "notes": "Read-only watcher of the public solicitations search page. Stays OFF until you read eMMA's terms of use; then paste the public listing URL into listing_url and set allowed_fetch true. robots.txt is honored on every run. Untested from the build environment."
+    },
+    {
+      "id": "dc_dgs_public_listing",
+      "name": "DC DGS OpenGov public listing (watcher, off by default)",
+      "jurisdiction": "Washington, DC",
+      "type": "city",
+      "url": "https://dgs.dc.gov/page/dgs-solicitations",
+      "url_verified": true,
+      "access_method": "public_listing",
+      "status": "blocked",
+      "allowed_fetch": false,
+      "listing_url": "",
+      "notes": "Same rules as above; OpenGov portals are public to view. Set listing_url to the portal's solicitations page once terms are confirmed."
     }
   ]
 }

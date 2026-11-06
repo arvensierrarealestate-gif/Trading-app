@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import pandas as pd
 import streamlit as st
 
@@ -9,25 +11,32 @@ from .common import get_conn, BADGE, REC_BADGE, money, capability_banner
 
 
 def render():
-    st.title("Opportunity Dashboard")
+    st.title("Opportunity Discovery")
     capability_banner()
     conn = get_conn()
     c = db.counts(conn)
-    m1, m2, m3, m4, m5 = st.columns(5)
+    m1, m2, m3, m4, m5, m6 = st.columns(6)
     m1.metric("Opportunities", c["total"])
-    m2.metric("Strong", c["Strong Match"])
-    m3.metric("Conditional", c["Conditional Match"])
-    m4.metric("Poor", c["Poor Match"])
-    m5.metric("Unsent alerts", c["unsent_alerts"])
+    m2.metric("High potential", c.get("High", 0))
+    m3.metric("Moderate", c.get("Moderate", 0))
+    m4.metric("Low", c.get("Low", 0))
+    m5.metric("Needs investigation", c.get("Requires investigation", 0))
+    m6.metric("Unsent alerts", c["unsent_alerts"])
 
     with st.sidebar:
         st.subheader("Filters")
         f_jur = st.multiselect("Jurisdiction", list(JURISDICTIONS))
         f_ind = st.multiselect("Industry", list(INDUSTRIES) + ["Other / Unclassified"])
-        f_match = st.multiselect("Qualification", list(MATCH_CLASSES) + ["Not evaluated"])
+        f_pot = st.multiselect("Opportunity rating", ["High", "Moderate", "Low", "Requires investigation"])
+        f_match = st.multiselect("Business match (only with a business selected)", list(MATCH_CLASSES) + ["Not evaluated"])
         f_rec = st.multiselect("Recommendation", list(RECOMMENDATIONS))
         f_status = st.multiselect("Bid status", list(OPP_STATUSES))
         f_days = st.slider("Deadline within (days)", 0, 120, 120)
+        v_lo, v_hi = st.slider("Contract value ($k)", 0, 5000, (0, 5000), step=25)
+        max_years = st.slider("Max. years of experience required", 0, 10, 10)
+        f_lic = st.multiselect("Licensing difficulty", ["low", "medium", "high", "unknown"])
+        f_cap = st.multiselect("Capital requirement", ["low", "medium", "high", "unknown"])
+        f_sub = st.checkbox("Subcontracting possible only", value=False)
         hide_samples = st.checkbox("Hide sample records", value=False)
         min_margin = st.number_input("Min. estimated margin %", value=-100.0, step=5.0)
         min_cscore = st.slider("Min. commercial score", 0, 100, 0)
@@ -39,7 +48,28 @@ def render():
         ev = db.latest_evaluation(conn, o["id"])
         margin = est["results"].get("gross_margin_pct") if est else None
         open_items = [ch for ch in (ev["checks"] if ev else []) if ch["mandatory"] and ch["result"] in ("UNKNOWN", "NOT_MET")]
+        try:
+            access = json.loads(o.get("barriers_json") or "{}")
+        except json.JSONDecodeError:
+            access = {}
+        ans = {a["key"]: a for a in access.get("answers", [])}
         if f_jur and (o.get("jurisdiction") or "Maryland") not in f_jur:
+            continue
+        if f_pot and (o.get("opportunity_potential") or "") not in f_pot:
+            continue
+        val = o["value_high"] or o["value_low"]
+        if val is not None and not (v_lo * 1000 <= val <= v_hi * 1000) and not (v_hi == 5000 and val > 5_000_000):
+            continue
+        if max_years < 10:
+            import re as _re
+            m = _re.search(r"(\d+(?:\.\d+)?)\s*years", (ans.get("min_history", {}).get("answer") or ""))
+            if m and float(m.group(1)) > max_years:
+                continue
+        if f_lic and (ans.get("licensing", {}).get("barrier") or "unknown") not in f_lic:
+            continue
+        if f_cap and (ans.get("upfront_capital", {}).get("barrier") or "unknown") not in f_cap:
+            continue
+        if f_sub and not access.get("subcontract_feasible"):
             continue
         if f_ind and o["industry"] not in f_ind:
             continue
@@ -66,9 +96,10 @@ def render():
             "Value": money(o["value_high"] or o["value_low"]) + ("" if o["value_status"] == "VERIFIED" else f" ({o['value_status']})"),
             "Deadline": deadlines.format_local(o["bid_deadline_utc"]),
             "Days left": round(d, 1) if d is not None else None,
-            "Qualification": f"{BADGE.get(o['match_class'])} {o['match_class'] or 'Not evaluated'}",
-            "Score": o["match_score"],
-            "Commercial": o.get("commercial_score"),
+            "Potential": o.get("opportunity_potential") or "not analyzed",
+            "Score": o.get("potential_score"),
+            "Entry barrier": access.get("entry_barrier", ""),
+            "Business match": f"{BADGE.get(o['match_class'])} {o['match_class']}" if o.get("match_class") else "—",
             "Entity": o.get("recommended_entity") or "",
             "Open items": len(open_items),
             "Est. margin %": margin,
