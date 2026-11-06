@@ -1,10 +1,11 @@
 {
-  "updated_at": "2026-11-05T00:00:00+00:00",
+  "updated_at": "2026-11-06T00:00:00+00:00",
   "_notes": [
     "access_method values: manual_upload | email_notification | rss | public_page | api.",
     "public_page sources are never fetched automatically until allowed_fetch is true AND you have read the site's terms of use.",
     "url_verified false means the URL was written from general knowledge and must be confirmed in a browser before relying on it.",
-    "Research pass 2026-11-05: URLs marked url_verified true come from official pages surfaced by web search; portals were not opened from this environment (state sites were not reachable), so confirm once in a browser."
+    "Research pass 2026-11-05: URLs marked url_verified true come from official pages surfaced by web search; portals were not opened from this environment (state sites were not reachable), so confirm once in a browser.",
+    "DC sources added 2026-11-06 from web research: OCP eSourcing (notices need registration), DGS OpenGov (free, Follow for amendments), DC Health and DCPS buy through OCP. CBE certification (principal office in DC) gives evaluation preference."
   ],
   "sources": [
     {
@@ -235,6 +236,102 @@
       "status": "awaiting_credentials",
       "allowed_fetch": true,
       "notes": "Montgomery County and other local agencies accept bids via BidNet. Free 'Limited' registration gives email notifications for the agencies you select; forward them to the IMAP inbox and set IMAP_SENDER_FILTER accordingly."
+    },
+    {
+      "id": "dc_ocp",
+      "name": "DC Office of Contracting and Procurement (OCP)",
+      "jurisdiction": "Washington, DC",
+      "type": "city",
+      "url": "https://ocp.dc.gov",
+      "url_verified": true,
+      "access_method": "manual_upload",
+      "status": "manual",
+      "allowed_fetch": false,
+      "notes": "Central DC procurement for most agencies including DC Health, DCPS and DHS. Solicitations are published in OCP's eSourcing system; vendors must register in eSourcing (one account per tax ID; confirmation can take 24-48 business hours) to receive electronic notifications. Purchase orders flow through the Ariba Supplier Network (may carry fees). Procurement Center of Excellence handles registration questions."
+    },
+    {
+      "id": "dc_ocp_email",
+      "name": "DC OCP eSourcing notifications",
+      "jurisdiction": "Washington, DC",
+      "type": "city",
+      "url": "https://ocp.dc.gov",
+      "url_verified": true,
+      "access_method": "email_notification",
+      "status": "awaiting_credentials",
+      "allowed_fetch": true,
+      "notes": "After eSourcing registration, point its notifications at the scout inbox and add the sender to IMAP_SENDER_FILTER."
+    },
+    {
+      "id": "dc_dgs",
+      "name": "DC Department of General Services (OpenGov)",
+      "jurisdiction": "Washington, DC",
+      "type": "city",
+      "url": "https://dgs.dc.gov/page/dgs-solicitations",
+      "url_verified": true,
+      "access_method": "manual_upload",
+      "status": "manual",
+      "allowed_fetch": false,
+      "notes": "DGS runs its own procurement for District facilities: construction, roofing, generators, landscaping and mowing, organics collection, custodial. Since July 2024 all solicitations are on an OpenGov portal; create a free account, 'Follow' solicitations for automatic amendments, and enable notifications. Award data on the Contract Award page."
+    },
+    {
+      "id": "dc_dgs_email",
+      "name": "DC DGS OpenGov notifications",
+      "jurisdiction": "Washington, DC",
+      "type": "city",
+      "url": "https://dgs.dc.gov/page/dgs-solicitations",
+      "url_verified": true,
+      "access_method": "email_notification",
+      "status": "awaiting_credentials",
+      "allowed_fetch": true,
+      "notes": "OpenGov emails new solicitations and amendments to followers; read through the scout inbox (sender filter 'opengov')."
+    },
+    {
+      "id": "dc_health",
+      "name": "DC Health (via OCP)",
+      "jurisdiction": "Washington, DC",
+      "type": "city",
+      "url": "https://dchealth.dc.gov",
+      "url_verified": true,
+      "access_method": "manual_upload",
+      "status": "manual",
+      "allowed_fetch": false,
+      "notes": "Pharmacy, immunization, vaccine administration and public-health support contracts are solicited by OCP on DC Health's behalf; grants (RFAs) are separate. Pharmacies can also enroll in the Vaccines for Children program via DC Health."
+    },
+    {
+      "id": "dcps",
+      "name": "DC Public Schools (via OCP)",
+      "jurisdiction": "Washington, DC",
+      "type": "school_district",
+      "url": "https://dcps.dc.gov",
+      "url_verified": true,
+      "access_method": "manual_upload",
+      "status": "manual",
+      "allowed_fetch": false,
+      "notes": "Food service, custodial and facilities support for DCPS are solicited through OCP; school modernization through DGS."
+    },
+    {
+      "id": "dc_housing_authority",
+      "name": "DC Housing Authority procurement",
+      "jurisdiction": "Washington, DC",
+      "type": "authority",
+      "url": "https://www.dchousing.org",
+      "url_verified": false,
+      "access_method": "manual_upload",
+      "status": "manual",
+      "allowed_fetch": false,
+      "notes": "Independent authority with its own solicitations (maintenance, cleaning, pest control, unit turnover). Verify portal URL in a browser."
+    },
+    {
+      "id": "dc_water",
+      "name": "DC Water procurement",
+      "jurisdiction": "Washington, DC",
+      "type": "authority",
+      "url": "https://www.dcwater.com",
+      "url_verified": false,
+      "access_method": "manual_upload",
+      "status": "manual",
+      "allowed_fetch": false,
+      "notes": "Independent authority; facilities and sanitation-adjacent work. Verify portal URL in a browser."
     }
   ]
 }

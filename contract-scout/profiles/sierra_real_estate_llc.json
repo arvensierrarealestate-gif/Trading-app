@@ -1,6 +1,6 @@
 {
   "_notice": "Built from documents in the owner's Google Drive and Gmail on 2026-11-03. No EIN, tax, bank or account numbers are stored here. Facts marked VERIFIED cite the document seen.",
-  "profile_version": "sre-2026-11-04c",
+  "profile_version": "sre-2026-11-06",
   "entity": {
     "legal_name": {
       "value": "Sierra Real Estate LLC",
@@ -65,7 +65,7 @@
       "status": "VERIFIED",
       "source": "Operating Agreement sierra Real estate LLC.docx dated 2024-01-07",
       "verified_on": "2026-11-03",
-      "notes": "Confirmed by owner on 2026-11-03: Tiffany Smith is the authorized signer for bids and contracts."
+      "notes": "Confirmed by owner on 2026-11-03/06: Tiffany Smith and Gbessay Bockai, PharmD are the same person (email signature 'Tiffany Smith, PharmD aka Gbessay Bockai'). She is the authorized signer."
     },
     "authorized_signer": {
       "value": "Tiffany Mia Smith, Member",

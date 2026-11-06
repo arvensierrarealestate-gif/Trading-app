@@ -68,3 +68,10 @@ From attachment indexes and submission checklists in state RFPs/IFBs. The solici
 - mgaleg.maryland.gov HB 543 (2023) fiscal note and chapter text; regulations.justia.com COMAR 21.05.07 and 21.11.01.06
 - montgomerycountymd.gov/PRO FAQ and CVRS announcement; baltimorecountymd.gov purchasing pages; princegeorgescountymd.gov procurement FAQs; howardcountymd.gov current solicitations; carrollcountymd.gov; charlescountymd.gov; stmaryscountymd.gov
 - State RFP attachment indexes (DoIT, DHS, DBM contract library) for the forms table
+
+## Washington, DC (added 2026-11-06)
+- **OCP (Office of Contracting and Procurement)** buys for most District agencies, including DC Health, DCPS and DHS. Solicitations are published in OCP's **eSourcing** system; a vendor must register there (one account per tax ID, 24-48 business hours to confirm) to receive electronic notices. Purchase orders go through the Ariba Supplier Network, which may carry fees; a suspended Ariba account does not block bidding. Contact: Procurement Center of Excellence.
+- **DGS (Department of General Services)** runs its own procurement for District facilities (construction, roofing, generators, landscaping and mowing, organics collection, custodial). Since July 2024 everything is on an **OpenGov** portal: free account, "Follow" a solicitation to get amendments, notifications by email, award data on the Contract Award page.
+- **CBE (Certified Business Enterprise)**, run by DSLBD: principal office must be physically in DC; size tested on 5-year average gross receipts against SBA standards; up to 45 business days to certify; gives evaluation preference points on RFPs and access to set-asides. The pharmacy entity's principal office is in DC, so it is the natural CBE candidate.
+- **DC Health**: pharmacy, immunization and vaccine-administration services are solicited through OCP; grant RFAs are separate. Pharmacies may enroll in the Vaccines for Children program.
+- No DC-wide RSS feed was found; intake relies on eSourcing and OpenGov notification emails.

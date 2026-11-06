@@ -22,6 +22,15 @@ Legend: [x] done and tested · [~] coded, awaiting credentials or real-world tes
 - [x] Multi-entity profiles (profiles/ + data/profiles override), sidebar entity picker, Compare entities tab
 - [x] Real profiles for Sierra Real Estate LLC and Medwise Seniors LLC built from SDAT, formation, COI, P&L and license documents
 
+## Stage 1b - Objective review 2026-11-06
+- [x] Washington, DC sources (OCP eSourcing, DGS OpenGov, DC Health, DCPS, DC Housing Authority, DC Water) with jurisdiction tagging
+- [x] Pharmacy & Immunization industry and the pharmacy entity profile (Sierra International Pharmaceutical Corporation)
+- [x] Commercial attractiveness score 0-100 with explanation, stored per opportunity, filterable
+- [x] Recommendation card: recommended entity, why, missing, partner path, financials, actions, links; digest carries entity and score
+- [x] Stages Qualified and Cancelled; cancellation/withdrawal detection from notices with stop-work alert
+- [ ] You: DC OCP eSourcing registration and DC DGS OpenGov account for the pharmacy entity; CBE certification application
+- [ ] You: upload current DC pharmacy license, immunization certifications, Erie COI for the pharmacy entity
+
 ## Stage 2 - Permitted automated intake
 - [ ] You: pull a Certificate of Status for Sierra Real Estate LLC from Maryland Business Express and a current COI from Gray Insurance Group; record both in the profile
 - [ ] You: confirm who is the authorized signer for Sierra Real Estate LLC (operating agreement lists Tiffany Mia Smith as 100% member)

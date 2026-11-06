@@ -9,7 +9,7 @@ import difflib
 from typing import Any, Optional
 
 from . import db, documents, analyzer, deadlines
-from .models import normalize_key, classify_industry, VERIFIED, MISSING, utcnow_iso
+from .models import normalize_key, classify_industry, classify_jurisdiction, VERIFIED, MISSING, utcnow_iso
 
 TRACKED_FIELDS = ("title", "agency", "bid_deadline_utc", "value_low", "value_high", "contract_duration", "location")
 
@@ -83,7 +83,8 @@ def ingest_document(conn, filename: str, data: bytes, *, source_id: str = "manua
         if db.get_opportunity_by_key(conn, key):
             key = f"{key}|{doc.sha256[:8]}"
         opp_id = db.insert_opportunity(
-            conn, key, solicitation_number=sol, title=title, agency=agency, jurisdiction=overrides.get("jurisdiction"),
+            conn, key, solicitation_number=sol, title=title, agency=agency,
+            jurisdiction=overrides.get("jurisdiction") or classify_jurisdiction(agency or "", location or "", source_id, source_url, doc.text[:3000]),
             industry=industry, location=location, source_id=source_id, source_url=source_url,
             summary=extraction.get("scope_summary", ""), contract_duration=duration, value_low=value_low, value_high=value_high,
             value_status=value_status, value_note=value_note, bid_deadline_utc=dl_utc, bid_deadline_local=dl_local, deadline_tz=dl_tz,

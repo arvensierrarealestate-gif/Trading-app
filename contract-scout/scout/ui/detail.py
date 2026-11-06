@@ -3,7 +3,7 @@ from __future__ import annotations
 import pandas as pd
 import streamlit as st
 
-from .. import db, deadlines, export, finance, pipeline, checklist
+from .. import db, deadlines, export, finance, pipeline, checklist, recommend, config
 from ..models import OPP_STATUSES, VERIFIED, ASSUMED
 from .common import get_conn, get_profile, BADGE, REC_BADGE, money
 
@@ -40,7 +40,27 @@ def render():
     top[2].metric("Bid deadline", deadlines.format_local(opp["bid_deadline_utc"]), deadlines.urgency_bucket(opp["bid_deadline_utc"]))
     top[3].metric("Contract value", money(opp["value_high"] or opp["value_low"]), opp["value_status"])
 
-    with st.expander("Facts and edits", expanded=True):
+    card = recommend.build_card(conn, oid, profile, config.DASHBOARD_URL)
+    with st.container(border=True):
+        st.markdown(f"### Recommendation: {REC_BADGE.get(card['recommendation'])} {card['recommendation']}")
+        r1, r2, r3 = st.columns(3)
+        r1.metric("Recommended entity", card["recommended_entity"] or "n/a", card["entity_match"] or "")
+        r2.metric("Commercial score", f"{card['commercial_score']}/100")
+        r3.metric("Jurisdiction", card["jurisdiction"] or "Maryland")
+        if card["why_it_matches"]:
+            st.markdown("**Why it fits:** " + " · ".join(card["why_it_matches"][:4]))
+        if card["missing"]:
+            st.markdown("**Missing or unverified:** " + " · ".join(card["missing"][:6]))
+        if card["partner_path"]:
+            st.markdown("**Subcontractor / partner path:** " + " · ".join(card["partner_path"][:4]))
+        if card["immediate_actions"]:
+            st.markdown("**Do first:** " + " · ".join(card["immediate_actions"][:5]))
+        with st.expander("How the commercial score was built"):
+            for pcs in card["commercial_parts"]:
+                st.write(f"- **{pcs['component']}**: {pcs['points']} / {pcs['max']} — {pcs['why']}")
+        st.caption("Entity comparison and qualification reasons are on the tabs below. Nothing here submits a bid.")
+
+    with st.expander("Facts and edits", expanded=False):
         c1, c2, c3 = st.columns(3)
         c1.write(f"**Number:** {opp['solicitation_number'] or 'Not found'}")
         c1.write(f"**Agency:** {opp['agency'] or 'Not found'}")

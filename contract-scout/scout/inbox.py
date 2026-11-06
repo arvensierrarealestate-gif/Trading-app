@@ -39,12 +39,14 @@ SOURCE_HINTS = [
     ("ariba.com", "prince_georges_county"), ("princegeorgescountymd.gov", "prince_georges_county"),
     ("baltimorecity.gov", "baltimore_city"), ("publicpurchase.com", "carroll_county"),
     ("montgomeryschoolsmd.org", "mcps"), ("pgcps.org", "pgcps"), ("baltimorecityschools.org", "baltimore_city_schools"),
+    ("dgs.dc.gov", "dc_dgs_email"), ("ocp.dc.gov", "dc_ocp_email"), ("dc.gov", "dc_ocp_email"), ("esourcing", "dc_ocp_email"),
 ]
+_CANCEL_RE = re.compile(r"\b(cancel+ed|cancel+ation|withdrawn|rescinded)\b", re.I)
 
 # hosts the bot may download a directly linked file from (public attachments only)
 DEFAULT_FILE_HOSTS = ("emma.maryland.gov", "procurement.opengov.com", "www.bidnetdirect.com", "pbsystem.planetbids.com",
                       "www.montgomerycountymd.gov", "montgomerycountymd.gov", "www.baltimorecountymd.gov", "www.howardcountymd.gov",
-                      "www.princegeorgescountymd.gov", "procurement.baltimorecity.gov")
+                      "www.princegeorgescountymd.gov", "procurement.baltimorecity.gov", "dgs.dc.gov", "ocp.dc.gov", "dchealth.dc.gov", "dcps.dc.gov")
 
 
 def allowed_file_hosts() -> set[str]:
@@ -139,12 +141,38 @@ def download_public_file(url: str, timeout: int = 60) -> Optional[tuple[str, byt
     return name, data
 
 
+def _handle_cancellation(conn, notice: Notice, fields: dict, source_id: str) -> Optional[dict]:
+    """If a notice says a tracked solicitation was cancelled/withdrawn, mark it and alert. Returns a report or None."""
+    if not _CANCEL_RE.search(notice.subject + " " + notice.body[:600]):
+        return None
+    num = fields.get("solicitation_number")
+    if not num:
+        return None
+    target = None
+    for o in db.list_opportunities(conn):
+        if o.get("solicitation_number") and normalize_key(o["solicitation_number"], "").split("|")[0] == normalize_key(num, "").split("|")[0]:
+            target = o
+            break
+    if target is None:
+        return None
+    if target["status"] != "Cancelled":
+        db.add_change_event(conn, target["id"], "status", target["status"], "Cancelled")
+        db.update_opportunity(conn, target["id"], status="Cancelled", last_seen=utcnow_iso(), notes=((target.get("notes") or "") + f"\nCancelled per notice '{notice.subject}' ({notice.date[:10]}).").strip())
+        db.add_alert(conn, "cancelled", f"CANCELLED: {target['title']} ({num}) per notice '{notice.subject}'. Stop work on this bid.", target["id"], f"cancel:{target['id']}:{notice.message_id}")
+        db.log(conn, "cancelled_by_notice", "opportunity", target["id"], {"subject": notice.subject}, actor="scan")
+    db.mark_email_processed(conn, notice.message_id, notice.uid, target["id"], notice.subject)
+    return {"status": "cancelled", "source": source_id, "opportunity_id": target["id"], "documents": 0, "created": False, "errors": []}
+
+
 def process_notice(conn, notice: Notice, profile: Optional[dict] = None, prefer_claude: bool = True, fetch_links: bool = True, actor: str = "scan") -> dict:
     """Turn one notification email into an opportunity (plus documents) and evaluate it."""
     if db.email_processed(conn, notice.message_id):
         return {"status": "already_processed", "message_id": notice.message_id}
     fields = extract_fields(notice)
     source_id = source_for(notice)
+    cancelled = _handle_cancellation(conn, notice, fields, source_id)
+    if cancelled:
+        return cancelled
     report: dict = {"status": "ok", "source": source_id, "documents": 0, "created": False, "opportunity_id": None, "errors": []}
     ingested = False
     # 1. attached files
@@ -183,7 +211,9 @@ def process_notice(conn, notice: Notice, profile: Optional[dict] = None, prefer_
             db.update_opportunity(conn, existing["id"], last_seen=utcnow_iso())
             report["opportunity_id"] = existing["id"]
         else:
+            from .models import classify_jurisdiction
             oid = db.insert_opportunity(conn, key, solicitation_number=fields["solicitation_number"], title=fields["title"], agency=None,
+                                        jurisdiction=classify_jurisdiction(notice.sender, notice.subject, notice.body[:800], source_id),
                                         industry=fields["industry"], source_id=source_id, source_url=notice.links[0] if notice.links else "",
                                         summary=notice.body[:1500], bid_deadline_utc=dl_utc, bid_deadline_local=dl_local, deadline_tz=dl_tz,
                                         deadline_status=VERIFIED if dl_utc else MISSING, notes="Lead from notification email; download the solicitation and upload it to evaluate fully.")

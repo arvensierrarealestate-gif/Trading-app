@@ -1,0 +1,73 @@
+{
+  "_notice": "Built from documents and emails in the owner's Drive/Gmail on 2026-11-06. No EIN, NPI, NCPDP, DEA or account numbers stored. Facts marked VERIFIED cite the document; facts inferred from email activity are ASSUMED until the document is on file.",
+  "profile_version": "sipc-2026-11-06",
+  "entity": {
+    "legal_name": {"value": "Sierra International Pharmaceutical Corporation", "status": "VERIFIED", "source": "Articles of Incorporation filed with Maryland SDAT 1992-10-28", "verified_on": "2026-11-06", "notes": "Trades as Columbia Heights Pharmacy (also styled Columbia Heights Professional Pharmacy); referred to as SIPC / Sierra Pharm Corp in email"},
+    "entity_type": {"value": "Corporation (Maryland), taxed as S corporation", "status": "VERIFIED", "source": "Articles of Incorporation 1992; 2020 federal and DC S-corporation returns (cover letter)", "verified_on": "2026-11-06", "notes": ""},
+    "state_of_formation": {"value": "Maryland", "status": "VERIFIED", "source": "Articles of Incorporation 1992", "verified_on": "2026-11-06", "notes": "Operates in Washington, DC; DC foreign-corporation registration and Basic Business License are implied by 30+ years of DC operation but the certificates are not on file"},
+    "formation_date": {"value": "1992-10-28", "status": "VERIFIED", "source": "SDAT filing stamp on Articles of Incorporation", "verified_on": "2026-11-06", "notes": "34 years of operating history"},
+    "sdat_department_id": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Pull from Maryland Business Express"},
+    "good_standing": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Maryland SDAT status and DC DLCP status both unverified; order a Certificate of Status (MD) and Certificate of Good Standing (DC) before bidding"},
+    "principal_address": {"value": "3316 14th St NW, Washington, DC 20010 (Columbia Heights)", "status": "VERIFIED", "source": "DC Health pharmacy license (2017), Certificate of Occupancy (1992), insurance certificates", "verified_on": "2026-11-06", "notes": "Principal office physically in DC: relevant to DC Certified Business Enterprise eligibility"},
+    "naics_codes": {"value": ["456110"], "status": "ASSUMED", "source": "", "verified_on": "", "notes": "456110 Pharmacies and drug retailers; confirm on SAM.gov"},
+    "owner_name": {"value": "Sahr L. Bockai (original director/shareholder, 1992); current ownership per corporate records", "status": "VERIFIED", "source": "Articles of Incorporation 1992", "verified_on": "2026-11-06", "notes": "Current shareholder list not on file. Gbessay Bockai, PharmD (also known as Tiffany Smith) is Supervisor and signs for the company; Sahr L. Bockai Jr. is COO."},
+    "authorized_signer": {"value": "Gbessay Bockai, PharmD, also known as Tiffany Smith (Supervisor)", "status": "ASSUMED", "source": "Email signatures and Medicare/Express Scripts credentialing correspondence, Oct-Nov 2026", "verified_on": "", "notes": "Confirm with a corporate resolution naming the officer authorized to sign bids"}
+  },
+  "registrations": {
+    "emma_vendor": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Needed for Maryland state/USM/school healthcare and pharmacy solicitations"},
+    "dc_esourcing_vendor": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "DC OCP eSourcing registration (one account per tax ID) is required to receive DC solicitation notices"},
+    "dc_cbe_certified": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "DC Certified Business Enterprise: principal office is in DC, so likely eligible; certification takes up to 45 business days and gives evaluation preference points. A 'Bidder Certification Form' and EEO forms were exchanged in Oct 2026, suggesting a DC bid was prepared; confirm."},
+    "sam_uei": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "sbr_certified": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Maryland SBR self-certification on eMMA"},
+    "mbe_certified": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "dbe_certified": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""},
+    "medicare_enrollment": {"value": true, "status": "ASSUMED", "source": "Novitas Medicare revalidation correspondence, Oct-Nov 2026", "verified_on": "", "notes": "Active Medicare Part B/DME enrollment implied; document not on file"},
+    "pbm_credentialing": {"value": true, "status": "ASSUMED", "source": "Express Scripts recredentialing thread, Nov 2026; NCPDP COI update mentioned", "verified_on": "", "notes": "NCPDP profile and PBM network participation implied"},
+    "local_business_licenses": {"value": ["DC Basic Business License (implied, not on file)"], "status": "MISSING", "source": "", "verified_on": "", "notes": "Upload current DC BBL"}
+  },
+  "licenses": [
+    {"type": "DC Resident Pharmacy License", "number_on_file": true, "expires": "2019-05-31", "status": "ASSUMED", "source": "DC Health Pharmaceutical Control Division license RX9300229 issued 2017-06-01 (expired copy on file); pharmacy is operating in 2026 with weekly Rx reports, PBM recredentialing and Medicare revalidation", "verified_on": "", "notes": "Current renewal certificate not on file. Upload it and set status VERIFIED with the new expiry. Required for any pharmacy or vaccine contract."},
+    {"type": "Pharmacist Immunization Certification", "number_on_file": false, "expires": "", "status": "ASSUMED", "source": "'IMMUNIZATION CPA' (collaborative practice agreement) email thread, Aug 2026, with staff pharmacists", "verified_on": "", "notes": "Immunization authority appears to be in place for staff pharmacists; upload the DC Health immunization certification(s) and the CPA"},
+    {"type": "Maryland Pharmacist License (owner)", "number_on_file": false, "expires": "", "status": "ASSUMED", "source": "'MD Pharmacist License Renewal' thread, Aug 2026 (renews every 2 years)", "verified_on": "", "notes": "Individual license of the owner, not the entity"},
+    {"type": "DEA Registration", "number_on_file": false, "expires": "", "status": "MISSING", "source": "", "verified_on": "", "notes": "Required for controlled substances; number must never be stored here"},
+    {"type": "MHIC", "number_on_file": false, "expires": "", "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}
+  ],
+  "insurance": {
+    "general_liability": {"carried": {"value": true, "status": "ASSUMED", "source": "Erie Insurance business policy set up Nov 2026 (program compared by Capitol Benefits, Matt Duncan); 'SIPC - Professional and General Liability 2026-27.pdf' in email; new expiration 2027-11-04 per owner", "verified_on": "", "notes": "Certificate of insurance was being issued on 2026-11-06. Upload it and record the per-occurrence limit."}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Limit not read; take from the COI"}, "aggregate": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "carrier": {"value": "Erie Insurance (2026-27); CNA/HPSO professional liability (2023-24)", "status": "ASSUMED", "source": "Email thread Nov 2026; HPSO certificate 2023", "verified_on": "", "notes": ""}, "expires": {"value": "2027-11-04", "status": "ASSUMED", "source": "Owner email 2026-11-06: 'New expiration 11/4/27'", "verified_on": "", "notes": ""}},
+    "professional_liability": {"carried": {"value": true, "status": "ASSUMED", "source": "Erie program 2026-27 (professional + general per owner); prior CNA/HPSO policy 2023-11-21 to 2024-11-21", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}},
+    "automobile_liability": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Needed for delivery/vaccine clinic travel if required"}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}},
+    "workers_compensation": {"carried": {"value": true, "status": "ASSUMED", "source": "Workers' comp RFP exchange with Pharmacists Mutual (PMCA), Nov 2026; payroll and benefits administered via Payentry", "verified_on": "", "notes": "Coverage in place or being rebid; upload the policy declarations"}, "per_occurrence": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": "statutory"}},
+    "umbrella": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}},
+    "pollution_liability": {"carried": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}, "per_occurrence": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}},
+    "cyber_liability": {"carried": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Often required where patient data is handled"}, "per_occurrence": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""}}
+  },
+  "bonding": {
+    "surety": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": "Bonds are rare for pharmacy/healthcare service contracts; revisit if a solicitation requires one"},
+    "single_project_limit": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""},
+    "aggregate_limit": {"value": null, "status": "NOT_APPLICABLE", "source": "", "verified_on": "", "notes": ""}
+  },
+  "experience": [
+    {"description": "Community/professional pharmacy operation at 3316 14th St NW, Washington DC (Columbia Heights Pharmacy): dispensing, PBM network participation, Medicare enrollment, weekly Rx volume reporting", "industry": "Pharmacy & Immunization", "performed_by": "contracting_entity", "client": "retail patients, Medicare, PBMs", "year": 1992, "value": null, "status": "VERIFIED", "source": "Certificate of Occupancy 1992; DC Health pharmacy license 2017; 2020 DC S-corp return cover letter; 2026 operating correspondence", "notes": "34 years of continuous pharmacy operation. Not a government contract, but direct, entity-performed, licensed healthcare service delivery."},
+    {"description": "Pharmacist-administered immunizations under a collaborative practice agreement (staff pharmacists)", "industry": "Pharmacy & Immunization", "performed_by": "contracting_entity", "client": "retail patients", "year": 2026, "value": null, "status": "ASSUMED", "source": "'IMMUNIZATION CPA' email thread Aug 2026", "notes": "Confirm by uploading the CPA and immunization certifications"},
+    {"description": "Pharmacy business acquisition/valuation experience (Van Ness Pharmacy LLC, affiliate)", "industry": "Pharmacy & Immunization", "performed_by": "affiliate", "client": "", "year": 2021, "value": null, "status": "ASSUMED", "source": "Van Ness Pharmacy LLC valuation report 2022; DC Health pharmacy closure checklist Feb 2025", "notes": "Affiliate; context only"},
+    {"description": "Healthcare supplies and distribution for government or institutional clients", "industry": "Healthcare & Hospital Support", "performed_by": "contracting_entity", "client": "", "year": null, "value": null, "status": "MISSING", "source": "", "notes": "No government or institutional supply contract found. Any wholesale/institutional account would strengthen supply bids."}
+  ],
+  "capabilities": {
+    "industries": {"value": ["Pharmacy & Immunization", "Healthcare & Hospital Support"], "status": "ASSUMED", "source": "Owner objective 2026-11-06: pharmacy, immunization services, healthcare supplies", "verified_on": "", "notes": ""},
+    "services": {"value": ["prescription dispensing", "immunization clinics", "medication therapy management", "long-term care and facility pharmacy supply", "healthcare supplies distribution", "point-of-care testing"], "status": "ASSUMED", "source": "", "verified_on": "", "notes": "Owner to confirm which are offered today"},
+    "service_area_counties": {"value": ["Washington, DC", "Montgomery", "Prince George's"], "status": "ASSUMED", "source": "", "verified_on": "", "notes": ""},
+    "max_contract_value": {"value": 500000, "status": "ASSUMED", "source": "", "verified_on": "", "notes": "Placeholder; edit"}
+  },
+  "resources": {
+    "employees_w2": {"value": 6, "status": "ASSUMED", "source": "Email signatures and payroll/benefits correspondence 2026: Supervisor/PharmD, COO, staff PharmD, business manager, outreach staff, technicians; PIC/pharmacy manager hiring in progress (applicant tracker Nov 2026)", "verified_on": "", "notes": "Confirm headcount from payroll"},
+    "subcontractors": {"value": [], "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "equipment": {"value": ["licensed pharmacy premises with dispensing systems", "vaccine cold-chain storage (implied by immunization program)"], "status": "ASSUMED", "source": "", "verified_on": "", "notes": ""},
+    "facilities": {"value": ["3316 14th St NW, Washington DC 20010 (first floor, certificate of occupancy for professional pharmacy)"], "status": "VERIFIED", "source": "Certificate of Occupancy No. 164450 (1992)", "verified_on": "2026-11-06", "notes": ""}
+  },
+  "financial": {
+    "annual_revenue_range": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Weekly Rx reports exist; owner to state a range (needed for SBR/CBE size tests)"},
+    "working_capital_available": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": ""},
+    "credit_line": {"value": null, "status": "MISSING", "source": "", "verified_on": "", "notes": "Business Amex offers seen; no line of credit documented"},
+    "statements_available": {"value": true, "status": "VERIFIED", "source": "2020 federal and DC S-corporation returns prepared by a CPA (cover letter on file)", "verified_on": "2026-11-06", "notes": "Current-year statements to be confirmed"}
+  }
+}

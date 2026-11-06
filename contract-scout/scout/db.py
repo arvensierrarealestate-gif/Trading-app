@@ -174,7 +174,15 @@ def connect(db_path: Optional[Path] = None) -> sqlite3.Connection:
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     conn.executescript(SCHEMA)
+    _migrate(conn)
     return conn
+
+
+def _migrate(conn) -> None:
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(opportunities)").fetchall()}
+    for name, ddl in (("commercial_score", "REAL"), ("commercial_reasons", "TEXT"), ("recommended_entity", "TEXT")):
+        if name not in cols:
+            conn.execute(f"ALTER TABLE opportunities ADD COLUMN {name} {ddl}")
 
 
 @contextmanager
@@ -238,7 +246,7 @@ def insert_opportunity(conn, normalized_key: str, **fields) -> int:
 
 
 def update_opportunity(conn, opp_id: int, **fields) -> None:
-    allowed = set(OPP_FIELDS) | {"status", "match_class", "match_score", "recommendation", "last_seen"}
+    allowed = set(OPP_FIELDS) | {"status", "match_class", "match_score", "recommendation", "last_seen", "commercial_score", "commercial_reasons", "recommended_entity"}
     sets, vals = [], []
     for k, v in fields.items():
         if k in allowed:

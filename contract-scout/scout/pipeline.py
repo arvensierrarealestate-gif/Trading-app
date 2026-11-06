@@ -28,6 +28,17 @@ def evaluate_opportunity(conn, opp_id: int, profile: Optional[dict] = None, acto
     db.add_evaluation(conn, opp_id, version, result["match_class"], result["score"], result["checks"], result["summary"])
     rec = _recommendation_for(conn, opp, result)
     db.update_opportunity(conn, opp_id, match_class=result["match_class"], match_score=result["score"], recommendation=rec)
+    try:
+        from . import scoring, alerts, recommend
+        import json as _json
+        opp2 = db.get_opportunity(conn, opp_id)
+        est = db.latest_cost_estimate(conn, opp_id)
+        sc, parts = scoring.score(opp2, {"checks": result["checks"], "match_class": result["match_class"]}, est["results"] if est else None, alerts.can_do_industries(profile), profile)
+        best = recommend.best_entity(compare_entities(conn, opp_id), (profile.get("entity", {}).get("legal_name", {}) or {}).get("value"))
+        db.update_opportunity(conn, opp_id, commercial_score=sc, commercial_reasons=_json.dumps(parts), recommended_entity=best["entity"] if best else None)
+        result["commercial_score"], result["recommended_entity"] = sc, best["entity"] if best else None
+    except Exception as exc:  # scoring must never break evaluation
+        db.log(conn, "scoring_error", "opportunity", opp_id, {"error": str(exc)})
     db.log(conn, "evaluate", "opportunity", opp_id, {"match_class": result["match_class"], "score": result["score"], "recommendation": rec}, actor=actor)
     result["recommendation"] = rec
     return result

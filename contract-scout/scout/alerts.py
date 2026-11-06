@@ -79,7 +79,7 @@ def doable_opportunities(conn, profile: Optional[dict] = None, now: Optional[dat
         d = deadlines.days_until(o["bid_deadline_utc"], now)
         if d is not None and d < 0:
             continue
-        if o["status"] in ("Rejected", "Lost", "Awarded", "Submitted"):
+        if o["status"] in ("Rejected", "Lost", "Awarded", "Submitted", "Cancelled"):
             continue
         if o["recommendation"] == REJECT:
             continue
@@ -94,8 +94,8 @@ def doable_opportunities(conn, profile: Optional[dict] = None, now: Optional[dat
         else:
             continue
         gaps = [c["requirement"][:60] for c in ev["checks"] if c["mandatory"] and c["result"] in ("UNKNOWN", "NOT_MET")][:3]
-        out.append({"opportunity": o, "why": why, "gaps": gaps, "days_left": d})
-    out.sort(key=lambda x: (x["why"] != "Strong Match", x["days_left"] if x["days_left"] is not None else 9999))
+        out.append({"opportunity": o, "why": why, "gaps": gaps, "days_left": d, "commercial_score": o.get("commercial_score"), "entity": o.get("recommended_entity")})
+    out.sort(key=lambda x: (x["why"] != "Strong Match", -(x["commercial_score"] or 0), x["days_left"] if x["days_left"] is not None else 9999))
     return out
 
 
@@ -112,12 +112,13 @@ def build_digest(conn, dashboard_url: str = "http://localhost:8501", profile: Op
     doable = doable_opportunities(conn, profile)
     section("OPPORTUNITIES YOU CAN DO (" + ", ".join(can_do_industries(profile)) + ")",
             [f"{x['opportunity']['title']} [{x['opportunity']['industry']}] due {deadlines.format_local(x['opportunity']['bid_deadline_utc'])} "
-             f"- {x['why']}" + (f"; resolve: {'; '.join(x['gaps'])}" if x['gaps'] else "") + f"  -> {dashboard_url}/detail?opp={x['opportunity']['id']}" for x in doable])
+             f"- {x['why']}; score {x['commercial_score'] if x['commercial_score'] is not None else 'n/a'}/100; entity: {x['entity'] or 'n/a'}" + (f"; resolve: {'; '.join(x['gaps'])}" if x['gaps'] else "") + f"  -> {dashboard_url}/detail?opp={x['opportunity']['id']}" for x in doable])
     if not doable:
         lines += ["OPPORTUNITIES YOU CAN DO", "  - None yet. Everything on file is either outside your industries, past deadline, or Poor Match.", ""]
     section("NEW OPPORTUNITIES", [a["message"] for a in unsent if a["kind"] == "new"])
     section("STRONG MATCHES", [a["message"] for a in unsent if a["kind"] == "strong_match"])
     section("DEADLINES APPROACHING", [a["message"] for a in unsent if a["kind"].startswith("deadline")])
+    section("CANCELLED - STOP WORK", [a["message"] for a in unsent if a["kind"] == "cancelled"])
     section("AMENDMENTS / CHANGES", [a["message"] for a in unsent if a["kind"] == "amendment"])
     needs = []
     for o in opps:

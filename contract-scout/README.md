@@ -1,6 +1,6 @@
-# Maryland Government Contract Scout Bot
+# Maryland & DC Government Contract Scout Bot
 
-A private web application that reads Maryland government solicitations, compares every stated requirement with your company's **verified** qualifications, estimates whether the job can be profitable, and ranks opportunities on a dashboard.
+A private web application that reads Maryland and Washington, DC government solicitations, compares every stated requirement with your company's **verified** qualifications, estimates whether the job can be profitable, and ranks opportunities on a dashboard.
 
 It never submits bids, never scrapes portals that forbid it, and never stores EINs, passwords or API keys.
 
@@ -11,6 +11,8 @@ It never submits bids, never scrapes portals that forbid it, and never stores EI
 | 1. Company profile & verified qualifications | Working | JSON profile; every fact is VERIFIED / MISSING / ASSUMED / NOT_APPLICABLE with a source. Sensitive keys are rejected. |
 | 2. Source registry & scanner | Working (needs credentials) | Registry of 19 Maryland sources with their mechanisms. Inbox intake pipeline: parses notices, ingests attachments, downloads linked files from allowed portal hosts only, creates leads, evaluates, de-duplicates by message ID. Tested with simulated emails; live IMAP needs your inbox credentials. Portal pages are never scraped. |
 | 3. Solicitation document reader | Working (two engines) | PDF/DOCX/TXT extraction with page markers. **Claude** structured extraction when `ANTHROPIC_API_KEY` is set (not yet exercised in this environment). **Offline heuristic** reader otherwise, labelled low confidence. |
+| Commercial attractiveness score | Working | Separate 0-100 score (industry fit, size, margin, deadline runway, access advantage, risk/bonding) with a per-component explanation; Poor Match caps it at 35. |
+| Recommendation card | Working | Recommended bidding entity across all profiles, why it fits, missing items, partner path, financials, immediate actions, deadline and links; also in the digest. |
 | 4. Eligibility & compliance engine | Working | Classifies Strong / Conditional / Poor with a traceable check per requirement. Unknown mandatory items block Strong Match. Owner/affiliate experience never counts. |
 | 5. Insurance & bonding analysis | Working | Compares stated limits and bond percentages with verified profile limits; computes bond size from contract value. |
 | 6. Cost, margin & working capital estimator | Working | Editable assumptions, low/base/high band, working-capital need, Pursue / Investigate / Reject logic. Never invents a contract value. |
@@ -62,6 +64,7 @@ Three profiles ship in `profiles/`, built from the owner's documents on 2026-11-
 |---|---|---|
 | `sierra_real_estate_llc.json` | Sierra Real Estate LLC (Maryland, formed 2023-09-08, SDAT W24358616) | General liability $1M on a 2025 certificate (renewal not found), 0 employees, 2025 revenue in the 50k to 100k range, no eMMA/SAM/SBR, no bonding. The MHIC license on file belongs to a hired contractor, not this entity. |
 | `medwise_seniors_llc.json` | Medwise Seniors LLC (Delaware, formed 2026-08-25) | No Maryland registration, insurance, licenses or history. |
+| `sierra_international_pharmaceutical_corp.json` | Sierra International Pharmaceutical Corporation (Maryland corp., 1992; Columbia Heights Pharmacy, DC) | 34 years of pharmacy operation, DC pharmacy license (current copy not on file), immunization CPA, Erie liability program 2026-27, Medicare/PBM credentialing; no eMMA, DC eSourcing or CBE registration yet. |
 | `new_maryland_entity.json` | Hypothetical new Maryland LLC | Everything MISSING, to show what a fresh entity would need. |
 
 Pick the bidding entity in the sidebar. The **Compare entities** tab on each opportunity scores the same solicitation against all three. To edit a profile without touching the shipped file, save it from the profile page; the copy lands in `data/profiles/` and overrides the shipped one.

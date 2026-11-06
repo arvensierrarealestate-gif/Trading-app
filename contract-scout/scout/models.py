@@ -26,7 +26,7 @@ REJECT = "Reject"
 RECOMMENDATIONS = (PURSUE, INVESTIGATE, REJECT)
 
 # ---- Pipeline status of an opportunity ------------------------------------
-OPP_STATUSES = ("New", "Under Review", "Preparing Bid", "Submitted", "Awarded", "Lost", "Rejected")
+OPP_STATUSES = ("New", "Under Review", "Qualified", "Preparing Bid", "Submitted", "Awarded", "Lost", "Rejected", "Cancelled")
 
 # ---- Result of a single compliance check ----------------------------------
 MET = "MET"
@@ -71,13 +71,18 @@ INDUSTRIES = {
     ],
     "Healthcare & Hospital Support": [
         "hospital", "healthcare", "health care", "medical supplies", "environmental services",
-        "patient transport", "sterile", "clinic", "nursing", "pharmac",
+        "patient transport", "sterile", "clinic", "nursing",
         "ppe", "durable medical", "medical waste", "biohazard",
     ],
     "Hospitality & Lodging": [
         "hospitality", "hotel", "lodging", "housekeeping", "laundry", "linen", "banquet",
         "conference services", "event services", "concierge", "front desk", "dormitory",
         "guest services", "shelter operations", "residential facility", "room attendant",
+    ],
+    "Pharmacy & Immunization": [
+        "pharmacy", "pharmacist", "pharmaceutical", "prescription", "immunization", "vaccine", "vaccination",
+        "flu shot", "medication therapy", "340b", "dispensing", "medication management", "point-of-care testing",
+        "naloxone", "long-term care pharmacy", "drug supply", "pharmacy services",
     ],
     "Sanitation & Waste": [
         "sanitation", "sanitary", "waste", "refuse", "trash", "recycling", "pest control",
@@ -88,7 +93,18 @@ INDUSTRIES = {
 
 # Industries the owner has said are "can do" by default; profile capabilities override this.
 DEFAULT_CAN_DO_INDUSTRIES = ("Construction & Property Services", "Cleaning & Janitorial", "Food & Catering",
-                             "Healthcare & Hospital Support", "Hospitality & Lodging", "Sanitation & Waste")
+                             "Healthcare & Hospital Support", "Hospitality & Lodging", "Sanitation & Waste", "Pharmacy & Immunization")
+
+JURISDICTIONS = ("Maryland", "Washington, DC")
+_DC_SIGNS = ("district of columbia", "washington, dc", "washington dc", "dc.gov", "ocp.dc", "dgs.dc", "dc health", "dc public schools",
+             "dc department", "dc office", "dcps", "dchfa", "dc water", "dc housing", ", dc ", " dc ")
+
+
+def classify_jurisdiction(*texts: str) -> str:
+    t = " " + " ".join(x or "" for x in texts).lower() + " "
+    if any(sign in t for sign in _DC_SIGNS):
+        return "Washington, DC"
+    return "Maryland"
 
 
 def classify_industry(text: str) -> str:
