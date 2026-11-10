@@ -144,3 +144,6 @@ Optional, after launch:
 - Test: `python3 tools/test_landing.py http://127.0.0.1:8765 /tmp/shots` and `python3 tools/test_nav.py "$PWD/site/index.html" /tmp/shots`
 - Deploy: commit `landing-pages/urpick-site` and `public/urpick`, push to the working branch, mirror to the default branch (`claude/trading-app-nextjs-setup-1r2LD`); Vercel builds the `urpick` project automatically. The route becomes `https://trading-app-3k96.vercel.app/products/cozy-cat-cave`.
 - The page ships in preview state. Switching to live is a JSON change (`status`, `price`, `stock`, variant IDs) plus a rebuild; do not flip it without the checklist above.
+
+## Waitlist backend (10 Nov 2026)
+The waitlist form posts to `{{BASE}}/api/subscribe` (`landing-pages/urpick-site/api/subscribe.js`, deployed with the site on the urpick Vercel project). Payload: email, consent, source `waitlist`, product, variant, qty, landing path and the captured attribution. The customer is created or updated in Shopify (0b1qjx-f5.myshopify.com) with marketing consent and the tags `urpick-website`, `src:waitlist`, `waitlist:urpick-cat-cave`. Until `SHOPIFY_ADMIN_TOKEN` is set in Vercel the function answers 503 and the page keeps its local-save message. The Lead pixel event fires on any saved signup.

@@ -100,6 +100,9 @@ if os.path.exists(landing_tpl):
         out_dir = os.path.join(site, "products", cfg["slug"]); os.makedirs(out_dir, exist_ok=True)
         open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8").write(render(""))
         landing_pages.append((cfg["slug"], render))
+api_src = os.path.join(ROOT, "api")   # Vercel serverless functions (api/subscribe.js) deploy with the static site
+if os.path.isdir(api_src):
+    shutil.copytree(api_src, os.path.join(site, "api"))
 open(os.path.join(site, "vercel.json"), "w").write('{\n  "framework": null,\n  "buildCommand": null,\n  "installCommand": null,\n  "outputDirectory": null,\n  "cleanUrls": true,\n  "headers": [\n    { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] }\n  ]\n}\n')
 # mirror into the repo's Next.js public/ folder so the existing Vercel deployment serves it at /urpick/
 pub = os.path.normpath(os.path.join(ROOT, "..", "..", "public", "urpick"))

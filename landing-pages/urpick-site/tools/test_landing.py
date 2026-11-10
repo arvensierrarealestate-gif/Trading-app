@@ -2,7 +2,7 @@
 import sys
 from playwright.sync_api import sync_playwright
 ORIGIN = sys.argv[1].rstrip("/"); OUT = sys.argv[2]; U = ORIGIN + "/products/cozy-cat-cave/"
-CH = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
+import glob as _g; CH = (sorted(_g.glob("/opt/pw-browsers/chromium-*/chrome-linux*/chrome")) or ["/opt/pw-browsers/chromium/chrome"])[-1]  # newest installed chromium
 results = []
 def check(name, ok, detail=""):
     results.append((name, bool(ok), detail)); print(("PASS" if ok else "FAIL"), name, detail)
@@ -70,9 +70,12 @@ with sync_playwright() as p:
         check(f"[{label}] quantity stepper", pg.evaluate("document.getElementById('qtyOut').textContent === '2' && document.querySelector('#upsOptions input[value=\"2\"]').checked"))
         pg.fill("#waitEmail", "bad"); pg.click("#waitForm button"); pg.wait_for_timeout(100)
         check(f"[{label}] waitlist validates email", pg.evaluate("document.getElementById('waitEmail').getAttribute('aria-invalid') === 'true'"))
-        pg.fill("#waitEmail", "Pat@Example.com"); pg.click("#waitForm button"); pg.wait_for_timeout(100)
+        pg.route("**/api/subscribe", lambda r: r.fulfill(status=200, content_type="application/json", body='{"ok":true,"eligible":true,"existing":false,"subscribed":true}'))
+        pg.fill("#waitEmail", "Pat@Example.com"); pg.click("#waitForm button"); pg.wait_for_timeout(400)
+        check(f"[{label}] waitlist: posted to /api/subscribe and confirms 'You're on the list'", pg.evaluate("/You.re on the list/.test(document.getElementById('waitMsg').textContent) && !/err/.test(document.getElementById('waitMsg').className)"))
         check(f"[{label}] waitlist signup sends a Lead event to the Meta Pixel and the data layer", pg.evaluate("(function(){var q=(window.fbq && fbq.queue)||[]; return q.filter(a=>a[0]==='track'&&a[1]==='Lead'&&a[3]&&a[3].eventID).length===1 && dataLayer.some(e=>e.event==='Lead'&&e.event_id);})()"))
-        check(f"[{label}] waitlist saves locally with attribution and says nothing was sent", pg.evaluate("(function(){var l=JSON.parse(localStorage.getItem('urpick_waitlist_v1')); var r=l[l.length-1]; return r.email === 'pat@example.com' && r.utm_source === 'tiktok' && r.ttclid === 't1' && r.qty === 2 && /nothing has been sent/.test(document.getElementById('waitMsg').textContent);})()"))
+        pg.unroute("**/api/subscribe"); pg.fill("#waitEmail", "Pat@Example.com"); pg.click("#waitForm button"); pg.wait_for_timeout(400)   # no function on this static server -> 404 -> local save
+        check(f"[{label}] waitlist saves locally with attribution and says nothing was sent when the endpoint is absent (404)", pg.evaluate("(function(){var l=JSON.parse(localStorage.getItem('urpick_waitlist_v1')); var r=l[l.length-1]; return r.email === 'pat@example.com' && r.utm_source === 'tiktok' && r.ttclid === 't1' && r.qty === 2 && /nothing has been sent/.test(document.getElementById('waitMsg').textContent);})()"))
         # ── upsell ──
         check(f"[{label}] upsell: heading, copy, one vs two selectable, no invented bundle price, action pending", pg.evaluate("document.getElementById('upsTitle').textContent === 'Make It Two Cozy Corners.' && /Explore adding a second Cat Cave/.test(document.getElementById('upsCopy').textContent) && document.querySelectorAll('#upsOptions input[type=radio]').length === 2 && Array.from(document.querySelectorAll('#upsOptions .p')).every(p => /Price to be confirmed/.test(p.textContent)) && document.getElementById('upsAdd').disabled && /Pending price/.test(document.getElementById('upsFine').textContent)"))
         pg.evaluate("document.querySelector('#upsOptions input[value=\"1\"]').click()"); pg.wait_for_timeout(100)
