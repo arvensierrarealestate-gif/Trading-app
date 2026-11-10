@@ -25,7 +25,9 @@
 
 "use strict";
 
-const STORE = (process.env.SHOPIFY_SHOP || process.env.SHOPIFY_STORE_DOMAIN || "0b1qjx-f5.myshopify.com").replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+function envClean(name) { return String(process.env[name] || "").trim().replace(/^["']+|["']+$/g, "").trim(); }   // tolerate pasted quotes/whitespace
+const CLIENT_ID = () => envClean("SHOPIFY_CLIENT_ID"), CLIENT_SECRET = () => envClean("SHOPIFY_CLIENT_SECRET"), ADMIN_TOKEN = () => envClean("SHOPIFY_ADMIN_TOKEN");
+const STORE = (envClean("SHOPIFY_SHOP") || envClean("SHOPIFY_STORE_DOMAIN") || "0b1qjx-f5.myshopify.com").replace(/^https?:\/\//, "").replace(/\/.*$/, "").toLowerCase();
 const API_VERSION = process.env.SHOPIFY_API_VERSION || "2025-10";
 const SOURCES = { "welcome-popup": "welcome-popup", newsletter: "newsletter", waitlist: "waitlist" };
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
@@ -74,11 +76,11 @@ function readBody(req) {
 const RENEW_MARGIN_MS = 5 * 60 * 1000;   // renew when less than 5 minutes remain (Shopify tokens last ~24 h)
 let tokenCache = { value: null, expiresAt: 0, ttl: 0 };
 let tokenInFlight = null;
-function configured() { return !!((process.env.SHOPIFY_CLIENT_ID && process.env.SHOPIFY_CLIENT_SECRET) || process.env.SHOPIFY_ADMIN_TOKEN); }
+function configured() { return !!((CLIENT_ID() && CLIENT_SECRET()) || ADMIN_TOKEN()); }
 async function requestToken() {
   const r = await fetch(`https://${STORE}/admin/oauth/access_token`, {
     method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({ client_id: process.env.SHOPIFY_CLIENT_ID, client_secret: process.env.SHOPIFY_CLIENT_SECRET, grant_type: "client_credentials" }),
+    body: JSON.stringify({ client_id: CLIENT_ID(), client_secret: CLIENT_SECRET(), grant_type: "client_credentials" }),
   });
   const j = await r.json().catch(() => ({}));
   if (!r.ok || !j.access_token) throw new Error("shopify auth: HTTP " + r.status + (j.error ? " " + j.error : ""));
@@ -87,7 +89,7 @@ async function requestToken() {
   return tokenCache.value;
 }
 async function accessToken(force) {
-  if (!(process.env.SHOPIFY_CLIENT_ID && process.env.SHOPIFY_CLIENT_SECRET)) return process.env.SHOPIFY_ADMIN_TOKEN;   // legacy fixed token
+  if (!(CLIENT_ID() && CLIENT_SECRET())) return ADMIN_TOKEN();   // legacy fixed token
   const margin = Math.min(RENEW_MARGIN_MS, (tokenCache.ttl || 0) / 2);   // never renew on every call for unusually short-lived tokens
   if (!force && tokenCache.value && Date.now() < tokenCache.expiresAt - margin) return tokenCache.value;
   if (!tokenInFlight) tokenInFlight = requestToken().finally(() => { tokenInFlight = null; });
@@ -100,7 +102,7 @@ async function shopify(query, variables, retried) {
     headers: { "Content-Type": "application/json", "X-Shopify-Access-Token": token },
     body: JSON.stringify({ query, variables }),
   });
-  if (r.status === 401 && !retried && process.env.SHOPIFY_CLIENT_ID) { tokenCache = { value: null, expiresAt: 0, ttl: 0 }; await accessToken(true); return shopify(query, variables, true); }   // token revoked or expired early: renew once
+  if (r.status === 401 && !retried && CLIENT_ID()) { tokenCache = { value: null, expiresAt: 0, ttl: 0 }; await accessToken(true); return shopify(query, variables, true); }   // token revoked or expired early: renew once
   const j = await r.json().catch(() => ({}));
   if (!r.ok || j.errors) { const msg = (j.errors && j.errors[0] && j.errors[0].message) || `HTTP ${r.status}`; throw new Error("shopify: " + msg); }
   return j.data;
@@ -134,17 +136,24 @@ function tagsFor(b, eligible) {
 async function diagnose() {
   const out = {
     ok: false, checkedAt: new Date().toISOString(), store: STORE, apiVersion: API_VERSION,
-    settings: { SHOPIFY_CLIENT_ID: !!process.env.SHOPIFY_CLIENT_ID, SHOPIFY_CLIENT_SECRET: !!process.env.SHOPIFY_CLIENT_SECRET, SHOPIFY_SHOP: !!process.env.SHOPIFY_SHOP, SHOPIFY_ADMIN_TOKEN: !!process.env.SHOPIFY_ADMIN_TOKEN },
+    settings: { SHOPIFY_CLIENT_ID: !!CLIENT_ID(), SHOPIFY_CLIENT_SECRET: !!CLIENT_SECRET(), SHOPIFY_SHOP: !!envClean("SHOPIFY_SHOP"), SHOPIFY_ADMIN_TOKEN: !!ADMIN_TOKEN() },
+    clientId: { length: CLIENT_ID().length, startsWith: CLIENT_ID().slice(0, 4), looksLikeShopifyClientId: /^[0-9a-f]{32}$/.test(CLIENT_ID()), hadStrayCharacters: String(process.env.SHOPIFY_CLIENT_ID || "") !== CLIENT_ID() },
+    clientSecret: { length: CLIENT_SECRET().length, hadStrayCharacters: String(process.env.SHOPIFY_CLIENT_SECRET || "") !== CLIENT_SECRET() },
     auth: null, shopQuery: null, customersAccess: null, nextStep: null,
   };
   if (!configured()) { out.nextStep = "Set SHOPIFY_CLIENT_ID, SHOPIFY_CLIENT_SECRET and SHOPIFY_SHOP in Vercel (Production and Preview), then redeploy."; return out; }
   try {
-    if (process.env.SHOPIFY_CLIENT_ID && process.env.SHOPIFY_CLIENT_SECRET) {
+    if (CLIENT_ID() && CLIENT_SECRET()) {
       tokenCache = { value: null, expiresAt: 0, ttl: 0 };
-      const r = await fetch(`https://${STORE}/admin/oauth/access_token`, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ client_id: process.env.SHOPIFY_CLIENT_ID, client_secret: process.env.SHOPIFY_CLIENT_SECRET, grant_type: "client_credentials" }) });
+      const r = await fetch(`https://${STORE}/admin/oauth/access_token`, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ client_id: CLIENT_ID(), client_secret: CLIENT_SECRET(), grant_type: "client_credentials" }) });
       const j = await r.json().catch(() => ({}));
       out.auth = { ok: r.ok && !!j.access_token, httpStatus: r.status, error: j.error || null, errorDescription: j.error_description || null, scope: j.scope || null, expiresIn: j.expires_in || null };
-      if (!out.auth.ok) { out.nextStep = r.status === 401 || r.status === 400 ? "Shopify rejected the client ID/secret for this store: check the values in Vercel match the app's API credentials, that the app is installed on " + STORE + ", and that the store domain is right." : "Token endpoint unreachable or unexpected (HTTP " + r.status + ")."; return out; }
+      if (!out.auth.ok) {
+        out.nextStep = j.error === "application_cannot_be_found"
+          ? "Shopify has no app with this Client ID. In the Dev Dashboard open the app → Settings and compare: the Client ID is 32 characters of 0-9 and a-f (this one has " + CLIENT_ID().length + " and starts with \"" + CLIENT_ID().slice(0, 4) + "\"). If the app was created under a different Shopify organisation or Partner account than the store, Shopify will not find it either; the app must belong to the organisation that owns " + STORE + ". Correct the value in Vercel and redeploy."
+          : (r.status === 401 || r.status === 400 ? "Shopify rejected the client ID/secret for this store (" + (j.error || r.status) + "): check the values in Vercel match the app's API credentials, that the app is installed on " + STORE + ", and that the store domain is right." : "Token endpoint unreachable or unexpected (HTTP " + r.status + ").");
+        return out;
+      }
       tokenCache = { value: j.access_token, expiresAt: Date.now() + Math.max(60, Number(j.expires_in) || 86400) * 1000, ttl: Math.max(60, Number(j.expires_in) || 86400) * 1000 };
     } else out.auth = { ok: true, mode: "fixed admin token" };
     try { const d = await shopify(`{ shop { name myshopifyDomain } }`); out.shopQuery = { ok: true, shopName: d.shop.name, domain: d.shop.myshopifyDomain }; }
