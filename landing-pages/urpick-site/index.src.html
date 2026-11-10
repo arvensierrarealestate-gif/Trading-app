@@ -1870,7 +1870,7 @@
       if (WELCOME_OFFER.code) {
         body.textContent = "Here’s your " + WELCOME_OFFER.percent + "% first-order code. Enter it in the discount field at checkout.";
         codeEl.textContent = WELCOME_OFFER.code; codeWrap.hidden = false;
-        notice.innerHTML = "<b>One use per customer, first order only.</b>" + (reason || "We’ve saved this email for launch news and offers.");
+        notice.innerHTML = "<b>One use per customer, first order only.</b>" + (reason || (confirmed ? "We’ve saved this email for launch news and offers." : "The mailing list isn’t connected yet, so this email is saved on this device only."));
         notice.hidden = false;
       } else if (confirmed) {
         body.textContent = "Your " + WELCOME_OFFER.percent + "% first-order discount is ready. Shop normally and use this email at checkout. We’ll apply your discount automatically.";
