@@ -14,15 +14,18 @@
 //           503 { ok: false, error: "not_configured", reason }   ← SHOPIFY_ADMIN_TOKEN missing; pages fall back
 //           502 { ok: false, error: "shopify_error", reason }
 //
-// Environment (Vercel → project urpick → Settings → Environment Variables):
-//   SHOPIFY_ADMIN_TOKEN   Admin API access token of the custom app "UrPick website" (scopes: read_customers, write_customers). Required.
-//   SHOPIFY_STORE_DOMAIN  optional, default 0b1qjx-f5.myshopify.com
+// Environment (Vercel → project urpick → Settings → Environment Variables; set for Production AND Preview):
+//   SHOPIFY_CLIENT_ID + SHOPIFY_CLIENT_SECRET   the "UrPick website" app (Dev Dashboard). The function exchanges them for a short-lived
+//                                               Admin access token with the client-credentials grant and renews it before it expires.
+//   SHOPIFY_SHOP          store domain, e.g. 0b1qjx-f5.myshopify.com (default below)
+//   SHOPIFY_ADMIN_TOKEN   alternative: a fixed Admin API token from a legacy custom app. Used only if the client credentials are absent.
 //   SHOPIFY_API_VERSION   optional, default 2025-10
 //   ALLOWED_ORIGINS       optional, comma-separated extra origins allowed to call this endpoint (same-origin always works)
+// The secret and the tokens never leave this function: not in responses, not in logs.
 
 "use strict";
 
-const STORE = process.env.SHOPIFY_STORE_DOMAIN || "0b1qjx-f5.myshopify.com";
+const STORE = (process.env.SHOPIFY_SHOP || process.env.SHOPIFY_STORE_DOMAIN || "0b1qjx-f5.myshopify.com").replace(/^https?:\/\//, "").replace(/\/.*$/, "");
 const API_VERSION = process.env.SHOPIFY_API_VERSION || "2025-10";
 const SOURCES = { "welcome-popup": "welcome-popup", newsletter: "newsletter", waitlist: "waitlist" };
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
@@ -67,12 +70,37 @@ function readBody(req) {
   });
 }
 
-async function shopify(query, variables) {
+// ── Access token: client-credentials grant, cached per instance and renewed before `expires_in` runs out ──
+const RENEW_MARGIN_MS = 5 * 60 * 1000;   // renew when less than 5 minutes remain (Shopify tokens last ~24 h)
+let tokenCache = { value: null, expiresAt: 0, ttl: 0 };
+let tokenInFlight = null;
+function configured() { return !!((process.env.SHOPIFY_CLIENT_ID && process.env.SHOPIFY_CLIENT_SECRET) || process.env.SHOPIFY_ADMIN_TOKEN); }
+async function requestToken() {
+  const r = await fetch(`https://${STORE}/admin/oauth/access_token`, {
+    method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({ client_id: process.env.SHOPIFY_CLIENT_ID, client_secret: process.env.SHOPIFY_CLIENT_SECRET, grant_type: "client_credentials" }),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || !j.access_token) throw new Error("shopify auth: HTTP " + r.status + (j.error ? " " + j.error : ""));
+  const ttl = Math.max(60, Number(j.expires_in) || 86400) * 1000;
+  tokenCache = { value: j.access_token, expiresAt: Date.now() + ttl, ttl };
+  return tokenCache.value;
+}
+async function accessToken(force) {
+  if (!(process.env.SHOPIFY_CLIENT_ID && process.env.SHOPIFY_CLIENT_SECRET)) return process.env.SHOPIFY_ADMIN_TOKEN;   // legacy fixed token
+  const margin = Math.min(RENEW_MARGIN_MS, (tokenCache.ttl || 0) / 2);   // never renew on every call for unusually short-lived tokens
+  if (!force && tokenCache.value && Date.now() < tokenCache.expiresAt - margin) return tokenCache.value;
+  if (!tokenInFlight) tokenInFlight = requestToken().finally(() => { tokenInFlight = null; });
+  return tokenInFlight;
+}
+async function shopify(query, variables, retried) {
+  const token = await accessToken(false);
   const r = await fetch(`https://${STORE}/admin/api/${API_VERSION}/graphql.json`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", "X-Shopify-Access-Token": process.env.SHOPIFY_ADMIN_TOKEN },
+    headers: { "Content-Type": "application/json", "X-Shopify-Access-Token": token },
     body: JSON.stringify({ query, variables }),
   });
+  if (r.status === 401 && !retried && process.env.SHOPIFY_CLIENT_ID) { tokenCache = { value: null, expiresAt: 0, ttl: 0 }; await accessToken(true); return shopify(query, variables, true); }   // token revoked or expired early: renew once
   const j = await r.json().catch(() => ({}));
   if (!r.ok || j.errors) { const msg = (j.errors && j.errors[0] && j.errors[0].message) || `HTTP ${r.status}`; throw new Error("shopify: " + msg); }
   return j.data;
@@ -114,7 +142,7 @@ async function handler(req, res) {
   if (!EMAIL_RE.test(email) || email.length > 254) return json(res, 400, { ok: false, error: "invalid_email", reason: "Please enter a valid email address, like name@example.com." });
   if (!SOURCES[b.source]) return json(res, 400, { ok: false, error: "invalid_source", reason: "Unknown signup source." });
   if (b.consent !== true) return json(res, 400, { ok: false, error: "consent_required", reason: "Consent to receive emails is required." });
-  if (!process.env.SHOPIFY_ADMIN_TOKEN) return json(res, 503, { ok: false, error: "not_configured", reason: "The email service is not connected yet." });
+  if (!configured()) return json(res, 503, { ok: false, error: "not_configured", reason: "The email service is not connected yet." });
 
   const consentUpdatedAt = new Date().toISOString();
   const consent = { marketingState: "SUBSCRIBED", marketingOptInLevel: "SINGLE_OPT_IN", consentUpdatedAt };
@@ -137,16 +165,22 @@ async function handler(req, res) {
     const tags = tagsFor(b, eligible).filter((t) => (existing.tags || []).indexOf(t) === -1);
     if (tags.length) { const r1 = await shopify(M_TAGS, { id: existing.id, tags }); const e1 = r1.tagsAdd.userErrors[0]; if (e1) throw new Error("shopify: " + e1.message); }
     const state = existing.emailMarketingConsent && existing.emailMarketingConsent.marketingState;
-    if (state !== "SUBSCRIBED") { const r2 = await shopify(M_CONSENT, { input: { customerId: existing.id, emailMarketingConsent: consent } }); const e2 = r2.customerEmailMarketingConsentUpdate.userErrors[0]; if (e2) throw new Error("shopify: " + e2.message); }
+    let subscribed = state === "SUBSCRIBED";
+    if (state === "UNSUBSCRIBED") {
+      // An explicit unsubscribe is never overridden by a form submission; the customer re-subscribes through an email footer or by contacting us.
+      return json(res, 200, { ok: true, eligible, existing: true, subscribed: false, reason: "This email previously unsubscribed from UrPick emails, so we have not re-subscribed it. Email us if you would like to receive updates again." });
+    }
+    if (!subscribed) { const r2 = await shopify(M_CONSENT, { input: { customerId: existing.id, emailMarketingConsent: consent } }); const e2 = r2.customerEmailMarketingConsentUpdate.userErrors[0]; if (e2) throw new Error("shopify: " + e2.message); subscribed = true; }
 
     const reason = eligible ? undefined : (hasOrders
       ? "This email has already placed an order, so the first-order offer doesn’t apply. You’re on the list for launch news."
       : "This email has already used the first-order offer. You’re on the list for launch news.");
-    return json(res, 200, { ok: true, eligible, existing: true, subscribed: true, reason });
+    return json(res, 200, { ok: true, eligible, existing: true, subscribed, reason });
   } catch (e) {
+    try { console.error("[subscribe] " + String(e && e.message || e).replace(/shp[a-z]*_[A-Za-z0-9]+/g, "[redacted]").slice(0, 200)); } catch (_) {}   // message only, never the body, token or secret
     return json(res, 502, { ok: false, error: "shopify_error", reason: "We couldn’t save your email just now. Please try again in a moment." });
   }
 }
 
 module.exports = handler;
-module.exports._internals = { tagsFor, attributionNote, EMAIL_RE };
+module.exports._internals = { tagsFor, attributionNote, EMAIL_RE, _resetTokenCache: () => { tokenCache = { value: null, expiresAt: 0, ttl: 0 }; }, _ageToken: (msLeft) => { if (tokenCache.value) tokenCache.expiresAt = Date.now() + msLeft; } };

@@ -18,10 +18,16 @@ function makeRes() {
 async function call(method, body, headers) { const req = makeReq(method, body, headers), res = makeRes(); await handler(req, res); let j = null; try { j = JSON.parse(res.body); } catch (e) {} return { status: res.statusCode, json: j, headers: res.headers }; }
 
 // Stub Shopify: records calls, answers by query shape.
-let calls = [], scenario = {};
+let calls = [], scenario = {}, tokenRequests = 0, tokenSerial = 0;
 global.fetch = async (url, opts) => {
   const payload = JSON.parse(opts.body);
+  if (/\/admin\/oauth\/access_token$/.test(url)) {
+    tokenRequests++; calls.push({ url, headers: opts.headers, grant: payload });
+    if (scenario.authFail) return { ok: false, status: 401, json: async () => ({ error: "invalid_client" }) };
+    return { ok: true, status: 200, json: async () => ({ access_token: "shpat_dyn_" + (++tokenSerial), expires_in: scenario.expiresIn || 86399, scope: "read_customers,write_customers" }) };
+  }
   calls.push({ url, headers: opts.headers, query: payload.query, variables: payload.variables });
+  if (scenario.rejectToken && opts.headers["X-Shopify-Access-Token"] === scenario.rejectToken) return { ok: false, status: 401, json: async () => ({ errors: "[API] Invalid API key or access token" }) };
   if (scenario.http) return { ok: false, status: scenario.http, json: async () => ({ errors: [{ message: "boom" }] }) };
   const q = payload.query;
   let data = {};
@@ -89,6 +95,44 @@ global.fetch = async (url, opts) => {
   const ip = "198.51.100.7"; let last;
   for (let i = 0; i < 13; i++) last = await call("POST", { email: "r@example.com", consent: true, source: "newsletter" }, { "x-forwarded-for": ip });
   check("13th request from one IP in a minute -> 429", last.status === 429);
+
+  // ── client-credentials grant (SHOPIFY_CLIENT_ID / SECRET / SHOP) ──
+  delete process.env.SHOPIFY_ADMIN_TOKEN; process.env.SHOPIFY_CLIENT_ID = "cid_123"; process.env.SHOPIFY_CLIENT_SECRET = "csecret_456"; process.env.SHOPIFY_SHOP = "0b1qjx-f5.myshopify.com";
+  handler._internals._resetTokenCache(); calls = []; scenario = {}; tokenRequests = 0;
+  r = await call("POST", { email: "cc1@example.com", consent: true, source: "newsletter" });
+  const grant = calls.find((c) => c.grant);
+  check("client credentials: token requested once with grant_type client_credentials, then customer created", r.status === 200 && r.json.ok && tokenRequests === 1 && grant && grant.grant.grant_type === "client_credentials" && grant.grant.client_id === "cid_123" && grant.grant.client_secret === "csecret_456", JSON.stringify(r.json));
+  check("client credentials: Admin calls use the granted token in the header", calls.filter((c) => c.query).every((c) => c.headers["X-Shopify-Access-Token"] === "shpat_dyn_1"));
+  calls = [];
+  r = await call("POST", { email: "cc2@example.com", consent: true, source: "newsletter" });
+  check("second request reuses the cached token (no new grant)", r.status === 200 && tokenRequests === 1 && calls.every((c) => !c.grant));
+  // renewal before expiry: age the cached token so under 5 minutes remain of its expires_in, then the next call must renew before using it
+  handler._internals._resetTokenCache(); scenario = {}; calls = []; tokenRequests = 0;
+  await call("POST", { email: "cc3@example.com", consent: true, source: "newsletter" });
+  handler._internals._ageToken(4 * 60 * 1000); calls = [];
+  r = await call("POST", { email: "cc4@example.com", consent: true, source: "newsletter" });
+  check("token renewed automatically when inside the expiry margin (expires_in honoured)", r.status === 200 && tokenRequests === 2 && calls.filter((c) => c.query).every((c) => c.headers["X-Shopify-Access-Token"] === "shpat_dyn_" + tokenSerial));
+  handler._internals._resetTokenCache(); scenario = { expiresIn: 120 }; calls = []; tokenRequests = 0;
+  await call("POST", { email: "cc3b@example.com", consent: true, source: "newsletter" }); await call("POST", { email: "cc3c@example.com", consent: true, source: "newsletter" });
+  check("a short-lived token is still cached for half its life rather than re-requested every call", tokenRequests === 1);
+  // early revocation: Shopify answers 401 for the cached token -> renew once and retry transparently
+  scenario = { rejectToken: "shpat_dyn_" + tokenSerial }; calls = []; const before = tokenRequests;
+  r = await call("POST", { email: "cc5@example.com", consent: true, source: "newsletter" });
+  check("401 on a cached token -> one renewal and a successful retry", r.status === 200 && r.json.ok && tokenRequests === before + 1);
+  scenario = { authFail: true }; handler._internals._resetTokenCache(); calls = [];
+  r = await call("POST", { email: "cc6@example.com", consent: true, source: "newsletter" });
+  check("bad client secret -> 502 friendly error, secret not in the response", r.status === 502 && !/csecret|cid_123/.test(JSON.stringify(r.json)));
+  check("secret and tokens never appear in any response body", !/csecret_456|shpat_/.test(JSON.stringify(r.json)));
+  // consent rules
+  scenario = { existing: { id: "gid://shopify/Customer/5", email: "u@example.com", tags: [], numberOfOrders: "0", emailMarketingConsent: { marketingState: "UNSUBSCRIBED" } } }; handler._internals._resetTokenCache(); calls = [];
+  r = await call("POST", { email: "u@example.com", consent: true, source: "newsletter" });
+  check("previously unsubscribed customer is never re-subscribed by a form; honest reason returned", r.status === 200 && r.json.subscribed === false && /previously unsubscribed/.test(r.json.reason) && !calls.some((c) => /ConsentUpdate/.test(c.query || "")));
+  scenario = { existing: { id: "gid://shopify/Customer/6", email: "p@example.com", tags: [], numberOfOrders: "0", emailMarketingConsent: { marketingState: "NOT_SUBSCRIBED" } } }; calls = [];
+  r = await call("POST", { email: "p@example.com", consent: true, source: "waitlist", product: "urpick-cat-cave" });
+  check("not-yet-subscribed customer is subscribed with explicit consent and consentUpdatedAt", r.json.subscribed === true && calls.some((c) => /ConsentUpdate/.test(c.query || "") && c.variables.input.emailMarketingConsent.marketingState === "SUBSCRIBED" && c.variables.input.emailMarketingConsent.consentUpdatedAt));
+  delete process.env.SHOPIFY_CLIENT_ID; delete process.env.SHOPIFY_CLIENT_SECRET; handler._internals._resetTokenCache();
+  r = await call("POST", { email: "z@example.com", consent: true, source: "newsletter" });
+  check("no credentials of either kind -> 503 not_configured", r.status === 503 && r.json.error === "not_configured");
 
   const fails = results.filter((x) => !x[1]);
   console.log(`\n${results.length - fails.length}/${results.length} passed`);
