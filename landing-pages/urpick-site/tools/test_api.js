@@ -134,6 +134,20 @@ global.fetch = async (url, opts) => {
   r = await call("POST", { email: "z@example.com", consent: true, source: "newsletter" });
   check("no credentials of either kind -> 503 not_configured", r.status === 503 && r.json.error === "not_configured");
 
+  // ── diagnostics view ──
+  process.env.SHOPIFY_CLIENT_ID = "cid_123"; process.env.SHOPIFY_CLIENT_SECRET = "csecret_456"; handler._internals._resetTokenCache(); scenario = {}; calls = [];
+  const oldFetch = global.fetch;
+  global.fetch = async (url, opts) => { const payload = JSON.parse(opts.body); if (/shop \{ name/.test(payload.query || "")) return { ok: true, status: 200, json: async () => ({ data: { shop: { name: "UrPick", myshopifyDomain: "0b1qjx-f5.myshopify.com" } } }) }; if (/customers\(first: 1\) \{ nodes \{ id/.test(payload.query || "")) return { ok: true, status: 200, json: async () => (scenario.denyCustomers ? { errors: [{ message: "Access denied for customers field. Required access: `read_customers` access scope. This app is not approved to access the Customer object." }] } : { data: { customers: { nodes: [] } } }) }; return oldFetch(url, opts); };
+  const reqD = makeReq("GET", null); reqD.url = "/api/subscribe?diag=1"; let resD = makeRes(); await handler(reqD, resD); let d = JSON.parse(resD.body);
+  check("diag: reports settings as booleans, auth ok with scope, shop name, customers access ok; no secrets", resD.statusCode === 200 && d.ok === true && d.settings.SHOPIFY_CLIENT_SECRET === true && d.auth.ok && d.shopQuery.shopName === "UrPick" && d.customersAccess.ok && !/csecret|shpat_/.test(resD.body), resD.body.slice(0, 300));
+  scenario = { denyCustomers: true }; resD = makeRes(); await handler(reqD, resD); d = JSON.parse(resD.body);
+  check("diag: customer access denied -> points at scopes / protected customer data", d.ok === false && d.customersAccess.ok === false && /Protected customer data/.test(d.nextStep));
+  scenario = { authFail: true }; resD = makeRes(); await handler(reqD, resD); d = JSON.parse(resD.body);
+  check("diag: bad credentials -> auth not ok with the OAuth error, no secret", d.auth.ok === false && d.auth.error === "invalid_client" && /rejected the client ID\/secret/.test(d.nextStep) && !/csecret/.test(resD.body));
+  global.fetch = oldFetch; scenario = {};
+  const reqP = makeReq("POST", { email: "q@example.com", consent: true, source: "newsletter" }); reqP.url = "/api/subscribe?diag=1"; const resP = makeRes(); await handler(reqP, resP);
+  check("diag is GET-only: a POST with ?diag=1 is handled as a normal signup", resP.statusCode !== 200 || !/checkedAt/.test(resP.body));
+
   const fails = results.filter((x) => !x[1]);
   console.log(`\n${results.length - fails.length}/${results.length} passed`);
   process.exit(fails.length ? 1 : 0);

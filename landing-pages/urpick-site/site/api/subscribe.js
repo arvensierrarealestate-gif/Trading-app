@@ -129,9 +129,47 @@ function tagsFor(b, eligible) {
   return t;
 }
 
+// GET /api/subscribe?diag=1 — connection check for the store owner. Reports which settings are present and whether Shopify accepts
+// the credentials and the customer scopes. Never returns a secret, token or customer record. Same per-IP throttle as signups.
+async function diagnose() {
+  const out = {
+    ok: false, checkedAt: new Date().toISOString(), store: STORE, apiVersion: API_VERSION,
+    settings: { SHOPIFY_CLIENT_ID: !!process.env.SHOPIFY_CLIENT_ID, SHOPIFY_CLIENT_SECRET: !!process.env.SHOPIFY_CLIENT_SECRET, SHOPIFY_SHOP: !!process.env.SHOPIFY_SHOP, SHOPIFY_ADMIN_TOKEN: !!process.env.SHOPIFY_ADMIN_TOKEN },
+    auth: null, shopQuery: null, customersAccess: null, nextStep: null,
+  };
+  if (!configured()) { out.nextStep = "Set SHOPIFY_CLIENT_ID, SHOPIFY_CLIENT_SECRET and SHOPIFY_SHOP in Vercel (Production and Preview), then redeploy."; return out; }
+  try {
+    if (process.env.SHOPIFY_CLIENT_ID && process.env.SHOPIFY_CLIENT_SECRET) {
+      tokenCache = { value: null, expiresAt: 0, ttl: 0 };
+      const r = await fetch(`https://${STORE}/admin/oauth/access_token`, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ client_id: process.env.SHOPIFY_CLIENT_ID, client_secret: process.env.SHOPIFY_CLIENT_SECRET, grant_type: "client_credentials" }) });
+      const j = await r.json().catch(() => ({}));
+      out.auth = { ok: r.ok && !!j.access_token, httpStatus: r.status, error: j.error || null, errorDescription: j.error_description || null, scope: j.scope || null, expiresIn: j.expires_in || null };
+      if (!out.auth.ok) { out.nextStep = r.status === 401 || r.status === 400 ? "Shopify rejected the client ID/secret for this store: check the values in Vercel match the app's API credentials, that the app is installed on " + STORE + ", and that the store domain is right." : "Token endpoint unreachable or unexpected (HTTP " + r.status + ")."; return out; }
+      tokenCache = { value: j.access_token, expiresAt: Date.now() + Math.max(60, Number(j.expires_in) || 86400) * 1000, ttl: Math.max(60, Number(j.expires_in) || 86400) * 1000 };
+    } else out.auth = { ok: true, mode: "fixed admin token" };
+    try { const d = await shopify(`{ shop { name myshopifyDomain } }`); out.shopQuery = { ok: true, shopName: d.shop.name, domain: d.shop.myshopifyDomain }; }
+    catch (e) { out.shopQuery = { ok: false, error: String(e.message).slice(0, 300) }; out.nextStep = "The token works for OAuth but Admin GraphQL calls fail: " + out.shopQuery.error; return out; }
+    try { await shopify(`{ customers(first: 1) { nodes { id } } }`); out.customersAccess = { ok: true }; }
+    catch (e) {
+      const msg = String(e.message).slice(0, 300); out.customersAccess = { ok: false, error: msg };
+      out.nextStep = /access denied|not approved|protected customer data|requires merchant approval|scope/i.test(msg)
+        ? "The app cannot read customers yet. In the Shopify Dev Dashboard open the app → API access: (1) make sure the access scopes include read_customers and write_customers and reinstall the app on the store if you change them; (2) under Protected customer data access, request access (reason: store management / customer communication) and enable the Email field. Then run this check again."
+        : "Customer query failed: " + msg;
+      return out;
+    }
+    out.ok = true; out.nextStep = "Everything is connected. Signups will be saved to the Shopify customer list.";
+  } catch (e) { out.nextStep = "Unexpected error: " + String(e.message).replace(/shp[a-z]*_[A-Za-z0-9]+/g, "[redacted]").slice(0, 200); }
+  return out;
+}
+
 async function handler(req, res) {
   if (req.method === "OPTIONS") { cors(req, res); res.statusCode = 204; return res.end(); }
   if (!cors(req, res)) return json(res, 403, { ok: false, error: "origin_not_allowed" });
+  if (req.method === "GET" && /(^|[?&])diag=1(&|$)/.test(String(req.url || ""))) {
+    const ip0 = String(req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "").split(",")[0].trim();
+    if (throttled(ip0)) return json(res, 429, { ok: false, error: "rate_limited" });
+    return json(res, 200, await diagnose());
+  }
   if (req.method !== "POST") { res.setHeader("Allow", "POST, OPTIONS"); return json(res, 405, { ok: false, error: "method_not_allowed" }); }
 
   const ip = String(req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "").split(",")[0].trim();
