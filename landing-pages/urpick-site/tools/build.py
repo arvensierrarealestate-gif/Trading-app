@@ -108,7 +108,7 @@ open(os.path.join(site, "vercel.json"), "w").write('{\n  "framework": null,\n  "
 pub = os.path.normpath(os.path.join(ROOT, "..", "..", "public", "urpick"))
 if os.path.isdir(os.path.dirname(pub)):
     shutil.rmtree(pub, ignore_errors=True)
-    shutil.copytree(site, pub, ignore=shutil.ignore_patterns("vercel.json"))
+    shutil.copytree(site, pub, ignore=shutil.ignore_patterns("vercel.json", "api"))   # the mirror has no serverless runtime; never ship function source as a static file
     for slug, render in landing_pages:   # the mirror lives under /urpick/, so its landing pages need that base path
         open(os.path.join(pub, "products", slug, "index.html"), "w", encoding="utf-8").write(render("/urpick"))
     print(f"mirrored to {os.path.relpath(pub, os.path.join(ROOT, '..', '..'))}/")
