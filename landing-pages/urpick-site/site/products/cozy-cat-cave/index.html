@@ -380,7 +380,19 @@ var BASE = "";
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(val)) { em.setAttribute("aria-invalid", "true"); msg.className = "msg err"; msg.textContent = "Please enter a valid email address."; em.focus(); return; }
       em.removeAttribute("aria-invalid"); var rec = Object.assign({ email: val, product: CONFIG.productId, variant: selected.id, qty: qty, at: new Date().toISOString() }, attr);
       try { var list = JSON.parse(localStorage.getItem("urpick_waitlist_v1") || "[]"); list.push(rec); localStorage.setItem("urpick_waitlist_v1", JSON.stringify(list)); } catch (err) {}
-      msg.className = "msg"; msg.textContent = "Saved on this device only. The email service is not connected yet, so nothing has been sent."; track("waitlist_signup", { variant: selected.id }); track("Lead", { variant: selected.id });
+      var btn = $("waitForm").querySelector('[type="submit"]'); btn.disabled = true; msg.className = "msg"; msg.textContent = "One moment\u2026";
+      // api/subscribe.js on the urpick Vercel project; 404 (mirror) or 503 (token not set yet) => local save only, nothing claimed
+      fetch(BASE + "/api/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({ email: val, consent: true, source: "waitlist", product: CONFIG.productId, variant: selected.id, qty: qty, landing: location.pathname + location.search }, attr)) })
+        .then(function (r) { if (r.status === 404 || r.status === 405 || r.status === 501 || r.status === 503) return { offline: true }; return r.json().then(function (j) { return { ok: r.ok && !!j.ok, reason: j.reason }; }); })
+        .catch(function () { return { network: true }; })
+        .then(function (res) {
+          btn.disabled = false;
+          if (res.network) { msg.className = "msg err"; msg.textContent = "We couldn\u2019t reach the server. Please check your connection and try again."; return; }
+          if (res.ok) { msg.className = "msg"; msg.textContent = "You\u2019re on the list. We\u2019ll email you when ordering opens."; }
+          else if (res.offline) { msg.className = "msg"; msg.textContent = "Saved on this device only. The email service is not connected yet, so nothing has been sent."; }
+          else { msg.className = "msg err"; msg.textContent = res.reason || "Something went wrong. Please try again."; return; }
+          track("waitlist_signup", { variant: selected.id, sent: !!res.ok }); track("Lead", { variant: selected.id });
+        });
     });
   }
   var ship = CONFIG.shipping, ret = CONFIG.returns;

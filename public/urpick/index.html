@@ -421,7 +421,7 @@
   .news form { margin-top: 1.75rem; display: flex; flex-direction: column; gap: 1rem; }
   .news .row input { min-height: 48px; max-height: 48px; flex: 1; min-width: 0; border-radius: var(--r-btn); border: 1px solid rgba(250,246,239,.2); background: rgba(255,255,255,.1); padding: 0 1.25rem; color: var(--cream); font: inherit; } .news .row input::placeholder { color: rgba(250,246,239,.5); } .news .row input:focus { outline: 2px solid var(--cream); outline-offset: 2px; }
   .news .row .btn { flex: none; min-height: 48px; }
-  .news .ok { display: none; margin-top: 1.5rem; font-weight: 600; }
+  .news .ok { display: none; margin-top: 1.5rem; font-weight: 600; } .news .ok.err { color: var(--clay); }
 
   /* footer */
   footer.site { border-top: 1px solid rgba(31,42,36,.1); padding-block: 3.5rem; }
@@ -1799,13 +1799,33 @@
     });
   });
 
+  // Attribution captured on arrival (utm_*, fbclid, ttclid) so signups can be tied back to the ad that brought them.
+  function signupAttribution() {
+    var out = {}; try { var q = new URLSearchParams(location.search); ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","fbclid","ttclid"].forEach(function (k) { var v = q.get(k); if (v) out[k] = v.slice(0, 120); }); var saved = sessionStorage.getItem("urpick_attribution"); if (saved) { var a = JSON.parse(saved); Object.keys(a).forEach(function (k) { if (!out[k] && a[k]) out[k] = String(a[k]).slice(0, 120); }); } if (Object.keys(out).length) sessionStorage.setItem("urpick_attribution", JSON.stringify(out)); } catch (e) {}
+    out.landing = location.pathname + (location.hash || ""); return out;
+  }
+  // Email signup endpoint (api/subscribe.js on the urpick Vercel project). Resolves {ok, offline, network, reason}: offline = no function here or not configured yet.
+  function subscribeEmail(payload) {
+    var ep = (window.WELCOME_OFFER && WELCOME_OFFER.endpoint) || "/api/subscribe";
+    return fetch(ep, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({ consent: true }, payload, signupAttribution())) })
+      .then(function (r) { if (r.status === 404 || r.status === 405 || r.status === 501 || r.status === 503) return { ok: false, offline: true }; return r.json().then(function (j) { return { ok: r.ok && !!j.ok, reason: j.reason, eligible: j.eligible }; }); })
+      .catch(function () { return { ok: false, network: true }; });
+  }
   function wire(formId, emailId, okId) {
-    var form = document.getElementById(formId), email = document.getElementById(emailId), ok = document.getElementById(okId);
+    var form = document.getElementById(formId), email = document.getElementById(emailId), ok = document.getElementById(okId), btn = form.querySelector('[type="submit"]'), okText = ok.textContent;
     form.addEventListener("submit", function (ev) {
       ev.preventDefault();
       if (!email.value || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value)) { email.focus(); email.setAttribute("aria-invalid", "true"); return; }
-      email.removeAttribute("aria-invalid"); ok.style.display = "block";
-      if (window.dataLayer) window.dataLayer.push({ event: "waitlist_submit", form: formId });
+      email.removeAttribute("aria-invalid"); ok.style.display = "none"; ok.classList.remove("err"); if (btn) btn.disabled = true;
+      var pets = Array.prototype.slice.call(form.querySelectorAll('input[name="pet"]:checked')).map(function (c) { return c.value; });
+      subscribeEmail({ email: email.value.trim().toLowerCase(), source: "newsletter", pets: pets }).then(function (res) {
+        if (btn) btn.disabled = false;
+        if (res.network) { ok.textContent = "We couldn\u2019t reach the server. Please check your connection and try again."; ok.classList.add("err"); ok.style.display = "block"; return; }
+        if (!res.ok && !res.offline) { ok.textContent = res.reason || "Something went wrong. Please try again."; ok.classList.add("err"); ok.style.display = "block"; return; }
+        ok.textContent = res.offline ? "Thanks, you\u2019re on the list. We\u2019ll email you as soon as the mailing list is connected." : okText; ok.style.display = "block";
+        if (res.offline) { try { var l = JSON.parse(localStorage.getItem("urpick_newsletter_v1") || "[]"); l.push({ email: email.value.trim().toLowerCase(), pets: pets, at: Date.now() }); localStorage.setItem("urpick_newsletter_v1", JSON.stringify(l)); } catch (e) {} }
+        if (window.dataLayer) window.dataLayer.push({ event: "waitlist_submit", form: formId, sent: !!res.ok });
+      });
     });
   }
   wire("newsForm", "newsEmail", "newsOk");
@@ -1818,7 +1838,7 @@
     enabled: true,
     percent: 10,
     code: "Urpick10off",      // the discount code shown after signup; must exist in the store (one use per customer, first order)
-    endpoint: "",            // e.g. "/api/welcome-offer" — POST {email, consent, source} -> {eligible: true|false, reason?}
+    endpoint: "/api/subscribe", // Vercel function (api/subscribe.js): POST {email, consent, source} -> {ok, eligible, reason?}; 404/503 => page falls back to a local save
     showAfterMs: 1200,       // delay before the popup appears on a first visit
     dismissCooldownDays: 7,  // closed without signing up: wait this long before showing again
     storageKey: "urpick_offer_v1"
@@ -1881,8 +1901,11 @@
       // Backend contract: POST endpoint, JSON {email, consent:true, source:"welcome-popup"} -> 2xx {eligible:boolean, reason?:string}.
       // The backend tags the customer / creates the one-use discount; this page never decides eligibility itself.
       if (!WELCOME_OFFER.endpoint) return Promise.resolve({ ok: false, offline: true });
-      return fetch(WELCOME_OFFER.endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: addr, consent: true, source: "welcome-popup", percent: WELCOME_OFFER.percent }) })
-        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok && !!j.eligible, reason: j.reason, status: r.status }; }); })
+      return fetch(WELCOME_OFFER.endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.assign({ email: addr, consent: true, source: "welcome-popup", percent: WELCOME_OFFER.percent }, signupAttribution())) })
+        .then(function (r) {
+          if (r.status === 404 || r.status === 405 || r.status === 501 || r.status === 503) return { ok: false, offline: true, status: r.status };   // no function here (mirror) or token not set yet: save locally, claim nothing
+          return r.json().then(function (j) { return { ok: r.ok && !!j.ok && !!j.eligible, subscribed: !!j.subscribed, reason: j.reason, status: r.status }; });
+        })
         .catch(function () { return { ok: false, network: true }; });
     }
     form.addEventListener("submit", function (ev) {
@@ -1893,7 +1916,7 @@
       register(addr).then(function (res) {
         submit.disabled = false; submit.textContent = "Unlock my 10% off";
         if (res.network) { showError("We couldn’t reach the server. Please check your connection and try again."); return; }
-        if (!res.ok && !res.offline && res.reason) { showError(res.reason); return; }       // e.g. "This email has already used the first-order offer."
+        if (!res.ok && !res.offline && res.reason && !res.subscribed) { showError(res.reason); return; }   // hard failure with a message (e.g. invalid email)
         save({ status: "signed", email: addr, consent: true, confirmed: !!res.ok, code: WELCOME_OFFER.code || null, at: Date.now() });
         showDone(addr, !!res.ok, res.offline ? null : res.reason);
         if (window.dataLayer) window.dataLayer.push({ event: "welcome_offer_signup", confirmed: !!res.ok });
