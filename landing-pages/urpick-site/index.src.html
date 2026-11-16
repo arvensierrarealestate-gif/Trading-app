@@ -799,7 +799,7 @@
       <ul class="reassure" id="shopReassure"></ul>
       <div class="pdp-details" id="pdpDetails"></div>
       <p class="pdp-story" id="pdpStory" hidden><a href="#" class="textlink">Watch Bruce’s story on the Cat Cave page <span aria-hidden="true">→</span></a></p>
-      <p class="connect-note">Shopify not connected yet — cart runs locally. Add <code>VITE_SHOPIFY_DOMAIN</code> and <code>VITE_SHOPIFY_STOREFRONT_TOKEN</code> to <code>.env</code> to enable live checkout.</p>
+      <p class="connect-note">Checkout hands the cart to Shopify once each line has a confirmed variant; until then the cart runs locally.</p>
     </div>
       </div>
     </div>
@@ -915,8 +915,8 @@
         <div class="co-pay">
           <h2>Secure checkout</h2>
           <p class="taupe">Payment, shipping address and delivery options are handled by Shopify's secure checkout.</p>
-          <button type="button" class="btn btn-primary" id="checkoutGo" disabled title="Connect Shopify to enable checkout">Continue to Shopify checkout</button>
-          <div class="status show"><b>Checkout isn't connected yet.</b>This button sends the cart to Shopify's hosted checkout once the store is connected (Storefront API domain and token). No payment is taken on this page and no order is created before then.</div>
+          <button type="button" class="btn btn-primary" id="checkoutGo" disabled title="Checkout opens once the product is confirmed">Continue to Shopify checkout</button>
+          <div class="status show" id="checkoutGoNote"><b>Checkout opens once the product is confirmed.</b> No payment is taken on this page and no order is created before then.</div>
           <ul class="reassure co-reassure" id="checkoutReassure"></ul>
           <p class="back"><a href="#shop" class="btn btn-secondary">Back to shop</a></p>
         </div>
@@ -1570,7 +1570,17 @@
       { label: "Secure Checkout", value: "Powered by Shopify" }
     ]
   };
-  var SHOPIFY_CONNECTED = false; // true once VITE_SHOPIFY_DOMAIN + VITE_SHOPIFY_STOREFRONT_TOKEN are wired
+  // Shopify checkout hand-off (16 Nov 2026): the store is connected; checkout uses Shopify cart permalinks (no token in the page).
+  // It switches itself on only when every cart line carries a numeric Shopify variant id, which happens once the product price and
+  // sizes are confirmed and the variant ids are filled in landing/cozy-cat-cave.json. Until then the button stays disabled with an honest note.
+  var SHOPIFY = { domain: "0b1qjx-f5.myshopify.com" };
+  function shopifyCheckoutUrl(lines) {
+    if (!SHOPIFY.domain || !lines.length) return null;
+    if (!lines.every(function (l) { return /^\d+$/.test(String(l.variantId || "")); })) return null;
+    var code = null; try { var st = JSON.parse(localStorage.getItem("urpick_offer_v1") || "null"); if (st && st.status === "signed" && st.code) code = st.code; } catch (e) {}
+    return "https://" + SHOPIFY.domain + "/cart/" + lines.map(function (l) { return l.variantId + ":" + l.qty; }).join(",") + (code ? "?discount=" + encodeURIComponent(code) : "");
+  }
+  var SHOPIFY_CONNECTED = !!SHOPIFY.domain;
   PRODUCT.id = "cat-1"; PRODUCT.cat = "cats";
   function money(n) { return new Intl.NumberFormat("en-US", { style: "currency", currency: PRODUCT.currency }).format(n); }
   var colorIdx = 0, imgIdx = 0, qty = 1;
@@ -1748,7 +1758,10 @@
     if (!cart.lines.length) { var e = document.createElement("p"); e.className = "co-empty"; e.textContent = "Your cart is empty. Add the product to review an order here."; lines.appendChild(e); }
     cart.lines.forEach(function (l) { lines.appendChild(lineEl(l, true)); });
     document.getElementById("checkoutSubtotal").textContent = money(cartSubtotal()); document.getElementById("checkoutTotal").textContent = money(cartSubtotal());
-    var go = document.getElementById("checkoutGo"); go.disabled = !(SHOPIFY_CONNECTED && cart.lines.length);
+    var go = document.getElementById("checkoutGo"), goUrl = shopifyCheckoutUrl(cart.lines), goNote = document.getElementById("checkoutGoNote");
+    go.disabled = !goUrl; go.title = goUrl ? "Continue to Shopify's secure checkout" : "Checkout opens once the product is confirmed";
+    if (goNote) goNote.innerHTML = goUrl ? "<b>Secure checkout by Shopify.</b> You will review shipping, taxes and payment on the next page before anything is charged." : (cart.lines.length ? "<b>Checkout opens once the product is confirmed.</b> The store is connected, but price, sizes and stock are still to be confirmed by the supplier, so nothing can be ordered yet and no payment is taken." : "<b>Checkout opens once the product is confirmed.</b> No payment is taken on this page and no order is created before then.");
+    go.onclick = goUrl ? function () { if (window.dataLayer) window.dataLayer.push({ event: "begin_checkout", lines: cart.lines.length }); window.location.href = goUrl; } : null;
     if (typeof renderCheckoutOffer === "function") renderCheckoutOffer();
   }
   function openCart() { if (!cartRoot.hidden) return; cartLast = document.activeElement; clearTimeout(cartTimer); cartRoot.hidden = false; document.body.classList.add("cart-open"); requestAnimationFrame(function () { cartRoot.classList.add("open"); cartClose.focus(); }); }
