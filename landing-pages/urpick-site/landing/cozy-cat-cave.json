@@ -420,5 +420,24 @@
   "fitTip": {
     "title": "Finding the right fit",
     "text": "Measure your cat's preferred resting position, curled up and stretched out, and compare it with the external sizes above. Allow some room inside, since these are outer dimensions; usable interior measurements follow once the supplier confirms them."
+  },
+  "shopify": {
+    "domain": "0b1qjx-f5.myshopify.com",
+    "productId": "10422837346523",
+    "handle": "cozy-cat-cave",
+    "status": "draft, price placeholder 0.00 until the supplier confirms",
+    "variantIds": {
+      "cow-print": {
+        "m": "51159188144347",
+        "l": "51159188177115",
+        "xl": "51159188209883"
+      },
+      "green-dino": {
+        "m": "51159188242651",
+        "l": "51159188275419",
+        "xl": "51159188308187"
+      }
+    },
+    "note": "Colour-level variantId stays null until the catalog confirms which size each colour is sold in; then copy the matching id into variants[].variantId and set price."
   }
 }
