@@ -53,7 +53,7 @@ out = re.sub(r'<div class="mockbar">.*?</div>\s*</div>\n', "", out, count=1, fla
 out = re.sub(r'\s*<div class="note">.*?</div>', "", out, flags=re.S)
 out = out.replace('<meta charset="utf-8">\n', "", 1)
 SITE_URL = "https://urpick.shop"   # public domain (bought 19 Nov 2026); absolute URLs only where crawlers need them
-META_DOMAIN_VERIFICATION = ""      # content of Meta's facebook-domain-verification tag; empty = tag not emitted
+META_DOMAIN_VERIFICATION = "0v1yipn73qzmc195yte6qe2lb6kg33"      # content of Meta's facebook-domain-verification tag; empty = tag not emitted
 META_TAG = f'<meta name="facebook-domain-verification" content="{META_DOMAIN_VERIFICATION}">\n' if META_DOMAIN_VERIFICATION else ""
 title = re.search(r"<title>(.*?)</title>", out).group(1)
 out = out.replace(f"<title>{title}</title>\n", "", 1)
