@@ -52,6 +52,9 @@ if not deploy:
 out = re.sub(r'<div class="mockbar">.*?</div>\s*</div>\n', "", out, count=1, flags=re.S)
 out = re.sub(r'\s*<div class="note">.*?</div>', "", out, flags=re.S)
 out = out.replace('<meta charset="utf-8">\n', "", 1)
+SITE_URL = "https://urpick.shop"   # public domain (bought 19 Nov 2026); absolute URLs only where crawlers need them
+META_DOMAIN_VERIFICATION = "0v1yipn73qzmc195yte6qe2lb6kg33"      # content of Meta's facebook-domain-verification tag; empty = tag not emitted
+META_TAG = f'<meta name="facebook-domain-verification" content="{META_DOMAIN_VERIFICATION}">\n' if META_DOMAIN_VERIFICATION else ""
 title = re.search(r"<title>(.*?)</title>", out).group(1)
 out = out.replace(f"<title>{title}</title>\n", "", 1)
 head = f"""<!doctype html>
@@ -63,8 +66,10 @@ head = f"""<!doctype html>
 <meta name="description" content="UrPick — everyday essentials for pets and the people who love them. Coming soon.">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="Everyday essentials for pets and the people who love them.">
-<meta property="og:image" content="assets/photos/hero-family.jpg">
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<meta property="og:image" content="{SITE_URL}/assets/photos/hero-family.jpg">
+<meta property="og:url" content="{SITE_URL}/">
+<link rel="canonical" href="{SITE_URL}/">
+{META_TAG}<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" as="video" href="assets/video/hero-loop.mp4" type="video/mp4">
 </head>
 <body>
@@ -95,11 +100,15 @@ if os.path.exists(landing_tpl):
             page = tpl.replace("{{PRODUCT_JSON}}", json.dumps(cfg, ensure_ascii=False).replace("</", "<\\/"))
             desc = cfg["angles"][cfg["defaultAngle"]]["sub"]
             og = (base + cfg["media"]["hero"]["src"]) if cfg["media"]["hero"].get("src") else base + "/assets/video/hero-loop-poster.jpg"
+            og = (SITE_URL + cfg["media"]["hero"]["src"]) if cfg["media"]["hero"].get("src") else SITE_URL + "/assets/video/hero-loop-poster.jpg"
             return (page.replace("{{TITLE}}", f'{cfg["name"]} · {cfg["brand"]}').replace("{{DESCRIPTION}}", desc)
-                        .replace("{{OG_IMAGE}}", og).replace("{{BASE}}", base))
+                        .replace("{{OG_IMAGE}}", og).replace("{{CANONICAL}}", SITE_URL + cfg["route"]).replace("{{META_TAG}}", META_TAG).replace("{{BASE}}", base))
         out_dir = os.path.join(site, "products", cfg["slug"]); os.makedirs(out_dir, exist_ok=True)
         open(os.path.join(out_dir, "index.html"), "w", encoding="utf-8").write(render(""))
         landing_pages.append((cfg["slug"], render))
+open(os.path.join(site, "robots.txt"), "w").write(f"User-agent: *\nAllow: /\nSitemap: {SITE_URL}/sitemap.xml\n")
+urls = [SITE_URL + "/"] + [SITE_URL + "/products/" + slug for slug, _ in landing_pages]
+open(os.path.join(site, "sitemap.xml"), "w").write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n")
 api_src = os.path.join(ROOT, "api")   # Vercel serverless functions (api/subscribe.js) deploy with the static site
 if os.path.isdir(api_src):
     shutil.copytree(api_src, os.path.join(site, "api"))
