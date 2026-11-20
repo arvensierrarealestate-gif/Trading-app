@@ -7,7 +7,7 @@ Goal: waitlist signups (Lead) for the UrPick Cozy Cat Cave. No price, delivery t
 - Story angle:   https://urpick.shop/products/cozy-cat-cave?angle=story&utm_source=meta&utm_medium=paid&utm_campaign=waitlist&utm_content=story
 
 ## Campaign settings
-- Objective: Leads · Conversion location: Website · Pixel 1492978566007604 · Event: Lead
+- Objective: Leads · Conversion location: Website · Pixel 1613678656642540 · Event: Lead
 - One ad set: Advantage+ audience, suggestions "cat owners", "pet supplies"; United States; 25–64; Advantage+ placements
 - Budget: small daily test for 5–7 days, then move spend to the lower cost-per-Lead ad
 - Two ads, same ad set, one per video
